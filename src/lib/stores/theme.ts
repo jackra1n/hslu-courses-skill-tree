@@ -4,7 +4,7 @@ import { browser } from '$app/environment';
 export type Theme = 'light' | 'dark' | 'system';
 
 function createThemeStore() {
-  const { subscribe, set } = writable<Theme>('system');
+  const { subscribe, set } = writable<Theme>('light');
 
   return {
     subscribe,
@@ -19,7 +19,7 @@ function createThemeStore() {
       if (!browser) return;
       
       const stored = localStorage.getItem('theme') as Theme;
-      const theme = stored || 'system';
+      const theme = stored || 'light';
       set(theme);
       applyTheme(theme);
     }
