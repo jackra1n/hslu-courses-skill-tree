@@ -43,12 +43,19 @@
     return s;
   }
 
+  function getNodeLabel(course: Course): string {
+    if (showShortNamesOnly) {
+      return course.id;
+    }
+    return `${course.label} (${course.id})`;
+  }
+
   function toGraph(courses: Course[]): { nodes: Node[]; edges: Edge[] } {
     const nodes: Node[] = courses.map((c) => ({
       id: c.id,
       position: { x: 0, y: 0 },
       data: { 
-        label: c.label
+        label: getNodeLabel(c)
       },
       style: "",
     }));
@@ -75,6 +82,7 @@
   let completed = new Set<string>();
   let statuses: Record<string, Status> = {};
   let showAssessmentInfo = false;
+  let showShortNamesOnly = false;
   
   let viewport = { x: 0, y: 0, zoom: 1 };
   
@@ -104,6 +112,13 @@
       const course = COURSES.find((c) => c.id === n.id);
       const semesterY = course?.semester ? (course.semester - 1) * 200 + 100 : p.y;
       return { ...n, position: { x: p.x, y: semesterY } };
+    });
+  }
+
+  function updateNodeLabels() {
+    nodes = nodes.map((n) => {
+      const course = COURSES.find((c) => c.id === n.id);
+      return { ...n, data: { label: course ? getNodeLabel(course) : n.data.label } };
     });
   }
 
@@ -140,6 +155,9 @@
       animated: statuses[e.target as string] === "available",
       style: "stroke-width: 2px; stroke: rgb(var(--border-primary));",
     }));
+    
+    // force reactivity update for sidebar
+    selection = selection;
   }
   
   function markAttended(id: string) {
@@ -230,6 +248,19 @@
       >
         <div class="i-lucide-info"></div>
         Assessment Info
+      </button>
+      <button 
+        onclick={() => {
+          showShortNamesOnly = !showShortNamesOnly;
+          updateNodeLabels();
+        }}
+        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all {showShortNamesOnly 
+          ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-800 dark:text-green-100 dark:hover:bg-green-700'
+          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700'
+        }"
+      >
+        <div class="i-lucide-toggle-left"></div>
+        {showShortNamesOnly ? 'Short Names' : 'Full Names'}
       </button>
       <ThemeSwitcher />
     </div>
