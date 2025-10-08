@@ -9,6 +9,7 @@
     type Node,
     MarkerType,
     Position,
+    type OnMove,
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
   import dagre from "@dagrejs/dagre";
@@ -20,16 +21,17 @@
     ects?: number;
     prereqs: string[];
     url?: string;
+    semester?: number;
   };
 
   const COURSES: Course[] = [
-    { id: "math1", label: "Discrete Math 1", ects: 6, prereqs: [] },
-    { id: "prog1", label: "Programming 1", ects: 6, prereqs: [] },
-    { id: "prog2", label: "Programming 2", ects: 6, prereqs: ["prog1"] },
-    { id: "algo", label: "Algorithms", ects: 6, prereqs: ["prog2", "math1"] },
-    { id: "net1", label: "Networking 1", ects: 4, prereqs: [] },
-    { id: "net2", label: "Networking 2", ects: 4, prereqs: ["net1"] },
-    { id: "cloud", label: "Cloud Tech", ects: 4, prereqs: ["net2", "prog2"] },
+    { id: "math1", label: "Discrete Math 1", ects: 6, prereqs: [], semester: 1 },
+    { id: "prog1", label: "Programming 1", ects: 6, prereqs: [], semester: 1 },
+    { id: "prog2", label: "Programming 2", ects: 6, prereqs: ["prog1"], semester: 2 },
+    { id: "algo", label: "Algorithms", ects: 6, prereqs: ["prog2", "math1"], semester: 3 },
+    { id: "net1", label: "Networking 1", ects: 4, prereqs: [], semester: 1 },
+    { id: "net2", label: "Networking 2", ects: 4, prereqs: ["net1"], semester: 2 },
+    { id: "cloud", label: "Cloud Tech", ects: 4, prereqs: ["net2", "prog2"], semester: 3 },
   ];
 
   function computeStatuses(
@@ -50,9 +52,11 @@
     const nodes: Node[] = courses.map((c) => ({
       id: c.id,
       position: { x: 0, y: 0 },
-      data: { label: c.label },
+      data: { 
+        label: c.label
+      },
       style:
-        "border-radius: 16px; padding: 12px; border-width: 2px; background: white;",
+        "border-radius: 16px; padding: 12px; border-width: 2px; background: white; white-space: pre-line; text-align: center;",
     }));
     const edges: Edge[] = courses.flatMap((c) =>
       c.prereqs.map((p) => ({
@@ -64,6 +68,7 @@
         markerEnd: { type: MarkerType.ArrowClosed },
         animated: false,
         style: "stroke-width: 2px;",
+        type: "smoothstep",
       }))
     );
     return { nodes, edges };
@@ -74,6 +79,12 @@
   let selection: Course | null = null;
   let completed = new Set<string>();
   let statuses: Record<string, Status> = {};
+  
+  let viewport = { x: 0, y: 0, zoom: 1 };
+  
+  const handleMove: OnMove = (event, viewportData) => {
+    viewport = viewportData;
+  };
 
   function layoutDagre() {
     const g = new dagre.graphlib.Graph();
@@ -148,23 +159,43 @@
 <div
   style="display: grid; grid-template-columns: 1fr 320px; height: 80vh; gap: 0;"
 >
-  <SvelteFlow {nodes} {edges} onnodeclick={handleNodeClick} fitView>
-    <MiniMap />
-    <Controls />
-    <Background gap={16} />
-  </SvelteFlow>
+  <div style="position: relative;">
+    <SvelteFlow {nodes} {edges} onnodeclick={handleNodeClick} onmove={handleMove} nodesDraggable={false} fitView>
+      <svg 
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible;"
+        class="semester-dividers"
+      >
+        <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
+          <!-- Semester 1 divider -->
+          <line x1="-200" y1="120" x2="1000" y2="120" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-150" y="110" fill="#64748b" font-size="{13 / viewport.zoom}" font-weight="500">Semester 1</text>
+          
+          <!-- Semester 2 divider -->
+          <line x1="-200" y1="350" x2="1000" y2="350" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-150" y="340" fill="#64748b" font-size="{13 / viewport.zoom}" font-weight="500">Semester 2</text>
+          
+          <!-- Semester 3 divider -->
+          <line x1="-200" y1="550" x2="1000" y2="550" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-150" y="540" fill="#64748b" font-size="{13 / viewport.zoom}" font-weight="500">Semester 3</text>
+        </g>
+      </svg>
+      <MiniMap />
+      <Controls />
+      <Background gap={16} />
+    </SvelteFlow>
+  </div>
 
   <aside class="sidebar">
     {#if selection}
       <h2 style="font-weight: 700; font-size: 1.125rem;">{selection.label}</h2>
       <p style="color:#64748b; font-size: 0.9rem;">
-        ECTS: {selection.ects ?? 0}
+        ECTS: {selection.ects ?? 0} • Semester: {selection.semester ?? "—"}
       </p>
       <p style="font-size: 0.9rem;">
         Prereqs: {selection.prereqs.length ? selection.prereqs.join(", ") : "—"}
       </p>
       <div style="display:flex; gap: 0.5rem; margin-top: 0.5rem;">
-        <button class="btn" on:click={() => toggleComplete(selection!.id)}
+        <button class="btn" onclick={() => toggleComplete(selection!.id)}
           >Toggle completed</button
         >
         <span style="font-size: 0.75rem; color:#64748b; align-self: center;"
