@@ -130,14 +130,24 @@
     nodes = nodes.map((n) => {
       const s = statuses[n.id];
       const isAttended = attended.has(n.id);
-      let styleStr = "padding: 14px; border-radius: 12px; border-width: 2px; font-weight: 500; font-size: 14px; text-align: center; min-width: 180px; font-family: Inter, sans-serif; ";
+      const isSelected = selection?.id === n.id;
+      let styleStr = "padding: 14px; border-radius: 12px; font-weight: 500; font-size: 14px; text-align: center; min-width: 180px; font-family: Inter, sans-serif; transition: all 0.2s; ";
+
+      if (isSelected) {
+        styleStr += "border-width: 3px; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 4px 6px rgba(0,0,0,0.1); transform: scale(1.05); ";
+      } else {
+        styleStr += "border-width: 2px; ";
+      }
       
       if (s === "completed") {
-        styleStr += "background: #f0fdf4; border-color: #4ade80; color: #111827; box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+        styleStr += "background: #f0fdf4; border-color: #4ade80; color: #111827; ";
+        if (!isSelected) styleStr += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
       } else if (isAttended) {
-        styleStr += "background: #fef3c7; border-color: #fbbf24; color: #111827; box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+        styleStr += "background: #fef3c7; border-color: #fbbf24; color: #111827; ";
+        if (!isSelected) styleStr += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
       } else if (s === "available") {
-        styleStr += "background: #eff6ff; border-color: #60a5fa; color: #111827; box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+        styleStr += "background: #eff6ff; border-color: #60a5fa; color: #111827; ";
+        if (!isSelected) styleStr += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
       } else {
         styleStr += "background: #f9fafb; border-color: #d1d5db; color: #9ca3af; opacity: 0.6;";
       }
@@ -154,7 +164,6 @@
     const course = COURSES.find((c) => c.id === id);
     if (!course) return;
     
-    // Check if prerequisites are met
     const prereqsMet = course.prereqs.every((p) => attended.has(p) || completed.has(p));
     if (!prereqsMet) return;
     
@@ -194,6 +203,7 @@
     if (!node) return;
     const course = COURSES.find((c) => c.id === node.id) || null;
     selection = course;
+    applyStatuses();
   }
 
   onMount(() => {
@@ -229,16 +239,16 @@
       >
         <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
           <!-- Semester 1 divider -->
-          <line x1="-200" y1="200" x2="2000" y2="200" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
-          <text x="-150" y="190" fill="#64748b" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 1</text>
+          <line x1="-200" y1="250" x2="2000" y2="250" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-150" y="240" fill="#64748b" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 1</text>
           
           <!-- Semester 2 divider -->
-          <line x1="-200" y1="400" x2="2000" y2="400" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
-          <text x="-150" y="390" fill="#64748b" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 2</text>
+          <line x1="-200" y1="450" x2="2000" y2="450" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-150" y="440" fill="#64748b" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 2</text>
           
           <!-- Semester 3 divider -->
-          <line x1="-200" y1="600" x2="2000" y2="600" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
-          <text x="-150" y="590" fill="#64748b" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 3</text>
+          <line x1="-200" y1="650" x2="2000" y2="650" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-150" y="640" fill="#64748b" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 3</text>
         </g>
       </svg>
         <MiniMap />
