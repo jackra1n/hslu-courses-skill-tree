@@ -1,0 +1,87 @@
+[
+  {
+    "id": "ana-g",
+    "label": "Grundlagen der Analysis",
+    "ects": 3,
+    "prereqs": [],
+    "semester": 1
+  },
+  {
+    "id": "dmath-algo",
+    "label": "Diskrete Mathematik Datenstrukturen und Algorithmen",
+    "ects": 3,
+    "prereqs": [],
+    "semester": 1
+  },
+  {
+    "id": "oop",
+    "label": "Objektorientierte Programmierung",
+    "ects": 6,
+    "prereqs": [],
+    "semester": 1
+  },
+  {
+    "id": "cna",
+    "label": "Computer & Network Architecture",
+    "ects": 6,
+    "prereqs": [],
+    "semester": 1
+  },
+  {
+    "id": "lial",
+    "label": "Lineare Algebra",
+    "ects": 3,
+    "prereqs": [],
+    "semester": 1
+  },
+  {
+    "id": "pta",
+    "label": "Projekt- und Teamarbeit",
+    "ects": 6,
+    "prereqs": [],
+    "semester": 1,
+    "type": "Projektmodul"
+  },
+  {
+    "id": "ana-f",
+    "label": "Fortgeschrittene Analysis",
+    "ects": 3,
+    "prereqs": ["ana-g"],
+    "semester": 2
+  },
+  {
+    "id": "dmath-code",
+    "label": "Diskrete Mathematik Datenverschlüsselung und Datenkodierung",
+    "ects": 3,
+    "prereqs": ["dmath-algo"],
+    "semester": 2
+  },
+  {
+    "id": "ad",
+    "label": "Algorithmen & Datenstrukturen",
+    "ects": 6,
+    "prereqs": ["oop"],
+    "semester": 2
+  },
+  {
+    "id": "iteo",
+    "label": "IT-System Engineering & Operation",
+    "ects": 6,
+    "prereqs": [],
+    "semester": 2
+  },
+  {
+    "id": "mod",
+    "label": "Modellierung Grundlagen",
+    "ects": 3,
+    "prereqs": [],
+    "semester": 2
+  },
+  {
+    "id": "pmb",
+    "label": "Project Management Basics",
+    "ects": 3,
+    "prereqs": ["pta"],
+    "semester": 2
+  }
+]

@@ -15,5 +15,26 @@ export default defineConfig({
                 mono: 'JetBrains Mono:400,500',
             }
         })
-    ]
+    ],
+    darkMode: 'class',
+    theme: {
+        colors: {
+            // semantic color tokens for theme switching
+            'bg-primary': 'rgb(var(--bg-primary))',
+            'bg-secondary': 'rgb(var(--bg-secondary))',
+            'text-primary': 'rgb(var(--text-primary))',
+            'text-secondary': 'rgb(var(--text-secondary))',
+            'border-primary': 'rgb(var(--border-primary))',
+            'border-secondary': 'rgb(var(--border-secondary))',
+            'node-completed-bg': 'rgb(var(--node-completed-bg))',
+            'node-completed-border': 'rgb(var(--node-completed-border))',
+            'node-attended-bg': 'rgb(var(--node-attended-bg))',
+            'node-attended-border': 'rgb(var(--node-attended-border))',
+            'node-available-bg': 'rgb(var(--node-available-bg))',
+            'node-available-border': 'rgb(var(--node-available-border))',
+            'node-locked-bg': 'rgb(var(--node-locked-bg))',
+            'node-locked-border': 'rgb(var(--node-locked-border))',
+            'node-locked-text': 'rgb(var(--node-locked-text))',
+        }
+    }
 })
