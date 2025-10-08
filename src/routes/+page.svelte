@@ -69,8 +69,7 @@
       data: { 
         label: c.label
       },
-      style:
-        "border-radius: 16px; padding: 12px; border-width: 2px; background: white; white-space: pre-line; text-align: center;",
+      style: "",
     }));
     const edges: Edge[] = courses.flatMap((c) =>
       c.prereqs.map((p) => ({
@@ -131,22 +130,23 @@
     nodes = nodes.map((n) => {
       const s = statuses[n.id];
       const isAttended = attended.has(n.id);
-      let styleStr = "";
+      let styleStr = "padding: 14px; border-radius: 12px; border-width: 2px; font-weight: 500; font-size: 14px; text-align: center; min-width: 180px; font-family: Inter, sans-serif; ";
       
       if (s === "completed") {
-        styleStr = "border-color: #86efac; background: #f0fdf4; border-radius: 16px; padding: 12px; border-width: 2px;";
+        styleStr += "background: #f0fdf4; border-color: #4ade80; color: #111827; box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
       } else if (isAttended) {
-        styleStr = "border-color: #fbbf24; background: #fffbeb; border-radius: 16px; padding: 12px; border-width: 2px;";
+        styleStr += "background: #fef3c7; border-color: #fbbf24; color: #111827; box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
       } else if (s === "available") {
-        styleStr = "border-color: #93c5fd; background: #eff6ff; border-radius: 16px; padding: 12px; border-width: 2px;";
+        styleStr += "background: #eff6ff; border-color: #60a5fa; color: #111827; box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
       } else {
-        styleStr = "border-color: #e5e7eb; background: #f9fafb; border-radius: 16px; padding: 12px; border-width: 2px; opacity: 0.5;";
+        styleStr += "background: #f9fafb; border-color: #d1d5db; color: #9ca3af; opacity: 0.6;";
       }
       return { ...n, style: styleStr };
     });
     edges = edges.map((e) => ({
       ...e,
       animated: statuses[e.target as string] === "available",
+      style: "stroke-width: 2px; stroke: #cbd5e0;",
     }));
   }
   
@@ -215,14 +215,17 @@
   });
 </script>
 
-<div
-  style="display: grid; grid-template-columns: 1fr 320px; height: 80vh; gap: 0;"
->
-  <div style="position: relative;">
-    <SvelteFlow {nodes} {edges} onnodeclick={handleNodeClick} onmove={handleMove} nodesDraggable={false} nodesConnectable={false} fitView>
+<div class="font-sans h-screen flex flex-col">
+  <header class="border-b border-gray-200 bg-white px-6 py-4">
+    <h1 class="text-2xl font-bold text-gray-900">HSLU Course Skill Tree</h1>
+    <p class="text-sm text-gray-600 mt-1">Track your progress through course prerequisites</p>
+  </header>
+  
+  <div class="flex-1 grid grid-cols-[1fr_400px] min-h-0">
+    <div class="relative">
+      <SvelteFlow {nodes} {edges} onnodeclick={handleNodeClick} onmove={handleMove} nodesDraggable={false} nodesConnectable={false} fitView>
       <svg 
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible;"
-        class="semester-dividers"
+        class="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
       >
         <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
           <!-- Semester 1 divider -->
@@ -238,73 +241,133 @@
           <text x="-150" y="590" fill="#64748b" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 3</text>
         </g>
       </svg>
-      <MiniMap />
-      <Controls />
-      <Background gap={16} />
-    </SvelteFlow>
-  </div>
+        <MiniMap />
+        <Controls />
+        <Background gap={16} />
+      </SvelteFlow>
+    </div>
 
-  <aside class="sidebar">
-    {#if selection}
-      <h2 style="font-weight: 700; font-size: 1.125rem;">{selection.label}</h2>
-      <p style="color:#64748b; font-size: 0.9rem;">
-        ECTS: {selection.ects} • Semester: {selection.semester}
-        {#if selection.type}
-          <br/><span style="color:#7c3aed;">📚 {selection.type}</span>
-        {/if}
-      </p>
-      <p style="font-size: 0.9rem;">
-        Prerequisites (attended): {selection.prereqs.length ? selection.prereqs.map(id => COURSES.find(c => c.id === id)?.label || id).join(", ") : "None"}
-      </p>
+    <aside class="border-l border-gray-200 bg-gray-50 overflow-y-auto">
       {#if selection}
         {@const isLocked = statuses[selection.id] === "locked"}
         {@const isAttended = attended.has(selection.id)}
         {@const isCompleted = completed.has(selection.id)}
-        <div style="display:flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
-          <button 
-            class="btn" 
-            onclick={() => markAttended(selection!.id)}
-            disabled={isLocked || isCompleted}
-            style="background: {isAttended ? '#fef3c7' : 'white'}; {isLocked || isCompleted ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
-          >
-            {isAttended ? '✓ Attended' : 'Mark Attended'}
-          </button>
-          <button 
-            class="btn" 
-            onclick={() => markCompleted(selection!.id)}
-            disabled={isLocked}
-            style="background: {isCompleted ? '#dcfce7' : 'white'}; {isLocked ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
-          >
-            {isCompleted ? '✓ Completed' : 'Mark Completed'}
-          </button>
+        
+        <div class="p-6 space-y-6">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-3">{selection.label}</h2>
+            
+            <div class="flex items-center gap-4 text-sm text-gray-600 mb-2">
+              <div class="flex items-center gap-1.5">
+                <div class="i-lucide-book-open text-gray-500"></div>
+                <span>{selection.ects} ECTS</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <div class="i-lucide-calendar text-gray-500"></div>
+                <span>Semester {selection.semester}</span>
+              </div>
+            </div>
+            
+            {#if selection.type}
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-100 text-purple-700 rounded-md text-sm font-medium">
+                <div class="i-lucide-layers text-purple-600"></div>
+                {selection.type}
+              </div>
+            {/if}
+          </div>
+
+          <div class="border-t border-gray-200 pt-4">
+            <h3 class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+              <div class="i-lucide-git-branch text-gray-500"></div>
+              Prerequisites
+            </h3>
+            {#if selection.prereqs.length > 0}
+              <ul class="space-y-1.5">
+                {#each selection.prereqs as prereqId}
+                  {@const prereqCourse = COURSES.find(c => c.id === prereqId)}
+                  {@const prereqMet = attended.has(prereqId) || completed.has(prereqId)}
+                  <li class="flex items-start gap-2 text-sm">
+                    <div class="{prereqMet ? 'i-lucide-check-circle text-green-500' : 'i-lucide-circle text-gray-400'} mt-0.5"></div>
+                    <span class={prereqMet ? 'text-gray-900' : 'text-gray-500'}>
+                      {prereqCourse?.label || prereqId}
+                    </span>
+                  </li>
+                {/each}
+              </ul>
+            {:else}
+              <p class="text-sm text-gray-500">None</p>
+            {/if}
+          </div>
+
+          <div class="border-t border-gray-200 pt-4 space-y-2">
+            <button 
+              onclick={() => markAttended(selection!.id)}
+              disabled={isLocked || isCompleted}
+              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {isAttended 
+                ? 'bg-amber-100 text-amber-900 border-2 border-amber-300 hover:bg-amber-200' 
+                : 'bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50'
+              } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+            >
+              {#if isAttended}
+                <div class="i-lucide-check"></div>
+                Attended
+              {:else}
+                <div class="i-lucide-eye"></div>
+                Mark as Attended
+              {/if}
+            </button>
+            
+            <button 
+              onclick={() => markCompleted(selection!.id)}
+              disabled={isLocked}
+              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {isCompleted
+                ? 'bg-green-100 text-green-900 border-2 border-green-300 hover:bg-green-200'
+                : 'bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50'
+              } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+            >
+              {#if isCompleted}
+                <div class="i-lucide-check-circle"></div>
+                Completed
+              {:else}
+                <div class="i-lucide-circle-check"></div>
+                Mark as Completed
+              {/if}
+            </button>
+          </div>
+        </div>
+      {:else}
+        <div class="p-6 space-y-6">
+          <div class="text-center py-8">
+            <div class="i-lucide-mouse-pointer-click w-12 h-12 mx-auto text-gray-400 mb-3"></div>
+            <p class="text-sm text-gray-600">
+              Click on a course to view details and track your progress
+            </p>
+          </div>
+          
+          <div class="border-t border-gray-200 pt-6">
+            <h3 class="text-sm font-semibold text-gray-700 mb-3">Status Legend</h3>
+            <div class="space-y-2.5">
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full bg-green-200 border-2 border-green-400"></div>
+                <span class="text-sm text-gray-700"><span class="font-medium">Completed</span> - Passed the course</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full bg-amber-200 border-2 border-amber-400"></div>
+                <span class="text-sm text-gray-700"><span class="font-medium">Attended</span> - Currently taking</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full bg-blue-200 border-2 border-blue-400"></div>
+                <span class="text-sm text-gray-700"><span class="font-medium">Available</span> - Ready to take</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-4 rounded-full bg-gray-200 border-2 border-gray-300 opacity-50"></div>
+                <span class="text-sm text-gray-700"><span class="font-medium">Locked</span> - Prerequisites needed</span>
+              </div>
+            </div>
+          </div>
         </div>
       {/if}
-    {:else}
-      <p style="color:#64748b; font-size:0.9rem;">
-        Select a course to see details. Mark courses as attended or completed to unlock dependent courses.
-      </p>
-      <div style="margin-top: 1rem; font-size: 0.85rem; color: #64748b;">
-        <p><strong>Status colors:</strong></p>
-        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-          <li>🟢 <strong>Green</strong>: Completed</li>
-          <li>🟡 <strong>Yellow</strong>: Attended</li>
-          <li>🔵 <strong>Blue</strong>: Available</li>
-          <li>⚪ <strong>Gray</strong>: Locked (prerequisites not met)</li>
-        </ul>
-      </div>
-    {/if}
-  </aside>
+    </aside>
+  </div>
 </div>
 
-<style>
-  .sidebar {
-    border-left: 1px solid #e2e8f0;
-    padding: 1rem;
-  }
-  .btn {
-    padding: 0.4rem 0.75rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 0.75rem;
-    cursor: pointer;
-  }
-</style>
