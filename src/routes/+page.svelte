@@ -18,33 +18,47 @@
   type Course = {
     id: string;
     label: string;
-    ects?: number;
-    prereqs: string[];
+    ects: number;
+    prereqs: string[]; // "attended" requirements
+    prereqsPassed?: string[]; // "passed" requirements
     url?: string;
-    semester?: number;
+    semester: number;
+    type?: "Kernmodul" | "Projektmodul" | "Erweiterungsmodul";
   };
 
   const COURSES: Course[] = [
-    { id: "math1", label: "Discrete Math 1", ects: 6, prereqs: [], semester: 1 },
-    { id: "prog1", label: "Programming 1", ects: 6, prereqs: [], semester: 1 },
-    { id: "prog2", label: "Programming 2", ects: 6, prereqs: ["prog1"], semester: 2 },
-    { id: "algo", label: "Algorithms", ects: 6, prereqs: ["prog2", "math1"], semester: 3 },
-    { id: "net1", label: "Networking 1", ects: 4, prereqs: [], semester: 1 },
-    { id: "net2", label: "Networking 2", ects: 4, prereqs: ["net1"], semester: 2 },
-    { id: "cloud", label: "Cloud Tech", ects: 4, prereqs: ["net2", "prog2"], semester: 3 },
+    // Semester 1
+    { id: "ana-g", label: "Grundlagen der Analysis", ects: 3, prereqs: [], semester: 1 },
+    { id: "dmath-algo", label: "Diskrete Mathematik Datenstrukturen und Algorithmen", ects: 3, prereqs: [], semester: 1 },
+    { id: "oop", label: "Objektorientierte Programmierung", ects: 6, prereqs: [], semester: 1 },
+    { id: "cna", label: "Computer & Network Architecture", ects: 6, prereqs: [], semester: 1 },
+    { id: "lial", label: "Lineare Algebra", ects: 3, prereqs: [], semester: 1 },
+    { id: "pta", label: "Projekt- und Teamarbeit", ects: 6, prereqs: [], semester: 1, type: "Projektmodul" },
+    
+    // Semester 2
+    { id: "ana-f", label: "Fortgeschrittene Analysis", ects: 3, prereqs: ["ana-g"], semester: 2 },
+    { id: "dmath-code", label: "Diskrete Mathematik Datenverschlüsselung und Datenkodierung", ects: 3, prereqs: ["dmath-algo"], semester: 2 },
+    { id: "ad", label: "Algorithmen & Datenstrukturen", ects: 6, prereqs: ["oop"], semester: 2 },
+    { id: "iteo", label: "IT-System Engineering & Operation", ects: 6, prereqs: [], semester: 2 },
+    { id: "mod", label: "Modellierung Grundlagen", ects: 3, prereqs: [], semester: 2 },
+    { id: "pmb", label: "Project Management Basics", ects: 3, prereqs: ["pta"], semester: 2 },
   ];
 
   function computeStatuses(
     courses: Course[],
+    attended: Set<string>,
     completed: Set<string>
   ): Record<string, Status> {
     const s: Record<string, Status> = {};
-    for (const c of courses)
-      s[c.id] = completed.has(c.id)
-        ? "completed"
-        : c.prereqs.every((p) => completed.has(p))
-          ? "available"
-          : "locked";
+    for (const c of courses) {
+      if (completed.has(c.id)) {
+        s[c.id] = "completed";
+      } else if (c.prereqs.every((p) => attended.has(p) || completed.has(p))) {
+        s[c.id] = "available";
+      } else {
+        s[c.id] = "locked";
+      }
+    }
     return s;
   }
 
@@ -77,6 +91,7 @@
   let nodes: Node[] = [];
   let edges: Edge[] = [];
   let selection: Course | null = null;
+  let attended = new Set<string>();
   let completed = new Set<string>();
   let statuses: Record<string, Status> = {};
   
@@ -90,8 +105,8 @@
     const g = new dagre.graphlib.Graph();
     g.setGraph({
       rankdir: "TB",
-      nodesep: 24,
-      ranksep: 40,
+      nodesep: 50,
+      ranksep: 200,
       marginx: 16,
       marginy: 16,
     });
@@ -101,22 +116,32 @@
     edges.forEach((e) => g.setEdge(e.source as string, e.target as string));
 
     dagre.layout(g);
+    
+    // position nodes based on semester and dagre's x-position
     nodes = nodes.map((n) => {
       const p = g.node(n.id);
-      return { ...n, position: { x: p.x, y: p.y } };
+      const course = COURSES.find((c) => c.id === n.id);
+      const semesterY = course?.semester ? (course.semester - 1) * 200 + 100 : p.y;
+      return { ...n, position: { x: p.x, y: semesterY } };
     });
   }
 
   function applyStatuses() {
-    statuses = computeStatuses(COURSES, completed);
+    statuses = computeStatuses(COURSES, attended, completed);
     nodes = nodes.map((n) => {
       const s = statuses[n.id];
-      const styleStr =
-        s === "completed"
-          ? "border-color: #86efac; background: #f0fdf4; border-radius: 16px; padding: 12px; border-width: 2px;"
-          : s === "available"
-            ? "border-color: #93c5fd; background: #eff6ff; border-radius: 16px; padding: 12px; border-width: 2px;"
-            : "border-color: #e2e8f0; background: #f8fafc; border-radius: 16px; padding: 12px; border-width: 2px;";
+      const isAttended = attended.has(n.id);
+      let styleStr = "";
+      
+      if (s === "completed") {
+        styleStr = "border-color: #86efac; background: #f0fdf4; border-radius: 16px; padding: 12px; border-width: 2px;";
+      } else if (isAttended) {
+        styleStr = "border-color: #fbbf24; background: #fffbeb; border-radius: 16px; padding: 12px; border-width: 2px;";
+      } else if (s === "available") {
+        styleStr = "border-color: #93c5fd; background: #eff6ff; border-radius: 16px; padding: 12px; border-width: 2px;";
+      } else {
+        styleStr = "border-color: #e5e7eb; background: #f9fafb; border-radius: 16px; padding: 12px; border-width: 2px; opacity: 0.5;";
+      }
       return { ...n, style: styleStr };
     });
     edges = edges.map((e) => ({
@@ -124,10 +149,39 @@
       animated: statuses[e.target as string] === "available",
     }));
   }
+  
+  function markAttended(id: string) {
+    const course = COURSES.find((c) => c.id === id);
+    if (!course) return;
+    
+    // Check if prerequisites are met
+    const prereqsMet = course.prereqs.every((p) => attended.has(p) || completed.has(p));
+    if (!prereqsMet) return;
+    
+    if (attended.has(id)) {
+      attended.delete(id);
+    } else {
+      attended.add(id);
+    }
+    localStorage.setItem("attendedCourses", JSON.stringify([...attended]));
+    applyStatuses();
+  }
+  
+  function markCompleted(id: string) {
+    const course = COURSES.find((c) => c.id === id);
+    if (!course) return;
 
-  function toggleComplete(id: string) {
-    if (completed.has(id)) completed.delete(id);
-    else completed.add(id);
+    const prereqsMet = course.prereqs.every((p) => attended.has(p) || completed.has(p));
+    if (!prereqsMet) return;
+    
+    if (completed.has(id)) {
+      completed.delete(id);
+    } else {
+      completed.add(id);
+      // if completed, remove from attended
+      attended.delete(id);
+    }
+    localStorage.setItem("attendedCourses", JSON.stringify([...attended]));
     localStorage.setItem("completedCourses", JSON.stringify([...completed]));
     applyStatuses();
   }
@@ -143,9 +197,14 @@
   }
 
   onMount(() => {
-    const saved = localStorage.getItem("completedCourses");
-    if (saved) {
-      completed = new Set<string>(JSON.parse(saved));
+    const savedAttended = localStorage.getItem("attendedCourses");
+    if (savedAttended) {
+      attended = new Set<string>(JSON.parse(savedAttended));
+    }
+    
+    const savedCompleted = localStorage.getItem("completedCourses");
+    if (savedCompleted) {
+      completed = new Set<string>(JSON.parse(savedCompleted));
     }
 
     const g = toGraph(COURSES);
@@ -167,16 +226,16 @@
       >
         <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
           <!-- Semester 1 divider -->
-          <line x1="-200" y1="120" x2="1000" y2="120" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
-          <text x="-150" y="110" fill="#64748b" font-size="{13 / viewport.zoom}" font-weight="500">Semester 1</text>
+          <line x1="-200" y1="200" x2="2000" y2="200" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-150" y="190" fill="#64748b" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 1</text>
           
           <!-- Semester 2 divider -->
-          <line x1="-200" y1="350" x2="1000" y2="350" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
-          <text x="-150" y="340" fill="#64748b" font-size="{13 / viewport.zoom}" font-weight="500">Semester 2</text>
+          <line x1="-200" y1="400" x2="2000" y2="400" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-150" y="390" fill="#64748b" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 2</text>
           
           <!-- Semester 3 divider -->
-          <line x1="-200" y1="550" x2="1000" y2="550" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
-          <text x="-150" y="540" fill="#64748b" font-size="{13 / viewport.zoom}" font-weight="500">Semester 3</text>
+          <line x1="-200" y1="600" x2="2000" y2="600" stroke="#cbd5e1" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-150" y="590" fill="#64748b" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 3</text>
         </g>
       </svg>
       <MiniMap />
@@ -189,24 +248,50 @@
     {#if selection}
       <h2 style="font-weight: 700; font-size: 1.125rem;">{selection.label}</h2>
       <p style="color:#64748b; font-size: 0.9rem;">
-        ECTS: {selection.ects ?? 0} • Semester: {selection.semester ?? "—"}
+        ECTS: {selection.ects} • Semester: {selection.semester}
+        {#if selection.type}
+          <br/><span style="color:#7c3aed;">📚 {selection.type}</span>
+        {/if}
       </p>
       <p style="font-size: 0.9rem;">
-        Prereqs: {selection.prereqs.length ? selection.prereqs.join(", ") : "—"}
+        Prerequisites (attended): {selection.prereqs.length ? selection.prereqs.map(id => COURSES.find(c => c.id === id)?.label || id).join(", ") : "None"}
       </p>
-      <div style="display:flex; gap: 0.5rem; margin-top: 0.5rem;">
-        <button class="btn" onclick={() => toggleComplete(selection!.id)}
-          >Toggle completed</button
-        >
-        <span style="font-size: 0.75rem; color:#64748b; align-self: center;"
-          >progress saved in localStorage</span
-        >
-      </div>
+      {#if selection}
+        {@const isLocked = statuses[selection.id] === "locked"}
+        {@const isAttended = attended.has(selection.id)}
+        {@const isCompleted = completed.has(selection.id)}
+        <div style="display:flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
+          <button 
+            class="btn" 
+            onclick={() => markAttended(selection!.id)}
+            disabled={isLocked || isCompleted}
+            style="background: {isAttended ? '#fef3c7' : 'white'}; {isLocked || isCompleted ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
+          >
+            {isAttended ? '✓ Attended' : 'Mark Attended'}
+          </button>
+          <button 
+            class="btn" 
+            onclick={() => markCompleted(selection!.id)}
+            disabled={isLocked}
+            style="background: {isCompleted ? '#dcfce7' : 'white'}; {isLocked ? 'opacity: 0.5; cursor: not-allowed;' : ''}"
+          >
+            {isCompleted ? '✓ Completed' : 'Mark Completed'}
+          </button>
+        </div>
+      {/if}
     {:else}
       <p style="color:#64748b; font-size:0.9rem;">
-        Select a course to see details. Toggle completion to unlock dependents;
-        available edges will animate.
+        Select a course to see details. Mark courses as attended or completed to unlock dependent courses.
       </p>
+      <div style="margin-top: 1rem; font-size: 0.85rem; color: #64748b;">
+        <p><strong>Status colors:</strong></p>
+        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+          <li>🟢 <strong>Green</strong>: Completed</li>
+          <li>🟡 <strong>Yellow</strong>: Attended</li>
+          <li>🔵 <strong>Blue</strong>: Available</li>
+          <li>⚪ <strong>Gray</strong>: Locked (prerequisites not met)</li>
+        </ul>
+      </div>
     {/if}
   </aside>
 </div>
