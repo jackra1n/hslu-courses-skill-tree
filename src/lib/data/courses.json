@@ -1,41 +1,46 @@
 [
   {
-    "id": "ana-g",
+    "id": "ANA-G",
     "label": "Grundlagen der Analysis",
     "ects": 3,
     "prereqs": [],
-    "semester": 1
+    "semester": 1,
+    "type": "Kernmodul"
   },
   {
-    "id": "dmath-algo",
+    "id": "DMATH-ALGO",
     "label": "Diskrete Mathematik Datenstrukturen und Algorithmen",
     "ects": 3,
     "prereqs": [],
-    "semester": 1
+    "semester": 1,
+    "type": "Kernmodul"
   },
   {
-    "id": "oop",
+    "id": "OOP",
     "label": "Objektorientierte Programmierung",
     "ects": 6,
     "prereqs": [],
-    "semester": 1
+    "semester": 1,
+    "type": "Kernmodul"
   },
   {
-    "id": "cna",
+    "id": "CNA",
     "label": "Computer & Network Architecture",
     "ects": 6,
     "prereqs": [],
-    "semester": 1
+    "semester": 1,
+    "type": "Kernmodul"
   },
   {
-    "id": "lial",
+    "id": "LIAL",
     "label": "Lineare Algebra",
     "ects": 3,
     "prereqs": [],
-    "semester": 1
+    "semester": 1,
+    "type": "Kernmodul"
   },
   {
-    "id": "pta",
+    "id": "PTA",
     "label": "Projekt- und Teamarbeit",
     "ects": 6,
     "prereqs": [],
@@ -43,45 +48,59 @@
     "type": "Projektmodul"
   },
   {
-    "id": "ana-f",
+    "id": "ANA-F",
     "label": "Fortgeschrittene Analysis",
     "ects": 3,
-    "prereqs": ["ana-g"],
-    "semester": 2
+    "prereqs": ["ANA-G"],
+    "semester": 2,
+    "type": "Kernmodul"
   },
   {
-    "id": "dmath-code",
+    "id": "DMATH-CODE",
     "label": "Diskrete Mathematik Datenverschlüsselung und Datenkodierung",
     "ects": 3,
-    "prereqs": ["dmath-algo"],
-    "semester": 2
+    "prereqs": ["DMATH-ALGO"],
+    "semester": 2,
+    "type": "Kernmodul"
   },
   {
-    "id": "ad",
+    "id": "AD",
     "label": "Algorithmen & Datenstrukturen",
     "ects": 6,
-    "prereqs": ["oop"],
-    "semester": 2
+    "prereqs": ["OOP"],
+    "semester": 2,
+    "type": "Kernmodul"
   },
   {
-    "id": "iteo",
+    "id": "ITEO",
     "label": "IT-System Engineering & Operation",
     "ects": 6,
     "prereqs": [],
-    "semester": 2
+    "semester": 2,
+    "type": "Kernmodul"
   },
   {
-    "id": "mod",
+    "id": "MOD",
     "label": "Modellierung Grundlagen",
     "ects": 3,
     "prereqs": [],
-    "semester": 2
+    "semester": 2,
+    "type": "Kernmodul"
   },
   {
-    "id": "pmb",
+    "id": "PMB",
     "label": "Project Management Basics",
     "ects": 3,
-    "prereqs": ["pta"],
-    "semester": 2
+    "prereqs": ["PTA"],
+    "semester": 2,
+    "type": "Projektmodul"
+  },
+  {
+    "id": "DBS",
+    "label": "Datenbanksysteme",
+    "ects": 6,
+    "prereqs": ["assessmentstufe bestanden"],
+    "semester": 3,
+    "type": "Kernmodul"
   }
 ]

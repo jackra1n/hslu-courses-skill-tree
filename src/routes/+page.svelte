@@ -26,7 +26,15 @@
     for (const c of courses) {
       if (completed.has(c.id)) {
         s[c.id] = "completed";
-      } else if (c.prereqs.every((p) => attended.has(p) || completed.has(p))) {
+      } else if (c.prereqs.every((p) => {
+        // handle special prerequisites
+        if (p === "assessmentstufe bestanden") {
+          // for now, we'll assume assessment stage is passed if user has completed enough courses
+          // this could be made configurable later
+          return completed.size >= 6; // approximate threshold
+        }
+        return attended.has(p) || completed.has(p);
+      })) {
         s[c.id] = "available";
       } else {
         s[c.id] = "locked";
@@ -66,6 +74,7 @@
   let attended = new Set<string>();
   let completed = new Set<string>();
   let statuses: Record<string, Status> = {};
+  let showAssessmentInfo = false;
   
   let viewport = { x: 0, y: 0, zoom: 1 };
   
@@ -137,7 +146,12 @@
     const course = COURSES.find((c) => c.id === id);
     if (!course) return;
     
-    const prereqsMet = course.prereqs.every((p) => attended.has(p) || completed.has(p));
+    const prereqsMet = course.prereqs.every((p) => {
+      if (p === "assessmentstufe bestanden") {
+        return completed.size >= 6; // approximate threshold
+      }
+      return attended.has(p) || completed.has(p);
+    });
     if (!prereqsMet) return;
     
     if (attended.has(id)) {
@@ -153,7 +167,12 @@
     const course = COURSES.find((c) => c.id === id);
     if (!course) return;
 
-    const prereqsMet = course.prereqs.every((p) => attended.has(p) || completed.has(p));
+    const prereqsMet = course.prereqs.every((p) => {
+      if (p === "assessmentstufe bestanden") {
+        return completed.size >= 6; // approximate threshold
+      }
+      return attended.has(p) || completed.has(p);
+    });
     if (!prereqsMet) return;
     
     if (completed.has(id)) {
@@ -204,8 +223,46 @@
       <h1 class="text-2xl font-bold text-text-primary">HSLU Course Skill Tree</h1>
       <p class="text-sm text-text-secondary mt-1">Track your progress through courses</p>
     </div>
-    <ThemeSwitcher />
+    <div class="flex items-center gap-3">
+      <button 
+        onclick={() => showAssessmentInfo = !showAssessmentInfo}
+        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-800 dark:text-blue-100 dark:hover:bg-blue-700"
+      >
+        <div class="i-lucide-info"></div>
+        Assessment Info
+      </button>
+      <ThemeSwitcher />
+    </div>
   </header>
+  
+  {#if showAssessmentInfo}
+    <div class="border-b border-border-primary bg-bg-secondary px-6 py-4">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-lg font-bold text-text-primary mb-3">Assessment Stage Rules</h2>
+        <div class="space-y-4 text-sm text-text-secondary">
+          <div>
+            <h3 class="font-semibold text-text-primary mb-2">Passing Requirements:</h3>
+            <ul class="space-y-1 ml-4">
+              <li><strong>Definitiv bestanden:</strong> 54 credits achieved</li>
+              <li><strong>Bedingt bestanden:</strong> ≥42 credits with ≥6 credits from project modules</li>
+              <li><strong>Nicht bestanden:</strong> &lt;42 credits or &lt;6 credits from project modules</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold text-text-primary mb-2">Consequences:</h3>
+            <ul class="space-y-1 ml-4">
+              <li><strong>Bedingt bestanden:</strong> Can continue studying, but must earn remaining credits within 5 semesters</li>
+              <li><strong>Nicht bestanden:</strong> Cannot continue to intermediate stage</li>
+              <li>Students who don't pass definitively within 5 semesters are excluded from the bachelor program</li>
+            </ul>
+          </div>
+          <div class="text-xs text-text-tertiary">
+            <p><strong>Note:</strong> In this skill tree, "assessmentstufe bestanden" is considered met when you have completed 6+ courses. This is an approximation for demonstration purposes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
   
   <div class="flex-1 grid grid-cols-[1fr_400px] min-h-0">
     <div class="relative">
@@ -215,16 +272,16 @@
       >
         <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
           <!-- Semester 1 divider -->
-          <line x1="-200" y1="250" x2="2000" y2="250" stroke="rgb(var(--border-primary))" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
-          <text x="-150" y="240" fill="rgb(var(--text-secondary))" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 1</text>
+          <line x1="-100" y1="250" x2="2000" y2="250" stroke="rgb(var(--border-primary))" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-50" y="240" fill="rgb(var(--text-secondary))" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 1</text>
           
           <!-- Semester 2 divider -->
-          <line x1="-200" y1="450" x2="2000" y2="450" stroke="rgb(var(--border-primary))" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
-          <text x="-150" y="440" fill="rgb(var(--text-secondary))" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 2</text>
+          <line x1="-100" y1="450" x2="2000" y2="450" stroke="rgb(var(--border-primary))" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-50" y="440" fill="rgb(var(--text-secondary))" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 2</text>
           
           <!-- Semester 3 divider -->
-          <line x1="-200" y1="650" x2="2000" y2="650" stroke="rgb(var(--border-primary))" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
-          <text x="-150" y="640" fill="rgb(var(--text-secondary))" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 3</text>
+          <line x1="-100" y1="650" x2="2000" y2="650" stroke="rgb(var(--border-primary))" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-50" y="640" fill="rgb(var(--text-secondary))" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 3</text>
         </g>
       </svg>
         <MiniMap />
@@ -271,12 +328,17 @@
               <ul class="space-y-1.5">
                 {#each selection.prereqs as prereqId}
                   {@const prereqCourse = COURSES.find(c => c.id === prereqId)}
-                  {@const prereqMet = attended.has(prereqId) || completed.has(prereqId)}
+                  {@const prereqMet = prereqId === "assessmentstufe bestanden" ? completed.size >= 6 : (attended.has(prereqId) || completed.has(prereqId))}
                   <li class="flex items-start gap-2 text-sm">
                     <div class="{prereqMet ? 'i-lucide-check-circle text-green-500' : 'i-lucide-circle text-gray-400'} mt-0.5"></div>
                     <span class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
-                      {prereqCourse?.label || prereqId}
+                      {prereqId === "assessmentstufe bestanden" ? "Assessment Stage Passed" : (prereqCourse?.label || prereqId)}
                     </span>
+                    {#if prereqId === "assessmentstufe bestanden"}
+                      <div class="text-xs text-text-tertiary ml-1">
+                        ({completed.size}/6+ courses completed)
+                      </div>
+                    {/if}
                   </li>
                 {/each}
               </ul>
