@@ -160,7 +160,7 @@
   style="display: grid; grid-template-columns: 1fr 320px; height: 80vh; gap: 0;"
 >
   <div style="position: relative;">
-    <SvelteFlow {nodes} {edges} onnodeclick={handleNodeClick} onmove={handleMove} nodesDraggable={false} fitView>
+    <SvelteFlow {nodes} {edges} onnodeclick={handleNodeClick} onmove={handleMove} nodesDraggable={false} nodesConnectable={false} fitView>
       <svg 
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible;"
         class="semester-dividers"
