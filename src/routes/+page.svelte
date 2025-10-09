@@ -12,7 +12,7 @@
     type OnMove,
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
-  import dagre from "@dagrejs/dagre";
+  import ELK from "elkjs/lib/elk.bundled.js";
   import { COURSES, type Course, type Status, type PrerequisiteRequirement } from '$lib/data/courses';
   import { theme } from '$lib/stores/theme';
   import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
@@ -123,6 +123,7 @@
   let statuses: Record<string, Status> = {};
   let showAssessmentInfo = false;
   let showShortNamesOnly = false;
+  let useELKLayout = false;
   
   let viewport = { x: 0, y: 0, zoom: 1 };
   
@@ -130,28 +131,88 @@
     viewport = viewportData;
   };
 
-  function layoutDagre() {
-    const g = new dagre.graphlib.Graph();
-    g.setGraph({
-      rankdir: "TB",
-      nodesep: 50,
-      ranksep: 200,
-      marginx: 16,
-      marginy: 16,
-    });
-    g.setDefaultEdgeLabel(() => ({}));
-
-    nodes.forEach((n) => g.setNode(n.id, { width: 180, height: 64 }));
-    edges.forEach((e) => g.setEdge(e.source as string, e.target as string));
-
-    dagre.layout(g);
+  async function layoutELK() {
+    const elk = new ELK();
     
-    // position nodes based on semester and dagre's x-position
+    const elkGraph = {
+      id: "root",
+      layoutOptions: {
+        "elk.algorithm": "layered",
+        "elk.direction": "DOWN",
+        "elk.spacing.nodeNode": "60",
+        "elk.spacing.edgeNode": "20",
+        "elk.layered.spacing.nodeNodeBetweenLayers": "150",
+        "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+        "elk.layered.nodePlacement.strategy": "BRANDES_KOEPF",
+        "elk.edgeRouting": "ORTHOGONAL",
+        "elk.spacing.edgeEdge": "20"
+      },
+      children: nodes.map(node => {
+        const course = COURSES.find(c => c.id === node.id);
+        return {
+          id: node.id,
+          width: 180,
+          height: 64,
+          layoutOptions: {
+            "elk.priority": String(course?.semester || 1)
+          }
+        };
+      }),
+      edges: edges.map(edge => ({
+        id: edge.id,
+        sources: [edge.source as string],
+        targets: [edge.target as string]
+      }))
+    };
+
+    try {
+      const layoutedGraph = await elk.layout(elkGraph);
+      
+      // extract positions from ELK layout
+      const nodePositions: Record<string, { x: number; y: number }> = {};
+      
+      layoutedGraph.children?.forEach(node => {
+        nodePositions[node.id] = {
+          x: (node as any).x || 0,
+          y: (node as any).y || 0
+        };
+      });
+
+      // update node positions
+      nodes = nodes.map((n) => {
+        const position = nodePositions[n.id] || { x: 0, y: 0 };
+        return { ...n, position };
+      });
+    } catch (error) {
+      console.error("ELK layout failed:", error);
+      // fallback to simple semester-based positioning
+      layoutSemesterBased();
+    }
+  }
+
+  function layoutSemesterBased() {
+    // group courses by semester
+    const semesterGroups: Record<number, Course[]> = {};
+    COURSES.forEach(course => {
+      if (!semesterGroups[course.semester]) {
+        semesterGroups[course.semester] = [];
+      }
+      semesterGroups[course.semester].push(course);
+    });
+
+    // position nodes in vertical columns within each semester
     nodes = nodes.map((n) => {
-      const p = g.node(n.id);
       const course = COURSES.find((c) => c.id === n.id);
-      const semesterY = course?.semester ? (course.semester - 1) * 200 + 100 : p.y;
-      return { ...n, position: { x: p.x, y: semesterY } };
+      if (!course) return n;
+
+      const semesterCourses = semesterGroups[course.semester];
+      const courseIndex = semesterCourses.findIndex(c => c.id === n.id);
+      
+      // calculate position: semester determines Y, course index determines X
+      const semesterY = (course.semester - 1) * 200 + 100;
+      const courseX = courseIndex * 220 + 100; // 220px spacing between courses
+      
+      return { ...n, position: { x: courseX, y: semesterY } };
     });
   }
 
@@ -190,14 +251,39 @@
       }
       return { ...n, style: styleStr };
     });
-    edges = edges.map((e) => ({
-      ...e,
-      animated: statuses[e.target as string] === "available",
-      style: "stroke-width: 2px; stroke: rgb(var(--border-primary));",
-    }));
+    
+    // apply edge highlighting based on selection
+    edges = edges.map((e) => {
+      const isSelected = selection?.id === e.source || selection?.id === e.target;
+      const isPrerequisite = selection?.id === e.target;
+      const isDependent = selection?.id === e.source;
+      
+      let edgeStyle = "stroke-width: 2px; transition: all 0.2s; ";
+      
+      if (isSelected) {
+        if (isPrerequisite) {
+          // highlight prerequisite edges (incoming) in orange/amber
+          edgeStyle += "stroke: #f59e0b; stroke-width: 3px; stroke-dasharray: 5,5; ";
+        } else if (isDependent) {
+          // highlight dependent edges (outgoing) in green
+          edgeStyle += "stroke: #10b981; stroke-width: 3px; ";
+        }
+      } else {
+        // default edge styling
+        edgeStyle += "stroke: rgb(var(--border-primary)); ";
+      }
+      
+      return {
+        ...e,
+        animated: statuses[e.target as string] === "available",
+        style: edgeStyle,
+      };
+    });
     
     // force reactivity update for sidebar
-    selection = selection;
+    if (selection) {
+      selection = { ...selection };
+    }
   }
   
   function markAttended(id: string) {
@@ -246,7 +332,7 @@
     applyStatuses();
   }
 
-  onMount(() => {
+  onMount(async () => {
     const savedAttended = localStorage.getItem("attendedCourses");
     if (savedAttended) {
       attended = new Set<string>(JSON.parse(savedAttended));
@@ -260,7 +346,16 @@
     const g = toGraph(COURSES);
     nodes = g.nodes;
     edges = g.edges;
-    layoutDagre();
+    console.log("Initial nodes:", nodes.length);
+    console.log("Initial edges:", edges.length);
+    
+    // use semester-based layout for now to ensure it works
+    if (useELKLayout) {
+      await layoutELK();
+    } else {
+      layoutSemesterBased();
+    }
+    console.log("After layout:", nodes.length);
     applyStatuses();
   });
 </script>
@@ -291,6 +386,23 @@
       >
         <div class="i-lucide-toggle-left"></div>
         {showShortNamesOnly ? 'Short Names' : 'Full Names'}
+      </button>
+      <button 
+        onclick={async () => {
+          useELKLayout = !useELKLayout;
+          if (useELKLayout) {
+            await layoutELK();
+          } else {
+            layoutSemesterBased();
+          }
+        }}
+        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all {useELKLayout 
+          ? 'bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-100 dark:hover:bg-purple-700'
+          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700'
+        }"
+      >
+        <div class="i-lucide-network"></div>
+        {useELKLayout ? 'ELK Layout' : 'Semester Layout'}
       </button>
       <ThemeSwitcher />
     </div>
@@ -385,7 +497,7 @@
               <div class="i-lucide-git-branch text-text-secondary"></div>
               Prerequisites
             </h3>
-            {#if selection.prereqs.length > 0}
+            {#if selection.prereqs && selection.prereqs.length > 0}
               <ul class="space-y-1.5">
                 {#each selection.prereqs as prereq}
                   {@const prereqMet = evaluatePrerequisite(prereq, attended, completed)}
@@ -491,6 +603,20 @@
               <div class="flex items-center gap-3">
                 <div class="w-4 h-4 rounded-full bg-gray-200 border-2 border-gray-300 opacity-50 dark:bg-gray-700 dark:border-gray-600"></div>
                 <span class="text-sm text-text-primary"><span class="font-medium">Locked</span> - Prerequisites needed</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="border-t border-border-primary pt-6">
+            <h3 class="text-sm font-semibold text-text-primary mb-3">Edge Highlighting</h3>
+            <div class="space-y-2.5">
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-0.5 bg-amber-500 border-0" style="border-top: 3px dashed #f59e0b;"></div>
+                <span class="text-sm text-text-primary"><span class="font-medium">Prerequisites</span> - Required courses</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="w-4 h-0.5 bg-emerald-500 border-0" style="border-top: 3px solid #10b981;"></div>
+                <span class="text-sm text-text-primary"><span class="font-medium">Dependents</span> - Courses that require this</span>
               </div>
             </div>
           </div>
