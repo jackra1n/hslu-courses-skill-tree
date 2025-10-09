@@ -7,6 +7,9 @@ export default defineConfig({
         presetIcons({
             scale: 1.2,
             warn: true,
+            collections: {
+                lucide: () => import('@iconify-json/lucide/icons.json').then(i => i.default),
+            },
         }),
         presetWebFonts({
             provider: 'google',

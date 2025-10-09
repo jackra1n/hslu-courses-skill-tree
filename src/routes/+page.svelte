@@ -259,24 +259,29 @@
       const isDependent = selection?.id === e.source;
       
       let edgeStyle = "stroke-width: 2px; transition: all 0.2s; ";
+      let markerEnd = e.markerEnd;
       
       if (isSelected) {
         if (isPrerequisite) {
           // highlight prerequisite edges (incoming) in orange/amber
           edgeStyle += "stroke: #f59e0b; stroke-width: 3px; stroke-dasharray: 5,5; ";
+          markerEnd = { type: MarkerType.ArrowClosed, color: "#f59e0b" };
         } else if (isDependent) {
-          // highlight dependent edges (outgoing) in green
-          edgeStyle += "stroke: #10b981; stroke-width: 3px; ";
+          // highlight dependent edges (outgoing) in light blue
+          edgeStyle += "stroke: #3b82f6; stroke-width: 3px; ";
+          markerEnd = { type: MarkerType.ArrowClosed, color: "#3b82f6" };
         }
       } else {
         // default edge styling
         edgeStyle += "stroke: rgb(var(--border-primary)); ";
+        markerEnd = { type: MarkerType.ArrowClosed };
       }
       
       return {
         ...e,
         animated: statuses[e.target as string] === "available",
         style: edgeStyle,
+        markerEnd,
       };
     });
     
@@ -615,7 +620,7 @@
                 <span class="text-sm text-text-primary"><span class="font-medium">Prerequisites</span> - Required courses</span>
               </div>
               <div class="flex items-center gap-3">
-                <div class="w-4 h-0.5 bg-emerald-500 border-0" style="border-top: 3px solid #10b981;"></div>
+                <div class="w-4 h-0.5 bg-blue-500 border-0" style="border-top: 3px solid #3b82f6;"></div>
                 <span class="text-sm text-text-primary"><span class="font-medium">Dependents</span> - Courses that require this</span>
               </div>
             </div>
