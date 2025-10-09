@@ -460,6 +460,18 @@
           <!-- Semester 3 divider -->
           <line x1="-100" y1="650" x2="2000" y2="650" stroke="rgb(var(--border-primary))" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
           <text x="-50" y="640" fill="rgb(var(--text-secondary))" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 3</text>
+
+          <!-- Semester 4 divider -->
+          <line x1="-100" y1="850" x2="2000" y2="850" stroke="rgb(var(--border-primary))" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-50" y="840" fill="rgb(var(--text-secondary))" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 4</text>
+
+          <!-- Semester 5 divider -->
+          <line x1="-100" y1="1050" x2="2000" y2="1050" stroke="rgb(var(--border-primary))" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-50" y="1040" fill="rgb(var(--text-secondary))" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 5</text>
+
+          <!-- Semester 6 divider -->
+          <line x1="-100" y1="1250" x2="2000" y2="1250" stroke="rgb(var(--border-primary))" stroke-width="{1 / viewport.zoom}" stroke-dasharray="{8 / viewport.zoom},{4 / viewport.zoom}" />
+          <text x="-50" y="1240" fill="rgb(var(--text-secondary))" font-size="{Math.max(15, 15 / viewport.zoom)}" font-weight="500">Semester 6</text>
         </g>
       </svg>
         <MiniMap />

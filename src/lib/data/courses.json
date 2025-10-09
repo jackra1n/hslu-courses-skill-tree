@@ -149,7 +149,7 @@
   },
   {
     "id": "VSK",
-    "label": "Verteilte Systeme und Komponenten",
+    "label": "Verteilte Systeme & Komponenten",
     "ects": 6,
     "prereqs": [
       {
@@ -167,5 +167,75 @@
     ],
     "semester": 3,
     "type": "Kernmodul"
+  },
+  {
+    "id": "ASTAT",
+    "label": "Applied Statistics for Data Science",
+    "ects": 3,
+    "prereqs": ["assessmentstufe bestanden"],
+    "semester": 3,
+    "type": "Kernmodul"
+  },
+  {
+    "id": "PREN1",
+    "label": "Produktenentwicklung 1",
+    "ects": 6,
+    "prereqs": ["assessmentstufe bestanden"],
+    "semester": 3,
+    "type": "Kernmodul"
+  },
+  {
+    "id": "SWDA",
+    "label": "Software Development & Architecture",
+    "ects": 6,
+    "prereqs": [
+      {
+        "courses": ["VSK"],
+        "requirement": "besucht"
+      },
+      {
+        "courses": ["DBS"],
+        "requirement": "besucht"
+      }
+    ],
+    "semester": 4,
+    "type": "Kernmodul"
+  },
+  {
+    "id": "PMRE",
+    "label": "Project Management & Requirements Engineering",
+    "ects": 3,
+    "prereqs": ["assessmentstufe bestanden"],
+    "semester": 4,
+    "type": "Kernmodul"
+  },
+  {
+    "id": "PREN2",
+    "label": "Produktenentwicklung 2",
+    "ects": 6,
+    "prereqs": [
+      {
+        "courses": ["PREN1"],
+        "requirement": "bestanden"
+      }
+    ],
+    "semester": 4,
+    "type": "Projektmodul"
+  },
+  {
+    "id": "WIPRO",
+    "label": "Wirtschaftsprojekt",
+    "ects": 6,
+    "prereqs": ["assessmentstufe bestanden"],
+    "semester": 5,
+    "type": "Projektmodul"
+  },
+  {
+    "id": "BAA",
+    "label": "Bachelorarbeit",
+    "ects": 12,
+    "prereqs": ["assessmentstufe bestanden"],
+    "semester": 6,
+    "type": "Projektmodul"
   }
 ]
