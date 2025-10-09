@@ -13,12 +13,12 @@
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
   import ELK from "elkjs/lib/elk.bundled.js";
-  import { COURSES, type Course, type Status, type PrerequisiteRequirement } from '$lib/data/courses';
+  import { COURSES, type Course, type Status, type AdvancedPrerequisite, calculateCreditsCompleted, calculateCreditsAttended, isCreditRequirement, isProgramSpecificRequirement, isPrerequisiteRequirement, isAdvancedPrerequisite } from '$lib/data/courses';
   import { theme } from '$lib/stores/theme';
   import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
 
   function evaluatePrerequisite(
-    prereq: string | PrerequisiteRequirement,
+    prereq: string | AdvancedPrerequisite,
     attended: Set<string>,
     completed: Set<string>
   ): boolean {
@@ -29,18 +29,39 @@
       return attended.has(prereq) || completed.has(prereq);
     }
 
-    // handle complex prerequisites with OR logic
-    const { courses, requirement } = prereq;
-    
-    // at least one course in the list must meet the requirement
-    return courses.some(courseId => {
-      if (requirement === "besucht") {
-        return attended.has(courseId) || completed.has(courseId);
-      } else if (requirement === "bestanden") {
-        return completed.has(courseId);
+    // handle different types of advanced prerequisites
+    if (isCreditRequirement(prereq)) {
+      // for credit requirements, check if user has enough credits
+      if (prereq.moduleType) {
+        return calculateCreditsCompleted(completed, prereq.moduleType) >= prereq.minCredits;
+      } else {
+        return calculateCreditsAttended(attended, completed) >= prereq.minCredits;
       }
-      return false;
-    });
+    }
+    
+    if (isProgramSpecificRequirement(prereq)) {
+      // for program-specific requirements, check if all requirements are met
+      // note: in a real implementation, you'd need to know the user's program
+      // for now, we'll assume the user meets the requirements if any program's requirements are met
+      return prereq.requirements.every(req => evaluatePrerequisite(req, attended, completed));
+    }
+
+    // Handle legacy PrerequisiteRequirement format
+    if (isPrerequisiteRequirement(prereq)) {
+      const { courses, requirement } = prereq;
+      
+      // at least one course in the list must meet the requirement
+      return courses.some(courseId => {
+        if (requirement === "besucht") {
+          return attended.has(courseId) || completed.has(courseId);
+        } else if (requirement === "bestanden") {
+          return completed.has(courseId);
+        }
+        return false;
+      });
+    }
+
+    return false;
   }
 
   function computeStatuses(
@@ -95,9 +116,26 @@
             style: "stroke-width: 2px;",
             type: "smoothstep",
           }];
-        } else {
-          // complex prerequisite, create edges for all courses in the group
-          return p.courses.map((courseId) => ({
+        } else if (isProgramSpecificRequirement(p)) {
+          // program-specific prerequisites - only create edges for course-based requirements
+          return p.requirements.flatMap(req => {
+            if (isPrerequisiteRequirement(req)) {
+              return req.courses.map((courseId: string) => ({
+                id: `${courseId}=>${c.id}`,
+                source: courseId,
+                target: c.id,
+                sourcePosition: Position.Top,
+                targetPosition: Position.Bottom,
+                markerEnd: { type: MarkerType.ArrowClosed },
+                animated: false,
+                style: "stroke-width: 2px;",
+                type: "smoothstep",
+              }));
+            }
+            return [];
+          });
+        } else if (isPrerequisiteRequirement(p)) {
+          return p.courses.map((courseId: string) => ({
             id: `${courseId}=>${c.id}`,
             source: courseId,
             target: c.id,
@@ -109,6 +147,7 @@
             type: "smoothstep",
           }));
         }
+        return [];
       });
     });
     
@@ -531,6 +570,42 @@
                             ({completed.size}/6+ courses completed)
                           </div>
                         {/if}
+                      {:else if isCreditRequirement(prereq)}
+                        <!-- Credit Requirements -->
+                        <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                          <span class="font-medium">
+                            {prereq.moduleType ? `${prereq.moduleType} Credits` : 'Total Credits'}:
+                          </span>
+                          <span class="ml-2">
+                            {prereq.moduleType 
+                              ? `${calculateCreditsCompleted(completed, prereq.moduleType)}/${prereq.minCredits} ECTS`
+                              : `${calculateCreditsAttended(attended, completed)}/${prereq.minCredits} ECTS`
+                            }
+                          </span>
+                        </div>
+                      {:else if isProgramSpecificRequirement(prereq)}
+                        <!-- Program-Specific Requirements -->
+                        <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                          <span class="font-medium">{prereq.program}:</span>
+                          <div class="ml-2 mt-1 space-y-1">
+                            {#each prereq.requirements as req}
+                              {@const reqMet = evaluatePrerequisite(req, attended, completed)}
+                              <div class="flex items-center gap-1.5 text-xs">
+                                <div class="{reqMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                                <span class={reqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                                  {#if isAdvancedPrerequisite(req) && isCreditRequirement(req)}
+                                    {req.moduleType ? `${req.moduleType} Credits` : 'Total Credits'}: {req.moduleType 
+                                      ? `${calculateCreditsCompleted(completed, req.moduleType)}/${req.minCredits} ECTS`
+                                      : `${calculateCreditsAttended(attended, completed)}/${req.minCredits} ECTS`
+                                    }
+                                  {:else if isPrerequisiteRequirement(req)}
+                                    {req.requirement === "besucht" ? "Attended" : "Completed"}: {req.courses.join(", ")}
+                                  {/if}
+                                </span>
+                              </div>
+                            {/each}
+                          </div>
+                        </div>
                       {:else}
                         <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
                           <span class="font-medium">{prereq.requirement === "besucht" ? "Attended" : "Completed"}:</span>

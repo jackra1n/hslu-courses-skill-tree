@@ -226,7 +226,36 @@
     "id": "WIPRO",
     "label": "Wirtschaftsprojekt",
     "ects": 6,
-    "prereqs": ["assessmentstufe bestanden"],
+    "prereqs": [
+      "assessmentstufe bestanden",
+      {
+        "type": "credits",
+        "moduleType": "Kernmodul",
+        "minCredits": 57
+      },
+      {
+        "type": "program_specific",
+        "program": "Informatik & Wirtschaftsinformatik",
+        "requirements": [
+          {
+            "type": "credits",
+            "moduleType": "Projektmodul",
+            "minCredits": 24
+          }
+        ]
+      },
+      {
+        "type": "program_specific",
+        "program": "Information & Cyber Security",
+        "requirements": [
+          {
+            "type": "credits",
+            "moduleType": "Projektmodul",
+            "minCredits": 18
+          }
+        ]
+      }
+    ],
     "semester": 5,
     "type": "Projektmodul"
   },
@@ -234,7 +263,34 @@
     "id": "BAA",
     "label": "Bachelorarbeit",
     "ects": 12,
-    "prereqs": ["assessmentstufe bestanden"],
+    "prereqs": [
+      "assessmentstufe bestanden",
+      {
+        "type": "program_specific",
+        "program": "Wirtschaftsinformatik, Informatik C16, Information & Cyber Security",
+        "requirements": [
+          {
+            "type": "credits",
+            "minCredits": 150
+          },
+          {
+            "type": "credits",
+            "moduleType": "Projektmodul",
+            "minCredits": 27
+          }
+        ]
+      },
+      {
+        "type": "program_specific",
+        "program": "Artificial Intelligence & Machine Learning",
+        "requirements": [
+          {
+            "courses": ["ADML"],
+            "requirement": "bestanden"
+          }
+        ]
+      }
+    ],
     "semester": 6,
     "type": "Projektmodul"
   }
