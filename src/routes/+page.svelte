@@ -527,7 +527,19 @@
         
         <div class="p-6 space-y-6">
           <div>
-            <h2 class="text-xl font-bold text-text-primary mb-3">{selection.label}</h2>
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-xl font-bold text-text-primary">{selection.label}</h2>
+              <button 
+                onclick={() => {
+                  selection = null;
+                  applyStatuses();
+                }}
+                class="flex items-center justify-center w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary transition-all"
+                title="Deselect course"
+              >
+                <div class="i-lucide-x w-4 h-4"></div>
+              </button>
+            </div>
             
             <div class="flex items-center gap-4 text-sm text-text-secondary mb-2">
               <div class="flex items-center gap-1.5">
