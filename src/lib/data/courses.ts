@@ -2,11 +2,16 @@ import coursesData from './courses.json';
 
 export type Status = "locked" | "available" | "completed";
 
+export type PrerequisiteRequirement = {
+  courses: string[];
+  requirement: "besucht" | "bestanden";
+};
+
 export type Course = {
   id: string;
   label: string;
   ects: number;
-  prereqs: string[];
+  prereqs: string[] | PrerequisiteRequirement[];
   prereqsPassed?: string[];
   url?: string;
   semester: number;

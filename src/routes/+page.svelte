@@ -13,9 +13,35 @@
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
   import dagre from "@dagrejs/dagre";
-  import { COURSES, type Course, type Status } from '$lib/data/courses';
+  import { COURSES, type Course, type Status, type PrerequisiteRequirement } from '$lib/data/courses';
   import { theme } from '$lib/stores/theme';
   import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
+
+  function evaluatePrerequisite(
+    prereq: string | PrerequisiteRequirement,
+    attended: Set<string>,
+    completed: Set<string>
+  ): boolean {
+    if (typeof prereq === 'string') {
+      if (prereq === "assessmentstufe bestanden") {
+        return completed.size >= 6; // approximate threshold
+      }
+      return attended.has(prereq) || completed.has(prereq);
+    }
+
+    // handle complex prerequisites with OR logic
+    const { courses, requirement } = prereq;
+    
+    // at least one course in the list must meet the requirement
+    return courses.some(courseId => {
+      if (requirement === "besucht") {
+        return attended.has(courseId) || completed.has(courseId);
+      } else if (requirement === "bestanden") {
+        return completed.has(courseId);
+      }
+      return false;
+    });
+  }
 
   function computeStatuses(
     courses: Course[],
@@ -26,15 +52,7 @@
     for (const c of courses) {
       if (completed.has(c.id)) {
         s[c.id] = "completed";
-      } else if (c.prereqs.every((p) => {
-        // handle special prerequisites
-        if (p === "assessmentstufe bestanden") {
-          // for now, we'll assume assessment stage is passed if user has completed enough courses
-          // this could be made configurable later
-          return completed.size >= 6; // approximate threshold
-        }
-        return attended.has(p) || completed.has(p);
-      })) {
+      } else if (c.prereqs.every((p) => evaluatePrerequisite(p, attended, completed))) {
         s[c.id] = "available";
       } else {
         s[c.id] = "locked";
@@ -59,19 +77,41 @@
       },
       style: "",
     }));
-    const edges: Edge[] = courses.flatMap((c) =>
-      c.prereqs.map((p) => ({
-        id: `${p}=>${c.id}`,
-        source: p,
-        target: c.id,
-        sourcePosition: Position.Top,
-        targetPosition: Position.Bottom,
-        markerEnd: { type: MarkerType.ArrowClosed },
-        animated: false,
-        style: "stroke-width: 2px;",
-        type: "smoothstep",
-      }))
-    );
+    
+    const edges: Edge[] = courses.flatMap((c) => {
+      return c.prereqs.flatMap((p) => {
+        if (typeof p === 'string') {
+          if (p === "assessmentstufe bestanden") {
+            return [];
+          }
+          return [{
+            id: `${p}=>${c.id}`,
+            source: p,
+            target: c.id,
+            sourcePosition: Position.Top,
+            targetPosition: Position.Bottom,
+            markerEnd: { type: MarkerType.ArrowClosed },
+            animated: false,
+            style: "stroke-width: 2px;",
+            type: "smoothstep",
+          }];
+        } else {
+          // complex prerequisite, create edges for all courses in the group
+          return p.courses.map((courseId) => ({
+            id: `${courseId}=>${c.id}`,
+            source: courseId,
+            target: c.id,
+            sourcePosition: Position.Top,
+            targetPosition: Position.Bottom,
+            markerEnd: { type: MarkerType.ArrowClosed },
+            animated: false,
+            style: "stroke-width: 2px;",
+            type: "smoothstep",
+          }));
+        }
+      });
+    });
+    
     return { nodes, edges };
   }
 
@@ -164,12 +204,7 @@
     const course = COURSES.find((c) => c.id === id);
     if (!course) return;
     
-    const prereqsMet = course.prereqs.every((p) => {
-      if (p === "assessmentstufe bestanden") {
-        return completed.size >= 6; // approximate threshold
-      }
-      return attended.has(p) || completed.has(p);
-    });
+    const prereqsMet = course.prereqs.every((p) => evaluatePrerequisite(p, attended, completed));
     if (!prereqsMet) return;
     
     if (attended.has(id)) {
@@ -185,12 +220,7 @@
     const course = COURSES.find((c) => c.id === id);
     if (!course) return;
 
-    const prereqsMet = course.prereqs.every((p) => {
-      if (p === "assessmentstufe bestanden") {
-        return completed.size >= 6; // approximate threshold
-      }
-      return attended.has(p) || completed.has(p);
-    });
+    const prereqsMet = course.prereqs.every((p) => evaluatePrerequisite(p, attended, completed));
     if (!prereqsMet) return;
     
     if (completed.has(id)) {
@@ -357,19 +387,39 @@
             </h3>
             {#if selection.prereqs.length > 0}
               <ul class="space-y-1.5">
-                {#each selection.prereqs as prereqId}
-                  {@const prereqCourse = COURSES.find(c => c.id === prereqId)}
-                  {@const prereqMet = prereqId === "assessmentstufe bestanden" ? completed.size >= 6 : (attended.has(prereqId) || completed.has(prereqId))}
+                {#each selection.prereqs as prereq}
+                  {@const prereqMet = evaluatePrerequisite(prereq, attended, completed)}
                   <li class="flex items-start gap-2 text-sm">
                     <div class="{prereqMet ? 'i-lucide-check-circle text-green-500' : 'i-lucide-circle text-gray-400'} mt-0.5"></div>
-                    <span class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
-                      {prereqId === "assessmentstufe bestanden" ? "Assessment Stage Passed" : (prereqCourse?.label || prereqId)}
-                    </span>
-                    {#if prereqId === "assessmentstufe bestanden"}
-                      <div class="text-xs text-text-tertiary ml-1">
-                        ({completed.size}/6+ courses completed)
-                      </div>
-                    {/if}
+                    <div class="flex-1">
+                      {#if typeof prereq === 'string'}
+                        {@const prereqCourse = COURSES.find(c => c.id === prereq)}
+                        <span class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                          {prereq === "assessmentstufe bestanden" ? "Assessment Stage Passed" : (prereqCourse?.label || prereq)}
+                        </span>
+                        {#if prereq === "assessmentstufe bestanden"}
+                          <div class="text-xs text-text-tertiary">
+                            ({completed.size}/6+ courses completed)
+                          </div>
+                        {/if}
+                      {:else}
+                        <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                          <span class="font-medium">{prereq.requirement === "besucht" ? "Attended" : "Completed"}:</span>
+                          <div class="ml-2 mt-1 space-y-1">
+                            {#each prereq.courses as courseId}
+                              {@const course = COURSES.find(c => c.id === courseId)}
+                              {@const courseMet = prereq.requirement === "besucht" ? (attended.has(courseId) || completed.has(courseId)) : completed.has(courseId)}
+                              <div class="flex items-center gap-1.5 text-xs">
+                                <div class="{courseMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                                <span class={courseMet ? 'text-text-primary' : 'text-text-secondary'}>
+                                  {course?.label || courseId}
+                                </span>
+                              </div>
+                            {/each}
+                          </div>
+                        </div>
+                      {/if}
+                    </div>
                   </li>
                 {/each}
               </ul>

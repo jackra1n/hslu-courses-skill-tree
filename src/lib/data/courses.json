@@ -51,7 +51,12 @@
     "id": "ANA-F",
     "label": "Fortgeschrittene Analysis",
     "ects": 3,
-    "prereqs": ["ANA-G"],
+    "prereqs": [
+      {
+        "courses": ["ANA-G"],
+        "requirement": "besucht"
+      }
+    ],
     "semester": 2,
     "type": "Kernmodul"
   },
@@ -59,7 +64,12 @@
     "id": "DMATH-CODE",
     "label": "Diskrete Mathematik Datenverschlüsselung und Datenkodierung",
     "ects": 3,
-    "prereqs": ["DMATH-ALGO"],
+    "prereqs": [
+      {
+        "courses": ["DMATH-ALGO"],
+        "requirement": "besucht"
+      }
+    ],
     "semester": 2,
     "type": "Kernmodul"
   },
@@ -67,7 +77,12 @@
     "id": "AD",
     "label": "Algorithmen & Datenstrukturen",
     "ects": 6,
-    "prereqs": ["OOP"],
+    "prereqs": [
+      {
+        "courses": ["OOP"],
+        "requirement": "besucht"
+      }
+    ],
     "semester": 2,
     "type": "Kernmodul"
   },
@@ -91,7 +106,12 @@
     "id": "PMB",
     "label": "Project Management Basics",
     "ects": 3,
-    "prereqs": ["PTA"],
+    "prereqs": [
+      {
+        "courses": ["PTA"],
+        "requirement": "besucht"
+      }
+    ],
     "semester": 2,
     "type": "Projektmodul"
   },
@@ -100,6 +120,51 @@
     "label": "Datenbanksysteme",
     "ects": 6,
     "prereqs": ["assessmentstufe bestanden"],
+    "semester": 3,
+    "type": "Kernmodul"
+  },
+  {
+    "id": "NETW1_MM",
+    "label": "Netzwerke 1 - Multimedia",
+    "ects": 6,
+    "prereqs": [],
+    "semester": 2,
+    "type": "Kernmodul"
+  },
+  {
+    "id": "PLAB",
+    "label": "Programmieren im Labor",
+    "ects": 3,
+    "prereqs": [],
+    "semester": 1,
+    "type": "Kernmodul"
+  },
+  {
+    "id": "ADS",
+    "label": "Algorithmen und Datenstrukturen",
+    "ects": 6,
+    "prereqs": [],
+    "semester": 2,
+    "type": "Kernmodul"
+  },
+  {
+    "id": "VSK",
+    "label": "Verteilte Systeme und Komponenten",
+    "ects": 6,
+    "prereqs": [
+      {
+        "courses": ["OOP", "PLAB"],
+        "requirement": "bestanden"
+      },
+      {
+        "courses": ["CNA", "NETW1_MM"],
+        "requirement": "besucht"
+      },
+      {
+        "courses": ["ADS", "AD"],
+        "requirement": "besucht"
+      }
+    ],
     "semester": 3,
     "type": "Kernmodul"
   }
