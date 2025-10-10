@@ -41,7 +41,6 @@ function applyTheme(theme: Theme) {
 
 export const theme = createThemeStore();
 
-// Listen for system theme changes
 if (browser) {
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (_e) => {
     const currentTheme = localStorage.getItem('theme') as Theme;
