@@ -1,0 +1,337 @@
+{
+  "id": "informatik-fulltime-hs16",
+  "name": "Informatik Fulltime HS16",
+  "studiengang": "Informatik",
+  "modell": "fulltime",
+  "plan": "HS16",
+  "slots": [
+    {
+      "id": "anlis",
+      "type": "fixed",
+      "courseId": "ANLIS",
+      "credits": 6,
+      "label": "Analysis",
+      "semester": 1
+    },
+    {
+      "id": "oop",
+      "type": "fixed",
+      "courseId": "OOP",
+      "credits": 6,
+      "label": "Objektorientierte Programmierung",
+      "semester": 1
+    },
+    {
+      "id": "cna",
+      "type": "fixed",
+      "courseId": "CNA",
+      "credits": 6,
+      "label": "Computer & Network Architecture",
+      "semester": 1
+    },
+    {
+      "id": "elective1-s1",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 1
+    },
+    {
+      "id": "elective2-s1",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 1
+    },
+    {
+      "id": "pta",
+      "type": "fixed",
+      "courseId": "PTA",
+      "credits": 6,
+      "label": "Projekt- und Teamarbeit",
+      "semester": 1
+    },
+    {
+      "id": "dmath",
+      "type": "fixed",
+      "courseId": "DMATH",
+      "credits": 6,
+      "label": "Diskrete Mathematik",
+      "semester": 2
+    },
+    {
+      "id": "ad",
+      "type": "fixed",
+      "courseId": "AD",
+      "credits": 6,
+      "label": "Algorithmen & Datenstrukturen",
+      "semester": 2
+    },
+    {
+      "id": "iteo",
+      "type": "fixed",
+      "courseId": "ITEO",
+      "credits": 6,
+      "label": "IT-System Engineering & Operation",
+      "semester": 2
+    },
+    {
+      "id": "isf",
+      "type": "fixed",
+      "courseId": "ISF",
+      "credits": 3,
+      "label": "Information Security Fundamentals",
+      "semester": 2
+    },
+    {
+      "id": "mod",
+      "type": "fixed",
+      "courseId": "MOD",
+      "credits": 3,
+      "label": "Modellierung Grundlagen",
+      "semester": 2
+    },
+    {
+      "id": "fkom",
+      "type": "fixed",
+      "courseId": "FKOM",
+      "credits": 3,
+      "label": "Fachkommunikation",
+      "semester": 2
+    },
+    {
+      "id": "pmb",
+      "type": "fixed",
+      "courseId": "PMB",
+      "credits": 3,
+      "label": "Project Management Basics",
+      "semester": 2
+    },
+    {
+      "id": "dbs",
+      "type": "fixed",
+      "courseId": "DBS",
+      "credits": 6,
+      "label": "Datenbanksysteme",
+      "semester": 3
+    },
+    {
+      "id": "vsk",
+      "type": "fixed",
+      "courseId": "VSK",
+      "credits": 6,
+      "label": "Verteilte Systeme & Komponenten",
+      "semester": 3
+    },
+    {
+      "id": "elective1-s3",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 3
+    },
+    {
+      "id": "astat",
+      "type": "fixed",
+      "courseId": "ASTAT",
+      "credits": 3,
+      "label": "Applied Statistics for Data Science",
+      "semester": 3
+    },
+    {
+      "id": "elective2-s3",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 3
+    },
+    {
+      "id": "pren1",
+      "type": "fixed",
+      "courseId": "PREN1",
+      "credits": 6,
+      "label": "Produktenentwicklung 1",
+      "semester": 3
+    },
+    {
+      "id": "major1-s3",
+      "type": "major",
+      "credits": 3,
+      "label": "Major-Modul",
+      "semester": 3
+    },
+    {
+      "id": "swda",
+      "type": "fixed",
+      "courseId": "SWDA",
+      "credits": 6,
+      "label": "Software Development & Architecture",
+      "semester": 4
+    },
+    {
+      "id": "pmre",
+      "type": "fixed",
+      "courseId": "PMRE",
+      "credits": 3,
+      "label": "Project Management & Requirements Engineering",
+      "semester": 4
+    },
+    {
+      "id": "elective1-s4",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 4
+    },
+    {
+      "id": "pren2",
+      "type": "fixed",
+      "courseId": "PREN2",
+      "credits": 6,
+      "label": "Produktenentwicklung 2",
+      "semester": 4
+    },
+    {
+      "id": "major1-s4",
+      "type": "major",
+      "credits": 3,
+      "label": "Major-Modul",
+      "semester": 4
+    },
+    {
+      "id": "elective2-s4",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 4
+    },
+    {
+      "id": "elective3-s4",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 4
+    },
+    {
+      "id": "elective4-s4",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 4
+    },
+    {
+      "id": "wipro",
+      "type": "fixed",
+      "courseId": "WIPRO",
+      "credits": 6,
+      "label": "Wirtschaftsprojekt",
+      "semester": 5
+    },
+    {
+      "id": "elective1-s5",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 5
+    },
+    {
+      "id": "elective2-s5",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 5
+    },
+    {
+      "id": "elective3-s5",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 5
+    },
+    {
+      "id": "elective4-s5",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 5
+    },
+    {
+      "id": "elective5-s5",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 5
+    },
+    {
+      "id": "major1-s5",
+      "type": "major",
+      "credits": 3,
+      "label": "Major-Modul",
+      "semester": 5
+    },
+    {
+      "id": "major2-s5",
+      "type": "major",
+      "credits": 3,
+      "label": "Major-Modul",
+      "semester": 5
+    },
+    {
+      "id": "major3-s5",
+      "type": "major",
+      "credits": 3,
+      "label": "Major-Modul",
+      "semester": 5
+    },
+    {
+      "id": "baa",
+      "type": "fixed",
+      "courseId": "BAA",
+      "credits": 12,
+      "label": "Bachelorarbeit",
+      "semester": 6
+    },
+    {
+      "id": "elective1-s6",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 6
+    },
+    {
+      "id": "elective2-s6",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 6
+    },
+    {
+      "id": "elective3-s6",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
+      "semester": 6
+    },
+    {
+      "id": "major1-s6",
+      "type": "major",
+      "credits": 3,
+      "label": "Major-Modul",
+      "semester": 6
+    },
+    {
+      "id": "major2-s6",
+      "type": "major",
+      "credits": 3,
+      "label": "Major-Modul",
+      "semester": 6
+    },
+    {
+      "id": "major3-s6",
+      "type": "major",
+      "credits": 3,
+      "label": "Major-Modul",
+      "semester": 6
+    }
+  ]
+}
