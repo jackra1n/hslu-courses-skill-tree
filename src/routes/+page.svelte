@@ -282,7 +282,101 @@
       const course = data.course;
       if (!course) return;
       
-      course.prereqs.forEach((prereq: string | AdvancedPrerequisite) => {
+      // sort prerequisites by dependency depth - courses that depend on others come first
+      const sortedPrereqs = [...course.prereqs].sort((a, b) => {
+        const getDependencyDepth = (prereq: string | AdvancedPrerequisite) => {
+          if (typeof prereq === 'string') {
+            if (prereq === "assessmentstufe bestanden") return 999; // generic prereqs go last
+            const prereqCourse = COURSES.find(c => c.id === prereq);
+            if (!prereqCourse) return 999;
+            
+            // calculate dependency depth recursively
+            const calculateDepth = (courseId: string, visited = new Set<string>()): number => {
+              if (visited.has(courseId)) return 0; // avoid circular dependencies
+              visited.add(courseId);
+              
+              const course = COURSES.find(c => c.id === courseId);
+              if (!course || course.prereqs.length === 0) return 0;
+              
+              let maxDepth = 0;
+              course.prereqs.forEach(prereq => {
+                if (typeof prereq === 'string' && prereq !== "assessmentstufe bestanden") {
+                  maxDepth = Math.max(maxDepth, calculateDepth(prereq, new Set(visited)) + 1);
+                } else if (typeof prereq === 'object' && isPrerequisiteRequirement(prereq)) {
+                  prereq.courses.forEach(courseId => {
+                    maxDepth = Math.max(maxDepth, calculateDepth(courseId, new Set(visited)) + 1);
+                  });
+                }
+              });
+              return maxDepth;
+            };
+            
+            return calculateDepth(prereq);
+          } else if (isPrerequisiteRequirement(prereq)) {
+            // for prerequisite requirements, find the course with the highest dependency depth
+            let maxDepth = 0;
+            prereq.courses.forEach(courseId => {
+              const prereqCourse = COURSES.find(c => c.id === courseId);
+              if (prereqCourse) {
+                const calculateDepth = (courseId: string, visited = new Set<string>()): number => {
+                  if (visited.has(courseId)) return 0;
+                  visited.add(courseId);
+                  
+                  const course = COURSES.find(c => c.id === courseId);
+                  if (!course || course.prereqs.length === 0) return 0;
+                  
+                  let maxDepth = 0;
+                  course.prereqs.forEach(prereq => {
+                    if (typeof prereq === 'string' && prereq !== "assessmentstufe bestanden") {
+                      maxDepth = Math.max(maxDepth, calculateDepth(prereq, new Set(visited)) + 1);
+                    } else if (typeof prereq === 'object' && isPrerequisiteRequirement(prereq)) {
+                      prereq.courses.forEach(courseId => {
+                        maxDepth = Math.max(maxDepth, calculateDepth(courseId, new Set(visited)) + 1);
+                      });
+                    }
+                  });
+                  return maxDepth;
+                };
+                maxDepth = Math.max(maxDepth, calculateDepth(courseId));
+              }
+            });
+            return maxDepth;
+          }
+          return 999;
+        };
+        
+        // sort by dependency depth (higher depth first, then by semester/position)
+        const depthA = getDependencyDepth(a);
+        const depthB = getDependencyDepth(b);
+        
+        if (depthA !== depthB) {
+          return depthB - depthA; // higher dependency depth first
+        }
+        
+        // if same depth, sort by semester and position
+        const getPrereqPosition = (prereq: string | AdvancedPrerequisite) => {
+          if (typeof prereq === 'string') {
+            if (prereq === "assessmentstufe bestanden") return 999;
+            const prereqSlot = template.slots.find(slot => slot.courseId === prereq);
+            return prereqSlot ? prereqSlot.semester * 1000 + template.slots.indexOf(prereqSlot) : 999;
+          } else if (isPrerequisiteRequirement(prereq)) {
+            let minPosition = 999;
+            prereq.courses.forEach(courseId => {
+              const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
+              if (prereqSlot) {
+                const position = prereqSlot.semester * 1000 + template.slots.indexOf(prereqSlot);
+                minPosition = Math.min(minPosition, position);
+              }
+            });
+            return minPosition;
+          }
+          return 999;
+        };
+        
+        return getPrereqPosition(a) - getPrereqPosition(b);
+      });
+      
+      sortedPrereqs.forEach((prereq: string | AdvancedPrerequisite) => {
         if (typeof prereq === 'string') {
           if (prereq === "assessmentstufe bestanden") {
             return;
