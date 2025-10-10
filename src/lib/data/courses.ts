@@ -3,6 +3,7 @@ import informatikFulltimeTemplate from './templates/informatik-fulltime.json';
 
 export type Status = "locked" | "available" | "completed";
 
+// Base requirement types
 export type PrerequisiteRequirement = {
   courses: string[];
   requirement: "besucht" | "bestanden";
@@ -20,38 +21,74 @@ export type ProgramSpecificRequirement = {
   requirements: PrerequisiteRequirement[];
 };
 
-export type AdvancedPrerequisite = 
+export type AssessmentStageRequirement = {
+  type: "assessment_stage";
+  requirement: "bestanden";
+};
+
+// Expression tree for complex logic
+export type PrerequisiteExpression = 
   | PrerequisiteRequirement 
   | CreditRequirement 
-  | ProgramSpecificRequirement;
+  | ProgramSpecificRequirement
+  | AssessmentStageRequirement
+  | AndExpression
+  | OrExpression;
 
-export function isCreditRequirement(prereq: AdvancedPrerequisite): prereq is CreditRequirement {
-  return 'type' in prereq && prereq.type === 'credits';
+export type AndExpression = {
+  type: "and";
+  operands: PrerequisiteExpression[];
+};
+
+export type OrExpression = {
+  type: "or";
+  operands: PrerequisiteExpression[];
+};
+
+// Type guards
+export function isCreditRequirement(prereq: PrerequisiteExpression): prereq is CreditRequirement {
+  return typeof prereq === 'object' && prereq !== null && 'type' in prereq && prereq.type === 'credits';
 }
 
-export function isProgramSpecificRequirement(prereq: AdvancedPrerequisite): prereq is ProgramSpecificRequirement {
-  return 'type' in prereq && prereq.type === 'program_specific';
+export function isProgramSpecificRequirement(prereq: PrerequisiteExpression): prereq is ProgramSpecificRequirement {
+  return typeof prereq === 'object' && prereq !== null && 'type' in prereq && prereq.type === 'program_specific';
 }
 
-export function isPrerequisiteRequirement(prereq: AdvancedPrerequisite): prereq is PrerequisiteRequirement {
-  return 'courses' in prereq && 'requirement' in prereq && !('type' in prereq);
+export function isAssessmentStageRequirement(prereq: PrerequisiteExpression): prereq is AssessmentStageRequirement {
+  return typeof prereq === 'object' && prereq !== null && 'type' in prereq && prereq.type === 'assessment_stage';
 }
 
-export function isAdvancedPrerequisite(prereq: AdvancedPrerequisite): prereq is CreditRequirement | ProgramSpecificRequirement {
-  return 'type' in prereq;
+export function isPrerequisiteRequirement(prereq: PrerequisiteExpression): prereq is PrerequisiteRequirement {
+  return typeof prereq === 'object' && prereq !== null && 'courses' in prereq && 'requirement' in prereq && !('type' in prereq);
+}
+
+export function isAndExpression(expr: PrerequisiteExpression): expr is AndExpression {
+  return typeof expr === 'object' && expr !== null && 'type' in expr && expr.type === 'and';
+}
+
+export function isOrExpression(expr: PrerequisiteExpression): expr is OrExpression {
+  return typeof expr === 'object' && expr !== null && 'type' in expr && expr.type === 'or';
+}
+
+export function isExpressionTree(expr: PrerequisiteExpression): expr is AndExpression | OrExpression {
+  return isAndExpression(expr) || isOrExpression(expr);
 }
 
 export type Course = {
   id: string;
   label: string;
   ects: number;
-  prereqs: string[] | AdvancedPrerequisite[];
+  prereqs: string[] | PrerequisiteExpression[];
   prereqsPassed?: string[];
   url?: string;
   type?: "Kernmodul" | "Projektmodul" | "Erweiterungsmodul";
 };
 
-export const COURSES: Course[] = coursesData as Course[];
+const sortedCoursesData = [...coursesData].sort((a, b) => {
+  return a.label.localeCompare(b.label);
+});
+
+export const COURSES: Course[] = sortedCoursesData as Course[];
 
 export function getCourseById(id: string): Course | undefined {
   return COURSES.find(course => course.id === id);
@@ -156,4 +193,113 @@ export function calculateTotalCredits(template: CurriculumTemplate, userSelectio
     const courses = getCoursesForSlot(slot, userSelections);
     return total + courses.reduce((sum, course) => sum + course.ects, 0);
   }, 0);
+}
+
+// Evaluation functions for prerequisite expressions
+export type UserProgress = {
+  completed: Set<string>;
+  attended: Set<string>;
+};
+
+export function evaluatePrerequisiteExpression(
+  expr: PrerequisiteExpression,
+  userProgress: UserProgress
+): boolean {
+  // Handle string prerequisites (legacy format)
+  if (typeof expr === 'string') {
+    if (expr === "assessmentstufe bestanden") {
+      return userProgress.completed.size >= 6; // approximate threshold
+    }
+    return userProgress.completed.has(expr);
+  }
+
+  // Handle PrerequisiteRequirement
+  if ('courses' in expr && 'requirement' in expr && !('type' in expr)) {
+    const { courses, requirement } = expr;
+    if (requirement === 'bestanden') {
+      return courses.every(courseId => userProgress.completed.has(courseId));
+    } else {
+      return courses.every(courseId => 
+        userProgress.attended.has(courseId) || userProgress.completed.has(courseId)
+      );
+    }
+  }
+
+  // Handle CreditRequirement
+  if (isCreditRequirement(expr)) {
+    const credits = calculateCreditsCompleted(
+      userProgress.completed,
+      expr.moduleType
+    );
+    return credits >= expr.minCredits;
+  }
+
+  // Handle ProgramSpecificRequirement
+  if ('type' in expr && expr.type === 'program_specific') {
+    // For now, we'll need to know the current program to evaluate this
+    // This could be extended to accept program context
+    return false; // Placeholder - would need program context
+  }
+
+  // Handle AssessmentStageRequirement
+  if ('type' in expr && expr.type === 'assessment_stage') {
+    return userProgress.completed.size >= 6; // approximate threshold
+  }
+
+  // Handle AndExpression
+  if (isAndExpression(expr)) {
+    return expr.operands.every(operand => 
+      evaluatePrerequisiteExpression(operand, userProgress)
+    );
+  }
+
+  // Handle OrExpression
+  if (isOrExpression(expr)) {
+    return expr.operands.some(operand => 
+      evaluatePrerequisiteExpression(operand, userProgress)
+    );
+  }
+
+  return false;
+}
+
+export function evaluateCoursePrerequisites(
+  course: Course,
+  userProgress: UserProgress
+): boolean {
+  if (!course.prereqs || course.prereqs.length === 0) {
+    return true;
+  }
+
+  // Handle string array prerequisites
+  if (course.prereqs.every(prereq => typeof prereq === 'string')) {
+    return (course.prereqs as string[]).every(courseId => 
+      userProgress.completed.has(courseId)
+    );
+  }
+
+  // Handle PrerequisiteExpression array
+  return (course.prereqs as PrerequisiteExpression[]).every(expr => 
+    evaluatePrerequisiteExpression(expr, userProgress)
+  );
+}
+
+// Helper function to create complex prerequisite expressions
+export function createAndExpression(...operands: PrerequisiteExpression[]): AndExpression {
+  return { type: 'and', operands };
+}
+
+export function createOrExpression(...operands: PrerequisiteExpression[]): OrExpression {
+  return { type: 'or', operands };
+}
+
+export function createPrerequisiteRequirement(
+  courses: string[], 
+  requirement: "besucht" | "bestanden"
+): PrerequisiteRequirement {
+  return { courses, requirement };
+}
+
+export function createAssessmentStageRequirement(): AssessmentStageRequirement {
+  return { type: 'assessment_stage', requirement: 'bestanden' };
 }

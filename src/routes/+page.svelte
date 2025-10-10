@@ -18,13 +18,18 @@
     COURSES, 
     type Course, 
     type Status, 
-    type AdvancedPrerequisite, 
+    type PrerequisiteExpression,
     calculateCreditsCompleted, 
     calculateCreditsAttended, 
     isCreditRequirement, 
     isProgramSpecificRequirement, 
     isPrerequisiteRequirement, 
-    isAdvancedPrerequisite, 
+    isAssessmentStageRequirement,
+    isAndExpression,
+    isOrExpression,
+    evaluatePrerequisiteExpression,
+    evaluateCoursePrerequisites,
+    type UserProgress,
     type CurriculumTemplate, 
     type TemplateSlot, 
     AVAILABLE_TEMPLATES, 
@@ -47,10 +52,12 @@
   };
 
   function evaluatePrerequisite(
-    prereq: string | AdvancedPrerequisite,
+    prereq: string | PrerequisiteExpression,
     attended: Set<string>,
     completed: Set<string>
   ): boolean {
+    const userProgress: UserProgress = { attended, completed };
+    
     if (typeof prereq === 'string') {
       if (prereq === "assessmentstufe bestanden") {
         return completed.size >= 6; // approximate threshold
@@ -58,32 +65,7 @@
       return attended.has(prereq) || completed.has(prereq);
     }
 
-    if (isCreditRequirement(prereq)) {
-      if (prereq.moduleType) {
-        return calculateCreditsCompleted(completed, prereq.moduleType) >= prereq.minCredits;
-      } else {
-        return calculateCreditsAttended(attended, completed) >= prereq.minCredits;
-      }
-    }
-    
-    if (isProgramSpecificRequirement(prereq)) {
-      return prereq.requirements.every(req => evaluatePrerequisite(req, attended, completed));
-    }
-
-    if (isPrerequisiteRequirement(prereq)) {
-      const { courses, requirement } = prereq;
-      
-      return courses.some(courseId => {
-        if (requirement === "besucht") {
-          return attended.has(courseId) || completed.has(courseId);
-        } else if (requirement === "bestanden") {
-          return completed.has(courseId);
-        }
-        return false;
-      });
-    }
-
-    return false;
+    return evaluatePrerequisiteExpression(prereq, userProgress);
   }
 
   function computeStatuses(
@@ -93,6 +75,7 @@
     completed: Set<string>
   ): Record<string, Status> {
     const s: Record<string, Status> = {};
+    const userProgress: UserProgress = { attended, completed };
     
     template.slots.forEach(slot => {
       if (slot.type === "fixed" && slot.courseId) {
@@ -100,7 +83,7 @@
         if (course) {
           if (completed.has(course.id)) {
             s[slot.id] = "completed";
-          } else if (course.prereqs.every((p) => evaluatePrerequisite(p, attended, completed))) {
+          } else if (evaluateCoursePrerequisites(course, userProgress)) {
             s[slot.id] = "available";
           } else {
             s[slot.id] = "locked";
@@ -113,7 +96,7 @@
           if (course) {
             if (completed.has(course.id)) {
               s[slot.id] = "completed";
-            } else if (course.prereqs.every((p) => evaluatePrerequisite(p, attended, completed))) {
+            } else if (evaluateCoursePrerequisites(course, userProgress)) {
               s[slot.id] = "available";
             } else {
               s[slot.id] = "locked";
@@ -200,7 +183,7 @@
         const otherCourse = otherData.course;
         if (!otherCourse || otherCourse.id === course.id) return;
         
-        otherCourse.prereqs.forEach((prereq: string | AdvancedPrerequisite) => {
+        otherCourse.prereqs.forEach((prereq: string | PrerequisiteExpression) => {
           if (typeof prereq === 'string') {
             if (prereq === course.id) {
               sourceCount++;
@@ -217,12 +200,27 @@
             if (prereq.courses.includes(course.id)) {
               sourceCount++;
             }
+          } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+            // For expression trees, we need to recursively check if any operand contains this course
+            const checkExpression = (expr: PrerequisiteExpression): boolean => {
+              if (typeof expr === 'string') {
+                return expr === course.id;
+              } else if (isAndExpression(expr) || isOrExpression(expr)) {
+                return expr.operands.some(checkExpression);
+              } else if (isPrerequisiteRequirement(expr)) {
+                return expr.courses.includes(course.id);
+              }
+              return false;
+            };
+            if (checkExpression(prereq)) {
+              sourceCount++;
+            }
           }
         });
       });
       
       let targetCount = 0;
-      course.prereqs.forEach((prereq: string | AdvancedPrerequisite) => {
+      course.prereqs.forEach((prereq: string | PrerequisiteExpression) => {
         if (typeof prereq === 'string') {
           if (prereq !== "assessmentstufe bestanden") {
             const prereqSlot = template.slots.find(slot => slot.courseId === prereq);
@@ -244,6 +242,26 @@
             return prereqSlot !== undefined;
           });
           if (hasAnyCourseInTemplate) targetCount++;
+        } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+          // For expression trees, count ALL courses that exist in the template
+          const countExpression = (expr: PrerequisiteExpression): number => {
+            if (typeof expr === 'string') {
+              if (expr === "assessmentstufe bestanden") {
+                return 0;
+              }
+              const prereqSlot = template.slots.find(slot => slot.courseId === expr);
+              return prereqSlot ? 1 : 0;
+            } else if (isPrerequisiteRequirement(expr)) {
+              return expr.courses.filter(courseId => {
+                const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
+                return prereqSlot !== undefined;
+              }).length;
+            } else if (isAndExpression(expr) || isOrExpression(expr)) {
+              return expr.operands.reduce((sum, operand) => sum + countExpression(operand), 0);
+            }
+            return 0;
+          };
+          targetCount += countExpression(prereq);
         }
       });
       
@@ -284,7 +302,7 @@
       
       // sort prerequisites by dependency depth - courses that depend on others come first
       const sortedPrereqs = [...course.prereqs].sort((a, b) => {
-        const getDependencyDepth = (prereq: string | AdvancedPrerequisite) => {
+        const getDependencyDepth = (prereq: string | PrerequisiteExpression) => {
           if (typeof prereq === 'string') {
             if (prereq === "assessmentstufe bestanden") return 999; // generic prereqs go last
             const prereqCourse = COURSES.find(c => c.id === prereq);
@@ -341,6 +359,13 @@
               }
             });
             return maxDepth;
+          } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+            // For expression trees, find the maximum depth among all operands
+            let maxDepth = 0;
+            prereq.operands.forEach(operand => {
+              maxDepth = Math.max(maxDepth, getDependencyDepth(operand));
+            });
+            return maxDepth;
           }
           return 999;
         };
@@ -354,7 +379,7 @@
         }
         
         // if same depth, sort by semester and position
-        const getPrereqPosition = (prereq: string | AdvancedPrerequisite) => {
+        const getPrereqPosition = (prereq: string | PrerequisiteExpression) => {
           if (typeof prereq === 'string') {
             if (prereq === "assessmentstufe bestanden") return 999;
             const prereqSlot = template.slots.find(slot => slot.courseId === prereq);
@@ -369,6 +394,13 @@
               }
             });
             return minPosition;
+          } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+            // For expression trees, find the minimum position among all operands
+            let minPosition = 999;
+            prereq.operands.forEach(operand => {
+              minPosition = Math.min(minPosition, getPrereqPosition(operand));
+            });
+            return minPosition;
           }
           return 999;
         };
@@ -376,7 +408,7 @@
         return getPrereqPosition(a) - getPrereqPosition(b);
       });
       
-      sortedPrereqs.forEach((prereq: string | AdvancedPrerequisite) => {
+      sortedPrereqs.forEach((prereq: string | PrerequisiteExpression) => {
         if (typeof prereq === 'string') {
           if (prereq === "assessmentstufe bestanden") {
             return;
@@ -461,6 +493,63 @@
               if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
             }
           }
+        } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+          // For expression trees, recursively create edges for all courses
+          const createEdgesForExpression = (expr: PrerequisiteExpression) => {
+            if (typeof expr === 'string') {
+              if (expr === "assessmentstufe bestanden") {
+                return;
+              }
+              const prereqSlot = template.slots.find(slot => slot.courseId === expr);
+              if (prereqSlot) {
+                const targetHandleIndex = handleUsage[node.id]?.target || 0;
+                const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
+                
+                edges.push({
+                  id: `${prereqSlot.id}=>${node.id}`,
+                  source: prereqSlot.id,
+                  sourceHandle: `source-${sourceHandleIndex}`,
+                  target: node.id,
+                  targetHandle: `target-${targetHandleIndex}`,
+                  markerEnd: { type: MarkerType.ArrowClosed },
+                  animated: false,
+                  style: "stroke-width: 2px;",
+                  type: "bezier",
+                });
+
+                if (handleUsage[node.id]) handleUsage[node.id].target++;
+                if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
+              }
+            } else if (isPrerequisiteRequirement(expr)) {
+              // Create edges for ALL courses in this requirement that exist in the template
+              expr.courses.forEach(courseId => {
+                const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
+                if (prereqSlot) {
+                  const targetHandleIndex = handleUsage[node.id]?.target || 0;
+                  const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
+                  
+                  edges.push({
+                    id: `${prereqSlot.id}=>${node.id}`,
+                    source: prereqSlot.id,
+                    sourceHandle: `source-${sourceHandleIndex}`,
+                    target: node.id,
+                    targetHandle: `target-${targetHandleIndex}`,
+                    markerEnd: { type: MarkerType.ArrowClosed },
+                    animated: false,
+                    style: "stroke-width: 2px;",
+                    type: "bezier",
+                  });
+
+                  if (handleUsage[node.id]) handleUsage[node.id].target++;
+                  if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
+                }
+              });
+            } else if (isAndExpression(expr) || isOrExpression(expr)) {
+              expr.operands.forEach(createEdgesForExpression);
+            }
+          };
+          
+          prereq.operands.forEach(createEdgesForExpression);
         }
       });
     });
@@ -588,6 +677,16 @@
               return prereq.courses.some(courseId => 
                 template.slots.some(s => s.courseId === courseId)
               );
+            } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+              // For expression trees, check if any operand has courses in the template
+              return prereq.operands.some(operand => {
+                if (isPrerequisiteRequirement(operand)) {
+                  return operand.courses.some(courseId => 
+                    template.slots.some(s => s.courseId === courseId)
+                  );
+                }
+                return false;
+              });
             }
             return false;
           });
@@ -606,6 +705,17 @@
                   const prereqSlot = template.slots.find(s => s.courseId === courseId);
                   if (prereqSlot && prerequisiteChains[prereqSlot.id] !== undefined) {
                     assignedChain = prerequisiteChains[prereqSlot.id];
+                  }
+                });
+              } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+                prereq.operands.forEach(operand => {
+                  if (isPrerequisiteRequirement(operand)) {
+                    operand.courses.forEach(courseId => {
+                      const prereqSlot = template.slots.find(s => s.courseId === courseId);
+                      if (prereqSlot && prerequisiteChains[prereqSlot.id] !== undefined) {
+                        assignedChain = prerequisiteChains[prereqSlot.id];
+                      }
+                    });
                   }
                 });
               }
@@ -640,6 +750,13 @@
                     return prereq === course.id;
                   } else if (isPrerequisiteRequirement(prereq)) {
                     return prereq.courses.includes(course.id);
+                  } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+                    return prereq.operands.some(operand => {
+                      if (isPrerequisiteRequirement(operand)) {
+                        return operand.courses.includes(course.id);
+                      }
+                      return false;
+                    });
                   }
                   return false;
                 });
@@ -691,6 +808,13 @@
                 return prereq !== "assessmentstufe bestanden" && template.slots.some(s => s.courseId === prereq);
               } else if (isPrerequisiteRequirement(prereq)) {
                 return prereq.courses.some(courseId => template.slots.some(s => s.courseId === courseId));
+              } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+                return prereq.operands.some(operand => {
+                  if (isPrerequisiteRequirement(operand)) {
+                    return operand.courses.some(courseId => template.slots.some(s => s.courseId === courseId));
+                  }
+                  return false;
+                });
               }
               return false;
             });
@@ -816,7 +940,26 @@
       }
       
       if (isElectiveSlot) {
-        styleStr += "background: rgb(var(--bg-secondary)); border-color: #3b82f6; color: rgb(var(--text-primary)); border-style: dashed; ";
+        // Check if there's a selected course for this elective slot
+        const selectedCourseId = userSelections[slot?.id || ''];
+        const selectedCourse = selectedCourseId ? COURSES.find(c => c.id === selectedCourseId) : null;
+        
+        if (selectedCourse) {
+          // There's a selected course - use normal status-based styling
+          if (isCompleted) {
+            styleStr += "background: rgb(var(--node-completed-bg)); border-color: rgb(var(--node-completed-border)); color: rgb(var(--text-primary)); border-style: dashed; ";
+          } else if (isAttended) {
+            styleStr += "background: rgb(var(--node-attended-bg)); border-color: rgb(var(--node-attended-border)); color: rgb(var(--text-primary)); border-style: dashed; ";
+          } else if (s === "available") {
+            styleStr += "background: rgb(var(--node-available-bg)); border-color: rgb(var(--node-available-border)); color: rgb(var(--text-primary)); border-style: dashed; ";
+          } else {
+            // Locked state for selected course
+            styleStr += "background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); border-style: dashed; opacity: 0.6;";
+          }
+        } else {
+          // No course selected - disabled state
+          styleStr += "background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); border-style: dashed; opacity: 0.6;";
+        }
         if (!isSelected) styleStr += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
       } else if (s === "completed") {
         styleStr += "background: rgb(var(--node-completed-bg)); border-color: rgb(var(--node-completed-border)); color: rgb(var(--text-primary)); ";
@@ -900,13 +1043,14 @@
     const course = COURSES.find(c => c.id === courseId);
     if (!course) return;
     
-    const prereqsMet = course.prereqs.every((p) => evaluatePrerequisite(p, attended, completed));
+    const userProgress: UserProgress = { attended, completed };
+    const prereqsMet = evaluateCoursePrerequisites(course, userProgress);
     if (!prereqsMet) return;
     
     if (attended.has(course.id)) {
-      attended.delete(course.id);
+      attended = new Set([...attended].filter(id => id !== course.id));
     } else {
-      attended.add(course.id);
+      attended = new Set([...attended, course.id]);
     }
     localStorage.setItem("attendedCourses", JSON.stringify([...attended]));
     applyStatuses();
@@ -916,14 +1060,15 @@
     const course = COURSES.find(c => c.id === courseId);
     if (!course) return;
 
-    const prereqsMet = course.prereqs.every((p) => evaluatePrerequisite(p, attended, completed));
+    const userProgress: UserProgress = { attended, completed };
+    const prereqsMet = evaluateCoursePrerequisites(course, userProgress);
     if (!prereqsMet) return;
     
     if (completed.has(course.id)) {
-      completed.delete(course.id);
+      completed = new Set([...completed].filter(id => id !== course.id));
     } else {
-      completed.add(course.id);
-      attended.delete(course.id);
+      completed = new Set([...completed, course.id]);
+      attended = new Set([...attended].filter(id => id !== course.id));
     }
     localStorage.setItem("attendedCourses", JSON.stringify([...attended]));
     localStorage.setItem("completedCourses", JSON.stringify([...completed]));
@@ -1355,6 +1500,218 @@
                 </div>
               </div>
             </div>
+
+            <!-- Prerequisites for Selected Course in Elective Slot -->
+            {#if selection && userSelections[selection.id]}
+              {@const selectedCourse = COURSES.find(c => c.id === userSelections[selection!.id])}
+              {#if selectedCourse && selectedCourse.prereqs && selectedCourse.prereqs.length > 0}
+                <div class="border-t border-border-primary pt-4">
+                  <h3 class="text-sm font-semibold text-text-primary mb-2 flex items-center gap-2">
+                    <div class="i-lucide-git-branch text-text-secondary"></div>
+                    Prerequisites for {selectedCourse.label}
+                  </h3>
+                  <ul class="space-y-1.5">
+                    {#each selectedCourse.prereqs as prereq}
+                      {@const prereqMet = evaluatePrerequisite(prereq, attended, completed)}
+                      <li class="flex items-start gap-2 text-sm">
+                        <div class="{prereqMet ? 'i-lucide-check-circle text-green-500' : 'i-lucide-circle text-gray-400'} mt-0.5"></div>
+                        <div class="flex-1">
+                          {#if typeof prereq === 'string'}
+                            {@const prereqCourse = COURSES.find(c => c.id === prereq)}
+                            <span class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                              {prereq === "assessmentstufe bestanden" ? "Assessment Stage Passed" : (prereqCourse?.label || prereq)}
+                            </span>
+                            {#if prereq === "assessmentstufe bestanden"}
+                              <div class="text-xs text-text-tertiary">
+                                ({completed.size}/6+ courses completed)
+                              </div>
+                            {/if}
+                          {:else if isCreditRequirement(prereq)}
+                            <!-- Credit Requirements -->
+                            <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                              <span class="font-medium">
+                                {prereq.moduleType ? `${prereq.moduleType} Credits` : 'Total Credits'}:
+                              </span>
+                              <span class="ml-2">
+                                {prereq.moduleType 
+                                  ? `${calculateCreditsCompleted(completed, prereq.moduleType)}/${prereq.minCredits} ECTS`
+                                  : `${calculateCreditsAttended(attended, completed)}/${prereq.minCredits} ECTS`
+                                }
+                              </span>
+                            </div>
+                          {:else if isProgramSpecificRequirement(prereq)}
+                            <!-- Program-Specific Requirements -->
+                            <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                              <span class="font-medium">{prereq.program}:</span>
+                              <div class="ml-2 mt-1 space-y-1">
+                                {#each prereq.requirements as req}
+                                  {@const reqMet = evaluatePrerequisite(req, attended, completed)}
+                                  <div class="flex items-center gap-1.5 text-xs">
+                                    <div class="{reqMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                                    <span class={reqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                                      {#if isCreditRequirement(req)}
+                                        {req.moduleType ? `${req.moduleType} Credits` : 'Total Credits'}: {req.moduleType 
+                                          ? `${calculateCreditsCompleted(completed, req.moduleType)}/${req.minCredits} ECTS`
+                                          : `${calculateCreditsAttended(attended, completed)}/${req.minCredits} ECTS`
+                                        }
+                                      {:else if isPrerequisiteRequirement(req)}
+                                        {req.requirement === "besucht" ? "Attended" : "Completed"}: {req.courses.join(", ")}
+                                      {/if}
+                                    </span>
+                                  </div>
+                                {/each}
+                              </div>
+                            </div>
+                          {:else if isAssessmentStageRequirement(prereq)}
+                            <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                              <span class="font-medium">Assessment Stage Passed</span>
+                              <div class="text-xs text-text-tertiary">
+                                ({completed.size}/6+ courses completed)
+                              </div>
+                            </div>
+                          {:else if isAndExpression(prereq)}
+                            <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                              <span class="font-medium">All of:</span>
+                              <div class="ml-2 mt-1 space-y-1">
+                                {#each prereq.operands as operand}
+                                  {@const operandMet = evaluatePrerequisite(operand, attended, completed)}
+                                  <div class="flex items-center gap-1.5 text-xs">
+                                    <div class="{operandMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                                    <span class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
+                                      {#if typeof operand === 'string'}
+                                        {operand === "assessmentstufe bestanden" ? "Assessment Stage Passed" : (COURSES.find(c => c.id === operand)?.label || operand)}
+                                      {:else if isPrerequisiteRequirement(operand)}
+                                        {operand.requirement === "besucht" ? "Attended" : "Completed"}: {operand.courses.join(", ")}
+                                      {:else if isAssessmentStageRequirement(operand)}
+                                        Assessment Stage Passed
+                                      {:else if isOrExpression(operand)}
+                                        One of: {operand.operands.map(op => {
+                                          if (typeof op === 'string') {
+                                            return COURSES.find(c => c.id === op)?.label || op;
+                                          } else if (isPrerequisiteRequirement(op)) {
+                                            return op.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(', ');
+                                          }
+                                          return 'Complex requirement';
+                                        }).join(' OR ')}
+                                      {:else}
+                                        Complex requirement
+                                      {/if}
+                                    </span>
+                                  </div>
+                                {/each}
+                              </div>
+                            </div>
+                          {:else if isOrExpression(prereq)}
+                            <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                              <span class="font-medium">One of:</span>
+                              <div class="ml-2 mt-1 space-y-1">
+                                {#each prereq.operands as operand}
+                                  {@const operandMet = evaluatePrerequisite(operand, attended, completed)}
+                                  <div class="flex items-center gap-1.5 text-xs">
+                                    <div class="{operandMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                                    <span class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
+                                      {#if typeof operand === 'string'}
+                                        {operand === "assessmentstufe bestanden" ? "Assessment Stage Passed" : (COURSES.find(c => c.id === operand)?.label || operand)}
+                                      {:else if isPrerequisiteRequirement(operand)}
+                                        {operand.requirement === "besucht" ? "Attended" : "Completed"}: {operand.courses.join(", ")}
+                                      {:else if isAssessmentStageRequirement(operand)}
+                                        Assessment Stage Passed
+                                      {:else if isAndExpression(operand)}
+                                        All of: {operand.operands.map(op => {
+                                          if (typeof op === 'string') {
+                                            return COURSES.find(c => c.id === op)?.label || op;
+                                          } else if (isPrerequisiteRequirement(op)) {
+                                            return op.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(', ');
+                                          } else if (isOrExpression(op)) {
+                                            return `(${op.operands.map(subOp => {
+                                              if (typeof subOp === 'string') {
+                                                return COURSES.find(c => c.id === subOp)?.label || subOp;
+                                              } else if (isPrerequisiteRequirement(subOp)) {
+                                                return subOp.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(', ');
+                                              }
+                                              return 'Complex';
+                                            }).join(' OR ')})`;
+                                          }
+                                          return 'Complex requirement';
+                                        }).join(' AND ')}
+                                      {:else}
+                                        Complex requirement
+                                      {/if}
+                                    </span>
+                                  </div>
+                                {/each}
+                              </div>
+                            </div>
+                          {:else}
+                            <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                              <span class="font-medium">{prereq.requirement === "besucht" ? "Attended" : "Completed"}:</span>
+                              <div class="ml-2 mt-1 space-y-1">
+                                {#each prereq.courses as courseId}
+                                  {@const course = COURSES.find(c => c.id === courseId)}
+                                  {@const courseMet = prereq.requirement === "besucht" ? (attended.has(courseId) || completed.has(courseId)) : completed.has(courseId)}
+                                  <div class="flex items-center gap-1.5 text-xs">
+                                    <div class="{courseMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                                    <span class={courseMet ? 'text-text-primary' : 'text-text-secondary'}>
+                                      {course?.label || courseId}
+                                    </span>
+                                  </div>
+                                {/each}
+                              </div>
+                            </div>
+                          {/if}
+                        </div>
+                      </li>
+                    {/each}
+                  </ul>
+                </div>
+              {/if}
+            {/if}
+
+            <!-- Action Buttons for Selected Course in Elective Slot -->
+            {#if selection && userSelections[selection.id]}
+              {@const selectedCourse = COURSES.find(c => c.id === userSelections[selection!.id])}
+              {#if selectedCourse}
+                {@const selectedCourseAttended = attended.has(selectedCourse.id)}
+                {@const selectedCourseCompleted = completed.has(selectedCourse.id)}
+                {@const selectedCourseLocked = statuses[selection!.id] === "locked"}
+                
+                <div class="border-t border-border-primary pt-4 space-y-2">
+                  <button 
+                    onclick={() => markAttended(selectedCourse.id)}
+                    disabled={selectedCourseLocked || selectedCourseCompleted}
+                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {selectedCourseAttended 
+                      ? 'bg-yellow-200 text-yellow-900 border-2 border-yellow-400 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:border-yellow-500 dark:hover:bg-yellow-700' 
+                      : 'bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-700'
+                    } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white dark:disabled:hover:bg-gray-800"
+                  >
+                    {#if selectedCourseAttended}
+                      <div class="i-lucide-check"></div>
+                      Attended
+                    {:else}
+                      <div class="i-lucide-eye"></div>
+                      Mark as Attended
+                    {/if}
+                  </button>
+                  
+                  <button 
+                    onclick={() => markCompleted(selectedCourse.id)}
+                    disabled={selectedCourseLocked}
+                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {selectedCourseCompleted
+                      ? 'bg-green-200 text-green-900 border-2 border-green-400 hover:bg-green-300 dark:bg-green-800 dark:text-green-100 dark:border-green-500 dark:hover:bg-green-700'
+                      : 'bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-700'
+                    } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white dark:disabled:hover:bg-gray-800"
+                  >
+                    {#if selectedCourseCompleted}
+                      <div class="i-lucide-check-circle"></div>
+                      Completed
+                    {:else}
+                      <div class="i-lucide-circle-check"></div>
+                      Mark as Completed
+                    {/if}
+                  </button>
+                </div>
+              {/if}
+            {/if}
           {:else}
             <!-- Course Details for Fixed Courses -->
             <div class="border-t border-border-primary pt-4">
@@ -1402,13 +1759,93 @@
                                 <div class="flex items-center gap-1.5 text-xs">
                                   <div class="{reqMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
                                   <span class={reqMet ? 'text-text-primary' : 'text-text-secondary'}>
-                                    {#if isAdvancedPrerequisite(req) && isCreditRequirement(req)}
+                                    {#if isCreditRequirement(req)}
                                       {req.moduleType ? `${req.moduleType} Credits` : 'Total Credits'}: {req.moduleType 
                                         ? `${calculateCreditsCompleted(completed, req.moduleType)}/${req.minCredits} ECTS`
                                         : `${calculateCreditsAttended(attended, completed)}/${req.minCredits} ECTS`
                                       }
                                     {:else if isPrerequisiteRequirement(req)}
                                       {req.requirement === "besucht" ? "Attended" : "Completed"}: {req.courses.join(", ")}
+                                    {/if}
+                                  </span>
+                                </div>
+                              {/each}
+                            </div>
+                          </div>
+                        {:else if isAssessmentStageRequirement(prereq)}
+                          <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                            <span class="font-medium">Assessment Stage Passed</span>
+                            <div class="text-xs text-text-tertiary">
+                              ({completed.size}/6+ courses completed)
+                            </div>
+                          </div>
+                        {:else if isAndExpression(prereq)}
+                          <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                            <span class="font-medium">All of:</span>
+                            <div class="ml-2 mt-1 space-y-1">
+                              {#each prereq.operands as operand}
+                                {@const operandMet = evaluatePrerequisite(operand, attended, completed)}
+                                <div class="flex items-center gap-1.5 text-xs">
+                                  <div class="{operandMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                                  <span class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
+                                    {#if typeof operand === 'string'}
+                                      {operand === "assessmentstufe bestanden" ? "Assessment Stage Passed" : (COURSES.find(c => c.id === operand)?.label || operand)}
+                                    {:else if isPrerequisiteRequirement(operand)}
+                                      {operand.requirement === "besucht" ? "Attended" : "Completed"}: {operand.courses.join(", ")}
+                                    {:else if isAssessmentStageRequirement(operand)}
+                                      Assessment Stage Passed
+                                    {:else if isOrExpression(operand)}
+                                      One of: {operand.operands.map(op => {
+                                        if (typeof op === 'string') {
+                                          return COURSES.find(c => c.id === op)?.label || op;
+                                        } else if (isPrerequisiteRequirement(op)) {
+                                          return op.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(', ');
+                                        }
+                                        return 'Complex requirement';
+                                      }).join(' OR ')}
+                                    {:else}
+                                      Complex requirement
+                                    {/if}
+                                  </span>
+                                </div>
+                              {/each}
+                            </div>
+                          </div>
+                        {:else if isOrExpression(prereq)}
+                          <div class={prereqMet ? 'text-text-primary' : 'text-text-secondary'}>
+                            <span class="font-medium">One of:</span>
+                            <div class="ml-2 mt-1 space-y-1">
+                              {#each prereq.operands as operand}
+                                {@const operandMet = evaluatePrerequisite(operand, attended, completed)}
+                                <div class="flex items-center gap-1.5 text-xs">
+                                  <div class="{operandMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                                  <span class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
+                                    {#if typeof operand === 'string'}
+                                      {operand === "assessmentstufe bestanden" ? "Assessment Stage Passed" : (COURSES.find(c => c.id === operand)?.label || operand)}
+                                    {:else if isPrerequisiteRequirement(operand)}
+                                      {operand.requirement === "besucht" ? "Attended" : "Completed"}: {operand.courses.join(", ")}
+                                    {:else if isAssessmentStageRequirement(operand)}
+                                      Assessment Stage Passed
+                                    {:else if isAndExpression(operand)}
+                                      All of: {operand.operands.map(op => {
+                                        if (typeof op === 'string') {
+                                          return COURSES.find(c => c.id === op)?.label || op;
+                                        } else if (isPrerequisiteRequirement(op)) {
+                                          return op.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(', ');
+                                        } else if (isOrExpression(op)) {
+                                          return `(${op.operands.map(subOp => {
+                                            if (typeof subOp === 'string') {
+                                              return COURSES.find(c => c.id === subOp)?.label || subOp;
+                                            } else if (isPrerequisiteRequirement(subOp)) {
+                                              return subOp.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(', ');
+                                            }
+                                            return 'Complex';
+                                          }).join(' OR ')})`;
+                                        }
+                                        return 'Complex requirement';
+                                      }).join(' AND ')}
+                                    {:else}
+                                      Complex requirement
                                     {/if}
                                   </span>
                                 </div>
