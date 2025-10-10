@@ -183,8 +183,99 @@
         });
       }
     });
+
+    const handleCounts: Record<string, { source: number; target: number }> = {};
+    
+    nodes.forEach(node => {
+      const data = node.data as ExtendedNodeData;
+      const course = data.course;
+      if (!course) {
+        handleCounts[node.id] = { source: 0, target: 0 };
+        return;
+      }
+      
+      let sourceCount = 0;
+      nodes.forEach(otherNode => {
+        const otherData = otherNode.data as ExtendedNodeData;
+        const otherCourse = otherData.course;
+        if (!otherCourse || otherCourse.id === course.id) return;
+        
+        otherCourse.prereqs.forEach((prereq: string | AdvancedPrerequisite) => {
+          if (typeof prereq === 'string') {
+            if (prereq === course.id) {
+              sourceCount++;
+            }
+          } else if (isProgramSpecificRequirement(prereq)) {
+            prereq.requirements.forEach(req => {
+              if (isPrerequisiteRequirement(req)) {
+                if (req.courses.includes(course.id)) {
+                  sourceCount++;
+                }
+              }
+            });
+          } else if (isPrerequisiteRequirement(prereq)) {
+            if (prereq.courses.includes(course.id)) {
+              sourceCount++;
+            }
+          }
+        });
+      });
+      
+      let targetCount = 0;
+      course.prereqs.forEach((prereq: string | AdvancedPrerequisite) => {
+        if (typeof prereq === 'string') {
+          if (prereq !== "assessmentstufe bestanden") {
+            const prereqSlot = template.slots.find(slot => slot.courseId === prereq);
+            if (prereqSlot) targetCount++;
+          }
+        } else if (isProgramSpecificRequirement(prereq)) {
+          prereq.requirements.forEach(req => {
+            if (isPrerequisiteRequirement(req)) {
+              const hasAnyCourseInTemplate = req.courses.some(courseId => {
+                const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
+                return prereqSlot !== undefined;
+              });
+              if (hasAnyCourseInTemplate) targetCount++;
+            }
+          });
+        } else if (isPrerequisiteRequirement(prereq)) {
+          const hasAnyCourseInTemplate = prereq.courses.some(courseId => {
+            const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
+            return prereqSlot !== undefined;
+          });
+          if (hasAnyCourseInTemplate) targetCount++;
+        }
+      });
+      
+      handleCounts[node.id] = { 
+        source: Math.min(sourceCount, 4),
+        target: Math.min(targetCount, 4)
+      };
+      
+      
+    });
+
+    nodes.forEach(node => {
+      const counts = handleCounts[node.id];
+      if (counts) {
+        node.data = {
+          ...node.data,
+          sourceHandles: counts.source,
+          targetHandles: counts.target
+        };
+        
+      }
+    });
     
     const edges: Edge[] = [];
+    const handleUsage: Record<string, { source: number; target: number }> = {};
+    
+    nodes.forEach(node => {
+      const counts = handleCounts[node.id];
+      if (counts) {
+        handleUsage[node.id] = { source: 0, target: 0 };
+      }
+    });
     
     nodes.forEach(node => {
       const data = node.data as ExtendedNodeData;
@@ -198,56 +289,84 @@
           }
           const prereqSlot = template.slots.find(slot => slot.courseId === prereq);
           if (prereqSlot) {
+            const targetHandleIndex = handleUsage[node.id]?.target || 0;
+            const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
+            
             edges.push({
               id: `${prereqSlot.id}=>${node.id}`,
               source: prereqSlot.id,
-              sourceHandle: "source",
+              sourceHandle: `source-${sourceHandleIndex}`,
               target: node.id,
-              targetHandle: "target",
+              targetHandle: `target-${targetHandleIndex}`,
               markerEnd: { type: MarkerType.ArrowClosed },
               animated: false,
               style: "stroke-width: 2px;",
               type: "bezier",
             });
+
+            if (handleUsage[node.id]) handleUsage[node.id].target++;
+            if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
           }
         } else if (isProgramSpecificRequirement(prereq)) {
           prereq.requirements.forEach(req => {
             if (isPrerequisiteRequirement(req)) {
-              req.courses.forEach(courseId => {
+              const availableCourseId = req.courses.find(courseId => {
                 const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
+                return prereqSlot !== undefined;
+              });
+              
+              if (availableCourseId) {
+                const prereqSlot = template.slots.find(slot => slot.courseId === availableCourseId);
                 if (prereqSlot) {
+                  const targetHandleIndex = handleUsage[node.id]?.target || 0;
+                  const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
+                  
                   edges.push({
                     id: `${prereqSlot.id}=>${node.id}`,
                     source: prereqSlot.id,
-                    sourceHandle: "source",
+                    sourceHandle: `source-${sourceHandleIndex}`,
                     target: node.id,
-                    targetHandle: "target",
+                    targetHandle: `target-${targetHandleIndex}`,
                     markerEnd: { type: MarkerType.ArrowClosed },
                     animated: false,
                     style: "stroke-width: 2px;",
                     type: "bezier",
                   });
+                  
+                  if (handleUsage[node.id]) handleUsage[node.id].target++;
+                  if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
                 }
-              });
+              }
             }
           });
         } else if (isPrerequisiteRequirement(prereq)) {
-          prereq.courses.forEach(courseId => {
+          const availableCourseId = prereq.courses.find(courseId => {
             const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
+            return prereqSlot !== undefined;
+          });
+          
+          if (availableCourseId) {
+            const prereqSlot = template.slots.find(slot => slot.courseId === availableCourseId);
             if (prereqSlot) {
+              const targetHandleIndex = handleUsage[node.id]?.target || 0;
+              const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
+              
               edges.push({
                 id: `${prereqSlot.id}=>${node.id}`,
                 source: prereqSlot.id,
-                sourceHandle: "source",
+                sourceHandle: `source-${sourceHandleIndex}`,
                 target: node.id,
-                targetHandle: "target",
+                targetHandle: `target-${targetHandleIndex}`,
                 markerEnd: { type: MarkerType.ArrowClosed },
                 animated: false,
                 style: "stroke-width: 2px;",
                 type: "bezier",
               });
+
+              if (handleUsage[node.id]) handleUsage[node.id].target++;
+              if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
             }
-          });
+          }
         }
       });
     });

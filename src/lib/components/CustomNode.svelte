@@ -21,6 +21,8 @@
     isElectiveSlot?: boolean;
     showCourseTypeBadges?: boolean;
     width?: number;
+    sourceHandles?: number;
+    targetHandles?: number;
   };
 
   const nodeData = $derived(data as ExtendedNodeData);
@@ -28,6 +30,8 @@
   const course = $derived(nodeData.course);
   const isElectiveSlot = $derived(nodeData.isElectiveSlot);
   const nodeWidth = $derived(nodeData.width || width);
+  const sourceHandles = $derived(nodeData.sourceHandles ?? 0);
+  const targetHandles = $derived(nodeData.targetHandles ?? 0);
 
   function getCourseTypeColor(type?: string): string {
     switch (type) {
@@ -57,9 +61,29 @@
 </script>
 
 <div class="relative h-full w-full flex flex-col justify-between p-2" style="width: {nodeWidth}px; max-width: {nodeWidth}px;">
-  <Handle type="source" position={Position.Bottom} id="source" />
+  <!-- Source handles (bottom) -->
+  {#if sourceHandles > 0}
+    {#each Array(sourceHandles) as _, i}
+      <Handle 
+        type="source" 
+        position={Position.Bottom} 
+        id="source-{i}" 
+        style="left: {((i + 1) * 100) / (sourceHandles + 1)}%"
+      />
+    {/each}
+  {/if}
   
-  <Handle type="target" position={Position.Top} id="target" />
+  <!-- Target handles (top) -->
+  {#if targetHandles > 0}
+    {#each Array(targetHandles) as _, i}
+      <Handle 
+        type="target" 
+        position={Position.Top} 
+        id="target-{i}" 
+        style="left: {((i + 1) * 100) / (targetHandles + 1)}%"
+      />
+    {/each}
+  {/if}
 
   {#if nodeData.showCourseTypeBadges}
     {#if course?.type}
