@@ -7,7 +7,7 @@
     { value: 'system' as Theme, label: 'System', icon: 'i-lucide-monitor' }
   ];
 
-  let isOpen = false;
+  let isOpen = $state(false);
 
   function toggleDropdown() {
     isOpen = !isOpen;
@@ -18,9 +18,9 @@
     isOpen = false;
   }
 
-  function getCurrentOption() {
+  const getCurrentOption = $derived(() => {
     return themeOptions.find(option => option.value === $theme) || themeOptions[0];
-  }
+  });
 </script>
 
 <div class="relative">
@@ -32,7 +32,7 @@
   >
     <div class="{getCurrentOption().icon} w-4 h-4"></div>
     <span class="text-sm font-medium">{getCurrentOption().label}</span>
-    <div class="i-lucide-chevron-down w-4 h-4 text-gray-500 transition-transform duration-200 {isOpen ? 'rotate-180' : ''}"></div>
+    <div class="i-lucide-chevron-down w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 {isOpen ? 'rotate-180' : ''}"></div>
   </button>
 
   {#if isOpen}
@@ -45,7 +45,7 @@
           <div class="{option.icon} w-4 h-4"></div>
           <span class="text-sm font-medium">{option.label}</span>
           {#if option.value === $theme}
-            <div class="i-lucide-check w-4 h-4 ml-auto text-blue-500"></div>
+            <div class="i-lucide-check w-4 h-4 ml-auto text-blue-500 dark:text-blue-400"></div>
           {/if}
         </button>
       {/each}
