@@ -629,7 +629,11 @@
             const lengthB = getChainLength(chainB);
             
             if (lengthA !== lengthB) {
-              return lengthB - lengthA; // longer chains first
+              // for projektmodul, reverse the ordering (shorter chains first, towards right)
+              if (typeA === "Projektmodul" && typeB === "Projektmodul") {
+                return lengthA - lengthB; // shorter chains first for projektmodul
+              }
+              return lengthB - lengthA; // longer chains first for other types
             }
             
             return chainA - chainB; // same length, sort by chain ID
@@ -637,8 +641,14 @@
           return 0;
         }
         
-        if (chainA !== undefined) return -1;
-        if (chainB !== undefined) return 1;
+        // for projektmodul, reverse the chain priority (chains towards right)
+        if (typeA === "Projektmodul" && typeB === "Projektmodul") {
+          if (chainA !== undefined) return 1; // chains go to the right
+          if (chainB !== undefined) return -1;
+        } else {
+          if (chainA !== undefined) return -1; // chains go to the left for other types
+          if (chainB !== undefined) return 1;
+        }
         
         return 0;
       });
