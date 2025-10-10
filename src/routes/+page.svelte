@@ -476,6 +476,174 @@
       semesterGroups[slot.semester].push(slot);
     });
 
+    // build prerequisite chains to determine vertical alignment
+    const prerequisiteChains: Record<string, number> = {};
+    const chainGroups: Record<number, string[]> = {};
+    let currentChain = 0;
+
+    // first pass: identify chains by analyzing prerequisites
+    template.slots.forEach(slot => {
+      if (slot.type === "fixed" && slot.courseId) {
+        const course = COURSES.find(c => c.id === slot.courseId);
+        if (course && course.prereqs.length > 0) {
+          // check if this course has prerequisites in the template
+          const hasPrereqsInTemplate = course.prereqs.some(prereq => {
+            if (typeof prereq === 'string') {
+              return template.slots.some(s => s.courseId === prereq);
+            } else if (isPrerequisiteRequirement(prereq)) {
+              return prereq.courses.some(courseId => 
+                template.slots.some(s => s.courseId === courseId)
+              );
+            }
+            return false;
+          });
+
+          if (hasPrereqsInTemplate) {
+            // check if any prerequisite is already in a chain
+            let assignedChain = -1;
+            course.prereqs.forEach(prereq => {
+              if (typeof prereq === 'string') {
+                const prereqSlot = template.slots.find(s => s.courseId === prereq);
+                if (prereqSlot && prerequisiteChains[prereqSlot.id] !== undefined) {
+                  assignedChain = prerequisiteChains[prereqSlot.id];
+                }
+              } else if (isPrerequisiteRequirement(prereq)) {
+                prereq.courses.forEach(courseId => {
+                  const prereqSlot = template.slots.find(s => s.courseId === courseId);
+                  if (prereqSlot && prerequisiteChains[prereqSlot.id] !== undefined) {
+                    assignedChain = prerequisiteChains[prereqSlot.id];
+                  }
+                });
+              }
+            });
+
+            if (assignedChain === -1) {
+              assignedChain = currentChain++;
+            }
+
+            prerequisiteChains[slot.id] = assignedChain;
+            if (!chainGroups[assignedChain]) {
+              chainGroups[assignedChain] = [];
+            }
+            chainGroups[assignedChain].push(slot.id);
+          }
+        }
+      }
+    });
+
+    // second pass: assign chains to prerequisite courses
+    template.slots.forEach(slot => {
+      if (slot.type === "fixed" && slot.courseId) {
+        const course = COURSES.find(c => c.id === slot.courseId);
+        if (course) {
+          // check if this course is a prerequisite for any course in a chain
+          template.slots.forEach(otherSlot => {
+            if (otherSlot.type === "fixed" && otherSlot.courseId && prerequisiteChains[otherSlot.id] !== undefined) {
+              const otherCourse = COURSES.find(c => c.id === otherSlot.courseId);
+              if (otherCourse) {
+                const isPrereq = otherCourse.prereqs.some(prereq => {
+                  if (typeof prereq === 'string') {
+                    return prereq === course.id;
+                  } else if (isPrerequisiteRequirement(prereq)) {
+                    return prereq.courses.includes(course.id);
+                  }
+                  return false;
+                });
+
+                if (isPrereq && prerequisiteChains[slot.id] === undefined) {
+                  const chainId = prerequisiteChains[otherSlot.id];
+                  prerequisiteChains[slot.id] = chainId;
+                  if (!chainGroups[chainId]) {
+                    chainGroups[chainId] = [];
+                  }
+                  chainGroups[chainId].push(slot.id);
+                }
+              }
+            }
+          });
+        }
+      }
+    });
+
+    // reorder slots within each semester to group prerequisite chains together
+    Object.keys(semesterGroups).forEach(semester => {
+      const semesterNum = parseInt(semester);
+      const slots = semesterGroups[semesterNum];
+      
+      // sort slots to group prerequisite chains together while maintaining type priority
+      slots.sort((a, b) => {
+        const chainA = prerequisiteChains[a.id];
+        const chainB = prerequisiteChains[b.id];
+        
+        // Determine course types for priority
+        const getCourseType = (slot: TemplateSlot) => {
+          if (slot.type === "fixed" && slot.courseId) {
+            const course = COURSES.find(c => c.id === slot.courseId);
+            return course?.type || "Kernmodul";
+          }
+          return slot.type === "major" ? "Major-Modul" : "Wahl-Modul";
+        };
+        
+        const typeA = getCourseType(a);
+        const typeB = getCourseType(b);
+        
+        // priority order: Kernmodul with concrete prerequisites > Kernmodul with generic prerequisites > Kernmodul > Wahl-Modul/Major-Modul > Projektmodul
+        const getTypePriority = (type: string, hasChain: boolean, slot: TemplateSlot) => {
+          if (type === "Kernmodul" && hasChain) {
+            // check if this is a concrete prerequisite chain (not just "assessmentstufe bestanden")
+            const course = COURSES.find(c => c.id === slot.courseId);
+            const hasConcretePrereqs = course && course.prereqs.some(prereq => {
+              if (typeof prereq === 'string') {
+                return prereq !== "assessmentstufe bestanden" && template.slots.some(s => s.courseId === prereq);
+              } else if (isPrerequisiteRequirement(prereq)) {
+                return prereq.courses.some(courseId => template.slots.some(s => s.courseId === courseId));
+              }
+              return false;
+            });
+            return hasConcretePrereqs ? 0 : 1; // concrete chains get highest priority
+          }
+          if (type === "Kernmodul") return 2;
+          if (type === "Wahl-Modul" || type === "Major-Modul") return 3;
+          if (type === "Projektmodul") return 4; // lowest priority
+          return 5;
+        };
+        
+        const priorityA = getTypePriority(typeA, chainA !== undefined, a);
+        const priorityB = getTypePriority(typeB, chainB !== undefined, b);
+        
+        // first sort by type priority
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
+        
+        // within same priority, group prerequisite chains together
+        if (chainA !== undefined && chainB !== undefined) {
+          if (chainA !== chainB) {
+            // different chains, prioritize longer chains (more prerequisites)
+            const getChainLength = (chainId: number) => {
+              const chainCourses = chainGroups[chainId] || [];
+              return chainCourses.length;
+            };
+            
+            const lengthA = getChainLength(chainA);
+            const lengthB = getChainLength(chainB);
+            
+            if (lengthA !== lengthB) {
+              return lengthB - lengthA; // longer chains first
+            }
+            
+            return chainA - chainB; // same length, sort by chain ID
+          }
+          return 0;
+        }
+        
+        if (chainA !== undefined) return -1;
+        if (chainB !== undefined) return 1;
+        
+        return 0;
+      });
+    });
+
     nodes = nodes.map((n) => {
       const data = n.data as ExtendedNodeData;
       const slot = data.slot;
@@ -485,7 +653,7 @@
       const slotIndex = semesterSlots.findIndex(s => s.id === slot.id);
       
       const semesterY = (slot.semester - 1) * 200 + 100;
-      
+
       let courseX = 100;
       for (let i = 0; i < slotIndex; i++) {
         const prevSlot = semesterSlots[i];

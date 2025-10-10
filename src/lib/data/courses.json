@@ -53,7 +53,7 @@
     "label": "Fachkommunikation",
     "ects": 3,
     "prereqs": [],
-    "type": "Kernmodul"
+    "type": "Projektmodul"
   },
   {
     "id": "LIAL",
@@ -191,7 +191,7 @@
     "label": "Produktenentwicklung 1",
     "ects": 6,
     "prereqs": ["assessmentstufe bestanden"],
-    "type": "Kernmodul"
+    "type": "Projektmodul"
   },
   {
     "id": "SWDA",

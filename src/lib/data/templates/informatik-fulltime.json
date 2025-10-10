@@ -124,18 +124,18 @@
       "semester": 3
     },
     {
-      "id": "elective1-s3",
-      "type": "elective",
-      "credits": 3,
-      "label": "Wahl-Modul",
-      "semester": 3
-    },
-    {
       "id": "astat",
       "type": "fixed",
       "courseId": "ASTAT",
       "credits": 3,
       "label": "Applied Statistics for Data Science",
+      "semester": 3
+    },
+    {
+      "id": "elective1-s3",
+      "type": "elective",
+      "credits": 3,
+      "label": "Wahl-Modul",
       "semester": 3
     },
     {
@@ -146,18 +146,18 @@
       "semester": 3
     },
     {
+      "id": "major1-s3",
+      "type": "major",
+      "credits": 3,
+      "label": "Major-Modul",
+      "semester": 3
+    },
+    {
       "id": "pren1",
       "type": "fixed",
       "courseId": "PREN1",
       "credits": 6,
       "label": "Produktenentwicklung 1",
-      "semester": 3
-    },
-    {
-      "id": "major1-s3",
-      "type": "major",
-      "credits": 3,
-      "label": "Major-Modul",
       "semester": 3
     },
     {
@@ -184,21 +184,6 @@
       "semester": 4
     },
     {
-      "id": "pren2",
-      "type": "fixed",
-      "courseId": "PREN2",
-      "credits": 6,
-      "label": "Produktenentwicklung 2",
-      "semester": 4
-    },
-    {
-      "id": "major1-s4",
-      "type": "major",
-      "credits": 3,
-      "label": "Major-Modul",
-      "semester": 4
-    },
-    {
       "id": "elective2-s4",
       "type": "elective",
       "credits": 3,
@@ -220,12 +205,19 @@
       "semester": 4
     },
     {
-      "id": "wipro",
+      "id": "major1-s4",
+      "type": "major",
+      "credits": 3,
+      "label": "Major-Modul",
+      "semester": 4
+    },
+    {
+      "id": "pren2",
       "type": "fixed",
-      "courseId": "WIPRO",
+      "courseId": "PREN2",
       "credits": 6,
-      "label": "Wirtschaftsprojekt",
-      "semester": 5
+      "label": "Produktenentwicklung 2",
+      "semester": 4
     },
     {
       "id": "elective1-s5",
@@ -284,12 +276,12 @@
       "semester": 5
     },
     {
-      "id": "baa",
+      "id": "wipro",
       "type": "fixed",
-      "courseId": "BAA",
-      "credits": 12,
-      "label": "Bachelorarbeit",
-      "semester": 6
+      "courseId": "WIPRO",
+      "credits": 6,
+      "label": "Wirtschaftsprojekt",
+      "semester": 5
     },
     {
       "id": "elective1-s6",
@@ -331,6 +323,14 @@
       "type": "major",
       "credits": 3,
       "label": "Major-Modul",
+      "semester": 6
+    },
+    {
+      "id": "baa",
+      "type": "fixed",
+      "courseId": "BAA",
+      "credits": 12,
+      "label": "Bachelorarbeit",
       "semester": 6
     }
   ]
