@@ -804,7 +804,7 @@
       
       const isAttended = course ? attended.has(course.id) : false;
       const isCompleted = course ? completed.has(course.id) : false;
-      const isSelected = selection?.id === n.id;
+      const isSelected = selection?.id === n.id || (course && selection?.id === course.id);
       
       const nodeWidth = data.width || getNodeWidth(course?.ects || slot?.credits || 6);
       let styleStr = `border-radius: 12px; font-weight: 500; font-size: 14px; text-align: center; min-width: ${nodeWidth}px; width: ${nodeWidth}px; font-family: Inter, sans-serif; transition: all 0.2s; `;
