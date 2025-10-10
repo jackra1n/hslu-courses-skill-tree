@@ -1,4 +1,5 @@
 import coursesData from './courses.json';
+import informatikFulltimeTemplate from './templates/informatik-fulltime.json';
 
 export type Status = "locked" | "available" | "completed";
 
@@ -24,7 +25,6 @@ export type AdvancedPrerequisite =
   | CreditRequirement 
   | ProgramSpecificRequirement;
 
-// Type guards
 export function isCreditRequirement(prereq: AdvancedPrerequisite): prereq is CreditRequirement {
   return 'type' in prereq && prereq.type === 'credits';
 }
@@ -48,7 +48,6 @@ export type Course = {
   prereqs: string[] | AdvancedPrerequisite[];
   prereqsPassed?: string[];
   url?: string;
-  semester: number;
   type?: "Kernmodul" | "Projektmodul" | "Erweiterungsmodul";
 };
 
@@ -58,9 +57,6 @@ export function getCourseById(id: string): Course | undefined {
   return COURSES.find(course => course.id === id);
 }
 
-export function getCoursesBySemester(semester: number): Course[] {
-  return COURSES.filter(course => course.semester === semester);
-}
 
 export function getPrerequisitesForCourse(courseId: string): Course[] {
   const course = getCourseById(courseId);
@@ -89,4 +85,75 @@ export function calculateCreditsAttended(
   return COURSES
     .filter(course => (attended.has(course.id) || completed.has(course.id)) && (!moduleType || course.type === moduleType))
     .reduce((total, course) => total + course.ects, 0);
+}
+
+export type TemplateSlot = {
+  id: string;
+  type: "fixed" | "elective" | "major";
+  courseId?: string; // for fixed courses
+  credits: number;
+  label: string;
+  semester: number;
+};
+
+export type CurriculumTemplate = {
+  id: string;
+  name: string;
+  studiengang: string;
+  modell: "fulltime" | "parttime";
+  plan: string; // e.g., "HS16", "HS25"
+  slots: TemplateSlot[];
+};
+
+export const AVAILABLE_TEMPLATES: CurriculumTemplate[] = [
+  informatikFulltimeTemplate as CurriculumTemplate
+];
+
+export function getTemplateById(id: string): CurriculumTemplate | undefined {
+  return AVAILABLE_TEMPLATES.find(template => template.id === id);
+}
+
+export function getTemplatesByProgram(studiengang: string, modell: "fulltime" | "parttime"): CurriculumTemplate[] {
+  return AVAILABLE_TEMPLATES.filter(template => 
+    template.studiengang === studiengang && template.modell === modell
+  );
+}
+
+export function getAvailablePlans(studiengang: string, modell: "fulltime" | "parttime"): string[] {
+  const templates = getTemplatesByProgram(studiengang, modell);
+  return [...new Set(templates.map(template => template.plan))].sort();
+}
+
+export function getCoursesForSlot(slot: TemplateSlot, userSelections: Record<string, string>): Course[] {
+  if (slot.type === "fixed" && slot.courseId) {
+    const course = getCourseById(slot.courseId);
+    return course ? [course] : [];
+  }
+  
+  if (slot.type === "elective" || slot.type === "major") {
+    const selectedCourseId = userSelections[slot.id];
+    if (selectedCourseId) {
+      const course = getCourseById(selectedCourseId);
+      return course ? [course] : [];
+    }
+    return [];
+  }
+  
+  return [];
+}
+
+export function calculateSemesterCredits(semester: number, template: CurriculumTemplate, userSelections: Record<string, string>): number {
+  return template.slots
+    .filter(slot => slot.semester === semester)
+    .reduce((total, slot) => {
+      const courses = getCoursesForSlot(slot, userSelections);
+      return total + courses.reduce((sum, course) => sum + course.ects, 0);
+    }, 0);
+}
+
+export function calculateTotalCredits(template: CurriculumTemplate, userSelections: Record<string, string>): number {
+  return template.slots.reduce((total, slot) => {
+    const courses = getCoursesForSlot(slot, userSelections);
+    return total + courses.reduce((sum, course) => sum + course.ects, 0);
+  }, 0);
 }
