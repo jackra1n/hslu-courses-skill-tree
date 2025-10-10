@@ -482,12 +482,8 @@
     }
   }
   
-  function markAttended(id: string) {
-    const node = nodes.find(n => n.id === id);
-    if (!node) return;
-    
-    const data = node.data as ExtendedNodeData;
-    const course = data.course;
+  function markAttended(courseId: string) {
+    const course = COURSES.find(c => c.id === courseId);
     if (!course) return;
     
     const prereqsMet = course.prereqs.every((p) => evaluatePrerequisite(p, attended, completed));
@@ -502,12 +498,8 @@
     applyStatuses();
   }
   
-  function markCompleted(id: string) {
-    const node = nodes.find(n => n.id === id);
-    if (!node) return;
-    
-    const data = node.data as ExtendedNodeData;
-    const course = data.course;
+  function markCompleted(courseId: string) {
+    const course = COURSES.find(c => c.id === courseId);
     if (!course) return;
 
     const prereqsMet = course.prereqs.every((p) => evaluatePrerequisite(p, attended, completed));
