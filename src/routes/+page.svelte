@@ -207,7 +207,7 @@
               markerEnd: { type: MarkerType.ArrowClosed },
               animated: false,
               style: "stroke-width: 2px;",
-              type: "smoothstep",
+              type: "bezier",
             });
           }
         } else if (isProgramSpecificRequirement(prereq)) {
@@ -225,7 +225,7 @@
                     markerEnd: { type: MarkerType.ArrowClosed },
                     animated: false,
                     style: "stroke-width: 2px;",
-                    type: "smoothstep",
+                    type: "bezier",
                   });
                 }
               });
@@ -244,7 +244,7 @@
                 markerEnd: { type: MarkerType.ArrowClosed },
                 animated: false,
                 style: "stroke-width: 2px;",
-                type: "smoothstep",
+                type: "bezier",
               });
             }
           });
@@ -453,8 +453,20 @@
       const isPrerequisite = selectedSlotId === e.target;
       const isDependent = selectedSlotId === e.source;
       
-      let edgeStyle = "stroke-width: 2px; transition: all 0.2s; ";
+      // check if source course is completed
+      const sourceSlot = currentTemplate.slots.find(slot => slot.id === e.source);
+      const sourceCourse = sourceSlot?.courseId ? COURSES.find(c => c.id === sourceSlot.courseId) : null;
+      const sourceCompleted = sourceCourse ? completed.has(sourceCourse.id) : false;
+      
+      // check if target course is completed
+      const targetSlot = currentTemplate.slots.find(slot => slot.id === e.target);
+      const targetCourse = targetSlot?.courseId ? COURSES.find(c => c.id === targetSlot.courseId) : null;
+      const targetCompleted = targetCourse ? completed.has(targetCourse.id) : false;
+      
+      let edgeStyle = "stroke-width: 2px; transition: all 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); ";
       let markerEnd = e.markerEnd;
+      let animated = false;
+      let edgeType = e.type;
       
       if (isSelected) {
         if (isPrerequisite) {
@@ -465,13 +477,24 @@
           markerEnd = { type: MarkerType.ArrowClosed, color: "rgb(59 130 246)" };
         }
       } else {
-        edgeStyle += "stroke: rgb(var(--border-primary)); ";
-        markerEnd = { type: MarkerType.ArrowClosed };
+        if (sourceCompleted && targetCompleted) {
+          edgeStyle += "stroke: rgb(34 197 94); stroke-width: 3px; ";
+          markerEnd = { type: MarkerType.ArrowClosed, color: "rgb(34 197 94)" };
+        }
+        else if (sourceCompleted) {
+          edgeStyle += "stroke: rgb(34 197 94); stroke-width: 3px; ";
+          markerEnd = { type: MarkerType.ArrowClosed, color: "rgb(34 197 94)" };
+          animated = true;
+        }
+        else {
+          edgeStyle += "stroke: rgb(var(--border-primary)); stroke-opacity: 0.6; ";
+          markerEnd = { type: MarkerType.ArrowClosed };
+        }
       }
       
       return {
         ...e,
-        animated: statuses[e.target as string] === "available",
+        animated: animated || (statuses[e.target as string] === "available" && !sourceCompleted),
         style: edgeStyle,
         markerEnd,
       };
