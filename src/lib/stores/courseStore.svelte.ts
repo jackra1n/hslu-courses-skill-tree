@@ -11,7 +11,7 @@ import {
 import { toGraph } from '../utils/graph';
 import { layoutSemesterBased, layoutELK, getNodeLabel } from '../utils/layout';
 
-// Private state - not exported directly
+// private state - not exported directly
 let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
 let _userSelections = $state<Record<string, string>>({});
 let _selectedPlan = $state(AVAILABLE_TEMPLATES[0].plan);
@@ -20,7 +20,7 @@ let _edges = $state<Edge[]>([]);
 let _showShortNamesOnly = $state(false);
 let _useELKLayout = $state(false);
 
-// Derived values
+// derived values
 const _totalCredits = $derived(calculateTotalCredits(_currentTemplate, _userSelections));
 
 const _availablePlans = $derived(
@@ -30,7 +30,7 @@ const _availablePlans = $derived(
     .sort()
 );
 
-// Export getter functions
+// export getter functions
 export function getCurrentTemplate() { return _currentTemplate; }
 export function getUserSelections() { return _userSelections; }
 export function getSelectedPlan() { return _selectedPlan; }

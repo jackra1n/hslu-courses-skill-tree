@@ -2,10 +2,10 @@ import { browser } from '$app/environment';
 
 export type Theme = 'light' | 'dark' | 'system';
 
-// Private state
+// private state
 let _theme = $state<Theme>('light');
 
-// Export getter function
+// export getter function
 export function getTheme() {
   return _theme;
 }

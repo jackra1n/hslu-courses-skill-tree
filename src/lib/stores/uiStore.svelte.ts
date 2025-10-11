@@ -1,6 +1,6 @@
 import type { Course, Viewport } from '../types';
 
-// Private state
+// private state
 let _selection = $state<Course | null>(null);
 let _viewport = $state<Viewport>({ x: 0, y: 0, zoom: 1 });
 let _showAssessmentInfo = $state(false);
@@ -13,7 +13,7 @@ const _isElectiveSlot = $derived(
   _selection?.id.startsWith('elective') || _selection?.id.startsWith('major') || false
 );
 
-// Export getter functions
+// export getter functions
 export function getSelection() { return _selection; }
 export function getViewport() { return _viewport; }
 export function getShowAssessmentInfo() { return _showAssessmentInfo; }

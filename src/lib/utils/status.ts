@@ -67,7 +67,7 @@ export function getNodeStyle(
   
   if (isElectiveSlot) {
     if (hasSelectedCourse) {
-      // There's a selected course - use normal status-based styling
+      // there's a selected course - use normal status-based styling
       if (isCompleted) {
         styleStr += "background: rgb(var(--node-completed-bg)); border-color: rgb(var(--node-completed-border)); color: rgb(var(--text-primary)); border-style: dashed; ";
       } else if (isAttended) {
@@ -75,11 +75,11 @@ export function getNodeStyle(
       } else if (status === "available") {
         styleStr += "background: rgb(var(--node-available-bg)); border-color: rgb(var(--node-available-border)); color: rgb(var(--text-primary)); border-style: dashed; ";
       } else {
-        // Locked state for selected course
+        // locked state for selected course
         styleStr += "background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); border-style: dashed; opacity: 0.6;";
       }
     } else {
-      // No course selected - disabled state
+      // no course selected - disabled state
       styleStr += "background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); border-style: dashed; opacity: 0.6;";
     }
     if (!isSelected) styleStr += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";

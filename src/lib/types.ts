@@ -1,4 +1,4 @@
-// Re-export all types from the data module for centralized access
+// re-export all types from the data module for centralized access
 export type {
   Course,
   Status,
