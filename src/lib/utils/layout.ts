@@ -84,6 +84,12 @@ export function layoutSemesterBased(
   selections: Record<string, string>,
   nodes: Node[]
 ): Node[] {
+  const templateCourseIds = new Set(
+    template.slots
+      .filter(slot => slot.courseId)
+      .map(slot => slot.courseId!)
+  );
+
   const semesterGroups: Record<number, TemplateSlot[]> = {};
   template.slots.forEach(slot => {
     if (!semesterGroups[slot.semester]) {
@@ -101,16 +107,16 @@ export function layoutSemesterBased(
       if (course && course.prereqs.length > 0) {
         const hasPrereqsInTemplate = course.prereqs.some(prereq => {
           if (typeof prereq === 'string') {
-            return template.slots.some(s => s.courseId === prereq);
+            return templateCourseIds.has(prereq);
           } else if (isPrerequisiteRequirement(prereq)) {
             return prereq.courses.some(courseId => 
-              template.slots.some(s => s.courseId === courseId)
+              templateCourseIds.has(courseId)
             );
           } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
             return prereq.operands.some(operand => {
               if (isPrerequisiteRequirement(operand)) {
                 return operand.courses.some(courseId => 
-                  template.slots.some(s => s.courseId === courseId)
+                  templateCourseIds.has(courseId)
                 );
               }
               return false;
@@ -123,24 +129,30 @@ export function layoutSemesterBased(
           let assignedChain = -1;
           course.prereqs.forEach(prereq => {
             if (typeof prereq === 'string') {
-              const prereqSlot = template.slots.find(s => s.courseId === prereq);
-              if (prereqSlot && prerequisiteChains[prereqSlot.id] !== undefined) {
-                assignedChain = prerequisiteChains[prereqSlot.id];
+              if (templateCourseIds.has(prereq)) {
+                const prereqSlot = template.slots.find(s => s.courseId === prereq);
+                if (prereqSlot && prerequisiteChains[prereqSlot.id] !== undefined) {
+                  assignedChain = prerequisiteChains[prereqSlot.id];
+                }
               }
             } else if (isPrerequisiteRequirement(prereq)) {
               prereq.courses.forEach(courseId => {
-                const prereqSlot = template.slots.find(s => s.courseId === courseId);
-                if (prereqSlot && prerequisiteChains[prereqSlot.id] !== undefined) {
-                  assignedChain = prerequisiteChains[prereqSlot.id];
+                if (templateCourseIds.has(courseId)) {
+                  const prereqSlot = template.slots.find(s => s.courseId === courseId);
+                  if (prereqSlot && prerequisiteChains[prereqSlot.id] !== undefined) {
+                    assignedChain = prerequisiteChains[prereqSlot.id];
+                  }
                 }
               });
             } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
               prereq.operands.forEach(operand => {
                 if (isPrerequisiteRequirement(operand)) {
                   operand.courses.forEach(courseId => {
-                    const prereqSlot = template.slots.find(s => s.courseId === courseId);
-                    if (prereqSlot && prerequisiteChains[prereqSlot.id] !== undefined) {
-                      assignedChain = prerequisiteChains[prereqSlot.id];
+                    if (templateCourseIds.has(courseId)) {
+                      const prereqSlot = template.slots.find(s => s.courseId === courseId);
+                      if (prereqSlot && prerequisiteChains[prereqSlot.id] !== undefined) {
+                        assignedChain = prerequisiteChains[prereqSlot.id];
+                      }
                     }
                   });
                 }
@@ -225,11 +237,11 @@ export function layoutSemesterBased(
           const course = COURSES.find(c => c.id === slot.courseId);
           const hasConcretePrereqs = course && course.prereqs.some(prereq => {
             if (isPrerequisiteRequirement(prereq)) {
-              return prereq.courses.some(courseId => template.slots.some(s => s.courseId === courseId));
+              return prereq.courses.some(courseId => templateCourseIds.has(courseId));
             } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
               return prereq.operands.some(operand => {
                 if (isPrerequisiteRequirement(operand)) {
-                  return operand.courses.some(courseId => template.slots.some(s => s.courseId === courseId));
+                  return operand.courses.some(courseId => templateCourseIds.has(courseId));
                 }
                 return false;
               });
