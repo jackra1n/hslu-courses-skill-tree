@@ -19,7 +19,6 @@ export default defineConfig({
             }
         })
     ],
-    darkMode: 'class',
     theme: {
         colors: {
             // semantic color tokens for theme switching
