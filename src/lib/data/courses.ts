@@ -303,3 +303,14 @@ export function createPrerequisiteRequirement(
 export function createAssessmentStageRequirement(): AssessmentStageRequirement {
   return { type: 'assessment_stage', requirement: 'bestanden' };
 }
+
+export type ExtendedNodeData = {
+  label: string;
+  slot?: TemplateSlot;
+  course?: Course;
+  isElectiveSlot?: boolean;
+  width?: number;
+  sourceHandles?: number;
+  targetHandles?: number;
+  showCourseTypeBadges?: boolean;
+};

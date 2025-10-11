@@ -2,13 +2,13 @@
 	import 'virtual:uno.css';
 	import '$lib/styles/theme.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { theme } from '$lib/stores/theme';
+	import { getTheme, themeStore } from '$lib/stores/theme.svelte';
 	import { onMount } from 'svelte';
 
 	let { children } = $props();
 
 	onMount(() => {
-		theme.init();
+		themeStore.init();
 	});
 </script>
 

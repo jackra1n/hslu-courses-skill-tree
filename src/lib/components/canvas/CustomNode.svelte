@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Course, TemplateSlot } from "../data/courses";
+  import type { Course, TemplateSlot } from "$lib/data/courses";
   import { Handle, Position } from "@xyflow/svelte";
 
   let { 

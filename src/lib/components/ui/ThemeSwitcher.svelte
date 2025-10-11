@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { theme, type Theme } from '$lib/stores/theme';
+  import { getTheme, themeStore, type Theme } from '$lib/stores/theme.svelte';
 
   const themeOptions = [
     { value: 'light' as Theme, label: 'Light', icon: 'i-lucide-sun' },
@@ -14,13 +14,13 @@
   }
 
   function selectTheme(selectedTheme: Theme) {
-    theme.set(selectedTheme);
+    themeStore.set(selectedTheme);
     isOpen = false;
   }
 
-  const getCurrentOption = $derived(() => {
-    return themeOptions.find(option => option.value === $theme) || themeOptions[0];
-  });
+	const getCurrentOption = $derived(() => {
+		return themeOptions.find(option => option.value === getTheme()) || themeOptions[0];
+	});
 </script>
 
 <div class="relative">
@@ -40,11 +40,11 @@
       {#each themeOptions as option}
         <button
           onclick={() => selectTheme(option.value)}
-          class="w-full flex items-center gap-2 px-3 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg {option.value === $theme ? 'bg-gray-100 dark:bg-gray-700' : ''}"
+          class="w-full flex items-center gap-2 px-3 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg {option.value === getTheme() ? 'bg-gray-100 dark:bg-gray-700' : ''}"
         >
           <div class="{option.icon} w-4 h-4"></div>
           <span class="text-sm font-medium">{option.label}</span>
-          {#if option.value === $theme}
+                 {#if option.value === getTheme()}
             <div class="i-lucide-check w-4 h-4 ml-auto text-blue-500 dark:text-blue-400"></div>
           {/if}
         </button>
