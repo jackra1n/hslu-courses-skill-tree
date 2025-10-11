@@ -84,11 +84,35 @@ export type Course = {
   type?: "Kernmodul" | "Projektmodul" | "Erweiterungsmodul";
 };
 
-const sortedCoursesData = [...coursesData].sort((a, b) => {
-  return a.label.localeCompare(b.label);
-});
+let _sortedCourses: Course[] | null = null;
 
-export const COURSES: Course[] = sortedCoursesData as Course[];
+function getSortedCourses(): Course[] {
+  if (_sortedCourses === null) {
+    _sortedCourses = [...coursesData].sort((a, b) => {
+      return a.label.localeCompare(b.label);
+    }) as Course[];
+  }
+  return _sortedCourses;
+}
+
+export const COURSES: Course[] = new Proxy([], {
+  get(_target, prop) {
+    const sortedCourses = getSortedCourses();
+    return Reflect.get(sortedCourses, prop);
+  },
+  has(_target, prop) {
+    const sortedCourses = getSortedCourses();
+    return Reflect.has(sortedCourses, prop);
+  },
+  ownKeys(_target) {
+    const sortedCourses = getSortedCourses();
+    return Reflect.ownKeys(sortedCourses);
+  },
+  getOwnPropertyDescriptor(_target, prop) {
+    const sortedCourses = getSortedCourses();
+    return Reflect.getOwnPropertyDescriptor(sortedCourses, prop);
+  }
+}) as Course[];
 
 export function getCourseById(id: string): Course | undefined {
   return COURSES.find(course => course.id === id);
