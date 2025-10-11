@@ -26,7 +26,7 @@
           </ul>
         </div>
         <div class="text-xs text-text-tertiary">
-          <p><strong>Note:</strong> In this skill tree, "assessmentstufe bestanden" is considered met when you have completed 6+ courses. This is an approximation for demonstration purposes.</p>
+          <p><strong>Note:</strong> In this skill tree, assessment stage requirements are considered met when you have completed 6+ courses. This is an approximation for demonstration purposes.</p>
         </div>
       </div>
     </div>

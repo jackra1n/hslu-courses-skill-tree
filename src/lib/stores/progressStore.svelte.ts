@@ -3,7 +3,7 @@ import type { Status } from '../types';
 import { COURSES, evaluateCoursePrerequisites, type UserProgress } from '../data/courses';
 import { computeStatuses } from '../utils/status';
 
-// Private state
+// private state
 let _attended = $state(new Set<string>());
 let _completed = $state(new Set<string>());
 
@@ -23,7 +23,7 @@ const _totalCompletedCredits = $derived(
   _completedCourses.reduce((total, course) => total + course.ects, 0)
 );
 
-// Export getter functions
+// export getter functions
 export function getAttended() { return _attended; }
 export function getCompleted() { return _completed; }
 export function getAttendedCourses() { return _attendedCourses; }
@@ -38,6 +38,9 @@ export const progressStore = {
   get completedCourses() { return _completedCourses; },
   get totalAttendedCredits() { return _totalAttendedCredits; },
   get totalCompletedCredits() { return _totalCompletedCredits; },
+  
+  get attendedSet() { return _attended; },
+  get completedSet() { return _completed; },
   
   markAttended(courseId: string) {
     const course = COURSES.find(c => c.id === courseId);
@@ -64,10 +67,6 @@ export const progressStore = {
   markCompleted(courseId: string) {
     const course = COURSES.find(c => c.id === courseId);
     if (!course) return;
-
-    const userProgress: UserProgress = { attended: _attended, completed: _completed };
-    const prereqsMet = evaluateCoursePrerequisites(course, userProgress);
-    if (!prereqsMet) return;
     
     const newCompleted = new Set(_completed);
     if (newCompleted.has(course.id)) {

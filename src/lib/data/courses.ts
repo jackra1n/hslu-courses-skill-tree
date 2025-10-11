@@ -3,7 +3,7 @@ import informatikFulltimeTemplate from './templates/informatik-fulltime.json';
 
 export type Status = "locked" | "available" | "completed";
 
-// Base requirement types
+// base requirement types
 export type PrerequisiteRequirement = {
   courses: string[];
   requirement: "besucht" | "bestanden";
@@ -26,7 +26,7 @@ export type AssessmentStageRequirement = {
   requirement: "bestanden";
 };
 
-// Expression tree for complex logic
+// expression tree for complex logic
 export type PrerequisiteExpression = 
   | PrerequisiteRequirement 
   | CreditRequirement 
@@ -45,7 +45,7 @@ export type OrExpression = {
   operands: PrerequisiteExpression[];
 };
 
-// Type guards
+// type guards
 export function isCreditRequirement(prereq: PrerequisiteExpression): prereq is CreditRequirement {
   return typeof prereq === 'object' && prereq !== null && 'type' in prereq && prereq.type === 'credits';
 }
@@ -78,7 +78,7 @@ export type Course = {
   id: string;
   label: string;
   ects: number;
-  prereqs: string[] | PrerequisiteExpression[];
+  prereqs: PrerequisiteExpression[];
   prereqsPassed?: string[];
   url?: string;
   type?: "Kernmodul" | "Projektmodul" | "Erweiterungsmodul";
@@ -99,10 +99,20 @@ export function getPrerequisitesForCourse(courseId: string): Course[] {
   const course = getCourseById(courseId);
   if (!course) return [];
 
-  return course.prereqs
-    .filter((prereq): prereq is string => typeof prereq === 'string')
-    .map(prereqId => getCourseById(prereqId))
-    .filter(Boolean) as Course[];
+  const prerequisiteCourses: Course[] = [];
+  
+  course.prereqs.forEach(prereq => {
+    if (isPrerequisiteRequirement(prereq)) {
+      prereq.courses.forEach(courseId => {
+        const prereqCourse = getCourseById(courseId);
+        if (prereqCourse) {
+          prerequisiteCourses.push(prereqCourse);
+        }
+      });
+    }
+  });
+  
+  return prerequisiteCourses;
 }
 
 export function calculateCreditsCompleted(
@@ -195,7 +205,7 @@ export function calculateTotalCredits(template: CurriculumTemplate, userSelectio
   }, 0);
 }
 
-// Evaluation functions for prerequisite expressions
+// evaluation functions for prerequisite expressions
 export type UserProgress = {
   completed: Set<string>;
   attended: Set<string>;
@@ -205,15 +215,7 @@ export function evaluatePrerequisiteExpression(
   expr: PrerequisiteExpression,
   userProgress: UserProgress
 ): boolean {
-  // Handle string prerequisites (legacy format)
-  if (typeof expr === 'string') {
-    if (expr === "assessmentstufe bestanden") {
-      return userProgress.completed.size >= 6; // approximate threshold
-    }
-    return userProgress.completed.has(expr);
-  }
 
-  // Handle PrerequisiteRequirement
   if ('courses' in expr && 'requirement' in expr && !('type' in expr)) {
     const { courses, requirement } = expr;
     if (requirement === 'bestanden') {
@@ -225,7 +227,6 @@ export function evaluatePrerequisiteExpression(
     }
   }
 
-  // Handle CreditRequirement
   if (isCreditRequirement(expr)) {
     const credits = calculateCreditsCompleted(
       userProgress.completed,
@@ -234,32 +235,27 @@ export function evaluatePrerequisiteExpression(
     return credits >= expr.minCredits;
   }
 
-  // Handle ProgramSpecificRequirement
   if ('type' in expr && expr.type === 'program_specific') {
-    // For now, we'll need to know the current program to evaluate this
-    // This could be extended to accept program context
-    return false; // Placeholder - would need program context
+    // for now, we'll need to know the current program to evaluate this
+    // this could be extended to accept program context
+    return false;
   }
 
-  // Handle AssessmentStageRequirement
   if ('type' in expr && expr.type === 'assessment_stage') {
     return userProgress.completed.size >= 6; // approximate threshold
   }
 
-  // Handle AndExpression
   if (isAndExpression(expr)) {
     return expr.operands.every(operand => 
       evaluatePrerequisiteExpression(operand, userProgress)
     );
   }
 
-  // Handle OrExpression
   if (isOrExpression(expr)) {
     return expr.operands.some(operand => 
       evaluatePrerequisiteExpression(operand, userProgress)
     );
   }
-
   return false;
 }
 
@@ -271,20 +267,11 @@ export function evaluateCoursePrerequisites(
     return true;
   }
 
-  // Handle string array prerequisites
-  if (course.prereqs.every(prereq => typeof prereq === 'string')) {
-    return (course.prereqs as string[]).every(courseId => 
-      userProgress.completed.has(courseId)
-    );
-  }
-
-  // Handle PrerequisiteExpression array
-  return (course.prereqs as PrerequisiteExpression[]).every(expr => 
+  return course.prereqs.every(expr => 
     evaluatePrerequisiteExpression(expr, userProgress)
   );
 }
 
-// Helper function to create complex prerequisite expressions
 export function createAndExpression(...operands: PrerequisiteExpression[]): AndExpression {
   return { type: 'and', operands };
 }

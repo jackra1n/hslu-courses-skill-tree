@@ -9,30 +9,15 @@ import {
 } from '../data/courses';
 
 export function evaluatePrerequisite(
-  prereq: string | PrerequisiteExpression,
+  prereq: PrerequisiteExpression,
   attended: Set<string>,
   completed: Set<string>
 ): boolean {
   const userProgress: UserProgress = { attended, completed };
-  
-  if (typeof prereq === 'string') {
-    if (prereq === "assessmentstufe bestanden") {
-      return completed.size >= 6; // approximate threshold
-    }
-    return attended.has(prereq) || completed.has(prereq);
-  }
-
   return evaluatePrerequisiteExpression(prereq, userProgress);
 }
 
 export function getPrerequisiteDisplayText(prereq: PrerequisiteExpression, courses: Course[]): string {
-  if (typeof prereq === 'string') {
-    if (prereq === "assessmentstufe bestanden") {
-      return "Assessment Stage Passed";
-    }
-    const course = courses.find(c => c.id === prereq);
-    return course?.label || prereq;
-  }
 
   if ('courses' in prereq && 'requirement' in prereq && !('type' in prereq)) {
     const courseLabels = prereq.courses.map(courseId => {

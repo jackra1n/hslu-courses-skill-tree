@@ -6,7 +6,9 @@ import {
   isProgramSpecificRequirement,
   isPrerequisiteRequirement,
   isAndExpression,
-  isOrExpression
+  isOrExpression,
+  isCreditRequirement,
+  isAssessmentStageRequirement
 } from '../data/courses';
 import { getNodeWidth, getNodeLabel } from './layout';
 import { MarkerType } from "@xyflow/svelte";
@@ -67,12 +69,8 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
       const otherCourse = otherData.course;
       if (!otherCourse || otherCourse.id === course.id) return;
       
-      otherCourse.prereqs.forEach((prereq: string | PrerequisiteExpression) => {
-        if (typeof prereq === 'string') {
-          if (prereq === course.id) {
-            sourceCount++;
-          }
-        } else if (isProgramSpecificRequirement(prereq)) {
+      otherCourse.prereqs.forEach((prereq: PrerequisiteExpression) => {
+        if (isProgramSpecificRequirement(prereq)) {
           prereq.requirements.forEach(req => {
             if (isPrerequisiteRequirement(req)) {
               if (req.courses.includes(course.id)) {
@@ -85,11 +83,9 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
             sourceCount++;
           }
         } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
-          // For expression trees, we need to recursively check if any operand contains this course
+          // for expression trees, we need to recursively check if any operand contains this course
           const checkExpression = (expr: PrerequisiteExpression): boolean => {
-            if (typeof expr === 'string') {
-              return expr === course.id;
-            } else if (isAndExpression(expr) || isOrExpression(expr)) {
+            if (isAndExpression(expr) || isOrExpression(expr)) {
               return expr.operands.some(checkExpression);
             } else if (isPrerequisiteRequirement(expr)) {
               return expr.courses.includes(course.id);
@@ -104,13 +100,8 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
     });
     
     let targetCount = 0;
-    course.prereqs.forEach((prereq: string | PrerequisiteExpression) => {
-      if (typeof prereq === 'string') {
-        if (prereq !== "assessmentstufe bestanden") {
-          const prereqSlot = template.slots.find(slot => slot.courseId === prereq);
-          if (prereqSlot) targetCount++;
-        }
-      } else if (isProgramSpecificRequirement(prereq)) {
+    course.prereqs.forEach((prereq: PrerequisiteExpression) => {
+      if (isProgramSpecificRequirement(prereq)) {
         prereq.requirements.forEach(req => {
           if (isPrerequisiteRequirement(req)) {
             const hasAnyCourseInTemplate = req.courses.some(courseId => {
@@ -127,15 +118,9 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
         });
         if (hasAnyCourseInTemplate) targetCount++;
       } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
-        // For expression trees, count ALL courses that exist in the template
+        // for expression trees, count ALL courses that exist in the template
         const countExpression = (expr: PrerequisiteExpression): number => {
-          if (typeof expr === 'string') {
-            if (expr === "assessmentstufe bestanden") {
-              return 0;
-            }
-            const prereqSlot = template.slots.find(slot => slot.courseId === expr);
-            return prereqSlot ? 1 : 0;
-          } else if (isPrerequisiteRequirement(expr)) {
+          if (isPrerequisiteRequirement(expr)) {
             return expr.courses.filter(courseId => {
               const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
               return prereqSlot !== undefined;
@@ -182,34 +167,8 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
     if (!course) return;
     
     const sortedPrereqs = [...course.prereqs].sort((a, b) => {
-      const getDependencyDepth = (prereq: string | PrerequisiteExpression) => {
-        if (typeof prereq === 'string') {
-          if (prereq === "assessmentstufe bestanden") return 999;
-          const prereqCourse = COURSES.find(c => c.id === prereq);
-          if (!prereqCourse) return 999;
-          
-          const calculateDepth = (courseId: string, visited = new Set<string>()): number => {
-            if (visited.has(courseId)) return 0;
-            visited.add(courseId);
-            
-            const course = COURSES.find(c => c.id === courseId);
-            if (!course || course.prereqs.length === 0) return 0;
-            
-            let maxDepth = 0;
-            course.prereqs.forEach(prereq => {
-              if (typeof prereq === 'string' && prereq !== "assessmentstufe bestanden") {
-                maxDepth = Math.max(maxDepth, calculateDepth(prereq, new Set(visited)) + 1);
-              } else if (typeof prereq === 'object' && isPrerequisiteRequirement(prereq)) {
-                prereq.courses.forEach(courseId => {
-                  maxDepth = Math.max(maxDepth, calculateDepth(courseId, new Set(visited)) + 1);
-                });
-              }
-            });
-            return maxDepth;
-          };
-          
-          return calculateDepth(prereq);
-        } else if (isPrerequisiteRequirement(prereq)) {
+      const getDependencyDepth = (prereq: PrerequisiteExpression) => {
+        if (isPrerequisiteRequirement(prereq)) {
           let maxDepth = 0;
           prereq.courses.forEach(courseId => {
             const prereqCourse = COURSES.find(c => c.id === courseId);
@@ -222,15 +181,13 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
                 if (!course || course.prereqs.length === 0) return 0;
                 
                 let maxDepth = 0;
-                course.prereqs.forEach(prereq => {
-                  if (typeof prereq === 'string' && prereq !== "assessmentstufe bestanden") {
-                    maxDepth = Math.max(maxDepth, calculateDepth(prereq, new Set(visited)) + 1);
-                  } else if (typeof prereq === 'object' && isPrerequisiteRequirement(prereq)) {
-                    prereq.courses.forEach(courseId => {
-                      maxDepth = Math.max(maxDepth, calculateDepth(courseId, new Set(visited)) + 1);
-                    });
-                  }
+            course.prereqs.forEach(prereq => {
+              if (isPrerequisiteRequirement(prereq)) {
+                prereq.courses.forEach(courseId => {
+                  maxDepth = Math.max(maxDepth, calculateDepth(courseId, new Set(visited)) + 1);
                 });
+              }
+            });
                 return maxDepth;
               };
               maxDepth = Math.max(maxDepth, calculateDepth(courseId));
@@ -254,12 +211,8 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
         return depthB - depthA;
       }
       
-      const getPrereqPosition = (prereq: string | PrerequisiteExpression) => {
-        if (typeof prereq === 'string') {
-          if (prereq === "assessmentstufe bestanden") return 999;
-          const prereqSlot = template.slots.find(slot => slot.courseId === prereq);
-          return prereqSlot ? prereqSlot.semester * 1000 + template.slots.indexOf(prereqSlot) : 999;
-        } else if (isPrerequisiteRequirement(prereq)) {
+      const getPrereqPosition = (prereq: PrerequisiteExpression) => {
+        if (isPrerequisiteRequirement(prereq)) {
           let minPosition = 999;
           prereq.courses.forEach(courseId => {
             const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
@@ -282,31 +235,30 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
       return getPrereqPosition(a) - getPrereqPosition(b);
     });
     
-    sortedPrereqs.forEach((prereq: string | PrerequisiteExpression) => {
-      if (typeof prereq === 'string') {
-        if (prereq === "assessmentstufe bestanden") {
-          return;
-        }
-        const prereqSlot = template.slots.find(slot => slot.courseId === prereq);
-        if (prereqSlot) {
-          const targetHandleIndex = handleUsage[node.id]?.target || 0;
-          const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
-          
-          edges.push({
-            id: `${prereqSlot.id}=>${node.id}`,
-            source: prereqSlot.id,
-            sourceHandle: `source-${sourceHandleIndex}`,
-            target: node.id,
-            targetHandle: `target-${targetHandleIndex}`,
-            markerEnd: { type: MarkerType.ArrowClosed },
-            animated: false,
-            style: "stroke-width: 2px;",
-            type: "bezier",
-          });
+    sortedPrereqs.forEach((prereq: PrerequisiteExpression) => {
+      if (isPrerequisiteRequirement(prereq)) {
+        prereq.courses.forEach(courseId => {
+          const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
+          if (prereqSlot) {
+            const targetHandleIndex = handleUsage[node.id]?.target || 0;
+            const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
+            
+            edges.push({
+              id: `${prereqSlot.id}=>${node.id}`,
+              source: prereqSlot.id,
+              sourceHandle: `source-${sourceHandleIndex}`,
+              target: node.id,
+              targetHandle: `target-${targetHandleIndex}`,
+              markerEnd: { type: MarkerType.ArrowClosed },
+              animated: false,
+              style: "stroke-width: 2px;",
+              type: "bezier",
+            });
 
-          if (handleUsage[node.id]) handleUsage[node.id].target++;
-          if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
-        }
+            if (handleUsage[node.id]) handleUsage[node.id].target++;
+            if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
+          }
+        });
       } else if (isProgramSpecificRequirement(prereq)) {
         prereq.requirements.forEach(req => {
           if (isPrerequisiteRequirement(req)) {
@@ -339,61 +291,9 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
             }
           }
         });
-      } else if (isPrerequisiteRequirement(prereq)) {
-        const availableCourseId = prereq.courses.find(courseId => {
-          const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
-          return prereqSlot !== undefined;
-        });
-        
-        if (availableCourseId) {
-          const prereqSlot = template.slots.find(slot => slot.courseId === availableCourseId);
-          if (prereqSlot) {
-            const targetHandleIndex = handleUsage[node.id]?.target || 0;
-            const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
-            
-            edges.push({
-              id: `${prereqSlot.id}=>${node.id}`,
-              source: prereqSlot.id,
-              sourceHandle: `source-${sourceHandleIndex}`,
-              target: node.id,
-              targetHandle: `target-${targetHandleIndex}`,
-              markerEnd: { type: MarkerType.ArrowClosed },
-              animated: false,
-              style: "stroke-width: 2px;",
-              type: "bezier",
-            });
-
-            if (handleUsage[node.id]) handleUsage[node.id].target++;
-            if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
-          }
-        }
       } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
         const createEdgesForExpression = (expr: PrerequisiteExpression) => {
-          if (typeof expr === 'string') {
-            if (expr === "assessmentstufe bestanden") {
-              return;
-            }
-            const prereqSlot = template.slots.find(slot => slot.courseId === expr);
-            if (prereqSlot) {
-              const targetHandleIndex = handleUsage[node.id]?.target || 0;
-              const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
-              
-              edges.push({
-                id: `${prereqSlot.id}=>${node.id}`,
-                source: prereqSlot.id,
-                sourceHandle: `source-${sourceHandleIndex}`,
-                target: node.id,
-                targetHandle: `target-${targetHandleIndex}`,
-                markerEnd: { type: MarkerType.ArrowClosed },
-                animated: false,
-                style: "stroke-width: 2px;",
-                type: "bezier",
-              });
-
-              if (handleUsage[node.id]) handleUsage[node.id].target++;
-              if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
-            }
-          } else if (isPrerequisiteRequirement(expr)) {
+          if (isPrerequisiteRequirement(expr)) {
             expr.courses.forEach(courseId => {
               const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
               if (prereqSlot) {
@@ -416,6 +316,8 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
                 if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
               }
             });
+          } else if (isCreditRequirement(expr) || isAssessmentStageRequirement(expr) || isProgramSpecificRequirement(expr)) {
+            // Skip non-course prerequisites for edge creation
           } else if (isAndExpression(expr) || isOrExpression(expr)) {
             expr.operands.forEach(createEdgesForExpression);
           }

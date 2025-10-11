@@ -54,7 +54,7 @@ export async function layoutELK(nodes: Node[]): Promise<Node[]> {
         }
       };
     }),
-    edges: [] // We'll handle edges separately
+    edges: [] // we'll handle edges separately
   };
 
   try {
@@ -224,9 +224,7 @@ export function layoutSemesterBased(
         if (type === "Kernmodul" && hasChain) {
           const course = COURSES.find(c => c.id === slot.courseId);
           const hasConcretePrereqs = course && course.prereqs.some(prereq => {
-            if (typeof prereq === 'string') {
-              return prereq !== "assessmentstufe bestanden" && template.slots.some(s => s.courseId === prereq);
-            } else if (isPrerequisiteRequirement(prereq)) {
+            if (isPrerequisiteRequirement(prereq)) {
               return prereq.courses.some(courseId => template.slots.some(s => s.courseId === courseId));
             } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
               return prereq.operands.some(operand => {
