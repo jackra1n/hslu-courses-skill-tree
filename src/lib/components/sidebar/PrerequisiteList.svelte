@@ -59,7 +59,7 @@
           </li>
         {:else if isProgramSpecificRequirement(prereq)}
           <li class="flex items-start gap-2 text-sm">
-            <div class="{prereqData.met ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} mt-0.5"></div>
+            <div class="{prereqData.met ? 'i-lucide-check text-green-500' : 'i-lucide-circle text-gray-400'} mt-0.5"></div>
             <div class="flex-1">
               <div class={prereqData.met ? 'text-text-primary' : 'text-text-secondary'}>
                 <span class="font-medium">{prereq.program}:</span>
@@ -67,7 +67,7 @@
                   {#each prereq.requirements as req}
                     {@const reqMet = evaluatePrerequisite(req, progressStore.attended, progressStore.completed)}
                     <div class="flex items-center gap-1.5 text-xs">
-                      <div class="{reqMet ? 'i-lucide-check text-green-500' : 'i-lucide-circle text-gray-400'} text-xs"></div>
+                      <div class="{reqMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
                       <span class={reqMet ? 'text-text-primary' : 'text-text-secondary'}>
                         {#if isCreditRequirement(req)}
                           {req.moduleType ? `${req.moduleType} Credits` : 'Total Credits'}: {req.moduleType 
@@ -102,24 +102,51 @@
             <li class="flex items-start gap-2 text-sm">
               <div class="{operandMet ? 'i-lucide-check text-green-500' : 'i-lucide-circle text-gray-400'} mt-0.5"></div>
               <div class="flex-1">
-                <span class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
-                  {#if isPrerequisiteRequirement(operand)}
-                    {operand.requirement === "besucht" ? "Attended" : "Completed"}: {operand.courses.join(", ")}
-                  {:else if isAssessmentStageRequirement(operand)}
-                    Assessment Stage Passed
-                  {:else if isOrExpression(operand)}
-                    One of: {operand.operands.map(op => {
-                      if (isPrerequisiteRequirement(op)) {
-                        const requirementText = op.requirement === "besucht" ? "Attended" : "Completed";
-                        const courseNames = op.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(', ');
-                        return `${requirementText}: ${courseNames}`;
-                      }
-                      return 'Complex requirement';
-                    }).join(' OR ')}
-                  {:else}
+                {#if isPrerequisiteRequirement(operand)}
+                  <div class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
+                    <span><span class="font-semibold">{operand.requirement === "besucht" ? "Attended" : "Completed"}</span> all of:</span>
+                    <div class="ml-2 mt-1 space-y-1">
+                      {#each operand.courses as courseId}
+                        {@const course = COURSES.find(c => c.id === courseId)}
+                        {@const courseMet = operand.requirement === "besucht" ? (progressStore.attended.has(courseId) || progressStore.completed.has(courseId)) : progressStore.completed.has(courseId)}
+                        <div class="flex items-center gap-1.5 text-xs">
+                          <div class="{courseMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                          <span class={courseMet ? 'text-text-primary' : 'text-text-secondary'}>
+                            {course?.label || courseId}
+                          </span>
+                        </div>
+                      {/each}
+                    </div>
+                  </div>
+                {:else if isAssessmentStageRequirement(operand)}
+                  <div class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
+                    <span class="font-medium">Assessment Stage Passed</span>
+                    <div class="text-xs text-text-tertiary">
+                      ({progressStore.completed.size}/6+ courses completed)
+                    </div>
+                  </div>
+                {:else if isOrExpression(operand)}
+                  <div class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
+                    <span><span class="font-semibold">{operand.operands.find(op => isPrerequisiteRequirement(op))?.requirement === "besucht" ? "Attended" : "Completed"}</span> one of:</span>
+                    <div class="ml-2 mt-1 space-y-1">
+                      {#each operand.operands as op}
+                        {@const opMet = evaluatePrerequisite(op, attended, completed)}
+                        {#if isPrerequisiteRequirement(op)}
+                          <div class="flex items-center gap-1.5 text-xs">
+                            <div class="{opMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                            <span class={opMet ? 'text-text-primary' : 'text-text-secondary'}>
+                              {op.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(", ")}
+                            </span>
+                          </div>
+                        {/if}
+                      {/each}
+                    </div>
+                  </div>
+                {:else}
+                  <span class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
                     Complex requirement
-                  {/if}
-                </span>
+                  </span>
+                {/if}
               </div>
             </li>
           {/each}
@@ -129,33 +156,51 @@
             <li class="flex items-start gap-2 text-sm">
               <div class="{operandMet ? 'i-lucide-check text-green-500' : 'i-lucide-circle text-gray-400'} mt-0.5"></div>
               <div class="flex-1">
-                <span class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
-                  {#if isPrerequisiteRequirement(operand)}
-                    {operand.requirement === "besucht" ? "Attended" : "Completed"}: {operand.courses.join(", ")}
-                  {:else if isAssessmentStageRequirement(operand)}
-                    Assessment Stage Passed
-                  {:else if isAndExpression(operand)}
-                    All of: {operand.operands.map(op => {
-                      if (isPrerequisiteRequirement(op)) {
-                        const requirementText = op.requirement === "besucht" ? "Attended" : "Completed";
-                        const courseNames = op.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(', ');
-                        return `${requirementText}: ${courseNames}`;
-                      } else if (isOrExpression(op)) {
-                        return `(${op.operands.map(subOp => {
-                          if (isPrerequisiteRequirement(subOp)) {
-                            const requirementText = subOp.requirement === "besucht" ? "Attended" : "Completed";
-                            const courseNames = subOp.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(', ');
-                            return `${requirementText}: ${courseNames}`;
-                          }
-                          return 'Complex';
-                        }).join(' OR ')})`;
-                      }
-                      return 'Complex requirement';
-                    }).join(' AND ')}
-                  {:else}
+                {#if isPrerequisiteRequirement(operand)}
+                  <div class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
+                    <span><span class="font-semibold">{operand.requirement === "besucht" ? "Attended" : "Completed"}</span> one of:</span>
+                    <div class="ml-2 mt-1 space-y-1">
+                      {#each operand.courses as courseId}
+                        {@const course = COURSES.find(c => c.id === courseId)}
+                        {@const courseMet = operand.requirement === "besucht" ? (progressStore.attended.has(courseId) || progressStore.completed.has(courseId)) : progressStore.completed.has(courseId)}
+                        <div class="flex items-center gap-1.5 text-xs">
+                          <div class="{courseMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                          <span class={courseMet ? 'text-text-primary' : 'text-text-secondary'}>
+                            {course?.label || courseId}
+                          </span>
+                        </div>
+                      {/each}
+                    </div>
+                  </div>
+                {:else if isAssessmentStageRequirement(operand)}
+                  <div class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
+                    <span class="font-medium">Assessment Stage Passed</span>
+                    <div class="text-xs text-text-tertiary">
+                      ({progressStore.completed.size}/6+ courses completed)
+                    </div>
+                  </div>
+                {:else if isAndExpression(operand)}
+                  <div class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
+                    <span><span class="font-semibold">{operand.operands.find(op => isPrerequisiteRequirement(op))?.requirement === "besucht" ? "Attended" : "Completed"}</span> all of:</span>
+                    <div class="ml-2 mt-1 space-y-1">
+                      {#each operand.operands as op}
+                        {@const opMet = evaluatePrerequisite(op, attended, completed)}
+                        {#if isPrerequisiteRequirement(op)}
+                          <div class="flex items-center gap-1.5 text-xs">
+                            <div class="{opMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                            <span class={opMet ? 'text-text-primary' : 'text-text-secondary'}>
+                              {op.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(", ")}
+                            </span>
+                          </div>
+                        {/if}
+                      {/each}
+                    </div>
+                  </div>
+                {:else}
+                  <span class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
                     Complex requirement
-                  {/if}
-                </span>
+                  </span>
+                {/if}
               </div>
             </li>
           {/each}
