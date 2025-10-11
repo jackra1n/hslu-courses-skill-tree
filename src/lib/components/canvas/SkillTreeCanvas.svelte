@@ -6,6 +6,7 @@
     Controls,
     MiniMap,
     type OnMove,
+    MarkerType,
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
   
@@ -33,6 +34,20 @@
   import { computeStatuses } from '$lib/utils/status';
   import { getNodeWidth } from '$lib/utils/layout';
   import { COURSES } from '$lib/data/courses';
+
+  type MarkerEnd = {
+    type: MarkerType | `${MarkerType}`;
+    color?: string;
+  };
+
+  function isMarkerEnd(marker: unknown): marker is MarkerEnd {
+    return (
+      typeof marker === 'object' &&
+      marker !== null &&
+      'type' in marker &&
+      typeof (marker as any).type === 'string'
+    );
+  }
 
   const nodeTypes = {
     custom: CustomNode
@@ -142,24 +157,24 @@
       if (isSelected) {
         if (isPrerequisite) {
           edgeStyle += "stroke: rgb(245 158 11); stroke-width: 3px; stroke-dasharray: 5,5; ";
-          markerEnd = { type: (markerEnd as any)?.type || 'arrowclosed', color: "rgb(245 158 11)" };
+          markerEnd = { type: (isMarkerEnd(markerEnd) ? markerEnd.type : MarkerType.ArrowClosed), color: "rgb(245 158 11)" };
         } else if (isDependent) {
           edgeStyle += "stroke: rgb(59 130 246); stroke-width: 3px; ";
-          markerEnd = { type: (markerEnd as any)?.type || 'arrowclosed', color: "rgb(59 130 246)" };
+          markerEnd = { type: (isMarkerEnd(markerEnd) ? markerEnd.type : MarkerType.ArrowClosed), color: "rgb(59 130 246)" };
         }
       } else {
         if (sourceCompleted && targetCompleted) {
           edgeStyle += "stroke: rgb(34 197 94); stroke-width: 3px; ";
-          markerEnd = { type: (markerEnd as any)?.type || 'arrowclosed', color: "rgb(34 197 94)" };
+          markerEnd = { type: (isMarkerEnd(markerEnd) ? markerEnd.type : MarkerType.ArrowClosed), color: "rgb(34 197 94)" };
         }
         else if (sourceCompleted) {
           edgeStyle += "stroke: rgb(34 197 94); stroke-width: 3px; ";
-          markerEnd = { type: (markerEnd as any)?.type || 'arrowclosed', color: "rgb(34 197 94)" };
+          markerEnd = { type: (isMarkerEnd(markerEnd) ? markerEnd.type : MarkerType.ArrowClosed), color: "rgb(34 197 94)" };
           animated = true;
         }
         else {
           edgeStyle += "stroke: rgb(var(--border-primary)); stroke-opacity: 0.6; ";
-          markerEnd = { type: (markerEnd as any)?.type || 'arrowclosed' };
+          markerEnd = { type: (isMarkerEnd(markerEnd) ? markerEnd.type : MarkerType.ArrowClosed) };
         }
       }
       
