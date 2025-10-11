@@ -181,13 +181,21 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
                 if (!course || course.prereqs.length === 0) return 0;
                 
                 let maxDepth = 0;
-            course.prereqs.forEach(prereq => {
-              if (isPrerequisiteRequirement(prereq)) {
-                prereq.courses.forEach(courseId => {
-                  maxDepth = Math.max(maxDepth, calculateDepth(courseId, new Set(visited)) + 1);
+                course.prereqs.forEach(prereq => {
+                  if (isPrerequisiteRequirement(prereq)) {
+                    prereq.courses.forEach(courseId => {
+                      maxDepth = Math.max(maxDepth, calculateDepth(courseId, new Set(visited)) + 1);
+                    });
+                  } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+                    prereq.operands.forEach(operand => {
+                      if (isPrerequisiteRequirement(operand)) {
+                        operand.courses.forEach(courseId => {
+                          maxDepth = Math.max(maxDepth, calculateDepth(courseId, new Set(visited)) + 1);
+                        });
+                      }
+                    });
+                  }
                 });
-              }
-            });
                 return maxDepth;
               };
               maxDepth = Math.max(maxDepth, calculateDepth(courseId));
