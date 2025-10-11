@@ -31,6 +31,34 @@ export function getCompletedCourses() { return _completedCourses; }
 export function getTotalAttendedCredits() { return _totalAttendedCredits; }
 export function getTotalCompletedCredits() { return _totalCompletedCredits; }
 
+// helper functions
+function toggleCourseInSet(set: Set<string>, courseId: string): Set<string> {
+  const newSet = new Set(set);
+  if (newSet.has(courseId)) {
+    newSet.delete(courseId);
+  } else {
+    newSet.add(courseId);
+  }
+  return newSet;
+}
+
+function saveToLocalStorage(key: string, set: Set<string>) {
+  if (browser) {
+    localStorage.setItem(key, JSON.stringify([...set]));
+  }
+}
+
+function validateCourseAndPrerequisites(courseId: string): typeof COURSES[0] | null {
+  const course = COURSES.find(c => c.id === courseId);
+  if (!course) return null;
+  
+  const userProgress: UserProgress = { attended: _attended, completed: _completed };
+  const prereqsMet = evaluateCoursePrerequisites(course, userProgress);
+  if (!prereqsMet) return null;
+  
+  return course;
+}
+
 export const progressStore = {
   get attended() { return _attended; },
   get completed() { return _completed; },
@@ -43,48 +71,26 @@ export const progressStore = {
   get completedSet() { return _completed; },
   
   markAttended(courseId: string) {
-    const course = COURSES.find(c => c.id === courseId);
+    const course = validateCourseAndPrerequisites(courseId);
     if (!course) return;
     
-    const userProgress: UserProgress = { attended: _attended, completed: _completed };
-    const prereqsMet = evaluateCoursePrerequisites(course, userProgress);
-    if (!prereqsMet) return;
-    
-    const newAttended = new Set(_attended);
-    if (newAttended.has(course.id)) {
-      newAttended.delete(course.id);
-    } else {
-      newAttended.add(course.id);
-    }
-
-    _attended = newAttended;
-
-    if (browser) {
-      localStorage.setItem("attendedCourses", JSON.stringify([..._attended]));
-    }
+    _attended = toggleCourseInSet(_attended, courseId);
+    saveToLocalStorage("attendedCourses", _attended);
   },
   
   markCompleted(courseId: string) {
-    const course = COURSES.find(c => c.id === courseId);
+    const course = validateCourseAndPrerequisites(courseId);
     if (!course) return;
     
-    const newCompleted = new Set(_completed);
-    if (newCompleted.has(course.id)) {
-      newCompleted.delete(course.id);
-    } else {
-      newCompleted.add(course.id);
-    }
-
-    _completed = newCompleted;
-
+    _completed = toggleCourseInSet(_completed, courseId);
+    
+    // remove from attended when marked as completed
     const newAttended = new Set(_attended);
-    newAttended.delete(course.id);
+    newAttended.delete(courseId);
     _attended = newAttended;
 
-    if (browser) {
-      localStorage.setItem("completedCourses", JSON.stringify([..._completed]));
-      localStorage.setItem("attendedCourses", JSON.stringify([..._attended]));
-    }
+    saveToLocalStorage("completedCourses", _completed);
+    saveToLocalStorage("attendedCourses", _attended);
   },
   
   isAttended(courseId: string): boolean {
