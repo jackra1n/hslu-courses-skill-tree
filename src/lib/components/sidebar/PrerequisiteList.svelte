@@ -65,14 +65,14 @@
                 <span class="font-medium">{prereq.program}:</span>
                 <div class="ml-2 mt-1 space-y-1">
                   {#each prereq.requirements as req}
-                    {@const reqMet = evaluatePrerequisite(req, progressStore.attended, progressStore.completed)}
+                    {@const reqMet = evaluatePrerequisite(req, attended, completed)}
                     <div class="flex items-center gap-1.5 text-xs">
                       <div class="{reqMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
                       <span class={reqMet ? 'text-text-primary' : 'text-text-secondary'}>
                         {#if isCreditRequirement(req)}
                           {req.moduleType ? `${req.moduleType} Credits` : 'Total Credits'}: {req.moduleType 
-                            ? `${calculateCreditsCompleted(progressStore.completed, req.moduleType)}/${req.minCredits} ECTS`
-                            : `${calculateCreditsAttended(progressStore.attended, progressStore.completed)}/${req.minCredits} ECTS`
+                            ? `${calculateCreditsCompleted(completed, req.moduleType)}/${req.minCredits} ECTS`
+                            : `${calculateCreditsAttended(attended, completed)}/${req.minCredits} ECTS`
                           }
                         {:else if isPrerequisiteRequirement(req)}
                           {req.requirement === "besucht" ? "Attended" : "Completed"}: {req.courses.join(", ")}
@@ -91,7 +91,7 @@
               <div class={prereqData.met ? 'text-text-primary' : 'text-text-secondary'}>
                 <span class="font-medium">Assessment Stage Passed</span>
                 <div class="text-xs text-text-tertiary">
-                  ({progressStore.completed.size}/6+ courses completed)
+                  ({completed.size}/6+ courses completed)
                 </div>
               </div>
             </div>
@@ -108,7 +108,7 @@
                     <div class="ml-2 mt-1 space-y-1">
                       {#each operand.courses as courseId}
                         {@const course = COURSES.find(c => c.id === courseId)}
-                        {@const courseMet = operand.requirement === "besucht" ? (progressStore.attended.has(courseId) || progressStore.completed.has(courseId)) : progressStore.completed.has(courseId)}
+                        {@const courseMet = operand.requirement === "besucht" ? (attended.has(courseId) || completed.has(courseId)) : completed.has(courseId)}
                         <div class="flex items-center gap-1.5 text-xs">
                           <div class="{courseMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
                           <span class={courseMet ? 'text-text-primary' : 'text-text-secondary'}>
@@ -122,7 +122,7 @@
                   <div class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
                     <span class="font-medium">Assessment Stage Passed</span>
                     <div class="text-xs text-text-tertiary">
-                      ({progressStore.completed.size}/6+ courses completed)
+                      ({completed.size}/6+ courses completed)
                     </div>
                   </div>
                 {:else if isOrExpression(operand)}
@@ -162,7 +162,7 @@
                     <div class="ml-2 mt-1 space-y-1">
                       {#each operand.courses as courseId}
                         {@const course = COURSES.find(c => c.id === courseId)}
-                        {@const courseMet = operand.requirement === "besucht" ? (progressStore.attended.has(courseId) || progressStore.completed.has(courseId)) : progressStore.completed.has(courseId)}
+                        {@const courseMet = operand.requirement === "besucht" ? (attended.has(courseId) || completed.has(courseId)) : completed.has(courseId)}
                         <div class="flex items-center gap-1.5 text-xs">
                           <div class="{courseMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
                           <span class={courseMet ? 'text-text-primary' : 'text-text-secondary'}>
@@ -176,7 +176,7 @@
                   <div class={operandMet ? 'text-text-primary' : 'text-text-secondary'}>
                     <span class="font-medium">Assessment Stage Passed</span>
                     <div class="text-xs text-text-tertiary">
-                      ({progressStore.completed.size}/6+ courses completed)
+                      ({completed.size}/6+ courses completed)
                     </div>
                   </div>
                 {:else if isAndExpression(operand)}
@@ -213,7 +213,7 @@
                 <div class="ml-2 mt-1 space-y-1">
                   {#each prereq.courses as courseId}
                     {@const course = COURSES.find(c => c.id === courseId)}
-                    {@const courseMet = prereq.requirement === "besucht" ? (progressStore.attended.has(courseId) || progressStore.completed.has(courseId)) : progressStore.completed.has(courseId)}
+                    {@const courseMet = prereq.requirement === "besucht" ? (attended.has(courseId) || completed.has(courseId)) : completed.has(courseId)}
                     <div class="flex items-center gap-1.5 text-xs">
                       <div class="{courseMet ? 'i-lucide-check text-green-500' : 'i-lucide-circle text-gray-400'} text-xs"></div>
                       <span class={courseMet ? 'text-text-primary' : 'text-text-secondary'}>
