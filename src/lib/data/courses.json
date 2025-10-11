@@ -94,6 +94,81 @@
     "type": "Kernmodul"
   },
   {
+    "id": "LIOS",
+    "label": "Linux OS",
+    "ects": 3,
+    "prereqs": [],
+    "type": "Wahlmodul"
+  },
+  {
+    "id": "WEBT",
+    "label": "Web-Technologien",
+    "ects": 3,
+    "prereqs": [],
+    "type": "Wahlmodul"
+  },
+  {
+    "id": "CT",
+    "label": "Cloud Technology",
+    "ects": 3,
+    "prereqs": [
+      {
+        "type": "and",
+        "operands": [
+          {
+            "type": "assessment_stage",
+            "requirement": "bestanden"
+          },
+          {
+            "type": "or",
+            "operands": [
+              {
+                "type": "and",
+                "operands": [
+                  {
+                    "courses": ["DIBA"],
+                    "requirement": "besucht"
+                  },
+                  {
+                    "courses": ["NETT"],
+                    "requirement": "besucht"
+                  }
+                ]
+              },
+              {
+                "type": "and",
+                "operands": [
+                  {
+                    "courses": ["NETW1_MM"],
+                    "requirement": "besucht"
+                  },
+                  {
+                    "courses": ["NETW2_MM"],
+                    "requirement": "besucht"
+                  }
+                ]
+              },
+              {
+                "type": "and",
+                "operands": [
+                  {
+                    "courses": ["CNA"],
+                    "requirement": "besucht"
+                  },
+                  {
+                    "courses": ["ITEO"],
+                    "requirement": "besucht"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "type": "Wahlmodul"
+  },
+  {
     "id": "AD",
     "label": "Algorithmen & Datenstrukturen",
     "ects": 6,
@@ -135,7 +210,12 @@
     "id": "DBS",
     "label": "Datenbanksysteme",
     "ects": 6,
-    "prereqs": ["assessmentstufe bestanden"],
+    "prereqs": [
+      {
+        "type": "assessment_stage",
+        "requirement": "bestanden"
+      }
+    ],
     "type": "Kernmodul"
   },
   {
@@ -165,32 +245,121 @@
     "ects": 6,
     "prereqs": [
       {
-        "courses": ["OOP", "PLAB"],
-        "requirement": "bestanden"
-      },
-      {
-        "courses": ["CNA", "NETW1_MM"],
-        "requirement": "besucht"
-      },
-      {
-        "courses": ["ADS", "AD"],
-        "requirement": "besucht"
+        "type": "and",
+        "operands": [
+          {
+            "type": "assessment_stage",
+            "requirement": "bestanden"
+          },
+          {
+            "type": "or",
+            "operands": [
+              {
+                "courses": ["OOP"],
+                "requirement": "bestanden"
+              },
+              {
+                "courses": ["PLAB"],
+                "requirement": "bestanden"
+              }
+            ]
+          },
+          {
+            "type": "or",
+            "operands": [
+              {
+                "courses": ["CNA"],
+                "requirement": "besucht"
+              },
+              {
+                "courses": ["NETW1_MM"],
+                "requirement": "besucht"
+              }
+            ]
+          },
+          {
+            "type": "or",
+            "operands": [
+              {
+                "courses": ["ADS"],
+                "requirement": "besucht"
+              },
+              {
+                "courses": ["AD"],
+                "requirement": "besucht"
+              }
+            ]
+          }
+        ]
       }
     ],
     "type": "Kernmodul"
   },
   {
+    "id": "COBAU",
+    "label": "Compilerbau",
+    "ects": 3,
+    "prereqs": [
+      {
+        "type": "and",
+        "operands": [
+          {
+            "type": "assessment_stage",
+            "requirement": "bestanden"
+          },
+          {
+            "type": "or",
+            "operands": [
+              {
+                "courses": ["AD"],
+                "requirement": "besucht"
+              },
+              {
+                "courses": ["ADS"],
+                "requirement": "besucht"
+              }
+            ]
+          },
+          {
+            "type": "or",
+            "operands": [
+              {
+                "courses": ["OOP"],
+                "requirement": "besucht"
+              },
+              {
+                "courses": ["PLAB"],
+                "requirement": "besucht"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "type": "Wahlmodul"
+  },
+  {
     "id": "ASTAT",
     "label": "Applied Statistics for Data Science",
     "ects": 3,
-    "prereqs": ["assessmentstufe bestanden"],
+    "prereqs": [
+      {
+        "type": "assessment_stage",
+        "requirement": "bestanden"
+      }
+    ],
     "type": "Kernmodul"
   },
   {
     "id": "PREN1",
     "label": "Produktenentwicklung 1",
     "ects": 6,
-    "prereqs": ["assessmentstufe bestanden"],
+    "prereqs": [
+      {
+        "type": "assessment_stage",
+        "requirement": "bestanden"
+      }
+    ],
     "type": "Projektmodul"
   },
   {
@@ -198,6 +367,10 @@
     "label": "Software Development & Architecture",
     "ects": 6,
     "prereqs": [
+      {
+        "type": "assessment_stage",
+        "requirement": "bestanden"
+      },
       {
         "courses": ["VSK"],
         "requirement": "besucht"
@@ -213,7 +386,12 @@
     "id": "PMRE",
     "label": "Project Management & Requirements Engineering",
     "ects": 3,
-    "prereqs": ["assessmentstufe bestanden"],
+    "prereqs": [
+      {
+        "type": "assessment_stage",
+        "requirement": "bestanden"
+      }
+    ],
     "type": "Kernmodul"
   },
   {
@@ -233,7 +411,10 @@
     "label": "Wirtschaftsprojekt",
     "ects": 6,
     "prereqs": [
-      "assessmentstufe bestanden",
+      {
+        "type": "assessment_stage",
+        "requirement": "bestanden"
+      },
       {
         "type": "credits",
         "moduleType": "Kernmodul",
@@ -269,7 +450,10 @@
     "label": "Bachelorarbeit",
     "ects": 12,
     "prereqs": [
-      "assessmentstufe bestanden",
+      {
+        "type": "assessment_stage",
+        "requirement": "bestanden"
+      },
       {
         "type": "program_specific",
         "program": "Wirtschaftsinformatik, Informatik C16, Information & Cyber Security",
