@@ -1,38 +1,53 @@
-# sv
+# HSLU Course Skill Tree
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Have you ever wanted to register for courses but found it annoying how time consuming it is to check all the requirements for them? With HSLU Skill Tree it takes only a second!
 
-## Creating a project
+![Preview](docs/imgs/preview.png)
 
-If you're seeing this, you've probably already done this step. Congrats!
+An interactive skill tree visualization for university courses. Track your progress through course prerequisites and unlock advanced courses as you complete the requirements.
 
-```sh
-# create a new project in the current directory
-npx sv create
+> **Disclaimer**: HSLU Courses Skill Tree is not supported by HSLU. It's a private initiative run by students.
 
-# create a new project in my-app
-npx sv create my-app
-```
+## Features
 
-## Developing
+- **Visual Course Graph**: See all courses and their prerequisites in an interactive flow diagram
+- **Progress Tracking**: Mark courses as completed, which automatically unlocks dependent courses
+- **Smart Status Indicators**: 
+  - **Completed** (green): Courses you've finished
+  - **Available** (blue): Courses you can take now (prerequisites met)
+  - **Locked** (gray): Courses still requiring prerequisites
+- **Course Details**: Click any course to view details in the sidebar (ECTS credits, prerequisites)
+- **Animated Transitions**: Visual feedback when courses become available
+- **Local Storage**: Your progress is automatically saved in your browser
+- **Dark/Light Theme**: Switch between themes to match your preference
+- **Curriculum Templates**: Pre-configured study plans for different programs
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Getting Started
 
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
+Install dependencies:
 
 ```sh
-npm run build
+bun install
 ```
 
-You can preview the production build with `npm run preview`.
+Start the development server:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```sh
+bun run dev --open
+```
+
+## Tech Stack
+
+- **Bun**
+- **SvelteKit 5**
+- **UnoCSS**
+- **@xyflow/svelte**
+- **TypeScript**
+
+## Roadmap
+
+- [ ] **More Templates**: Add curriculum templates for other HSLU programs (Wirtschaftsinformatik, Digital Ideation, etc.)
+- [ ] **Expanded Course Database**: Include more courses and detailed prerequisite information
+- [ ] **Custom Template Builder**: Allow users to create and share their own curriculum templates
+- [ ] **Course Links**: Direct links to HSLU course pages and registration systems
+- [ ] **Progress Analytics**: Visualize your academic progress and credit accumulation

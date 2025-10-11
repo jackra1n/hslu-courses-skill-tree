@@ -31,6 +31,7 @@
   import { getTheme } from '$lib/stores/theme.svelte';
   import CustomNode from './CustomNode.svelte';
   import SemesterDivider from './SemesterDivider.svelte';
+  import DisclaimerToast from '$lib/components/ui/DisclaimerToast.svelte';
   import { computeStatuses } from '$lib/utils/status';
   import { getNodeWidth } from '$lib/utils/layout';
   import { COURSES } from '$lib/data/courses';
@@ -245,4 +246,6 @@
     <Controls />
     <Background gap={16} />
   </SvelteFlow>
+  
+  <DisclaimerToast />
 </div>
