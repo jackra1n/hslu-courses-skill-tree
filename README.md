@@ -4,14 +4,14 @@ Have you ever wanted to register for courses but found it annoying how time cons
 
 ![Preview](docs/imgs/preview.png)
 
-An interactive skill tree visualization for university courses. Track your progress through course prerequisites and unlock advanced courses as you complete the requirements.
+An interactive skill tree visualization tool for university courses. Track your progress through course prerequisites and see which courses become available as you complete the requirements.
 
 > **Disclaimer**: HSLU Courses Skill Tree is not supported by HSLU. It's a private initiative run by students.
 
 ## Features
 
 - **Visual Course Graph**: See all courses and their prerequisites in an interactive flow diagram
-- **Progress Tracking**: Mark courses as completed, which automatically unlocks dependent courses
+- **Progress Tracking**: Mark courses as completed, which automatically shows dependent courses as available
 - **Smart Status Indicators**: 
   - **Completed** (green): Courses you've finished
   - **Available** (blue): Courses you can take now (prerequisites met)
@@ -39,15 +39,15 @@ bun run dev --open
 ## Tech Stack
 
 - **Bun**
-- **SvelteKit 5**
-- **UnoCSS**
-- **@xyflow/svelte**
-- **TypeScript**
+- **SvelteKit**
+- **Svelte 5 and TypeScript**
+- **UnoCSS** (Tailwindcss4, icons, webfonts)
+- **Iconify icons** (lucide)
 
 ## Roadmap
 
 - [ ] **More Templates**: Add curriculum templates for other HSLU programs (Wirtschaftsinformatik, Digital Ideation, etc.)
 - [ ] **Expanded Course Database**: Include more courses and detailed prerequisite information
-- [ ] **Custom Template Builder**: Allow users to create and share their own curriculum templates
+- [ ] **Custom Study Plans**: Allow users to create and save their own personalized curriculum plans
 - [ ] **Course Links**: Direct links to HSLU course pages and registration systems
 - [ ] **Progress Analytics**: Visualize your academic progress and credit accumulation
