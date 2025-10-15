@@ -1,5 +1,6 @@
 <script lang="ts">
   import { courseStore } from '$lib/stores/courseStore.svelte';
+  import { progressStore } from '$lib/stores/progressStore.svelte';
   import { COURSES } from '$lib/data/courses';
   import PrerequisiteList from './PrerequisiteList.svelte';
   import ActionButtons from './ActionButtons.svelte';
@@ -8,6 +9,22 @@
 
   const selectedCourseId = $derived(courseStore.userSelections[slotId]);
   const selectedCourse = $derived(selectedCourseId ? COURSES.find(c => c.id === selectedCourseId) : null);
+
+  const availableCourses = $derived(
+    COURSES.filter(course => {
+      // if course is attended (failed) allow it regardless of type
+      if (progressStore.isAttended(course.id)) {
+        return true;
+      }
+      if (course.type === "Kernmodul" || course.type === "Projektmodul") {
+        return false;
+      }
+      if (progressStore.isCompleted(course.id)) {
+        return false;
+      }
+      return true;
+    })
+  );
 
   function handleCourseSelect(e: Event) {
     const target = e.target as HTMLSelectElement;
@@ -51,7 +68,7 @@
         class="w-full px-3 py-2 rounded-lg text-sm border border-border-primary bg-bg-primary text-text-primary focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value="">Select a course...</option>
-        {#each COURSES as course}
+        {#each availableCourses as course}
           <option value={course.id}>{course.label} ({course.id}) - {course.ects} ECTS</option>
         {/each}
       </select>
