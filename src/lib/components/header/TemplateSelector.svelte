@@ -1,73 +1,82 @@
 <script lang="ts">
   import { courseStore } from '$lib/stores/courseStore.svelte';
   import { AVAILABLE_TEMPLATES, getTemplatesByProgram } from '$lib/data/courses';
+  import { PROGRAMS, PROGRAM_PLANS } from '$lib/data/programs';
+  import Dropdown from '$lib/components/ui/Dropdown.svelte';
 
   const currentTemplate = $derived(courseStore.currentTemplate);
   const selectedPlan = $derived(courseStore.selectedPlan);
   const availablePlans = $derived(courseStore.availablePlans);
 
-  function handleProgramChange(e: Event) {
-    const target = e.target as HTMLSelectElement;
-    const studiengang = target.value;
+  const programOptions = PROGRAMS.map(p => ({
+    value: p,
+    label: p,
+    disabled: p !== 'Informatik',
+    tooltip: p !== 'Informatik' ? 'Coming soon' : undefined
+  }));
+
+  const modelOptions = [
+    { value: 'fulltime', label: 'Fulltime' },
+    { value: 'parttime', label: 'Parttime', disabled: true, tooltip: 'Coming soon' },
+    { value: 'berufsbegleitend', label: 'Berufsbegleitend', disabled: true, tooltip: 'Coming soon' }
+  ];
+
+  const planOptions = $derived.by(() => {
+    const declaredPlans = PROGRAM_PLANS[currentTemplate.studiengang] || [];
+    const plansUnion = Array.from(new Set([...availablePlans, ...declaredPlans])).sort();
+    return plansUnion.map(plan => ({
+      value: plan,
+      label: plan,
+      disabled: !availablePlans.includes(plan),
+      tooltip: !availablePlans.includes(plan) ? 'Coming soon' : undefined
+    }));
+  });
+
+  function handleProgramChange(value: string) {
     const template = AVAILABLE_TEMPLATES.find(t => 
-      t.studiengang === studiengang && t.modell === currentTemplate.modell
+      t.studiengang === value && t.modell === currentTemplate.modell
     );
     if (template) courseStore.switchTemplate(template.id);
   }
 
-  function handleModelChange(e: Event) {
-    const target = e.target as HTMLSelectElement;
-    const modell = target.value as "fulltime" | "parttime";
-    const template = getTemplatesByProgram(currentTemplate.studiengang, modell)
+  function handleModelChange(value: string) {
+    const modell = value as "fulltime" | "parttime" | "berufsbegleitend";
+    const template = getTemplatesByProgram(currentTemplate.studiengang, modell as "fulltime" | "parttime")
       .find(t => t.plan === selectedPlan) || 
-      getTemplatesByProgram(currentTemplate.studiengang, modell)[0];
+      getTemplatesByProgram(currentTemplate.studiengang, modell as "fulltime" | "parttime")[0];
     if (template) courseStore.switchTemplate(template.id);
   }
 
-  function handlePlanChange(e: Event) {
-    const target = e.target as HTMLSelectElement;
-    const plan = target.value;
-    courseStore.switchPlan(plan);
+  function handlePlanChange(value: string) {
+    courseStore.switchPlan(value);
   }
 </script>
 
 <div class="flex items-center gap-3">
   <div class="flex items-center gap-2">
     <label for="program-select" class="text-sm font-medium text-text-primary">Program:</label>
-    <select 
-      id="program-select"
-      value={currentTemplate.studiengang}
-      onchange={handleProgramChange}
-      class="px-3 py-1.5 rounded-lg text-sm border border-border-primary bg-bg-primary text-text-primary focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      <option value="Informatik">Informatik</option>
-    </select>
+    <Dropdown 
+      options={programOptions}
+      selected={currentTemplate.studiengang}
+      onSelect={handleProgramChange}
+    />
   </div>
   
   <div class="flex items-center gap-2">
-    <label for="model-select" class="text-sm font-medium text-text-primary">Model:</label>
-    <select 
-      id="model-select"
-      value={currentTemplate.modell}
-      onchange={handleModelChange}
-      class="px-3 py-1.5 rounded-lg text-sm border border-border-primary bg-bg-primary text-text-primary focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      <option value="fulltime">Full-time</option>
-      <option value="parttime">Part-time</option>
-    </select>
+    <label for="model-select" class="text-sm font-medium text-text-primary">Study model:</label>
+    <Dropdown 
+      options={modelOptions}
+      selected={currentTemplate.modell}
+      onSelect={handleModelChange}
+    />
   </div>
   
   <div class="flex items-center gap-2">
     <label for="plan-select" class="text-sm font-medium text-text-primary">Plan:</label>
-    <select 
-      id="plan-select"
-      value={selectedPlan}
-      onchange={handlePlanChange}
-      class="px-3 py-1.5 rounded-lg text-sm border border-border-primary bg-bg-primary text-text-primary focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      {#each availablePlans as plan}
-        <option value={plan}>{plan}</option>
-      {/each}
-    </select>
+    <Dropdown 
+      options={planOptions}
+      selected={selectedPlan}
+      onSelect={handlePlanChange}
+    />
   </div>
 </div>
