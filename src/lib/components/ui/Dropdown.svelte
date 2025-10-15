@@ -12,9 +12,10 @@
     selected: string;
     onSelect: (value: string) => void;
     placeholder?: string;
+    minWidth?: string;
   }
 
-  let { options, selected, onSelect, placeholder = "Select option" }: Props = $props();
+  let { options, selected, onSelect, placeholder = "Select option", minWidth = "auto" }: Props = $props();
 
   let isOpen = $state(false);
   // @ts-ignore - assigned by bind:this
@@ -51,14 +52,17 @@
 <div class="relative" bind:this={dropdownElement}>
   <button
     onclick={toggleDropdown}
-    class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
+    class="flex items-center justify-between px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
+    style="min-width: {minWidth}"
     aria-label="Select option"
     aria-expanded={isOpen}
   >
-    {#if getCurrentOption.icon}
-      <div class="{getCurrentOption.icon} w-4 h-4"></div>
-    {/if}
-    <span class="text-sm font-medium">{getCurrentOption.label}</span>
+    <div class="flex items-center gap-2">
+      {#if getCurrentOption.icon}
+        <div class="{getCurrentOption.icon} w-4 h-4"></div>
+      {/if}
+      <span class="text-sm font-medium">{getCurrentOption.label}</span>
+    </div>
     <div class="i-lucide-chevron-down w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 {isOpen ? 'rotate-180' : ''}"></div>
   </button>
 
@@ -76,9 +80,9 @@
           {/if}
           <span class="text-sm font-medium">{option.label}</span>
           {#if option.disabled}
-            <div class="i-lucide-lock w-4 h-4 ml-auto text-gray-400"></div>
+            <div class="i-lucide-lock w-4 h-4 ml-auto text-gray-400 flex-shrink-0"></div>
           {:else if option.value === selected}
-            <div class="i-lucide-check w-4 h-4 ml-auto text-blue-500 dark:text-blue-400"></div>
+            <div class="i-lucide-check w-4 h-4 ml-auto text-blue-500 dark:text-blue-400 flex-shrink-0"></div>
           {/if}
         </button>
       {/each}

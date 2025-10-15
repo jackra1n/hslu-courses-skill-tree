@@ -6,6 +6,7 @@ let _viewport = $state<Viewport>({ x: 0, y: 0, zoom: 1 });
 let _showAssessmentInfo = $state(false);
 let _showMoreOptions = $state(false);
 let _showCourseTypeBadges = $state(false);
+let _showProgramSelector = $state(false);
 
 const _hasSelection = $derived(_selection !== null);
 
@@ -19,6 +20,7 @@ export function getViewport() { return _viewport; }
 export function getShowAssessmentInfo() { return _showAssessmentInfo; }
 export function getShowMoreOptions() { return _showMoreOptions; }
 export function getShowCourseTypeBadges() { return _showCourseTypeBadges; }
+export function getShowProgramSelector() { return _showProgramSelector; }
 export function getHasSelection() { return _hasSelection; }
 export function getIsElectiveSlot() { return _isElectiveSlot; }
 
@@ -28,6 +30,7 @@ export const uiStore = {
   get showAssessmentInfo() { return _showAssessmentInfo; },
   get showMoreOptions() { return _showMoreOptions; },
   get showCourseTypeBadges() { return _showCourseTypeBadges; },
+  get showProgramSelector() { return _showProgramSelector; },
   get hasSelection() { return _hasSelection; },
   get isElectiveSlot() { return _isElectiveSlot; },
   
@@ -53,5 +56,9 @@ export const uiStore = {
 
   toggleCourseTypeBadges() {
     _showCourseTypeBadges = !_showCourseTypeBadges;
+  },
+
+  toggleProgramSelector() {
+    _showProgramSelector = !_showProgramSelector;
   }
 };

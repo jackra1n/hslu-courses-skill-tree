@@ -59,6 +59,7 @@
       options={programOptions}
       selected={currentTemplate.studiengang}
       onSelect={handleProgramChange}
+      minWidth="240px"
     />
   </div>
   
@@ -68,6 +69,7 @@
       options={modelOptions}
       selected={currentTemplate.modell}
       onSelect={handleModelChange}
+      minWidth="200px"
     />
   </div>
   
