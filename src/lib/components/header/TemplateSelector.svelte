@@ -52,33 +52,34 @@
   }
 </script>
 
-<div class="flex items-center gap-3">
-  <div class="flex items-center gap-2">
-    <label for="program-select" class="text-sm font-medium text-text-primary">Program:</label>
+<div class="space-y-3">
+  <div class="space-y-1.5">
+    <label for="program-select" class="text-xs font-medium text-text-secondary">Program</label>
     <Dropdown 
       options={programOptions}
       selected={currentTemplate.studiengang}
       onSelect={handleProgramChange}
-      minWidth="240px"
+      minWidth="100%"
     />
   </div>
   
-  <div class="flex items-center gap-2">
-    <label for="model-select" class="text-sm font-medium text-text-primary">Study model:</label>
+  <div class="space-y-1.5">
+    <label for="model-select" class="text-xs font-medium text-text-secondary">Study Model</label>
     <Dropdown 
       options={modelOptions}
       selected={currentTemplate.modell}
       onSelect={handleModelChange}
-      minWidth="200px"
+      minWidth="100%"
     />
   </div>
   
-  <div class="flex items-center gap-2">
-    <label for="plan-select" class="text-sm font-medium text-text-primary">Plan:</label>
+  <div class="space-y-1.5">
+    <label for="plan-select" class="text-xs font-medium text-text-secondary">Plan</label>
     <Dropdown 
       options={planOptions}
       selected={selectedPlan}
       onSelect={handlePlanChange}
+      minWidth="100%"
     />
   </div>
 </div>
