@@ -2,6 +2,12 @@
 
 Have you ever wanted to register for courses but found it annoying how time consuming it is to check all the requirements for them? With HSLU Skill Tree it takes only a second!
 
+<div align="center">
+  <a href="https://jackra1n.github.io/hslu-courses-skill-tree/">
+    DEMO
+  </a>
+</div>
+
 ![Preview](docs/imgs/preview.png)
 
 An interactive skill tree visualization tool for university courses. Track your progress through course prerequisites and see which courses become available as you complete the requirements.
