@@ -26,6 +26,7 @@ export default defineConfig({
             'bg-secondary': 'rgb(var(--bg-secondary))',
             'text-primary': 'rgb(var(--text-primary))',
             'text-secondary': 'rgb(var(--text-secondary))',
+            'text-tertiary': 'rgb(var(--text-tertiary))',
             'border-primary': 'rgb(var(--border-primary))',
             'border-secondary': 'rgb(var(--border-secondary))',
             'node-completed-bg': 'rgb(var(--node-completed-bg))',
