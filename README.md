@@ -28,20 +28,6 @@ An interactive skill tree visualization tool for university courses. Track your 
 - **Dark/Light Theme**: Switch between themes to match your preference
 - **Curriculum Templates**: Pre-configured study plans for different programs
 
-## Getting Started
-
-Install dependencies:
-
-```sh
-bun install
-```
-
-Start the development server:
-
-```sh
-bun run dev --open
-```
-
 ## Tech Stack
 
 - **Bun**
@@ -57,3 +43,18 @@ bun run dev --open
 - [ ] **Custom Study Plans**: Allow users to create and save their own personalized curriculum plans
 - [ ] **Course Links**: Direct links to HSLU course pages and registration systems
 - [ ] **Progress Analytics**: Visualize your academic progress and credit accumulation
+- [ ] **Internationalization (i18n)**: Add German translation support for better accessibility
+
+## Development
+
+Install dependencies:
+
+```sh
+bun install
+```
+
+Start the development server:
+
+```sh
+bun run dev --open
+```
