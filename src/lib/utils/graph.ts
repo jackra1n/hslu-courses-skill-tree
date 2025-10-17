@@ -106,7 +106,11 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
           if (isPrerequisiteRequirement(req)) {
             const hasAnyCourseInTemplate = req.courses.some(courseId => {
               const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
-              return prereqSlot !== undefined;
+              const prereqElectiveSlot = template.slots.find(slot => 
+                (slot.type === "elective" || slot.type === "major") && 
+                selections[slot.id] === courseId
+              );
+              return prereqSlot !== undefined || prereqElectiveSlot !== undefined;
             });
             if (hasAnyCourseInTemplate) targetCount++;
           }
@@ -114,7 +118,11 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
       } else if (isPrerequisiteRequirement(prereq)) {
         const hasAnyCourseInTemplate = prereq.courses.some(courseId => {
           const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
-          return prereqSlot !== undefined;
+          const prereqElectiveSlot = template.slots.find(slot => 
+            (slot.type === "elective" || slot.type === "major") && 
+            selections[slot.id] === courseId
+          );
+          return prereqSlot !== undefined || prereqElectiveSlot !== undefined;
         });
         if (hasAnyCourseInTemplate) targetCount++;
       } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
@@ -123,7 +131,11 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
           if (isPrerequisiteRequirement(expr)) {
             return expr.courses.filter(courseId => {
               const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
-              return prereqSlot !== undefined;
+              const prereqElectiveSlot = template.slots.find(slot => 
+                (slot.type === "elective" || slot.type === "major") && 
+                selections[slot.id] === courseId
+              );
+              return prereqSlot !== undefined || prereqElectiveSlot !== undefined;
             }).length;
           } else if (isAndExpression(expr) || isOrExpression(expr)) {
             return expr.operands.reduce((sum, operand) => sum + countExpression(operand), 0);
@@ -248,42 +260,43 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
         prereq.courses.forEach(courseId => {
           const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
           if (prereqSlot) {
-            const targetHandleIndex = handleUsage[node.id]?.target || 0;
-            const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
-            
-            edges.push({
-              id: `${prereqSlot.id}=>${node.id}`,
-              source: prereqSlot.id,
-              sourceHandle: `source-${sourceHandleIndex}`,
-              target: node.id,
-              targetHandle: `target-${targetHandleIndex}`,
-              markerEnd: { type: MarkerType.ArrowClosed },
-              animated: false,
-              style: "stroke-width: 2px;",
-              type: "bezier",
-            });
+            // only create edge if prerequisite comes before the dependent course
+            const dependentSlot = template.slots.find(slot => slot.id === node.id);
+            if (dependentSlot && prereqSlot.semester < dependentSlot.semester) {
+              const targetHandleIndex = handleUsage[node.id]?.target || 0;
+              const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
+              
+              edges.push({
+                id: `${prereqSlot.id}=>${node.id}`,
+                source: prereqSlot.id,
+                sourceHandle: `source-${sourceHandleIndex}`,
+                target: node.id,
+                targetHandle: `target-${targetHandleIndex}`,
+                markerEnd: { type: MarkerType.ArrowClosed },
+                animated: false,
+                style: "stroke-width: 2px;",
+                type: "bezier",
+              });
 
-            if (handleUsage[node.id]) handleUsage[node.id].target++;
-            if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
-          }
-        });
-      } else if (isProgramSpecificRequirement(prereq)) {
-        prereq.requirements.forEach(req => {
-          if (isPrerequisiteRequirement(req)) {
-            const availableCourseId = req.courses.find(courseId => {
-              const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
-              return prereqSlot !== undefined;
-            });
-            
-            if (availableCourseId) {
-              const prereqSlot = template.slots.find(slot => slot.courseId === availableCourseId);
-              if (prereqSlot) {
+              if (handleUsage[node.id]) handleUsage[node.id].target++;
+              if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
+            }
+          } else {
+            // look for prerequisite in elective slots with selected courses
+            const prereqElectiveSlot = template.slots.find(slot => 
+              (slot.type === "elective" || slot.type === "major") && 
+              selections[slot.id] === courseId
+            );
+            if (prereqElectiveSlot) {
+              // only create edge if prerequisite comes before the dependent course
+              const dependentSlot = template.slots.find(slot => slot.id === node.id);
+              if (dependentSlot && prereqElectiveSlot.semester < dependentSlot.semester) {
                 const targetHandleIndex = handleUsage[node.id]?.target || 0;
-                const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
+                const sourceHandleIndex = handleUsage[prereqElectiveSlot.id]?.source || 0;
                 
                 edges.push({
-                  id: `${prereqSlot.id}=>${node.id}`,
-                  source: prereqSlot.id,
+                  id: `${prereqElectiveSlot.id}=>${node.id}`,
+                  source: prereqElectiveSlot.id,
                   sourceHandle: `source-${sourceHandleIndex}`,
                   target: node.id,
                   targetHandle: `target-${targetHandleIndex}`,
@@ -292,9 +305,79 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
                   style: "stroke-width: 2px;",
                   type: "bezier",
                 });
-                
+
                 if (handleUsage[node.id]) handleUsage[node.id].target++;
-                if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
+                if (handleUsage[prereqElectiveSlot.id]) handleUsage[prereqElectiveSlot.id].source++;
+              }
+            }
+          }
+        });
+      } else if (isProgramSpecificRequirement(prereq)) {
+        prereq.requirements.forEach(req => {
+          if (isPrerequisiteRequirement(req)) {
+            const availableCourseId = req.courses.find(courseId => {
+              const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
+              const prereqElectiveSlot = template.slots.find(slot => 
+                (slot.type === "elective" || slot.type === "major") && 
+                selections[slot.id] === courseId
+              );
+              return prereqSlot !== undefined || prereqElectiveSlot !== undefined;
+            });
+            
+            if (availableCourseId) {
+              // look for prerequisite in fixed slots
+              const prereqSlot = template.slots.find(slot => slot.courseId === availableCourseId);
+              if (prereqSlot) {
+                // only create edge if prerequisite comes before the dependent course
+                const dependentSlot = template.slots.find(slot => slot.id === node.id);
+                if (dependentSlot && prereqSlot.semester < dependentSlot.semester) {
+                  const targetHandleIndex = handleUsage[node.id]?.target || 0;
+                  const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
+                  
+                  edges.push({
+                    id: `${prereqSlot.id}=>${node.id}`,
+                    source: prereqSlot.id,
+                    sourceHandle: `source-${sourceHandleIndex}`,
+                    target: node.id,
+                    targetHandle: `target-${targetHandleIndex}`,
+                    markerEnd: { type: MarkerType.ArrowClosed },
+                    animated: false,
+                    style: "stroke-width: 2px;",
+                    type: "bezier",
+                  });
+                  
+                  if (handleUsage[node.id]) handleUsage[node.id].target++;
+                  if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
+                }
+              } else {
+                // look for prerequisite in elective slots
+                const prereqElectiveSlot = template.slots.find(slot => 
+                  (slot.type === "elective" || slot.type === "major") && 
+                  selections[slot.id] === availableCourseId
+                );
+                if (prereqElectiveSlot) {
+                  // only create edge if prerequisite comes before the dependent course
+                  const dependentSlot = template.slots.find(slot => slot.id === node.id);
+                  if (dependentSlot && prereqElectiveSlot.semester < dependentSlot.semester) {
+                    const targetHandleIndex = handleUsage[node.id]?.target || 0;
+                    const sourceHandleIndex = handleUsage[prereqElectiveSlot.id]?.source || 0;
+                    
+                    edges.push({
+                      id: `${prereqElectiveSlot.id}=>${node.id}`,
+                      source: prereqElectiveSlot.id,
+                      sourceHandle: `source-${sourceHandleIndex}`,
+                      target: node.id,
+                      targetHandle: `target-${targetHandleIndex}`,
+                      markerEnd: { type: MarkerType.ArrowClosed },
+                      animated: false,
+                      style: "stroke-width: 2px;",
+                      type: "bezier",
+                    });
+                    
+                    if (handleUsage[node.id]) handleUsage[node.id].target++;
+                    if (handleUsage[prereqElectiveSlot.id]) handleUsage[prereqElectiveSlot.id].source++;
+                  }
+                }
               }
             }
           }
@@ -303,29 +386,63 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
         const createEdgesForExpression = (expr: PrerequisiteExpression) => {
           if (isPrerequisiteRequirement(expr)) {
             expr.courses.forEach(courseId => {
+              // look for prerequisite in fixed slots
               const prereqSlot = template.slots.find(slot => slot.courseId === courseId);
               if (prereqSlot) {
-                const targetHandleIndex = handleUsage[node.id]?.target || 0;
-                const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
-                
-                edges.push({
-                  id: `${prereqSlot.id}=>${node.id}`,
-                  source: prereqSlot.id,
-                  sourceHandle: `source-${sourceHandleIndex}`,
-                  target: node.id,
-                  targetHandle: `target-${targetHandleIndex}`,
-                  markerEnd: { type: MarkerType.ArrowClosed },
-                  animated: false,
-                  style: "stroke-width: 2px;",
-                  type: "bezier",
-                });
+                // only create edge if prerequisite comes before the dependent course
+                const dependentSlot = template.slots.find(slot => slot.id === node.id);
+                if (dependentSlot && prereqSlot.semester < dependentSlot.semester) {
+                  const targetHandleIndex = handleUsage[node.id]?.target || 0;
+                  const sourceHandleIndex = handleUsage[prereqSlot.id]?.source || 0;
+                  
+                  edges.push({
+                    id: `${prereqSlot.id}=>${node.id}`,
+                    source: prereqSlot.id,
+                    sourceHandle: `source-${sourceHandleIndex}`,
+                    target: node.id,
+                    targetHandle: `target-${targetHandleIndex}`,
+                    markerEnd: { type: MarkerType.ArrowClosed },
+                    animated: false,
+                    style: "stroke-width: 2px;",
+                    type: "bezier",
+                  });
 
-                if (handleUsage[node.id]) handleUsage[node.id].target++;
-                if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
+                  if (handleUsage[node.id]) handleUsage[node.id].target++;
+                  if (handleUsage[prereqSlot.id]) handleUsage[prereqSlot.id].source++;
+                }
+              } else {
+                // look for prerequisite in elective slots
+                const prereqElectiveSlot = template.slots.find(slot => 
+                  (slot.type === "elective" || slot.type === "major") && 
+                  selections[slot.id] === courseId
+                );
+                if (prereqElectiveSlot) {
+                  // only create edge if prerequisite comes before the dependent course
+                  const dependentSlot = template.slots.find(slot => slot.id === node.id);
+                  if (dependentSlot && prereqElectiveSlot.semester < dependentSlot.semester) {
+                    const targetHandleIndex = handleUsage[node.id]?.target || 0;
+                    const sourceHandleIndex = handleUsage[prereqElectiveSlot.id]?.source || 0;
+                    
+                    edges.push({
+                      id: `${prereqElectiveSlot.id}=>${node.id}`,
+                      source: prereqElectiveSlot.id,
+                      sourceHandle: `source-${sourceHandleIndex}`,
+                      target: node.id,
+                      targetHandle: `target-${targetHandleIndex}`,
+                      markerEnd: { type: MarkerType.ArrowClosed },
+                      animated: false,
+                      style: "stroke-width: 2px;",
+                      type: "bezier",
+                    });
+
+                    if (handleUsage[node.id]) handleUsage[node.id].target++;
+                    if (handleUsage[prereqElectiveSlot.id]) handleUsage[prereqElectiveSlot.id].source++;
+                  }
+                }
               }
             });
           } else if (isCreditRequirement(expr) || isAssessmentStageRequirement(expr) || isProgramSpecificRequirement(expr)) {
-            // Skip non-course prerequisites for edge creation
+            // skip non-course prerequisites for edge creation
           } else if (isAndExpression(expr) || isOrExpression(expr)) {
             expr.operands.forEach(createEdgesForExpression);
           }
