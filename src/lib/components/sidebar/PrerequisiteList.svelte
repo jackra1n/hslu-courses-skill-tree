@@ -138,6 +138,27 @@
                               {op.courses.map(courseId => COURSES.find(c => c.id === courseId)?.label || courseId).join(", ")}
                             </span>
                           </div>
+                        {:else if isAndExpression(op)}
+                          <div class="flex items-center gap-1.5 text-xs">
+                            <div class="{opMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                            <span class="font-medium">Attended all of:</span>
+                          </div>
+                          <div class="ml-4 mt-1 space-y-1">
+                            {#each op.operands as nestedOp}
+                              {#if isPrerequisiteRequirement(nestedOp)}
+                                {#each nestedOp.courses as courseId}
+                                  {@const course = COURSES.find(c => c.id === courseId)}
+                                  {@const courseMet = nestedOp.requirement === "besucht" ? (attended.has(courseId) || completed.has(courseId)) : completed.has(courseId)}
+                                  <div class="flex items-center gap-1.5 text-xs">
+                                    <div class="{courseMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
+                                    <span class={courseMet ? 'text-text-primary' : 'text-text-secondary'}>
+                                      {course?.label || courseId}
+                                    </span>
+                                  </div>
+                                {/each}
+                              {/if}
+                            {/each}
+                          </div>
                         {/if}
                       {/each}
                     </div>
@@ -215,7 +236,7 @@
                     {@const course = COURSES.find(c => c.id === courseId)}
                     {@const courseMet = prereq.requirement === "besucht" ? (attended.has(courseId) || completed.has(courseId)) : completed.has(courseId)}
                     <div class="flex items-center gap-1.5 text-xs">
-                      <div class="{courseMet ? 'i-lucide-check text-green-500' : 'i-lucide-circle text-gray-400'} text-xs"></div>
+                      <div class="{courseMet ? 'i-lucide-check text-green-500' : 'i-lucide-minus text-gray-400'} text-xs"></div>
                       <span class={courseMet ? 'text-text-primary' : 'text-text-secondary'}>
                         {course?.label || courseId}
                       </span>
