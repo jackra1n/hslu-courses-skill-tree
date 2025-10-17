@@ -324,4 +324,5 @@ export type ExtendedNodeData = {
   sourceHandles?: number;
   targetHandles?: number;
   showCourseTypeBadges?: boolean;
+  hasLaterPrerequisites?: boolean;
 };
