@@ -90,9 +90,12 @@
       if (isElectiveSlot) {
         const selectedCourseId = userSelections[slot?.id || ''];
         const selectedCourse = selectedCourseId ? COURSES.find((c: any) => c.id === selectedCourseId) : null;
+        const hasLaterPrerequisites = data.hasLaterPrerequisites || false;
         
         if (selectedCourse) {
-          if (isCompleted) {
+          if (hasLaterPrerequisites) {
+            styleStr += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.8;";
+          } else if (isCompleted) {
             styleStr += "background: rgb(var(--node-completed-bg)); border-color: rgb(var(--node-completed-border)); color: rgb(var(--text-primary)); border-style: dashed; ";
           } else if (isAttended) {
             styleStr += "background: rgb(var(--node-attended-bg)); border-color: rgb(var(--node-attended-border)); color: rgb(var(--text-primary)); border-style: dashed; ";

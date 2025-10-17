@@ -37,6 +37,57 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
       const selectedCourseId = selections[slot.id];
       const selectedCourse = selectedCourseId ? COURSES.find(c => c.id === selectedCourseId) : null;
       
+      let hasLaterPrerequisites = false;
+      if (selectedCourse) {
+        hasLaterPrerequisites = selectedCourse.prereqs.some(prereq => {
+          if (isPrerequisiteRequirement(prereq)) {
+            return prereq.courses.some(courseId => {
+              const prereqSlot = template.slots.find(s => s.courseId === courseId);
+              const prereqElectiveSlot = template.slots.find(s => 
+                (s.type === "elective" || s.type === "major") && 
+                selections[s.id] === courseId
+              );
+              return (prereqSlot && prereqSlot.semester > slot.semester) || 
+                     (prereqElectiveSlot && prereqElectiveSlot.semester > slot.semester);
+            });
+          } else if (isProgramSpecificRequirement(prereq)) {
+            return prereq.requirements.some(req => {
+              if (isPrerequisiteRequirement(req)) {
+                return req.courses.some(courseId => {
+                  const prereqSlot = template.slots.find(s => s.courseId === courseId);
+                  const prereqElectiveSlot = template.slots.find(s => 
+                    (s.type === "elective" || s.type === "major") && 
+                    selections[s.id] === courseId
+                  );
+                  return (prereqSlot && prereqSlot.semester > slot.semester) || 
+                         (prereqElectiveSlot && prereqElectiveSlot.semester > slot.semester);
+                });
+              }
+              return false;
+            });
+          } else if (isAndExpression(prereq) || isOrExpression(prereq)) {
+            const checkExpression = (expr: PrerequisiteExpression): boolean => {
+              if (isPrerequisiteRequirement(expr)) {
+                return expr.courses.some(courseId => {
+                  const prereqSlot = template.slots.find(s => s.courseId === courseId);
+                  const prereqElectiveSlot = template.slots.find(s => 
+                    (s.type === "elective" || s.type === "major") && 
+                    selections[s.id] === courseId
+                  );
+                  return (prereqSlot && prereqSlot.semester > slot.semester) || 
+                         (prereqElectiveSlot && prereqElectiveSlot.semester > slot.semester);
+                });
+              } else if (isAndExpression(expr) || isOrExpression(expr)) {
+                return expr.operands.some(checkExpression);
+              }
+              return false;
+            };
+            return checkExpression(prereq);
+          }
+          return false;
+        });
+      }
+
       nodes.push({
         id: slot.id,
         position: { x: 0, y: 0 },
@@ -46,7 +97,8 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
           slot: slot,
           course: selectedCourse,
           isElectiveSlot: true,
-          width: getNodeWidth(selectedCourse ? selectedCourse.ects : slot.credits)
+          width: getNodeWidth(selectedCourse ? selectedCourse.ects : slot.credits),
+          hasLaterPrerequisites: hasLaterPrerequisites
         } as ExtendedNodeData,
         style: "",
       });
