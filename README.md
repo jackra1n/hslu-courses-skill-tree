@@ -3,7 +3,7 @@
 Have you ever wanted to register for courses but found it annoying how time consuming it is to check all the requirements for them? With HSLU Skill Tree it takes only a second!
 
 <div align="center">
-  <a href="https://jackra1n.github.io/hslu-courses-skill-tree/">
+  <a href="https://hsluskilltree.com/">
     DEMO
   </a>
 </div>
@@ -28,14 +28,6 @@ An interactive skill tree visualization tool for university courses. Track your 
 - **Dark/Light Theme**: Switch between themes to match your preference
 - **Curriculum Templates**: Pre-configured study plans for different programs
 
-## Tech Stack
-
-- **Bun**
-- **SvelteKit**
-- **Svelte 5 and TypeScript**
-- **UnoCSS** (Tailwindcss4, icons, webfonts)
-- **Iconify icons** (lucide)
-
 ## Roadmap
 
 - [ ] **More Templates**: Add curriculum templates for other HSLU programs (Wirtschaftsinformatik, Digital Ideation, etc.)
@@ -44,6 +36,14 @@ An interactive skill tree visualization tool for university courses. Track your 
 - [ ] **Course Links**: Direct links to HSLU course pages and registration systems
 - [ ] **Progress Analytics**: Visualize your academic progress and credit accumulation
 - [ ] **Internationalization (i18n)**: Add German translation support for better accessibility
+
+## Tech Stack
+
+- **Bun**
+- **SvelteKit**
+- **Svelte 5 and TypeScript**
+- **UnoCSS** (Tailwindcss4, icons, webfonts)
+- **Iconify icons** (lucide)
 
 ## Development
 
