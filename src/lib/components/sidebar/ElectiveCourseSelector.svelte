@@ -42,8 +42,7 @@
 
   const availableCourses = $derived(
     COURSES.filter(course => {
-      // if course is attended (failed) allow it regardless of type
-      if (progressStore.isAttended(course.id)) {
+      if (selectedCourseId === course.id) {
         return true;
       }
       if (course.type === "Kernmodul" || course.type === "Projektmodul") {
@@ -52,7 +51,7 @@
       if (progressStore.isCompleted(course.id)) {
         return false;
       }
-      return true;
+      return courseStore.canSelectCourseForSlot(slotId, course.id);
     })
   );
 

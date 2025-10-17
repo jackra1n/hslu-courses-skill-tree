@@ -10,6 +10,7 @@ import {
 } from '../data/courses';
 import { toGraph } from '../utils/graph';
 import { layoutSemesterBased, layoutELK, getNodeLabel } from '../utils/layout';
+import { progressStore } from './progressStore.svelte';
 
 // private state - not exported directly
 let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
@@ -52,6 +53,32 @@ export const courseStore = {
   get totalCredits() { return _totalCredits; },
   get availablePlans() { return _availablePlans; },
   
+  canSelectCourseForSlot(slotId: string, courseId: string): boolean {
+    if (progressStore.isCompleted(courseId)) {
+      return false;
+    }
+
+    const slot = _currentTemplate.slots.find(s => s.id === slotId);
+    if (!slot) {
+      return false;
+    }
+    
+    const conflictingSlotId = Object.entries(_userSelections).find(([otherSlotId, otherCourseId]) => 
+      otherSlotId !== slotId && otherCourseId === courseId
+    )?.[0];
+    
+    if (!conflictingSlotId) {
+      return true;
+    }
+    
+    // if course is attended (failed) allow across semesters but only one per semester
+    if (progressStore.isAttended(courseId)) {
+      const conflictingSlot = _currentTemplate.slots.find(s => s.id === conflictingSlotId);
+      return conflictingSlot ? conflictingSlot.semester !== slot.semester : true;
+    }
+    return false;
+  },
+  
   switchTemplate(templateId: string) {
     const template = getTemplateById(templateId);
     if (!template) return;
@@ -76,6 +103,10 @@ export const courseStore = {
   },
   
   selectCourseForSlot(slotId: string, courseId: string) {
+    if (!this.canSelectCourseForSlot(slotId, courseId)) {
+      return;
+    }
+    
     _userSelections = { ..._userSelections, [slotId]: courseId };
     if (browser) {
       localStorage.setItem("userSelections", JSON.stringify(_userSelections));
