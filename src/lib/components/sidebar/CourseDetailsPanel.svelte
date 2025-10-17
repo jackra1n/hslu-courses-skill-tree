@@ -6,8 +6,10 @@
     uiStore
   } from '$lib/stores/uiStore.svelte';
   import {
-    getCurrentTemplate
+    getCurrentTemplate,
+    getUserSelections
   } from '$lib/stores/courseStore.svelte';
+  import { COURSES } from '$lib/data/courses';
   import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
   import PrerequisiteList from './PrerequisiteList.svelte';
   import ActionButtons from './ActionButtons.svelte';
@@ -17,6 +19,20 @@
   const hasSelection = $derived(getHasSelection());
   const isElectiveSlot = $derived(getIsElectiveSlot());
   const currentTemplate = $derived(getCurrentTemplate());
+  const userSelections = $derived(getUserSelections());
+
+  const displayCourse = $derived.by(() => {
+    if (!selection) return null;
+    
+    if (isElectiveSlot) {
+      const selectedCourseId = userSelections[selection.id];
+      if (selectedCourseId) {
+        return COURSES.find(c => c.id === selectedCourseId) || selection;
+      }
+    }
+    
+    return selection;
+  });
 </script>
 
 <aside class="border-l border-border-primary bg-bg-secondary overflow-y-auto">
@@ -24,7 +40,7 @@
     <div class="p-6 space-y-6">
       <div>
         <div class="flex items-center justify-between mb-3">
-          <h2 class="text-xl font-bold text-text-primary">{selection?.label || ''}</h2>
+          <h2 class="text-xl font-bold text-text-primary">{displayCourse?.label || ''}</h2>
           <button 
             onclick={() => uiStore.deselectCourse()}
             class="flex items-center justify-center w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary transition-all"
@@ -37,7 +53,7 @@
         <div class="flex items-center gap-4 text-sm text-text-secondary mb-2">
           <div class="flex items-center gap-1.5">
             <div class="i-lucide-book-open text-text-secondary"></div>
-                   <span>{selection?.ects || 0} ECTS</span>
+                   <span>{displayCourse?.ects || 0} ECTS</span>
           </div>
           <div class="flex items-center gap-1.5">
             <div class="i-lucide-calendar text-text-secondary"></div>
@@ -45,10 +61,10 @@
           </div>
         </div>
         
-        {#if selection?.type}
+        {#if displayCourse?.type}
           <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-100 rounded-md text-sm font-medium">
             <div class="i-lucide-layers text-purple-600 dark:text-purple-400"></div>
-            {selection.type}
+            {displayCourse.type}
           </div>
         {/if}
       </div>
@@ -56,8 +72,8 @@
       {#if isElectiveSlot}
         <ElectiveCourseSelector slotId={selection?.id || ''} />
       {:else}
-        <PrerequisiteList prereqs={selection?.prereqs as any} />
-        <ActionButtons courseId={selection?.id || ''} />
+        <PrerequisiteList prereqs={displayCourse?.prereqs as any} />
+        <ActionButtons courseId={displayCourse?.id || ''} />
       {/if}
     </div>
   {:else}
