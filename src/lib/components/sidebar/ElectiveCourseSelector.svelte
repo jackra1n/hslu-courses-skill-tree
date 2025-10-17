@@ -4,6 +4,7 @@
   import { COURSES, isPrerequisiteRequirement, isAndExpression, isOrExpression } from '$lib/data/courses';
   import PrerequisiteList from './PrerequisiteList.svelte';
   import ActionButtons from './ActionButtons.svelte';
+  import Combobox from '$lib/components/ui/Combobox.svelte';
 
   let { slotId }: { slotId: string } = $props();
 
@@ -55,9 +56,15 @@
     })
   );
 
-  function handleCourseSelect(e: Event) {
-    const target = e.target as HTMLSelectElement;
-    const courseId = target.value;
+  const comboboxOptions = $derived(
+    availableCourses.map(course => ({
+      value: course.id,
+      label: `${course.label} (${course.id}) — ${course.ects} ECTS`,
+      keywords: [course.label, course.id]
+    }))
+  );
+
+  function handleCourseSelect(courseId: string) {
     if (courseId) {
       courseStore.selectCourseForSlot(slotId, courseId);
     } else {
@@ -90,17 +97,15 @@
           </button>
         {/if}
       </div>
-      <select 
-        id="elective-course-select"
-        value={selectedCourseId || ''}
-        onchange={handleCourseSelect}
-        class="w-full px-3 py-2 rounded-lg text-sm border border-border-primary bg-bg-primary text-text-primary focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="">Select a course...</option>
-        {#each availableCourses as course}
-          <option value={course.id}>{course.label} ({course.id}) - {course.ects} ECTS</option>
-        {/each}
-      </select>
+      <Combobox
+        options={comboboxOptions}
+        selected={selectedCourseId || ''}
+        onSelect={handleCourseSelect}
+        placeholder="Select a course..."
+        searchPlaceholder="Search courses..."
+        noResultsText="No courses found"
+        minWidth="100%"
+      />
     </div>
   </div>
 </div>
