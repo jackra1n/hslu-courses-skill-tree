@@ -234,8 +234,8 @@
   },
   {
     "id": "ADS",
-    "label": "Algorithmen und Datenstrukturen",
-    "ects": 6,
+    "label": "Algorithmen & Datenstrukturen ICS",
+    "ects": 3,
     "prereqs": [],
     "type": "Kernmodul"
   },
