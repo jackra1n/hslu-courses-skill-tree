@@ -42,9 +42,9 @@
   let isOpen = $state(false);
   let searchQuery = $state('');
   let highlightedIndex = $state(-1);
-  let comboboxElement: HTMLDivElement | undefined;
-  let inputElement: HTMLInputElement | undefined;
-  let listboxElement: HTMLUListElement | undefined;
+  let comboboxElement: HTMLDivElement | undefined = $state();
+  let inputElement: HTMLInputElement | undefined = $state();
+  let listboxElement: HTMLUListElement | undefined = $state();
 
   const filteredOptions = $derived.by(() => {
     if (!searchQuery.trim()) return options;

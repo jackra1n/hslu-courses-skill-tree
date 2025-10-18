@@ -18,8 +18,7 @@
   let { options, selected, onSelect, placeholder = "Select option", minWidth = "auto" }: Props = $props();
 
   let isOpen = $state(false);
-  // @ts-ignore - assigned by bind:this
-  let dropdownElement!: HTMLDivElement;
+  let dropdownElement: HTMLDivElement | undefined = $state();
 
   function toggleDropdown() {
     isOpen = !isOpen;
