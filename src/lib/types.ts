@@ -2,18 +2,13 @@
 export type {
   Course,
   Status,
-  PrerequisiteExpression,
-  PrerequisiteRequirement,
-  CreditRequirement,
-  ProgramSpecificRequirement,
-  AssessmentStageRequirement,
-  AndExpression,
-  OrExpression,
+  ModuleType,
+  IdmsPrerequisiteRule,
+  IdmsLink,
   TemplateSlot,
   CurriculumTemplate,
-  UserProgress,
   ExtendedNodeData
-} from './data/courses';
+} from '$lib/data/courses';
 
 export type Viewport = {
   x: number;

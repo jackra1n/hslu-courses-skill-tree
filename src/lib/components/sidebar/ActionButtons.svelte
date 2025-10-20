@@ -2,7 +2,8 @@
   import { progressStore } from '$lib/stores/progressStore.svelte';
   import { computeStatuses } from '$lib/utils/status';
   import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { COURSES, evaluateCoursePrerequisites } from '$lib/data/courses';
+  import { COURSES } from '$lib/data/courses';
+  import { evaluatePrerequisites } from '$lib/utils/prerequisite';
 
   let { courseId, isElectiveSlot = false }: { courseId: string; isElectiveSlot?: boolean } = $props();
 
@@ -15,11 +16,7 @@
   const course = $derived(COURSES.find(c => c.id === courseId));
   const prerequisitesMet = $derived.by(() => {
     if (!course) return false;
-    const userProgress = { 
-      attended: progressStore.attendedSet, 
-      completed: progressStore.completedSet 
-    };
-    return evaluateCoursePrerequisites(course, userProgress);
+    return evaluatePrerequisites(course.prerequisites, progressStore.attendedSet, progressStore.completedSet);
   });
 </script>
 

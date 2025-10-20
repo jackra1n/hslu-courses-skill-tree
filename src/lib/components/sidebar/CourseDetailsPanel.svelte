@@ -72,7 +72,7 @@
       {#if isElectiveSlot}
         <ElectiveCourseSelector slotId={selection?.id || ''} />
       {:else}
-        <PrerequisiteList prereqs={displayCourse?.prereqs as any} />
+        <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} />
         <ActionButtons courseId={displayCourse?.id || ''} />
       {/if}
     </div>

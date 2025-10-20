@@ -1,18 +1,18 @@
 import { browser } from '$app/environment';
 import type { Node, Edge } from '@xyflow/svelte';
-import type { Course, ExtendedNodeData } from '../types';
+import type { ExtendedNodeData, Course } from '$lib/data/courses';
 import {
   AVAILABLE_TEMPLATES,
   getTemplateById,
   getTemplatesByProgram,
   calculateTotalCredits,
-  COURSES
-} from '../data/courses';
-import { toGraph } from '../utils/graph';
-import { layoutSemesterBased, layoutELK, getNodeLabel } from '../utils/layout';
+  COURSES,
+  setCoursePlan
+} from '$lib/data/courses';
+import { toGraph } from '$lib/utils/graph';
+import { layoutSemesterBased, layoutELK, getNodeLabel } from '$lib/utils/layout';
 import { progressStore } from './progressStore.svelte';
 
-// private state - not exported directly
 let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
 let _userSelections = $state<Record<string, string>>({});
 let _selectedPlan = $state(AVAILABLE_TEMPLATES[0].plan);
@@ -21,7 +21,6 @@ let _edges = $state<Edge[]>([]);
 let _showShortNamesOnly = $state(false);
 let _useELKLayout = $state(false);
 
-// derived values
 const _totalCredits = $derived(calculateTotalCredits(_currentTemplate, _userSelections));
 
 const _availablePlans = $derived(
@@ -95,6 +94,7 @@ export const courseStore = {
   },
   
   switchPlan(plan: string) {
+    setCoursePlan(plan);
     const newTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
       .find(t => t.plan === plan);
     if (newTemplate) {
@@ -150,12 +150,14 @@ export const courseStore = {
       if (template) {
         _currentTemplate = template;
         _selectedPlan = template.plan;
+        setCoursePlan(template.plan);
       }
     }
 
     const savedPlan = localStorage.getItem("selectedPlan");
     if (savedPlan) {
       _selectedPlan = savedPlan;
+      setCoursePlan(savedPlan);
       if (!savedTemplate) {
         const newTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
           .find(t => t.plan === savedPlan);
@@ -163,6 +165,8 @@ export const courseStore = {
           _currentTemplate = newTemplate;
         }
       }
+    } else {
+      setCoursePlan(_selectedPlan);
     }
     
     updateGraph();
@@ -207,7 +211,7 @@ function updateNodeLabels() {
         COURSES.find((c: Course) => c.id === selectedCourseId) : null;
       const label = selectedCourse ?
         getNodeLabel(selectedCourse, _showShortNamesOnly) :
-        `${slot.label} (${slot.credits} ECTS)`;
+        `${slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course'} (${selectedCourse ? (selectedCourse as Course).ects : 0} ECTS)`;
       return { ...n, data: { ...data, label, course: selectedCourse } };
     }
     

@@ -36,6 +36,8 @@
   import { getNodeWidth } from '$lib/utils/layout';
   import { COURSES } from '$lib/data/courses';
 
+  import type { Course } from '$lib/types';
+
   type MarkerEnd = {
     type: MarkerType | `${MarkerType}`;
     color?: string;
@@ -205,13 +207,14 @@
     const isElectiveSlot = data.isElectiveSlot;
 
     if (isElectiveSlot && slot) {
-      uiStore.selectCourse({
+      const electiveCourse: Course = {
         id: slot.id,
-        label: slot.label,
-        ects: slot.credits,
-        prereqs: [],
-        type: slot.type === "major" ? "Erweiterungsmodul" : "Erweiterungsmodul"
-      });
+        label: slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course',
+        ects: 0,
+        prerequisites: [],
+        type: slot.type === "major" ? "Major-/Minormodul" : "Erweiterungsmodul"
+      };
+      uiStore.selectCourse(electiveCourse);
     } else if (course) {
       uiStore.selectCourse(course);
     }

@@ -41,6 +41,10 @@
         return "bg-orange-500";
       case "Erweiterungsmodul":
         return "bg-green-500";
+      case "Major-/Minormodul":
+        return "bg-purple-500";
+      case "Zusatzmodul":
+        return "bg-yellow-500";
       default:
         return "bg-gray-500";
     }
@@ -54,6 +58,10 @@
         return "Projekt";
       case "Erweiterungsmodul":
         return "Wahl";
+      case "Major-/Minormodul":
+        return "Major/Minor";
+      case "Zusatzmodul":
+        return "Zusatz";
       default:
         return "Modul";
     }

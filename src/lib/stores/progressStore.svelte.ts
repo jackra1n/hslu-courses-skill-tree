@@ -1,9 +1,9 @@
 import { browser } from '$app/environment';
-import type { Status } from '../types';
-import { COURSES, evaluateCoursePrerequisites, type UserProgress } from '../data/courses';
-import { computeStatuses } from '../utils/status';
+import type { Status } from '$lib/data/courses';
+import { COURSES } from '$lib/data/courses';
+import { evaluatePrerequisites } from '$lib/utils/prerequisite';
+import { computeStatuses } from '$lib/utils/status';
 
-// private state
 let _attended = $state(new Set<string>());
 let _completed = $state(new Set<string>());
 
@@ -52,8 +52,7 @@ function validateCourseAndPrerequisites(courseId: string): typeof COURSES[0] | n
   const course = COURSES.find(c => c.id === courseId);
   if (!course) return null;
   
-  const userProgress: UserProgress = { attended: _attended, completed: _completed };
-  const prereqsMet = evaluateCoursePrerequisites(course, userProgress);
+  const prereqsMet = evaluatePrerequisites(course.prerequisites, _attended, _completed);
   if (!prereqsMet) return null;
   
   return course;
@@ -105,8 +104,7 @@ export const progressStore = {
     const course = COURSES.find(c => c.id === courseId);
     if (!course) return false;
     
-    const userProgress: UserProgress = { attended: _attended, completed: _completed };
-    return evaluateCoursePrerequisites(course, userProgress);
+    return evaluatePrerequisites(course.prerequisites, _attended, _completed);
   },
   
   getCourseStatus(courseId: string, template: any, selections: Record<string, string>): Status {

@@ -1,8 +1,8 @@
-import type { Status, CurriculumTemplate, UserProgress } from '../types';
+import type { Status, CurriculumTemplate } from '../types';
 import { 
-  COURSES, 
-  evaluateCoursePrerequisites
+  COURSES
 } from '../data/courses';
+import { evaluatePrerequisites } from './prerequisite';
 
 export function computeStatuses(
   template: CurriculumTemplate,
@@ -11,7 +11,6 @@ export function computeStatuses(
   completed: Set<string>
 ): Record<string, Status> {
   const s: Record<string, Status> = {};
-  const userProgress: UserProgress = { attended, completed };
   
   template.slots.forEach(slot => {
     if (slot.type === "fixed" && slot.courseId) {
@@ -19,7 +18,7 @@ export function computeStatuses(
       if (course) {
         if (completed.has(course.id)) {
           s[slot.id] = "completed";
-        } else if (evaluateCoursePrerequisites(course, userProgress)) {
+        } else if (evaluatePrerequisites(course.prerequisites, attended, completed)) {
           s[slot.id] = "available";
         } else {
           s[slot.id] = "locked";
@@ -32,7 +31,7 @@ export function computeStatuses(
         if (course) {
           if (completed.has(course.id)) {
             s[slot.id] = "completed";
-          } else if (evaluateCoursePrerequisites(course, userProgress)) {
+          } else if (evaluatePrerequisites(course.prerequisites, attended, completed)) {
             s[slot.id] = "available";
           } else {
             s[slot.id] = "locked";

@@ -1,9 +1,9 @@
 <script lang="ts">
   import { courseStore } from '$lib/stores/courseStore.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
-  import { COURSES, isPrerequisiteRequirement, isAndExpression, isOrExpression } from '$lib/data/courses';
-  import PrerequisiteList from './PrerequisiteList.svelte';
-  import ActionButtons from './ActionButtons.svelte';
+  import { COURSES } from '$lib/data/courses';
+  import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
+  import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
   import Combobox from '$lib/components/ui/Combobox.svelte';
 
   let { slotId }: { slotId: string } = $props();
@@ -18,27 +18,18 @@
     const slot = currentTemplate.slots.find(s => s.id === slotId);
     if (!slot) return false;
     
-    const checkPrerequisite = (prereq: any): boolean => {
-      if (isPrerequisiteRequirement(prereq)) {
-        return prereq.courses.some((courseId: string) => {
-          const prereqSlot = currentTemplate.slots.find(s => s.courseId === courseId);
-          const prereqElectiveSlot = currentTemplate.slots.find(s => 
-            (s.type === "elective" || s.type === "major") && 
-            courseStore.userSelections[s.id] === courseId
-          );
-          
-          return (prereqSlot && prereqSlot.semester > slot.semester) || 
-                 (prereqElectiveSlot && prereqElectiveSlot.semester > slot.semester);
-        });
-      } else if (isAndExpression(prereq)) {
-        return prereq.operands.some(checkPrerequisite);
-      } else if (isOrExpression(prereq)) {
-        return prereq.operands.some(checkPrerequisite);
-      }
-      return false;
-    };
-
-    return selectedCourse.prereqs.some(checkPrerequisite);
+    return selectedCourse.prerequisites.some(rule => 
+      rule.modules.some((moduleId: string) => {
+        const prereqSlot = currentTemplate.slots.find(s => s.courseId === moduleId);
+        const prereqElectiveSlot = currentTemplate.slots.find(s => 
+          (s.type === "elective" || s.type === "major") && 
+          courseStore.userSelections[s.id] === moduleId
+        );
+        
+        return (prereqSlot && prereqSlot.semester > slot.semester) || 
+               (prereqElectiveSlot && prereqElectiveSlot.semester > slot.semester);
+      })
+    );
   });
 
   const availableCourses = $derived(
@@ -130,6 +121,6 @@
     </div>
   {/if}
   
-  <PrerequisiteList prereqs={selectedCourse.prereqs as any} />
+  <PrerequisiteList prerequisites={selectedCourse.prerequisites || []} />
   <ActionButtons courseId={selectedCourse.id} isElectiveSlot={true} />
 {/if}

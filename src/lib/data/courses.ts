@@ -1,98 +1,46 @@
-import coursesData from './courses.json';
 import informatikFulltimeTemplate from './templates/informatik-fulltime.json';
+import { loadIdmsCourses } from './idms-adapter';
 
 export type Status = "locked" | "available" | "completed";
 
-// base requirement types
-export type PrerequisiteRequirement = {
-  courses: string[];
-  requirement: "besucht" | "bestanden";
+export type ModuleType = "Kernmodul" | "Projektmodul" | "Erweiterungsmodul" | "Major-/Minormodul" | "Zusatzmodul";
+
+export type IdmsLink = "und" | "oder";
+
+export type IdmsPrerequisiteRule = {
+  modules: string[];
+  mustBePassed: boolean;
+  moduleLinkType: IdmsLink;
+  prerequisiteLinkType?: IdmsLink;
 };
 
-export type CreditRequirement = {
-  type: "credits";
-  moduleType?: "Kernmodul" | "Projektmodul" | "Erweiterungsmodul";
-  minCredits: number;
-};
-
-export type ProgramSpecificRequirement = {
-  type: "program_specific";
-  program: string;
-  requirements: PrerequisiteRequirement[];
-};
-
-export type AssessmentStageRequirement = {
-  type: "assessment_stage";
-  requirement: "bestanden";
-};
-
-// expression tree for complex logic
-export type PrerequisiteExpression = 
-  | PrerequisiteRequirement 
-  | CreditRequirement 
-  | ProgramSpecificRequirement
-  | AssessmentStageRequirement
-  | AndExpression
-  | OrExpression;
-
-export type AndExpression = {
-  type: "and";
-  operands: PrerequisiteExpression[];
-};
-
-export type OrExpression = {
-  type: "or";
-  operands: PrerequisiteExpression[];
-};
-
-// type guards
-export function isCreditRequirement(prereq: PrerequisiteExpression): prereq is CreditRequirement {
-  return typeof prereq === 'object' && prereq !== null && 'type' in prereq && prereq.type === 'credits';
-}
-
-export function isProgramSpecificRequirement(prereq: PrerequisiteExpression): prereq is ProgramSpecificRequirement {
-  return typeof prereq === 'object' && prereq !== null && 'type' in prereq && prereq.type === 'program_specific';
-}
-
-export function isAssessmentStageRequirement(prereq: PrerequisiteExpression): prereq is AssessmentStageRequirement {
-  return typeof prereq === 'object' && prereq !== null && 'type' in prereq && prereq.type === 'assessment_stage';
-}
-
-export function isPrerequisiteRequirement(prereq: PrerequisiteExpression): prereq is PrerequisiteRequirement {
-  return typeof prereq === 'object' && prereq !== null && 'courses' in prereq && 'requirement' in prereq && !('type' in prereq);
-}
-
-export function isAndExpression(expr: PrerequisiteExpression): expr is AndExpression {
-  return typeof expr === 'object' && expr !== null && 'type' in expr && expr.type === 'and';
-}
-
-export function isOrExpression(expr: PrerequisiteExpression): expr is OrExpression {
-  return typeof expr === 'object' && expr !== null && 'type' in expr && expr.type === 'or';
-}
-
-export function isExpressionTree(expr: PrerequisiteExpression): expr is AndExpression | OrExpression {
-  return isAndExpression(expr) || isOrExpression(expr);
-}
 
 export type Course = {
   id: string;
   label: string;
   ects: number;
-  prereqs: PrerequisiteExpression[];
-  prereqsPassed?: string[];
-  url?: string;
-  type?: "Kernmodul" | "Projektmodul" | "Erweiterungsmodul";
+  prerequisites: IdmsPrerequisiteRule[];
+  prerequisiteNote?: string;
+  type?: ModuleType;
 };
 
 let _sortedCourses: Course[] | null = null;
+let _currentPlan: string = 'HS25';
 
 function getSortedCourses(): Course[] {
   if (_sortedCourses === null) {
-    _sortedCourses = [...coursesData].sort((a, b) => {
+    _sortedCourses = loadIdmsCourses(_currentPlan).sort((a, b) => {
       return a.label.localeCompare(b.label);
-    }) as Course[];
+    });
   }
   return _sortedCourses;
+}
+
+export function setCoursePlan(plan: string): void {
+  if (_currentPlan !== plan) {
+    _currentPlan = plan;
+    _sortedCourses = null;
+  }
 }
 
 export const COURSES: Course[] = new Proxy([], {
@@ -125,15 +73,13 @@ export function getPrerequisitesForCourse(courseId: string): Course[] {
 
   const prerequisiteCourses: Course[] = [];
   
-  course.prereqs.forEach(prereq => {
-    if (isPrerequisiteRequirement(prereq)) {
-      prereq.courses.forEach(courseId => {
-        const prereqCourse = getCourseById(courseId);
-        if (prereqCourse) {
-          prerequisiteCourses.push(prereqCourse);
-        }
-      });
-    }
+  course.prerequisites.forEach(rule => {
+    rule.modules.forEach(moduleId => {
+      const prereqCourse = getCourseById(moduleId);
+      if (prereqCourse) {
+        prerequisiteCourses.push(prereqCourse);
+      }
+    });
   });
   
   return prerequisiteCourses;
@@ -141,7 +87,7 @@ export function getPrerequisitesForCourse(courseId: string): Course[] {
 
 export function calculateCreditsCompleted(
   completed: Set<string>, 
-  moduleType?: "Kernmodul" | "Projektmodul" | "Erweiterungsmodul"
+  moduleType?: ModuleType
 ): number {
   return COURSES
     .filter(course => completed.has(course.id) && (!moduleType || course.type === moduleType))
@@ -151,7 +97,7 @@ export function calculateCreditsCompleted(
 export function calculateCreditsAttended(
   attended: Set<string>, 
   completed: Set<string>,
-  moduleType?: "Kernmodul" | "Projektmodul" | "Erweiterungsmodul"
+  moduleType?: ModuleType
 ): number {
   return COURSES
     .filter(course => (attended.has(course.id) || completed.has(course.id)) && (!moduleType || course.type === moduleType))
@@ -162,8 +108,6 @@ export type TemplateSlot = {
   id: string;
   type: "fixed" | "elective" | "major";
   courseId?: string; // for fixed courses
-  credits: number;
-  label: string;
   semester: number;
 };
 
@@ -229,91 +173,6 @@ export function calculateTotalCredits(template: CurriculumTemplate, userSelectio
   }, 0);
 }
 
-// evaluation functions for prerequisite expressions
-export type UserProgress = {
-  completed: Set<string>;
-  attended: Set<string>;
-};
-
-export function evaluatePrerequisiteExpression(
-  expr: PrerequisiteExpression,
-  userProgress: UserProgress
-): boolean {
-
-  if ('courses' in expr && 'requirement' in expr && !('type' in expr)) {
-    const { courses, requirement } = expr;
-    if (requirement === 'bestanden') {
-      return courses.every(courseId => userProgress.completed.has(courseId));
-    } else {
-      return courses.every(courseId => 
-        userProgress.attended.has(courseId) || userProgress.completed.has(courseId)
-      );
-    }
-  }
-
-  if (isCreditRequirement(expr)) {
-    const credits = calculateCreditsCompleted(
-      userProgress.completed,
-      expr.moduleType
-    );
-    return credits >= expr.minCredits;
-  }
-
-  if ('type' in expr && expr.type === 'program_specific') {
-    // for now, we'll need to know the current program to evaluate this
-    // this could be extended to accept program context
-    return false;
-  }
-
-  if ('type' in expr && expr.type === 'assessment_stage') {
-    return userProgress.completed.size >= 6; // approximate threshold
-  }
-
-  if (isAndExpression(expr)) {
-    return expr.operands.every(operand => 
-      evaluatePrerequisiteExpression(operand, userProgress)
-    );
-  }
-
-  if (isOrExpression(expr)) {
-    return expr.operands.some(operand => 
-      evaluatePrerequisiteExpression(operand, userProgress)
-    );
-  }
-  return false;
-}
-
-export function evaluateCoursePrerequisites(
-  course: Course,
-  userProgress: UserProgress
-): boolean {
-  if (!course.prereqs || course.prereqs.length === 0) {
-    return true;
-  }
-
-  return course.prereqs.every(expr => 
-    evaluatePrerequisiteExpression(expr, userProgress)
-  );
-}
-
-export function createAndExpression(...operands: PrerequisiteExpression[]): AndExpression {
-  return { type: 'and', operands };
-}
-
-export function createOrExpression(...operands: PrerequisiteExpression[]): OrExpression {
-  return { type: 'or', operands };
-}
-
-export function createPrerequisiteRequirement(
-  courses: string[], 
-  requirement: "besucht" | "bestanden"
-): PrerequisiteRequirement {
-  return { courses, requirement };
-}
-
-export function createAssessmentStageRequirement(): AssessmentStageRequirement {
-  return { type: 'assessment_stage', requirement: 'bestanden' };
-}
 
 export type ExtendedNodeData = {
   label: string;

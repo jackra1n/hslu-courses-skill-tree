@@ -10,9 +10,7 @@ function buildNode(slot: TemplateSlot, selectedCourse: Course | null, index: Tem
   let hasLaterPrerequisites = false;
   
   if (selectedCourse) {
-    hasLaterPrerequisites = selectedCourse.prereqs.some(prereq => 
-      hasPrereqAfter(slot, prereq, index, { considerSameSemester: true })
-    );
+    hasLaterPrerequisites = hasPrereqAfter(slot, selectedCourse, index, { considerSameSemester: true });
   }
 
   return {
@@ -20,11 +18,11 @@ function buildNode(slot: TemplateSlot, selectedCourse: Course | null, index: Tem
     position: { x: 0, y: 0 },
     type: "custom",
     data: { 
-      label: selectedCourse ? getNodeLabel(selectedCourse, false) : `${slot.label} (${slot.credits} ECTS)`,
+      label: selectedCourse ? getNodeLabel(selectedCourse, false) : `${slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course'} (${selectedCourse ? (selectedCourse as Course).ects : 0} ECTS)`,
       slot: slot,
       course: selectedCourse,
       isElectiveSlot: slot.type === "elective" || slot.type === "major",
-      width: getNodeWidth(selectedCourse ? selectedCourse.ects : slot.credits),
+      width: getNodeWidth(selectedCourse ? selectedCourse.ects : 3),
       hasLaterPrerequisites: hasLaterPrerequisites
     } as ExtendedNodeData,
     style: "",
