@@ -5,6 +5,9 @@
   import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
   import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
   import Combobox from '$lib/components/ui/Combobox.svelte';
+  import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
+  import { hasPrereqAfter } from '$lib/utils/prerequisite';
+  import { TemplateIndex } from '$lib/utils/template-index';
 
   let { slotId }: { slotId: string } = $props();
 
@@ -18,18 +21,9 @@
     const slot = currentTemplate.slots.find(s => s.id === slotId);
     if (!slot) return false;
     
-    return selectedCourse.prerequisites.some(rule => 
-      rule.modules.some((moduleId: string) => {
-        const prereqSlot = currentTemplate.slots.find(s => s.courseId === moduleId);
-        const prereqElectiveSlot = currentTemplate.slots.find(s => 
-          (s.type === "elective" || s.type === "major") && 
-          courseStore.userSelections[s.id] === moduleId
-        );
-        
-        return (prereqSlot && prereqSlot.semester > slot.semester) || 
-               (prereqElectiveSlot && prereqElectiveSlot.semester > slot.semester);
-      })
-    );
+    // use the same logic as the graph builder
+    const index = new TemplateIndex(currentTemplate, courseStore.userSelections);
+    return hasPrereqAfter(slot, selectedCourse, index, { considerSameSemester: true });
   });
 
   const availableCourses = $derived(
@@ -103,22 +97,7 @@
 
 {#if selectedCourse}
   {#if hasLaterPrerequisites}
-    <div class="border-t border-border-primary pt-4">
-      <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
-        <div class="flex items-start gap-2">
-          <div class="i-lucide-alert-triangle text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0"></div>
-          <div class="text-sm">
-            <div class="font-medium text-red-800 dark:text-red-200 mb-1">
-              Prerequisite Placement Warning
-            </div>
-            <div class="text-red-700 dark:text-red-300">
-              This course has prerequisites that are scheduled in later semesters. 
-              You may not be able to take this course in the current semester.
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <PrerequisiteWarning showBorder={true} />
   {/if}
   
   <PrerequisiteList prerequisites={selectedCourse.prerequisites || []} />

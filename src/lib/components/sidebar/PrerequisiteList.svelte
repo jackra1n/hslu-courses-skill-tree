@@ -26,8 +26,18 @@
       Prerequisites
     </h3>
     <ul class="space-y-1.5">
-      {#each prerequisites as rule}
+      {#each prerequisites as rule, index}
         {@const ruleData = renderPrerequisiteRule(rule)}
+        {@const prevRule = index > 0 ? prerequisites[index - 1] : null}
+        {@const showOrSeparator = prevRule && prevRule.prerequisiteLinkType === 'oder'}
+        
+        {#if showOrSeparator}
+          <li class="flex items-center justify-center py-1">
+            <div class="text-xs font-medium text-text-secondary bg-bg-primary px-2 py-1 rounded-full border border-border-primary">
+              OR
+            </div>
+          </li>
+        {/if}
         
         <li class="flex items-start gap-2 text-sm">
           <div class="{ruleData.met ? 'i-lucide-check text-green-500' : 'i-lucide-circle text-gray-400'} mt-0.5"></div>

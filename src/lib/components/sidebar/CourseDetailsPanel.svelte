@@ -14,6 +14,9 @@
   import PrerequisiteList from './PrerequisiteList.svelte';
   import ActionButtons from './ActionButtons.svelte';
   import StatusLegend from './StatusLegend.svelte';
+  import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
+  import { hasPrereqAfter } from '$lib/utils/prerequisite';
+  import { TemplateIndex } from '$lib/utils/template-index';
 
   const selection = $derived(getSelection());
   const hasSelection = $derived(getHasSelection());
@@ -32,6 +35,16 @@
     }
     
     return selection;
+  });
+
+  const hasLaterPrerequisites = $derived.by(() => {
+    if (!displayCourse || isElectiveSlot) return false;
+    
+    const slot = currentTemplate.slots.find(s => s.courseId === displayCourse.id);
+    if (!slot) return false;
+    
+    const index = new TemplateIndex(currentTemplate, userSelections);
+    return hasPrereqAfter(slot, displayCourse, index, { considerSameSemester: true });
   });
 </script>
 
@@ -72,6 +85,9 @@
       {#if isElectiveSlot}
         <ElectiveCourseSelector slotId={selection?.id || ''} />
       {:else}
+        {#if hasLaterPrerequisites}
+          <PrerequisiteWarning />
+        {/if}
         <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} />
         <ActionButtons courseId={displayCourse?.id || ''} />
       {/if}

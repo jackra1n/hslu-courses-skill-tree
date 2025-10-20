@@ -89,10 +89,11 @@
         styleStr += "border-width: 2px; ";
       }
       
+      const hasLaterPrerequisites = data.hasLaterPrerequisites || false;
+      
       if (isElectiveSlot) {
         const selectedCourseId = userSelections[slot?.id || ''];
         const selectedCourse = selectedCourseId ? COURSES.find((c: any) => c.id === selectedCourseId) : null;
-        const hasLaterPrerequisites = data.hasLaterPrerequisites || false;
         
         if (selectedCourse) {
           if (hasLaterPrerequisites) {
@@ -109,6 +110,9 @@
         } else {
           styleStr += "background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); border-style: dashed; opacity: 0.6;";
         }
+        if (!isSelected) styleStr += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+      } else if (hasLaterPrerequisites) {
+        styleStr += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.8;";
         if (!isSelected) styleStr += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
       } else if (s === "completed") {
         styleStr += "background: rgb(var(--node-completed-bg)); border-color: rgb(var(--node-completed-border)); color: rgb(var(--text-primary)); ";
