@@ -26,17 +26,26 @@
     return hasPrereqAfter(slot, selectedCourse, index, { considerSameSemester: true });
   });
 
+  const electiveSlot = $derived(currentTemplate.slots.find(s => s.id === slotId));
+  
   const availableCourses = $derived(
     COURSES.filter(course => {
-      if (selectedCourseId === course.id) {
-        return true;
+      if (!electiveSlot) return false;
+      if (selectedCourseId === course.id) return true;
+      if (progressStore.isCompleted(course.id)) return false;
+
+      const appearsFixed = currentTemplate.slots.some(s => s.type === 'fixed' && s.courseId === course.id);
+      const isCoreOrProject = course.type === 'Kernmodul' || course.type === 'Projektmodul';
+      
+      if (appearsFixed || isCoreOrProject) {
+        if (!progressStore.isAttended(course.id)) return false;
+        const fixedSemesters = currentTemplate.slots
+          .filter(s => s.type === 'fixed' && s.courseId === course.id)
+          .map(s => s.semester);
+        const earliest = fixedSemesters.length ? Math.min(...fixedSemesters) : undefined;
+        if (earliest !== undefined && electiveSlot.semester <= earliest) return false;
       }
-      if (course.type === "Kernmodul" || course.type === "Projektmodul") {
-        return false;
-      }
-      if (progressStore.isCompleted(course.id)) {
-        return false;
-      }
+
       return courseStore.canSelectCourseForSlot(slotId, course.id);
     })
   );

@@ -62,6 +62,31 @@ export const courseStore = {
       return false;
     }
     
+    // check if this is an elective/major slot and the course is a fixed course or core/project type
+    const isElectiveLike = slot.type === 'elective' || slot.type === 'major';
+    if (isElectiveLike) {
+      const course = COURSES.find(c => c.id === courseId);
+      const appearsFixed = _currentTemplate.slots.some(s => s.type === 'fixed' && s.courseId === courseId);
+      const isCoreOrProject = course?.type === 'Kernmodul' || course?.type === 'Projektmodul';
+      
+      if (appearsFixed || isCoreOrProject) {
+        // require course to be attended (failed) to select in elective slot
+        if (!progressStore.isAttended(courseId)) {
+          return false;
+        }
+        
+        // require elective semester to be later than earliest fixed semester
+        const earliestFixed = Math.min(
+          ..._currentTemplate.slots
+            .filter(s => s.type === 'fixed' && s.courseId === courseId)
+            .map(s => s.semester)
+        );
+        if (Number.isFinite(earliestFixed) && slot.semester <= earliestFixed) {
+          return false;
+        }
+      }
+    }
+    
     const conflictingSlotId = Object.entries(_userSelections).find(([otherSlotId, otherCourseId]) => 
       otherSlotId !== slotId && otherCourseId === courseId
     )?.[0];

@@ -50,40 +50,37 @@ function mapPrerequisites(idmsPrereqs: IdmsModule['Prerequisites']): IdmsPrerequ
 }
 
 function selectModuleType(moduleOffers: IdmsModule['ModuleOffers'], plan: string): ModuleType | undefined {
-  // filter to Informatik program
   const informatikOffers = moduleOffers.filter(offer => 
     offer.DegreeProgramme === "Informatik"
   );
-  
-  if (informatikOffers.length === 0) {
-    // fallback to first offer if no Informatik offers
-    return informatikOffers.length > 0 ? mapModuleType(moduleOffers[0].ModuleType) : undefined;
-  }
   
   // map plan to CourseOffering preference
   const preferredOffering = plan.startsWith('HS') ? 'Herbst' : 
                            plan.startsWith('FS') ? 'Frühling' : 'Frühling/Herbst';
   
-  // try to find offer matching preferred offering
-  const preferredOffer = informatikOffers.find(offer => 
-    offer.CourseOffering === preferredOffering
-  );
+  // helper function to find best offer from a list
+  const findBestOffer = (offers: IdmsModule['ModuleOffers']) => {
+    // try preferred offering first
+    const preferredOffer = offers.find(offer => 
+      offer.CourseOffering === preferredOffering
+    );
+    if (preferredOffer) return preferredOffer;
+    
+    // try Frühling/Herbst as fallback
+    const flexibleOffer = offers.find(offer => 
+      offer.CourseOffering === 'Frühling/Herbst'
+    );
+    if (flexibleOffer) return flexibleOffer;
+    
+    // use first available offer
+    return offers[0];
+  };
   
-  if (preferredOffer) {
-    return mapModuleType(preferredOffer.ModuleType);
-  }
+  // prioritize Informatik offers, but fall back to all offers if none exist
+  const baseOffers = informatikOffers.length > 0 ? informatikOffers : moduleOffers;
+  const bestOffer = baseOffers.length > 0 ? findBestOffer(baseOffers) : undefined;
   
-  // try Frühling/Herbst as fallback
-  const flexibleOffer = informatikOffers.find(offer => 
-    offer.CourseOffering === 'Frühling/Herbst'
-  );
-  
-  if (flexibleOffer) {
-    return mapModuleType(flexibleOffer.ModuleType);
-  }
-  
-  // use first available offer
-  return mapModuleType(informatikOffers[0].ModuleType);
+  return bestOffer ? mapModuleType(bestOffer.ModuleType) : undefined;
 }
 
 export function loadIdmsCourses(plan: string = 'HS25'): Course[] {
