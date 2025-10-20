@@ -227,6 +227,7 @@
   onMount(() => {
     courseStore.init();
     progressStore.init();
+    uiStore.init();
   });
 </script>
 

@@ -1,4 +1,5 @@
 import type { Course, Viewport } from '../types';
+import { browser } from '$app/environment';
 
 // private state
 let _selection = $state<Course | null>(null);
@@ -33,7 +34,7 @@ export const uiStore = {
   get showProgramSelector() { return _showProgramSelector; },
   get hasSelection() { return _hasSelection; },
   get isElectiveSlot() { return _isElectiveSlot; },
-  
+
   selectCourse(course: Course | null) {
     _selection = course;
   },
@@ -56,9 +57,21 @@ export const uiStore = {
 
   toggleCourseTypeBadges() {
     _showCourseTypeBadges = !_showCourseTypeBadges;
+    if (browser) {
+      localStorage.setItem("showCourseTypeBadges", JSON.stringify(_showCourseTypeBadges));
+    }
   },
 
   toggleProgramSelector() {
     _showProgramSelector = !_showProgramSelector;
+  },
+
+  init() {
+    if (!browser) return;
+
+    const savedShowCourseTypeBadges = localStorage.getItem("showCourseTypeBadges");
+    if (savedShowCourseTypeBadges) {
+      _showCourseTypeBadges = JSON.parse(savedShowCourseTypeBadges);
+    }
   }
 };
