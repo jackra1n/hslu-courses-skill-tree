@@ -108,12 +108,17 @@ export function planEdgesForCourse(
   index: TemplateIndex
 ): EdgePair[] {
   const pairs: EdgePair[] = [];
+  const seen = new Set<string>();
   
   course.prerequisites.forEach(rule => {
     rule.modules.forEach(moduleId => {
       const providerSlots = index.providerSlotsBefore(moduleId, dependentSlot.id);
       providerSlots.forEach(sourceSlot => {
-        pairs.push({ source: sourceSlot, target: dependentSlot });
+        const key = `${sourceSlot.id}->${dependentSlot.id}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          pairs.push({ source: sourceSlot, target: dependentSlot });
+        }
       });
     });
   });
