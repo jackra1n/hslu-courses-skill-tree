@@ -6,7 +6,7 @@ import { MarkerType } from "@xyflow/svelte";
 import { TemplateIndex } from '$lib/utils/template-index';
 import { hasPrereqAfter, planEdges } from '$lib/utils/prerequisite';
 
-function buildNode(slot: TemplateSlot, selectedCourse: Course | null, index: TemplateIndex): Node {
+function buildNode(slot: TemplateSlot, selectedCourse: Course | null, index: TemplateIndex, showShortNamesOnly: boolean): Node {
   let hasLaterPrerequisites = false;
   
   if (selectedCourse) {
@@ -18,7 +18,7 @@ function buildNode(slot: TemplateSlot, selectedCourse: Course | null, index: Tem
     position: { x: 0, y: 0 },
     type: "custom",
     data: { 
-      label: selectedCourse ? getNodeLabel(selectedCourse, false) : `${slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course'} (${selectedCourse ? (selectedCourse as Course).ects : 0} ECTS)`,
+      label: selectedCourse ? getNodeLabel(selectedCourse, showShortNamesOnly) : `${slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course'} (${selectedCourse ? (selectedCourse as Course).ects : 0} ECTS)`,
       slot: slot,
       course: selectedCourse,
       isElectiveSlot: slot.type === "elective" || slot.type === "major",
@@ -29,7 +29,7 @@ function buildNode(slot: TemplateSlot, selectedCourse: Course | null, index: Tem
   };
 }
 
-export function toGraph(template: CurriculumTemplate, selections: Record<string, string>): { nodes: Node[]; edges: Edge[] } {
+export function toGraph(template: CurriculumTemplate, selections: Record<string, string>, showShortNamesOnly: boolean): { nodes: Node[]; edges: Edge[] } {
   // Build template index for fast lookups
   const index = new TemplateIndex(template, selections);
   
@@ -40,12 +40,12 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
     if (slot.type === "fixed" && slot.courseId) {
       const course = COURSES.find(c => c.id === slot.courseId);
       if (course) {
-        nodes.push(buildNode(slot, course, index));
+        nodes.push(buildNode(slot, course, index, showShortNamesOnly));
       }
     } else if (slot.type === "elective" || slot.type === "major") {
       const selectedCourseId = selections[slot.id];
       const selectedCourse = selectedCourseId ? COURSES.find(c => c.id === selectedCourseId) || null : null;
-      nodes.push(buildNode(slot, selectedCourse, index));
+      nodes.push(buildNode(slot, selectedCourse, index, showShortNamesOnly));
     }
   });
 
@@ -88,8 +88,8 @@ export function toGraph(template: CurriculumTemplate, selections: Record<string,
     if (usage) {
       node.data = {
         ...node.data,
-        sourceHandles: Math.min(usage.source, 4),
-        targetHandles: Math.min(usage.target, 4)
+        sourceHandles: Math.min(usage.source, 7),
+        targetHandles: Math.min(usage.target, 7)
       };
     }
   });

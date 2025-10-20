@@ -128,6 +128,9 @@ export const courseStore = {
   
   toggleShortNames() {
     _showShortNamesOnly = !_showShortNamesOnly;
+    if (browser) {
+      localStorage.setItem("showShortNamesOnly", JSON.stringify(_showShortNamesOnly));
+    }
     updateNodeLabels();
   },
   
@@ -142,6 +145,11 @@ export const courseStore = {
     const savedSelections = localStorage.getItem("userSelections");
     if (savedSelections) {
       _userSelections = JSON.parse(savedSelections);
+    }
+    
+    const savedShortNames = localStorage.getItem("showShortNamesOnly");
+    if (savedShortNames) {
+      _showShortNamesOnly = JSON.parse(savedShortNames);
     }
     
     const savedTemplate = localStorage.getItem("currentTemplate");
@@ -174,7 +182,7 @@ export const courseStore = {
 };
 
 function updateGraph() {
-  const g = toGraph(_currentTemplate, _userSelections);
+  const g = toGraph(_currentTemplate, _userSelections, _showShortNamesOnly);
   _nodes = g.nodes;
   _edges = g.edges;
   updateLayout();
