@@ -1,4 +1,4 @@
-# HSLU Course Skill Tree
+# HSLU Courses Skill Tree
 
 Have you ever wanted to register for courses but found it annoying how time consuming it is to check all the requirements for them? With HSLU Skill Tree it takes only a second!
 

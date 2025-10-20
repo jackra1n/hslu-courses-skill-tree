@@ -14,7 +14,7 @@
 </script>
 
 <svelte:head>
-	<title>HSLU Course Skill Tree - Interactive Course Planning</title>
+	<title>HSLU Courses Skill Tree - Interactive Course Planning</title>
 	<meta name="description" content="Interactive skill tree visualization for HSLU courses. Plan your academic journey with prerequisite tracking and course progression." />
 	<link rel="icon" type="image/png" href={favicon} />
 	<link rel="apple-touch-icon" href={favicon} />

@@ -51,7 +51,7 @@
 <header class="flex items-center justify-between border-b border-border-primary bg-bg-primary px-4 py-3">
   <div class="flex items-center gap-3">
     <div>
-      <h1 class="text-lg font-semibold leading-none text-text-primary">HSLU Course Skill Tree</h1>
+      <h1 class="text-lg font-semibold leading-none text-text-primary">HSLU Courses Skill Tree</h1>
       <p class="text-xs text-text-secondary">Track your progress through courses</p>
     </div>
   </div>
