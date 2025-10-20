@@ -20,23 +20,27 @@
     filter?: (query: string, option: Option) => boolean;
   }
 
-  let { 
-    options, 
-    selected, 
-    onSelect, 
-    placeholder = "Select option", 
+  let {
+    options,
+    selected,
+    onSelect,
+    placeholder = "Select option",
     minWidth = "auto",
     searchPlaceholder = "Search...",
     noResultsText = "No results found",
-    normalize = (text: string) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''),
+    normalize = (text: string) =>
+      text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""),
     filter = (query: string, option: Option) => {
       const normalizedQuery = normalize(query);
       const searchTexts = [
         normalize(option.label),
-        ...(option.keywords || []).map(k => normalize(k))
+        ...(option.keywords || []).map((k) => normalize(k)),
       ];
-      return searchTexts.some(text => text.includes(normalizedQuery));
-    }
+      return searchTexts.some((text) => text.includes(normalizedQuery));
+    },
   }: Props = $props();
 
   let isOpen = $state(false);
@@ -48,11 +52,16 @@
 
   const filteredOptions = $derived.by(() => {
     if (!searchQuery.trim()) return options;
-    return options.filter(option => filter(searchQuery, option));
+    return options.filter((option) => filter(searchQuery, option));
   });
 
   const selectedOption = $derived.by(() => {
-    return options.find(option => option.value === selected) || { value: '', label: placeholder };
+    return (
+      options.find((option) => option.value === selected) || {
+        value: "",
+        label: placeholder,
+      }
+    );
   });
 
   function toggleCombobox() {
@@ -87,7 +96,11 @@
 
   function handleKeydown(event: KeyboardEvent) {
     if (!isOpen) {
-      if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {
+      if (
+        event.key === "Enter" ||
+        event.key === " " ||
+        event.key === "ArrowDown"
+      ) {
         event.preventDefault();
         openCombobox();
       }
@@ -95,27 +108,33 @@
     }
 
     switch (event.key) {
-      case 'Escape':
+      case "Escape":
         event.preventDefault();
         closeCombobox();
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         event.preventDefault();
-        highlightedIndex = Math.min(highlightedIndex + 1, filteredOptions.length - 1);
+        highlightedIndex = Math.min(
+          highlightedIndex + 1,
+          filteredOptions.length - 1
+        );
         scrollToHighlighted();
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         event.preventDefault();
         highlightedIndex = Math.max(highlightedIndex - 1, -1);
         scrollToHighlighted();
         break;
-      case 'Enter':
+      case "Enter":
         event.preventDefault();
-        if (highlightedIndex >= 0 && highlightedIndex < filteredOptions.length) {
+        if (
+          highlightedIndex >= 0 &&
+          highlightedIndex < filteredOptions.length
+        ) {
           selectOption(filteredOptions[highlightedIndex]);
         }
         break;
-      case 'Tab':
+      case "Tab":
         closeCombobox();
         break;
     }
@@ -123,8 +142,10 @@
 
   function scrollToHighlighted() {
     if (highlightedIndex >= 0 && listboxElement) {
-      const highlightedElement = listboxElement.children[highlightedIndex] as HTMLElement;
-      highlightedElement?.scrollIntoView({ block: 'nearest' });
+      const highlightedElement = listboxElement.children[
+        highlightedIndex
+      ] as HTMLElement;
+      highlightedElement?.scrollIntoView({ block: "nearest" });
     }
   }
 
@@ -142,24 +163,24 @@
 
   function highlightText(text: string, query: string): string {
     if (!query.trim()) return text;
-    
+
     const normalizedText = normalize(text);
     const normalizedQuery = normalize(query);
     const index = normalizedText.indexOf(normalizedQuery);
-    
+
     if (index === -1) return text;
-    
+
     const before = text.substring(0, index);
     const match = text.substring(index, index + query.length);
     const after = text.substring(index + query.length);
-    
+
     return `${before}<mark class="bg-yellow-200 dark:bg-yellow-800 px-0.5 rounded">${match}</mark>${after}`;
   }
 
   $effect(() => {
     if (isOpen) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
     }
   });
 
@@ -181,13 +202,17 @@
     aria-haspopup="listbox"
     aria-controls="combobox-listbox"
   >
-    <div class="flex items-center gap-2 flex-1 text-left">
+    <div class="flex items-center gap-2 flex-1 text-left min-w-0">
       {#if selectedOption.icon}
-        <div class="{selectedOption.icon} w-4 h-4"></div>
+        <div class="{selectedOption.icon} w-4 h-4 flex-shrink-0"></div>
       {/if}
       <span class="text-sm font-medium truncate">{selectedOption.label}</span>
     </div>
-    <div class="i-lucide-chevron-down w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 {isOpen ? 'rotate-180' : ''} flex-shrink-0"></div>
+    <div
+      class="i-lucide-chevron-down w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 {isOpen
+        ? 'rotate-180'
+        : ''} flex-shrink-0"
+    ></div>
   </button>
 
   {#if isOpen}
@@ -206,7 +231,7 @@
           aria-controls="combobox-listbox"
         />
       </div>
-      
+
       <ul
         bind:this={listboxElement}
         id="combobox-listbox"
@@ -219,14 +244,25 @@
             role="option"
             aria-selected={option.value === selected}
             onclick={() => selectOption(option)}
-            onkeydown={(e) => e.key === 'Enter' && selectOption(option)}
+            onkeydown={(e) => e.key === "Enter" && selectOption(option)}
             tabindex="-1"
-            class="flex items-center gap-2 px-3 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer {index === highlightedIndex ? 'bg-gray-100 dark:bg-gray-700' : ''} {option.disabled ? 'opacity-50 cursor-not-allowed' : ''} {option.value === selected ? 'bg-gray-100 dark:bg-gray-700' : ''}"
+            class="flex items-center gap-2 px-3 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer {index ===
+            highlightedIndex
+              ? 'bg-gray-100 dark:bg-gray-700'
+              : ''} {option.disabled
+              ? 'opacity-50 cursor-not-allowed'
+              : ''} {option.value === selected
+              ? 'bg-gray-100 dark:bg-gray-700'
+              : ''}"
           >
             {#if option.icon}
               <div class="{option.icon} w-4 h-4 flex-shrink-0"></div>
             {/if}
-            <span class="text-sm font-medium flex-1 {option.value === selected ? 'font-semibold' : ''}">
+            <span
+              class="text-sm font-medium flex-1 {option.value === selected
+                ? 'font-semibold'
+                : ''}"
+            >
               {@html highlightText(option.label, searchQuery)}
             </span>
             {#if option.disabled}
@@ -236,7 +272,7 @@
             {/if}
           </li>
         {/each}
-        
+
         {#if filteredOptions.length === 0}
           <li class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 text-center">
             {noResultsText}
