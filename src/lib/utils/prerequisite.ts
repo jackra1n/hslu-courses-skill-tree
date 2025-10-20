@@ -31,23 +31,58 @@ export function evaluatePrerequisites(
 ): boolean {
   if (rules.length === 0) return true;
   
-  let result = evaluatePrerequisiteRule(rules[0], attended, completed);
-  
-  for (let i = 1; i < rules.length; i++) {
-    const prevRule = rules[i - 1];
-    const currentRule = rules[i];
-    const currentResult = evaluatePrerequisiteRule(currentRule, attended, completed);
+  return rules.reduce((acc, rule, index) => {
+    const currentResult = evaluatePrerequisiteRule(rule, attended, completed);
     
+    if (index === 0) {
+      return currentResult;
+    }
+    
+    const prevRule = rules[index - 1];
     const linkType = prevRule.prerequisiteLinkType || 'und';
     
-    if (linkType === 'oder') {
-      result = result || currentResult;
-    } else {
-      result = result && currentResult;
-    }
+    return linkType === 'oder' ? acc || currentResult : acc && currentResult;
+  }, false);
+}
+
+function ruleSatisfiedBefore(rule: IdmsPrerequisiteRule, dependentSlotId: string, index: TemplateIndex, considerSameSemester: boolean): boolean {
+  const dependentSemester = index.getSemesterBySlotId(dependentSlotId);
+  if (dependentSemester === undefined) return false;
+
+  const moduleResults = rule.modules.map(moduleId => {
+    const providerSlots = considerSameSemester 
+      ? index.providerSlotsFor(moduleId).filter(slot => slot.semester <= dependentSemester)
+      : index.providerSlotsFor(moduleId).filter(slot => slot.semester < dependentSemester);
+    return providerSlots.length > 0;
+  });
+
+  if (rule.moduleLinkType === 'oder') {
+    return moduleResults.some(result => result);
+  } else {
+    return moduleResults.every(result => result);
   }
+}
+
+function evaluatePrerequisitesSchedulableBefore(
+  rules: IdmsPrerequisiteRule[],
+  dependentSlotId: string,
+  index: TemplateIndex,
+  considerSameSemester: boolean
+): boolean {
+  if (rules.length === 0) return true;
   
-  return result;
+  return rules.reduce((acc, rule, ruleIndex) => {
+    const currentResult = ruleSatisfiedBefore(rule, dependentSlotId, index, considerSameSemester);
+    
+    if (ruleIndex === 0) {
+      return currentResult;
+    }
+    
+    const prevRule = rules[ruleIndex - 1];
+    const linkType = prevRule.prerequisiteLinkType || 'und';
+    
+    return linkType === 'oder' ? acc || currentResult : acc && currentResult;
+  }, false);
 }
 
 export function hasPrereqAfter(
@@ -58,15 +93,8 @@ export function hasPrereqAfter(
 ): boolean {
   const { considerSameSemester = true } = options;
   
-  return course.prerequisites.some(rule => 
-    rule.modules.some(moduleId => {
-      const providerSlots = considerSameSemester 
-        ? index.providerSlotsAfterOrSame(moduleId, dependentSlot.id)
-        : index.providerSlotsFor(moduleId).filter(slot => slot.semester > dependentSlot.semester);
-      
-      return providerSlots.length > 0;
-    })
-  );
+  // check if prerequisites cannot be satisfied before the dependent course
+  return !evaluatePrerequisitesSchedulableBefore(course.prerequisites, dependentSlot.id, index, considerSameSemester);
 }
 
 export type EdgePair = {
