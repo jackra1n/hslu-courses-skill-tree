@@ -3,6 +3,7 @@ import { browser } from '$app/environment';
 
 // private state
 let _selection = $state<Course | null>(null);
+let _selectedSlotId = $state<string | null>(null);
 let _viewport = $state<Viewport>({ x: 0, y: 0, zoom: 1 });
 let _showAssessmentInfo = $state(false);
 let _showMoreOptions = $state(false);
@@ -17,6 +18,7 @@ const _isElectiveSlot = $derived(
 
 // export getter functions
 export function getSelection() { return _selection; }
+export function getSelectedSlotId() { return _selectedSlotId; }
 export function getViewport() { return _viewport; }
 export function getShowAssessmentInfo() { return _showAssessmentInfo; }
 export function getShowMoreOptions() { return _showMoreOptions; }
@@ -27,6 +29,7 @@ export function getIsElectiveSlot() { return _isElectiveSlot; }
 
 export const uiStore = {
   get selection() { return _selection; },
+  get selectedSlotId() { return _selectedSlotId; },
   get viewport() { return _viewport; },
   get showAssessmentInfo() { return _showAssessmentInfo; },
   get showMoreOptions() { return _showMoreOptions; },
@@ -35,12 +38,14 @@ export const uiStore = {
   get hasSelection() { return _hasSelection; },
   get isElectiveSlot() { return _isElectiveSlot; },
 
-  selectCourse(course: Course | null) {
+  selectCourse(course: Course | null, slotId?: string | null) {
     _selection = course;
+    _selectedSlotId = slotId || null;
   },
 
   deselectCourse() {
     _selection = null;
+    _selectedSlotId = null;
   },
 
   updateViewport(newViewport: Viewport) {
