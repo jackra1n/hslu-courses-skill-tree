@@ -1,133 +1,127 @@
 import { browser } from '$app/environment';
-import type { Status } from '$lib/data/courses';
+import type { Status, CurriculumTemplate } from '$lib/data/courses';
 import { COURSES } from '$lib/data/courses';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
 import { computeStatuses } from '$lib/utils/status';
 
-let _attended = $state(new Set<string>());
-let _completed = $state(new Set<string>());
-
-const _attendedCourses = $derived(
-  COURSES.filter(course => _attended.has(course.id))
-);
-
-const _completedCourses = $derived(
-  COURSES.filter(course => _completed.has(course.id))
-);
-
-const _totalAttendedCredits = $derived(
-  _attendedCourses.reduce((total, course) => total + course.ects, 0)
-);
-
-const _totalCompletedCredits = $derived(
-  _completedCourses.reduce((total, course) => total + course.ects, 0)
-);
-
-// export getter functions
-export function getAttended() { return _attended; }
-export function getCompleted() { return _completed; }
-export function getAttendedCourses() { return _attendedCourses; }
-export function getCompletedCourses() { return _completedCourses; }
-export function getTotalAttendedCredits() { return _totalAttendedCredits; }
-export function getTotalCompletedCredits() { return _totalCompletedCredits; }
+let _slotStatus = $state(new Map<string, 'attended' | 'completed'>());
 
 // helper functions
-function toggleCourseInSet(set: Set<string>, courseId: string): Set<string> {
-  const newSet = new Set(set);
-  if (newSet.has(courseId)) {
-    newSet.delete(courseId);
-  } else {
-    newSet.add(courseId);
-  }
-  return newSet;
-}
-
-function saveToLocalStorage(key: string, set: Set<string>) {
+function saveToLocalStorage() {
   if (browser) {
-    localStorage.setItem(key, JSON.stringify([...set]));
+    const slotStatusObj: Record<string, 'attended' | 'completed'> = {};
+    _slotStatus.forEach((status, slotId) => {
+      slotStatusObj[slotId] = status;
+    });
+    localStorage.setItem('slotStatus', JSON.stringify(slotStatusObj));
   }
-}
-
-function validateCourseAndPrerequisites(courseId: string): typeof COURSES[0] | null {
-  const course = COURSES.find(c => c.id === courseId);
-  if (!course) return null;
-  
-  const prereqsMet = evaluatePrerequisites(course.prerequisites, _attended, _completed);
-  if (!prereqsMet) return null;
-  
-  return course;
 }
 
 export const progressStore = {
-  get attended() { return _attended; },
-  get completed() { return _completed; },
-  get attendedCourses() { return _attendedCourses; },
-  get completedCourses() { return _completedCourses; },
-  get totalAttendedCredits() { return _totalAttendedCredits; },
-  get totalCompletedCredits() { return _totalCompletedCredits; },
+  get slotStatusMap() { return _slotStatus; },
   
-  get attendedSet() { return _attended; },
-  get completedSet() { return _completed; },
-  
-  markAttended(courseId: string) {
-    const course = validateCourseAndPrerequisites(courseId);
-    if (!course) return;
+  markSlotAttended(slotId: string) {
+    const newMap = new Map(_slotStatus);
     
-    _attended = toggleCourseInSet(_attended, courseId);
-    saveToLocalStorage("attendedCourses", _attended);
+    if (newMap.get(slotId) === 'attended') {
+      newMap.delete(slotId);
+    } else {
+      newMap.set(slotId, 'attended');
+    }
+    
+    _slotStatus = newMap;
+    saveToLocalStorage();
   },
   
-  markCompleted(courseId: string) {
-    const course = validateCourseAndPrerequisites(courseId);
-    if (!course) return;
+  markSlotCompleted(slotId: string) {
+    const newMap = new Map(_slotStatus);
     
-    _completed = toggleCourseInSet(_completed, courseId);
+    if (newMap.get(slotId) === 'completed') {
+      newMap.delete(slotId);
+    } else {
+      newMap.set(slotId, 'completed');
+    }
     
-    // remove from attended when marked as completed
-    const newAttended = new Set(_attended);
-    newAttended.delete(courseId);
-    _attended = newAttended;
+    _slotStatus = newMap;
+    saveToLocalStorage();
+  },
+  
+  clearSlotStatus(slotId: string) {
+    const newMap = new Map(_slotStatus);
+    newMap.delete(slotId);
+    _slotStatus = newMap;
+    saveToLocalStorage();
+  },
+  
+  getSlotStatus(slotId: string): 'attended' | 'completed' | null {
+    return _slotStatus.get(slotId) ?? null;
+  },
+  
+  hasCompletedInstance(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): boolean {
+    const slotsWithCourse = template.slots.filter(slot => {
+      if (slot.type === 'fixed') return slot.courseId === courseId;
+      if (slot.type === 'elective' || slot.type === 'major') return selections[slot.id] === courseId;
+      return false;
+    });
 
-    saveToLocalStorage("completedCourses", _completed);
-    saveToLocalStorage("attendedCourses", _attended);
+    return slotsWithCourse.some(slot => _slotStatus.get(slot.id) === 'completed');
   },
   
-  isAttended(courseId: string): boolean {
-    return _attended.has(courseId);
-  },
+  hasAttendedInstance(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): boolean {
+    const slotsWithCourse = template.slots.filter(slot => {
+      if (slot.type === 'fixed') return slot.courseId === courseId;
+      if (slot.type === 'elective' || slot.type === 'major') return selections[slot.id] === courseId;
+      return false;
+    });
 
-  isCompleted(courseId: string): boolean {
-    return _completed.has(courseId);
+    return slotsWithCourse.some(slot => _slotStatus.get(slot.id) === 'attended');
   },
   
-  canTakeCourse(courseId: string): boolean {
+  getAllInstanceStatuses(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): Array<{slotId: string, status: 'attended' | 'completed'}> {
+    const slotsWithCourse = template.slots.filter(slot => {
+      if (slot.type === 'fixed') return slot.courseId === courseId;
+      if (slot.type === 'elective' || slot.type === 'major') return selections[slot.id] === courseId;
+      return false;
+    });
+
+    return slotsWithCourse
+      .map(slot => {
+        const status = _slotStatus.get(slot.id);
+        return status ? { slotId: slot.id, status } : null;
+      })
+      .filter((item): item is {slotId: string, status: 'attended' | 'completed'} => item !== null);
+  },
+  
+  canTakeCourse(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): boolean {
     const course = COURSES.find(c => c.id === courseId);
     if (!course) return false;
     
-    const prereqsMet = evaluatePrerequisites(course.prerequisites, _attended, _completed);
-    const assessmentStageMet = _completed.size >= 6;
+    const prereqsMet = evaluatePrerequisites(course.prerequisites, _slotStatus, template, selections);
+    const completedSlotCount = Array.from(_slotStatus.values()).filter(status => status === 'completed').length;
+    const assessmentStageMet = completedSlotCount >= 6;
     const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
     
     return prereqsMet && assessmentMet;
   },
   
   getCourseStatus(courseId: string, template: any, selections: Record<string, string>): Status {
-    const statuses = computeStatuses(template, selections, _attended, _completed);
+    const statuses = computeStatuses(template, selections, _slotStatus);
     const slot = template.slots.find((s: any) => s.courseId === courseId);
     return slot ? statuses[slot.id] : "locked";
   },
   
   init() {
     if (!browser) return;
-    
-    const savedAttended = localStorage.getItem("attendedCourses");
-    if (savedAttended) {
-      _attended = new Set<string>(JSON.parse(savedAttended));
-    }
 
-    const savedCompleted = localStorage.getItem("completedCourses");
-    if (savedCompleted) {
-      _completed = new Set<string>(JSON.parse(savedCompleted));
+    const savedSlotStatus = localStorage.getItem('slotStatus');
+    if (savedSlotStatus) {
+      try {
+        const slotStatusObj: Record<string, 'attended' | 'completed'> = JSON.parse(savedSlotStatus);
+        _slotStatus = new Map(Object.entries(slotStatusObj));
+        return;
+      } catch (e) {
+        console.error('Failed to parse slotStatus from localStorage', e);
+      }
     }
   }
 };
