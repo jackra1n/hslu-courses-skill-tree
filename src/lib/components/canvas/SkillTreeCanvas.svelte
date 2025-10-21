@@ -23,11 +23,7 @@
     getShowCourseTypeBadges,
     uiStore
   } from '$lib/stores/uiStore.svelte';
-  import {
-    getAttended,
-    getCompleted,
-    progressStore
-  } from '$lib/stores/progressStore.svelte';
+  import { progressStore } from '$lib/stores/progressStore.svelte';
   import { getTheme } from '$lib/stores/theme.svelte';
   import CustomNode from './CustomNode.svelte';
   import SemesterDivider from './SemesterDivider.svelte';
@@ -63,11 +59,9 @@
   const selection = $derived(getSelection());
   const viewport = $derived(getViewport());
   const showCourseTypeBadges = $derived(getShowCourseTypeBadges());
-  const attended = $derived(getAttended());
-  const completed = $derived(getCompleted());
 
   const styledNodes = $derived.by(() => {
-    const statuses = computeStatuses(currentTemplate, userSelections, attended, completed);
+    const statuses = computeStatuses(currentTemplate, userSelections, progressStore.slotStatusMap);
 
     return nodes.map((n) => {
       const s = statuses[n.id];
@@ -75,9 +69,10 @@
       const slot = data.slot;
       const course = data.course;
       const isElectiveSlot = data.isElectiveSlot;
-      
-      const isAttended = course ? attended.has(course.id) : false;
-      const isCompleted = course ? completed.has(course.id) : false;
+
+      const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
+      const isAttended = slotStatus === 'attended';
+      const isCompleted = slotStatus === 'completed';
       const isSelected = selection?.id === n.id || (course && selection?.id === course.id);
       
       const nodeWidth = data.width || getNodeWidth(course?.ects || slot?.credits || 6);
@@ -138,7 +133,7 @@
   });
 
   const styledEdges = $derived.by(() => {
-    const statuses = computeStatuses(currentTemplate, userSelections, attended, completed);
+    const statuses = computeStatuses(currentTemplate, userSelections, progressStore.slotStatusMap);
     return edges.map((e) => {
       let selectedSlotId = selection?.id;
       if (selection && !selection.id.startsWith('elective') && !selection.id.startsWith('major')) {
@@ -151,14 +146,10 @@
       const isDependent = selectedSlotId === e.source;
       
       const sourceSlot = currentTemplate.slots.find(slot => slot.id === e.source);
-      const sourceCourse = sourceSlot?.courseId ?
-        COURSES.find((c: any) => c.id === sourceSlot.courseId) : null;
-      const sourceCompleted = sourceCourse ? completed.has(sourceCourse.id) : false;
+      const sourceCompleted = sourceSlot ? progressStore.getSlotStatus(sourceSlot.id) === 'completed' : false;
 
       const targetSlot = currentTemplate.slots.find(slot => slot.id === e.target);
-      const targetCourse = targetSlot?.courseId ?
-        COURSES.find((c: any) => c.id === targetSlot.courseId) : null;
-      const targetCompleted = targetCourse ? completed.has(targetCourse.id) : false;
+      const targetCompleted = targetSlot ? progressStore.getSlotStatus(targetSlot.id) === 'completed' : false;
       
       let edgeStyle = "stroke-width: 2px; transition: all 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); ";
       let markerEnd = e.markerEnd;
@@ -218,9 +209,9 @@
         prerequisites: [],
         type: slot.type === "major" ? "Major-/Minormodul" : "Erweiterungsmodul"
       };
-      uiStore.selectCourse(electiveCourse);
-    } else if (course) {
-      uiStore.selectCourse(course);
+      uiStore.selectCourse(electiveCourse, slot.id);
+    } else if (course && slot) {
+      uiStore.selectCourse(course, slot.id);
     }
   }
 
