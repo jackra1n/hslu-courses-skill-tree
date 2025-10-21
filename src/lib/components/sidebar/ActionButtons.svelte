@@ -12,11 +12,14 @@
   const statuses = $derived(computeStatuses(courseStore.currentTemplate, courseStore.userSelections, progressStore.attendedSet, progressStore.completedSet));
   const isLocked = $derived(statuses[courseId] === "locked");
   
-  // check if prerequisites are met
+  // check if prerequisites are met (including assessment stage)
   const course = $derived(COURSES.find(c => c.id === courseId));
   const prerequisitesMet = $derived.by(() => {
     if (!course) return false;
-    return evaluatePrerequisites(course.prerequisites, progressStore.attendedSet, progressStore.completedSet);
+    const prereqsMet = evaluatePrerequisites(course.prerequisites, progressStore.attendedSet, progressStore.completedSet);
+    const assessmentStageMet = progressStore.completedSet.size >= 6;
+    const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
+    return prereqsMet && assessmentMet;
   });
 </script>
 

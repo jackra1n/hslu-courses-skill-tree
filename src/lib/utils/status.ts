@@ -11,6 +11,7 @@ export function computeStatuses(
   completed: Set<string>
 ): Record<string, Status> {
   const s: Record<string, Status> = {};
+  const assessmentStageMet = completed.size >= 6;
   
   template.slots.forEach(slot => {
     if (slot.type === "fixed" && slot.courseId) {
@@ -18,10 +19,14 @@ export function computeStatuses(
       if (course) {
         if (completed.has(course.id)) {
           s[slot.id] = "completed";
-        } else if (evaluatePrerequisites(course.prerequisites, attended, completed)) {
-          s[slot.id] = "available";
         } else {
-          s[slot.id] = "locked";
+          const prereqsMet = evaluatePrerequisites(course.prerequisites, attended, completed);
+          const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
+          if (prereqsMet && assessmentMet) {
+            s[slot.id] = "available";
+          } else {
+            s[slot.id] = "locked";
+          }
         }
       }
     } else if (slot.type === "elective" || slot.type === "major") {
@@ -31,10 +36,14 @@ export function computeStatuses(
         if (course) {
           if (completed.has(course.id)) {
             s[slot.id] = "completed";
-          } else if (evaluatePrerequisites(course.prerequisites, attended, completed)) {
-            s[slot.id] = "available";
           } else {
-            s[slot.id] = "locked";
+            const prereqsMet = evaluatePrerequisites(course.prerequisites, attended, completed);
+            const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
+            if (prereqsMet && assessmentMet) {
+              s[slot.id] = "available";
+            } else {
+              s[slot.id] = "locked";
+            }
           }
         }
       } else {

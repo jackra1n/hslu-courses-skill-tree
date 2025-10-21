@@ -21,6 +21,7 @@ export type Course = {
   ects: number;
   prerequisites: IdmsPrerequisiteRule[];
   prerequisiteNote?: string;
+  assessmentLevelPassed?: boolean;
   type?: ModuleType;
 };
 

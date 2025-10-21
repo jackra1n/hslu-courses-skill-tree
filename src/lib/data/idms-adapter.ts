@@ -20,6 +20,7 @@ interface IdmsModule {
     PrerequisiteLinkType?: "und" | "oder";
   }> | null;
   PrerequisiteNote: string | null;
+  AssessmentLevelPassed: boolean;
 }
 
 interface IdmsData {
@@ -92,6 +93,7 @@ export function loadIdmsCourses(plan: string = 'HS25'): Course[] {
     ects: module.Ects,
     prerequisites: mapPrerequisites(module.Prerequisites),
     prerequisiteNote: module.PrerequisiteNote || undefined,
+    assessmentLevelPassed: module.AssessmentLevelPassed,
     type: selectModuleType(module.ModuleOffers, plan)
   }));
 }

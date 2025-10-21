@@ -109,6 +109,6 @@
     <PrerequisiteWarning showBorder={true} />
   {/if}
   
-  <PrerequisiteList prerequisites={selectedCourse.prerequisites || []} />
+  <PrerequisiteList prerequisites={selectedCourse.prerequisites || []} assessmentLevelPassed={selectedCourse.assessmentLevelPassed} />
   <ActionButtons courseId={selectedCourse.id} isElectiveSlot={true} />
 {/if}

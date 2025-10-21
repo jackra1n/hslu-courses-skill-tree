@@ -104,7 +104,11 @@ export const progressStore = {
     const course = COURSES.find(c => c.id === courseId);
     if (!course) return false;
     
-    return evaluatePrerequisites(course.prerequisites, _attended, _completed);
+    const prereqsMet = evaluatePrerequisites(course.prerequisites, _attended, _completed);
+    const assessmentStageMet = _completed.size >= 6;
+    const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
+    
+    return prereqsMet && assessmentMet;
   },
   
   getCourseStatus(courseId: string, template: any, selections: Record<string, string>): Status {

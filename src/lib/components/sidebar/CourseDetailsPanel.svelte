@@ -88,7 +88,7 @@
         {#if hasLaterPrerequisites}
           <PrerequisiteWarning />
         {/if}
-        <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} />
+        <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} assessmentLevelPassed={displayCourse?.assessmentLevelPassed} />
         <ActionButtons courseId={displayCourse?.id || ''} />
       {/if}
     </div>
