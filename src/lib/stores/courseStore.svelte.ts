@@ -53,7 +53,7 @@ export const courseStore = {
   get availablePlans() { return _availablePlans; },
   
   canSelectCourseForSlot(slotId: string, courseId: string): boolean {
-    if (progressStore.isCompleted(courseId)) {
+    if (progressStore.hasCompletedInstance(courseId, _currentTemplate, _userSelections)) {
       return false;
     }
 
@@ -70,8 +70,8 @@ export const courseStore = {
       const isCoreOrProject = course?.type === 'Kernmodul' || course?.type === 'Projektmodul';
       
       if (appearsFixed || isCoreOrProject) {
-        // require course to be attended (failed) to select in elective slot
-        if (!progressStore.isAttended(courseId)) {
+        // require at least one attended instance to select in elective slot
+        if (!progressStore.hasAttendedInstance(courseId, _currentTemplate, _userSelections)) {
           return false;
         }
         
@@ -95,8 +95,8 @@ export const courseStore = {
       return true;
     }
     
-    // if course is attended (failed) allow across semesters but only one per semester
-    if (progressStore.isAttended(courseId)) {
+    // if course has attended instances, allow across semesters but only one per semester
+    if (progressStore.hasAttendedInstance(courseId, _currentTemplate, _userSelections)) {
       const conflictingSlot = _currentTemplate.slots.find(s => s.id === conflictingSlotId);
       return conflictingSlot ? conflictingSlot.semester !== slot.semester : true;
     }
