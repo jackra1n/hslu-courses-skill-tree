@@ -32,13 +32,13 @@
     COURSES.filter(course => {
       if (!electiveSlot) return false;
       if (selectedCourseId === course.id) return true;
-      if (progressStore.isCompleted(course.id)) return false;
+      if (progressStore.hasCompletedInstance(course.id, currentTemplate, courseStore.userSelections)) return false;
 
       const appearsFixed = currentTemplate.slots.some(s => s.type === 'fixed' && s.courseId === course.id);
       const isCoreOrProject = course.type === 'Kernmodul' || course.type === 'Projektmodul';
       
       if (appearsFixed || isCoreOrProject) {
-        if (!progressStore.isAttended(course.id)) return false;
+        if (!progressStore.hasAttendedInstance(course.id, currentTemplate, courseStore.userSelections)) return false;
         const fixedSemesters = currentTemplate.slots
           .filter(s => s.type === 'fixed' && s.courseId === course.id)
           .map(s => s.semester);

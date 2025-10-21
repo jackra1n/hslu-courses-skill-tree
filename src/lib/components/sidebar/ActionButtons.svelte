@@ -4,20 +4,29 @@
   import { courseStore } from '$lib/stores/courseStore.svelte';
   import { COURSES } from '$lib/data/courses';
   import { evaluatePrerequisites } from '$lib/utils/prerequisite';
+  import { getSelectedSlotId } from '$lib/stores/uiStore.svelte';
 
   let { courseId, isElectiveSlot = false }: { courseId: string; isElectiveSlot?: boolean } = $props();
 
-  const isAttended = $derived(progressStore.isAttended(courseId));
-  const isCompleted = $derived(progressStore.isCompleted(courseId));
-  const statuses = $derived(computeStatuses(courseStore.currentTemplate, courseStore.userSelections, progressStore.attendedSet, progressStore.completedSet));
-  const isLocked = $derived(statuses[courseId] === "locked");
+  const selectedSlotId = $derived(getSelectedSlotId());
+  const slotStatus = $derived(selectedSlotId ? progressStore.getSlotStatus(selectedSlotId) : null);
+  const isAttended = $derived(slotStatus === 'attended');
+  const isCompleted = $derived(slotStatus === 'completed');
+  const statuses = $derived(computeStatuses(courseStore.currentTemplate, courseStore.userSelections, progressStore.slotStatusMap));
+  const isLocked = $derived(selectedSlotId ? statuses[selectedSlotId] === "locked" : true);
   
   // check if prerequisites are met (including assessment stage)
   const course = $derived(COURSES.find(c => c.id === courseId));
   const prerequisitesMet = $derived.by(() => {
     if (!course) return false;
-    const prereqsMet = evaluatePrerequisites(course.prerequisites, progressStore.attendedSet, progressStore.completedSet);
-    const assessmentStageMet = progressStore.completedSet.size >= 6;
+    const prereqsMet = evaluatePrerequisites(
+      course.prerequisites,
+      progressStore.slotStatusMap,
+      courseStore.currentTemplate,
+      courseStore.userSelections
+    );
+    const completedSlotCount = Array.from(progressStore.slotStatusMap.values()).filter(status => status === 'completed').length;
+    const assessmentStageMet = completedSlotCount >= 6;
     const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
     return prereqsMet && assessmentMet;
   });
@@ -25,9 +34,9 @@
 
 <div class="border-t border-border-primary pt-4 space-y-2">
   <button 
-    onclick={() => progressStore.markAttended(courseId)}
-    disabled={isLocked || isCompleted || !prerequisitesMet}
-    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {(isLocked || isCompleted || !prerequisitesMet)
+    onclick={() => selectedSlotId && progressStore.markSlotAttended(selectedSlotId)}
+    disabled={!selectedSlotId || isLocked || isCompleted || !prerequisitesMet}
+    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {(!selectedSlotId || isLocked || isCompleted || !prerequisitesMet)
       ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700'
       : isAttended 
         ? 'bg-yellow-200 text-yellow-900 border-2 border-yellow-400 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:border-yellow-500 dark:hover:bg-yellow-700' 
@@ -44,9 +53,9 @@
   </button>
   
   <button 
-    onclick={() => progressStore.markCompleted(courseId)}
-    disabled={isLocked || !prerequisitesMet}
-    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {(isLocked || !prerequisitesMet)
+    onclick={() => selectedSlotId && progressStore.markSlotCompleted(selectedSlotId)}
+    disabled={!selectedSlotId || isLocked || !prerequisitesMet}
+    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {(!selectedSlotId || isLocked || !prerequisitesMet)
       ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700'
       : isCompleted
         ? 'bg-green-200 text-green-900 border-2 border-green-400 hover:bg-green-300 dark:bg-green-800 dark:text-green-100 dark:border-green-500 dark:hover:bg-green-700'

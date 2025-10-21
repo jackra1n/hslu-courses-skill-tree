@@ -4,6 +4,7 @@
   import { progressStore } from "$lib/stores/progressStore.svelte";
   import { evaluatePrerequisiteRule } from "$lib/utils/prerequisite";
   import { uiStore } from "$lib/stores/uiStore.svelte";
+  import { courseStore } from "$lib/stores/courseStore.svelte";
 
   let {
     prerequisites,
@@ -13,20 +14,44 @@
     assessmentLevelPassed?: boolean;
   } = $props();
 
-  const attended = $derived(progressStore.attendedSet);
-  const completed = $derived(progressStore.completedSet);
-  const completedCount = $derived(completed.size);
+  const completedCount = $derived(
+    Array.from(progressStore.slotStatusMap.values()).filter(
+      (status) => status === "completed"
+    ).length
+  );
 
-  // Assessment stage is considered passed when 6+ courses are completed
   const assessmentStageMet = $derived(completedCount >= 6);
 
   function renderPrerequisiteRule(rule: IdmsPrerequisiteRule) {
-    const ruleMet = evaluatePrerequisiteRule(rule, attended, completed);
+    const ruleMet = evaluatePrerequisiteRule(
+      rule,
+      progressStore.slotStatusMap,
+      courseStore.currentTemplate,
+      courseStore.userSelections
+    );
 
     return {
       rule,
       met: ruleMet,
     };
+  }
+
+  function isModuleMet(moduleId: string, mustBePassed: boolean): boolean {
+    const slotsWithCourse = courseStore.currentTemplate.slots.filter((slot) => {
+      if (slot.type === "fixed") return slot.courseId === moduleId;
+      if (slot.type === "elective" || slot.type === "major")
+        return courseStore.userSelections[slot.id] === moduleId;
+      return false;
+    });
+
+    return slotsWithCourse.some((slot) => {
+      const status = progressStore.slotStatusMap.get(slot.id);
+      if (mustBePassed) {
+        return status === "completed";
+      } else {
+        return status === "attended" || status === "completed";
+      }
+    });
   }
 
   function openAssessmentInfo() {
@@ -110,9 +135,7 @@
               <div class="ml-2 mt-1 space-y-1">
                 {#each rule.modules as moduleId}
                   {@const course = COURSES.find((c) => c.id === moduleId)}
-                  {@const moduleMet = rule.mustBePassed
-                    ? completed.has(moduleId)
-                    : attended.has(moduleId) || completed.has(moduleId)}
+                  {@const moduleMet = isModuleMet(moduleId, rule.mustBePassed)}
                   <div class="flex items-center gap-1.5 text-xs">
                     <div
                       class="{moduleMet
