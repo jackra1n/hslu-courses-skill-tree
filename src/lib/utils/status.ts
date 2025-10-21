@@ -7,20 +7,22 @@ import { evaluatePrerequisites } from './prerequisite';
 export function computeStatuses(
   template: CurriculumTemplate,
   selections: Record<string, string>,
-  attended: Set<string>,
-  completed: Set<string>
+  slotStatus: Map<string, 'attended' | 'completed'>
 ): Record<string, Status> {
   const s: Record<string, Status> = {};
-  const assessmentStageMet = completed.size >= 6;
+
+  const completedSlotCount = Array.from(slotStatus.values()).filter(status => status === 'completed').length;
+  const assessmentStageMet = completedSlotCount >= 6;
   
   template.slots.forEach(slot => {
     if (slot.type === "fixed" && slot.courseId) {
       const course = COURSES.find(c => c.id === slot.courseId);
       if (course) {
-        if (completed.has(course.id)) {
+        const slotStatusValue = slotStatus.get(slot.id);
+        if (slotStatusValue === 'completed') {
           s[slot.id] = "completed";
         } else {
-          const prereqsMet = evaluatePrerequisites(course.prerequisites, attended, completed);
+          const prereqsMet = evaluatePrerequisites(course.prerequisites, slotStatus, template, selections);
           const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
           if (prereqsMet && assessmentMet) {
             s[slot.id] = "available";
@@ -34,10 +36,11 @@ export function computeStatuses(
       if (selectedCourseId) {
         const course = COURSES.find(c => c.id === selectedCourseId);
         if (course) {
-          if (completed.has(course.id)) {
+          const slotStatusValue = slotStatus.get(slot.id);
+          if (slotStatusValue === 'completed') {
             s[slot.id] = "completed";
           } else {
-            const prereqsMet = evaluatePrerequisites(course.prerequisites, attended, completed);
+            const prereqsMet = evaluatePrerequisites(course.prerequisites, slotStatus, template, selections);
             const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
             if (prereqsMet && assessmentMet) {
               s[slot.id] = "available";
@@ -111,7 +114,7 @@ export function getEdgeStyle(
   edge: any,
   selection: any,
   statuses: Record<string, Status>,
-  completed: Set<string>,
+  slotStatus: Map<string, 'attended' | 'completed'>,
   currentTemplate: CurriculumTemplate
 ): { style: string; markerEnd: any; animated: boolean } {
   let selectedSlotId = selection?.id;
@@ -123,14 +126,9 @@ export function getEdgeStyle(
   const isSelected = selectedSlotId === edge.source || selectedSlotId === edge.target;
   const isPrerequisite = selectedSlotId === edge.target;
   const isDependent = selectedSlotId === edge.source;
-  
-  const sourceSlot = currentTemplate.slots.find(slot => slot.id === edge.source);
-  const sourceCourse = sourceSlot?.courseId ? COURSES.find(c => c.id === sourceSlot.courseId) : null;
-  const sourceCompleted = sourceCourse ? completed.has(sourceCourse.id) : false;
-  
-  const targetSlot = currentTemplate.slots.find(slot => slot.id === edge.target);
-  const targetCourse = targetSlot?.courseId ? COURSES.find(c => c.id === targetSlot.courseId) : null;
-  const targetCompleted = targetCourse ? completed.has(targetCourse.id) : false;
+
+  const sourceCompleted = slotStatus.get(edge.source) === 'completed';
+  const targetCompleted = slotStatus.get(edge.target) === 'completed';
   
   let edgeStyle = "stroke-width: 2px; transition: all 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); ";
   let markerEnd = edge.markerEnd;
