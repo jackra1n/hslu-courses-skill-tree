@@ -10,29 +10,46 @@ import { TemplateIndex } from '$lib/utils/template-index';
 
 export function evaluatePrerequisiteRule(
   rule: IdmsPrerequisiteRule,
-  attended: Set<string>,
-  completed: Set<string>
+  slotStatus: Map<string, 'attended' | 'completed'>,
+  template: CurriculumTemplate,
+  selections: Record<string, string>
 ): boolean {
   const modules = rule.modules;
-  const requiredSet = rule.mustBePassed ? completed : 
-    new Set([...attended, ...completed]);
+
+  const moduleResults = modules.map(moduleId => {
+    const slotsWithCourse = template.slots.filter(slot => {
+      if (slot.type === 'fixed') return slot.courseId === moduleId;
+      if (slot.type === 'elective' || slot.type === 'major') return selections[slot.id] === moduleId;
+      return false;
+    });
+
+    return slotsWithCourse.some(slot => {
+      const status = slotStatus.get(slot.id);
+      if (rule.mustBePassed) {
+        return status === 'completed';
+      } else {
+        return status === 'attended' || status === 'completed';
+      }
+    });
+  });
   
   if (rule.moduleLinkType === 'oder') {
-    return modules.some(moduleId => requiredSet.has(moduleId));
+    return moduleResults.some(result => result);
   } else {
-    return modules.every(moduleId => requiredSet.has(moduleId));
+    return moduleResults.every(result => result);
   }
 }
 
 export function evaluatePrerequisites(
   rules: IdmsPrerequisiteRule[],
-  attended: Set<string>,
-  completed: Set<string>
+  slotStatus: Map<string, 'attended' | 'completed'>,
+  template: CurriculumTemplate,
+  selections: Record<string, string>
 ): boolean {
   if (rules.length === 0) return true;
   
   return rules.reduce((acc, rule, index) => {
-    const currentResult = evaluatePrerequisiteRule(rule, attended, completed);
+    const currentResult = evaluatePrerequisiteRule(rule, slotStatus, template, selections);
     
     if (index === 0) {
       return currentResult;
