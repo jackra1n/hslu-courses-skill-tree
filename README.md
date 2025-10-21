@@ -31,7 +31,7 @@ An interactive skill tree visualization tool for university courses. Track your 
 ## Roadmap
 
 - [ ] **More Templates**: Add curriculum templates for other HSLU programs (Wirtschaftsinformatik, Digital Ideation, etc.)
-- [ ] **Expanded Course Database**: Include more courses and detailed prerequisite information
+- [x] **Expanded Course Database**: Include more courses and detailed prerequisite information
 - [ ] **Custom Study Plans**: Allow users to create and save their own personalized curriculum plans
 - [ ] **Course Links**: Direct links to HSLU course pages and registration systems
 - [ ] **Progress Analytics**: Visualize your academic progress and credit accumulation
