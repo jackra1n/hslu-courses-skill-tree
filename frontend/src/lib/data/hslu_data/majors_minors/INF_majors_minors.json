@@ -1,0 +1,49 @@
+{
+  "data": [
+    {
+      "ShortName": "AV",
+      "Name": "Artificial Intelligence & Visual Computing",
+      "PlanningClassShortName": "maAV"
+    },
+    {
+      "ShortName": "RO",
+      "Name": "Artificial Intelligence Robotics",
+      "PlanningClassShortName": "maRO"
+    },
+    {
+      "ShortName": "VR",
+      "Name": "Augmented & Virtual Reality",
+      "PlanningClassShortName": "maVR"
+    },
+    {
+      "ShortName": "BA",
+      "Name": "Business Analysis",
+      "PlanningClassShortName": "maBA"
+    },
+    {
+      "ShortName": "DS",
+      "Name": "Data Science & Data Engineering",
+      "PlanningClassShortName": "maDS"
+    },
+    {
+      "ShortName": "HC",
+      "Name": "Human Computer Interaction Design",
+      "PlanningClassShortName": "maHC"
+    },
+    {
+      "ShortName": "OS",
+      "Name": "IT Operation & Security",
+      "PlanningClassShortName": "maOS"
+    },
+    {
+      "ShortName": "SD",
+      "Name": "Software Development",
+      "PlanningClassShortName": "maSD"
+    },
+    {
+      "ShortName": "SE",
+      "Name": "Software Engineering & DevOps",
+      "PlanningClassShortName": "maSE"
+    }
+  ]
+}

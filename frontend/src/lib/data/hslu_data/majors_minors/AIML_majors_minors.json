@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "ShortName": "AR",
+      "Name": "AI Robotics Minor",
+      "PlanningClassShortName": "miAR"
+    },
+    {
+      "ShortName": "CS",
+      "Name": "Information & Cyber Security Minor",
+      "PlanningClassShortName": "miCS"
+    },
+    {
+      "ShortName": "MH",
+      "Name": "Medtech & Healthcare Minor",
+      "PlanningClassShortName": "miMH"
+    },
+    {
+      "ShortName": "EM",
+      "Name": "Software Engineering Minor",
+      "PlanningClassShortName": "miSE"
+    }
+  ]
+}

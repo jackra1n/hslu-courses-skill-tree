@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "ShortName": "SP",
+      "Name": "Attack Specialist & Penetration Testing",
+      "PlanningClassShortName": "maSP"
+    },
+    {
+      "ShortName": "SF",
+      "Name": "Digital Forensic & Incident Response",
+      "PlanningClassShortName": "maSF"
+    },
+    {
+      "ShortName": "SM",
+      "Name": "Information Security Management",
+      "PlanningClassShortName": "maSM"
+    },
+    {
+      "ShortName": "ST",
+      "Name": "Information Security Technologie",
+      "PlanningClassShortName": "maST"
+    },
+    {
+      "ShortName": "SC",
+      "Name": "Major Security of Cloud, Mobile & IoT",
+      "PlanningClassShortName": "maSC"
+    }
+  ]
+}

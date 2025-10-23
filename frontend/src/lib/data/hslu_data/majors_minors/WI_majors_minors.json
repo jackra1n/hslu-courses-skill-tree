@@ -1,0 +1,34 @@
+{
+  "data": [
+    {
+      "ShortName": "VR",
+      "Name": "Augmented & Virtual Reality",
+      "PlanningClassShortName": "maVR"
+    },
+    {
+      "ShortName": "BA",
+      "Name": "Business Analysis",
+      "PlanningClassShortName": "maBA"
+    },
+    {
+      "ShortName": "DS",
+      "Name": "Data Science & Data Engineering",
+      "PlanningClassShortName": "maDS"
+    },
+    {
+      "ShortName": "DB",
+      "Name": "Digital Business",
+      "PlanningClassShortName": "maDB"
+    },
+    {
+      "ShortName": "HC",
+      "Name": "Human Computer Interaction Design",
+      "PlanningClassShortName": "maHC"
+    },
+    {
+      "ShortName": "OS",
+      "Name": "IT Operation & Security",
+      "PlanningClassShortName": "maOS"
+    }
+  ]
+}

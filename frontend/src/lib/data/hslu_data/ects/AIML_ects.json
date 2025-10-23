@@ -1,0 +1,12 @@
+{
+  "data": {
+    "TotalECTS": "180",
+    "ectsPerModule": {
+      "Kernmodul": "105",
+      "Projektmodul": "39",
+      "Erweiterungsmodul": "24",
+      "Major-/Minormodul": "15",
+      "Zusatzmodul": "6"
+    }
+  }
+}

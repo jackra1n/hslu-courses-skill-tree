@@ -1,0 +1,28 @@
+{
+  "data": [
+    {
+      "ShortName": "AIML",
+      "Name": "Artificial Intelligence & Machine Learning"
+    },
+    {
+      "ShortName": "ICS",
+      "Name": "Information & Cyber Security"
+    },
+    {
+      "ShortName": "INF",
+      "Name": "Informatik"
+    },
+    {
+      "ShortName": "WI",
+      "Name": "Wirtschaftsinformatik"
+    },
+    {
+      "ShortName": "DI",
+      "Name": "Digital Ideation"
+    },
+    {
+      "ShortName": "IMTEC",
+      "Name": "Immersive Technologies"
+    }
+  ]
+}
