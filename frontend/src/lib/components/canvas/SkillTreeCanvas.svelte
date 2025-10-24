@@ -6,6 +6,7 @@
     Controls,
     MiniMap,
     type OnMove,
+    type NodeChange,
     MarkerType,
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
@@ -192,6 +193,10 @@
     uiStore.updateViewport(viewportData);
   };
 
+  function handleNodesChange(changes: NodeChange[]) {
+    courseStore.handleNodesChange(changes);
+  }
+
   function handleNodeClick(evt: { node: any; event: MouseEvent | TouchEvent }) {
     const node = evt.node;
     if (!node) return;
@@ -229,8 +234,11 @@
     {nodeTypes}
     onnodeclick={handleNodeClick}
     onmove={handleMove}
-    nodesDraggable={false}
+    onnodeschange={handleNodesChange}
+    nodesDraggable={true}
     nodesConnectable={false}
+    snapToGrid={true}
+    snapGrid={[40, 200]}
     fitView
     colorMode={getTheme() === 'system' ? 'system' : getTheme()}
     >

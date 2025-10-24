@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
-import type { Node, Edge } from '@xyflow/svelte';
+import type { Node, Edge, NodeChange } from '@xyflow/svelte';
+import { applyNodeChanges } from '@xyflow/svelte';
 import type { ExtendedNodeData, Course } from '$lib/data/courses';
 import {
   AVAILABLE_TEMPLATES,
@@ -20,6 +21,8 @@ let _nodes = $state<Node[]>([]);
 let _edges = $state<Edge[]>([]);
 let _showShortNamesOnly = $state(false);
 let _useELKLayout = $state(false);
+type ManualPosition = { x: number; y: number };
+let _manualPositions = $state<Record<string, ManualPosition>>({});
 
 const _totalCredits = $derived(calculateTotalCredits(_currentTemplate, _userSelections));
 
@@ -51,6 +54,7 @@ export const courseStore = {
   get useELKLayout() { return _useELKLayout; },
   get totalCredits() { return _totalCredits; },
   get availablePlans() { return _availablePlans; },
+  get manualPositions() { return _manualPositions; },
   
   canSelectCourseForSlot(slotId: string, courseId: string): boolean {
     if (progressStore.hasCompletedInstance(courseId, _currentTemplate, _userSelections)) {
@@ -109,6 +113,7 @@ export const courseStore = {
     
     _currentTemplate = template;
     _selectedPlan = template.plan;
+    _manualPositions = loadManualPositions(template.id);
     
     if (browser) {
       localStorage.setItem("currentTemplate", templateId);
@@ -201,8 +206,45 @@ export const courseStore = {
     } else {
       setCoursePlan(_selectedPlan);
     }
+
+    _manualPositions = loadManualPositions(_currentTemplate.id);
     
     updateGraph();
+  },
+
+  handleNodesChange(changes: NodeChange[]) {
+    if (!changes.length) return;
+
+    const updatedNodes = applyNodeChanges(changes, _nodes);
+    _nodes = updatedNodes;
+
+    const manualPositions: Record<string, ManualPosition> = { ..._manualPositions };
+    let shouldPersist = false;
+
+    changes.forEach((change) => {
+      if (change.type === 'position') {
+        const node = updatedNodes.find((n) => n.id === change.id);
+        if (node && node.position) {
+          manualPositions[change.id] = { x: node.position.x, y: node.position.y };
+          if (change.dragging !== true) {
+            shouldPersist = true;
+          }
+        }
+      }
+
+      if (change.type === 'remove') {
+        if (manualPositions[change.id]) {
+          delete manualPositions[change.id];
+          shouldPersist = true;
+        }
+      }
+    });
+
+    _manualPositions = manualPositions;
+
+    if (shouldPersist) {
+      saveManualPositions(_currentTemplate.id, _manualPositions);
+    }
   }
 };
 
@@ -217,16 +259,16 @@ async function updateLayout() {
   if (_useELKLayout) {
     try {
       const newNodes = await layoutELK(_nodes);
-      _nodes = newNodes;
+      _nodes = applyManualPositionsToNodes(newNodes);
     } catch (error) {
       console.error("ELK layout failed, falling back to semester layout:", error);
       _useELKLayout = false;
       const newNodes = layoutSemesterBased(_currentTemplate, _userSelections, _nodes);
-      _nodes = newNodes;
+      _nodes = applyManualPositionsToNodes(newNodes);
     }
   } else {
     const newNodes = layoutSemesterBased(_currentTemplate, _userSelections, _nodes);
-    _nodes = newNodes;
+    _nodes = applyManualPositionsToNodes(newNodes);
   }
 }
 
@@ -252,4 +294,66 @@ function updateNodeLabels() {
   });
   
   _nodes = newNodes;
+}
+
+function applyManualPositionsToNodes(nodes: Node[]): Node[] {
+  if (!nodes.length) return nodes;
+
+  const currentManual = _manualPositions;
+  const updatedManual: Record<string, ManualPosition> = {};
+
+  const updatedNodes = nodes.map((node) => {
+    const manual = currentManual[node.id];
+    if (!manual) {
+      return node;
+    }
+
+    updatedManual[node.id] = manual;
+    const position = { x: manual.x, y: manual.y };
+    const updatedNode: Node = {
+      ...node,
+      position
+    };
+
+    if ('positionAbsolute' in node) {
+      (updatedNode as any).positionAbsolute = position;
+    }
+
+    return updatedNode;
+  });
+
+  if (Object.keys(updatedManual).length !== Object.keys(currentManual).length) {
+    _manualPositions = updatedManual;
+    saveManualPositions(_currentTemplate.id, _manualPositions);
+  }
+
+  return updatedNodes;
+}
+
+function loadManualPositions(templateId: string): Record<string, ManualPosition> {
+  if (!browser) return {};
+
+  try {
+    const stored = localStorage.getItem(getManualPositionsKey(templateId));
+    if (!stored) return {};
+    const parsed = JSON.parse(stored) as Record<string, ManualPosition>;
+    return parsed || {};
+  } catch (error) {
+    console.error('Failed to load manual positions from localStorage', error);
+    return {};
+  }
+}
+
+function saveManualPositions(templateId: string, positions: Record<string, ManualPosition>): void {
+  if (!browser) return;
+
+  try {
+    localStorage.setItem(getManualPositionsKey(templateId), JSON.stringify(positions));
+  } catch (error) {
+    console.error('Failed to save manual positions to localStorage', error);
+  }
+}
+
+function getManualPositionsKey(templateId: string): string {
+  return `manualPositions:${templateId}`;
 }
