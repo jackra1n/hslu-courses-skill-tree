@@ -14,6 +14,7 @@
   const selectedCourseId = $derived(courseStore.userSelections[slotId]);
   const selectedCourse = $derived(selectedCourseId ? COURSES.find(c => c.id === selectedCourseId) : null);
   const currentTemplate = $derived(courseStore.currentTemplate);
+  const slotSemesterOverrides = $derived(courseStore.slotSemesterOverrides);
   
   const hasLaterPrerequisites = $derived.by(() => {
     if (!selectedCourse) return false;
@@ -22,8 +23,8 @@
     if (!slot) return false;
     
     // use the same logic as the graph builder
-    const index = new TemplateIndex(currentTemplate, courseStore.userSelections);
-    return hasPrereqAfter(slot, selectedCourse, index, { considerSameSemester: true });
+    const index = new TemplateIndex(currentTemplate, courseStore.userSelections, slotSemesterOverrides);
+    return hasPrereqAfter(slot, selectedCourse, index, { considerSameSemester: false });
   });
 
   const electiveSlot = $derived(currentTemplate.slots.find(s => s.id === slotId));

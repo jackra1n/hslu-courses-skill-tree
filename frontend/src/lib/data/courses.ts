@@ -158,9 +158,14 @@ export function getCoursesForSlot(slot: TemplateSlot, userSelections: Record<str
   return [];
 }
 
-export function calculateSemesterCredits(semester: number, template: CurriculumTemplate, userSelections: Record<string, string>): number {
+export function calculateSemesterCredits(
+  semester: number,
+  template: CurriculumTemplate,
+  userSelections: Record<string, string>,
+  semesterOverrides: Record<string, number> = {}
+): number {
   return template.slots
-    .filter(slot => slot.semester === semester)
+    .filter(slot => (semesterOverrides[slot.id] ?? slot.semester) === semester)
     .reduce((total, slot) => {
       const courses = getCoursesForSlot(slot, userSelections);
       return total + courses.reduce((sum, course) => sum + course.ects, 0);

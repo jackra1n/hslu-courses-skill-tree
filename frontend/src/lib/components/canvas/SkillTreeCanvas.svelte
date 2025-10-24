@@ -6,6 +6,7 @@
     Controls,
     MiniMap,
     type OnMove,
+    type NodeTargetEventWithPointer,
     MarkerType,
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
@@ -60,6 +61,16 @@
   const viewport = $derived(getViewport());
   const showCourseTypeBadges = $derived(getShowCourseTypeBadges());
 
+  let isDragging = $state(false);
+
+  const totalSemesters = $derived.by(() => {
+    const semesters = currentTemplate?.slots?.map(slot => slot.semester) ?? [];
+    if (!semesters.length) return 1;
+    return Math.max(1, Math.max(...semesters));
+  });
+
+  const semesterNumbers = $derived.by(() => Array.from({ length: totalSemesters }, (_, idx) => idx + 1));
+
   const styledNodes = $derived.by(() => {
     const statuses = computeStatuses(currentTemplate, userSelections, progressStore.slotStatusMap);
 
@@ -76,7 +87,7 @@
       const isSelected = selection?.id === n.id || (course && selection?.id === course.id);
       
       const nodeWidth = data.width || getNodeWidth(course?.ects || slot?.credits || 6);
-      let styleStr = `border-radius: 12px; font-weight: 500; font-size: 14px; text-align: center; min-width: ${nodeWidth}px; width: ${nodeWidth}px; font-family: Inter, sans-serif; transition: all 0.2s; `;
+      let styleStr = `border-radius: 12px; font-weight: 500; font-size: 14px; text-align: center; min-width: ${nodeWidth}px; width: ${nodeWidth}px; font-family: Inter, sans-serif; ${!isDragging ? 'transition: all 0.2s;' : ''}; `;
 
       if (isSelected) {
         styleStr += "border-width: 3px; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 4px 6px rgba(0,0,0,0.1); transform: scale(1.05); ";
@@ -151,7 +162,7 @@
       const targetSlot = currentTemplate.slots.find(slot => slot.id === e.target);
       const targetCompleted = targetSlot ? progressStore.getSlotStatus(targetSlot.id) === 'completed' : false;
       
-      let edgeStyle = "stroke-width: 2px; transition: all 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); ";
+      let edgeStyle = "stroke-width: 2px; ${!isDragging ? 'transition: all 0.2s;' : ''}; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); ";
       let markerEnd = e.markerEnd;
       let animated = false;
       
@@ -192,6 +203,25 @@
     uiStore.updateViewport(viewportData);
   };
 
+  const handleNodeDragStart: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
+    if (!targetNode) return;
+    isDragging = true;
+    courseStore.handleNodeDragStart(targetNode.id);
+  };
+
+  const handleNodeDrag: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
+    if (!targetNode) return;
+    const position = (targetNode as any).positionAbsolute || targetNode.position || { x: 0, y: 0 };
+    courseStore.handleNodeDrag(targetNode.id, position);
+  };
+
+  const handleNodeDragStop: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
+    if (!targetNode) return;
+    isDragging = false;
+    const position = (targetNode as any).positionAbsolute || targetNode.position || { x: 0, y: 0 };
+    courseStore.handleNodeDragStop(targetNode.id, position);
+  };
+
   function handleNodeClick(evt: { node: any; event: MouseEvent | TouchEvent }) {
     const node = evt.node;
     if (!node) return;
@@ -228,20 +258,25 @@
     edges={styledEdges}
     {nodeTypes}
     onnodeclick={handleNodeClick}
+    onnodedragstart={handleNodeDragStart}
+    onnodedrag={handleNodeDrag}
+    onnodedragstop={handleNodeDragStop}
     onmove={handleMove}
-    nodesDraggable={false}
+    nodesDraggable={true}
     nodesConnectable={false}
     fitView
     colorMode={getTheme() === 'system' ? 'system' : getTheme()}
     >
     <svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
       <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
-        <SemesterDivider semester={1} yPosition={250} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={2} yPosition={450} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={3} yPosition={650} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={4} yPosition={850} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={5} yPosition={1050} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={6} yPosition={1250} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        {#each semesterNumbers as sem}
+          <SemesterDivider
+            semester={sem}
+            viewport={viewport}
+            currentTemplate={currentTemplate}
+            userSelections={userSelections}
+          />
+        {/each}
       </g>
     </svg>
     <MiniMap />

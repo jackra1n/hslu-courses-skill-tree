@@ -68,8 +68,8 @@ function ruleSatisfiedBefore(rule: PrerequisiteRule, dependentSlotId: string, in
 
   const moduleResults = rule.modules.map(moduleId => {
     const providerSlots = considerSameSemester 
-      ? index.providerSlotsFor(moduleId).filter(slot => slot.semester <= dependentSemester)
-      : index.providerSlotsFor(moduleId).filter(slot => slot.semester < dependentSemester);
+      ? index.providerSlotsBeforeOrSame(moduleId, dependentSlotId)
+      : index.providerSlotsBefore(moduleId, dependentSlotId);
     return providerSlots.length > 0;
   });
 
@@ -129,7 +129,17 @@ export function planEdgesForCourse(
   
   course.prerequisites.forEach(rule => {
     rule.modules.forEach(moduleId => {
-      const providerSlots = index.providerSlotsBefore(moduleId, dependentSlot.id);
+      const providerSlotsBefore = index.providerSlotsBefore(moduleId, dependentSlot.id);
+      const providerSlots = providerSlotsBefore.length
+        ? providerSlotsBefore
+        : index.providerSlotsFor(moduleId)
+            .filter(slot => slot.id !== dependentSlot.id)
+            .sort((a, b) => {
+              const semesterA = index.getSemesterBySlotId(a.id) ?? a.semester;
+              const semesterB = index.getSemesterBySlotId(b.id) ?? b.semester;
+              return semesterA - semesterB;
+            });
+
       providerSlots.forEach(sourceSlot => {
         const key = `${sourceSlot.id}->${dependentSlot.id}`;
         if (!seen.has(key)) {
@@ -137,6 +147,7 @@ export function planEdgesForCourse(
           pairs.push({ source: sourceSlot, target: dependentSlot });
         }
       });
+
     });
   });
   
@@ -205,7 +216,8 @@ export function getEarliestReferencedSlotPosition(
     rule.modules.forEach(moduleId => {
       const providerSlots = index.providerSlotsFor(moduleId);
       providerSlots.forEach(slot => {
-        const position = slot.semester * 1000 + slot.semester; // Simplified position calculation
+        const effectiveSemester = index.getSemesterBySlotId(slot.id) ?? slot.semester;
+        const position = effectiveSemester * 1000 + effectiveSemester; // Simplified position calculation
         minPosition = Math.min(minPosition, position);
       });
     });

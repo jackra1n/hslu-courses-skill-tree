@@ -6,7 +6,11 @@ export class TemplateIndex {
   private semesterBySlotId: Map<string, number>;
   private electiveSelections: Map<string, string>;
 
-  constructor(template: CurriculumTemplate, selections: Record<string, string>) {
+  constructor(
+    template: CurriculumTemplate,
+    selections: Record<string, string>,
+    semesterOverrides: Record<string, number> = {}
+  ) {
     this.slotById = new Map();
     this.slotsByCourseId = new Map();
     this.semesterBySlotId = new Map();
@@ -14,7 +18,8 @@ export class TemplateIndex {
 
     template.slots.forEach(slot => {
       this.slotById.set(slot.id, slot);
-      this.semesterBySlotId.set(slot.id, slot.semester);
+      const effectiveSemester = semesterOverrides[slot.id] ?? slot.semester;
+      this.semesterBySlotId.set(slot.id, effectiveSemester);
 
       if (slot.type === 'fixed' && slot.courseId) {
         if (!this.slotsByCourseId.has(slot.courseId)) {
@@ -62,7 +67,19 @@ export class TemplateIndex {
     if (dependentSemester === undefined) return [];
 
     return this.providerSlotsFor(courseId).filter(slot => 
-      slot.semester < dependentSemester
+      (this.semesterBySlotId.get(slot.id) ?? slot.semester) < dependentSemester
+    );
+  }
+
+  /**
+   * Returns provider slots that come in the same or earlier semester than the given dependent slot
+   */
+  providerSlotsBeforeOrSame(courseId: string, dependentSlotId: string): TemplateSlot[] {
+    const dependentSemester = this.semesterBySlotId.get(dependentSlotId);
+    if (dependentSemester === undefined) return [];
+
+    return this.providerSlotsFor(courseId).filter(slot =>
+      (this.semesterBySlotId.get(slot.id) ?? slot.semester) <= dependentSemester
     );
   }
 
@@ -74,7 +91,7 @@ export class TemplateIndex {
     if (dependentSemester === undefined) return [];
 
     return this.providerSlotsFor(courseId).filter(slot => 
-      slot.semester >= dependentSemester
+      (this.semesterBySlotId.get(slot.id) ?? slot.semester) >= dependentSemester
     );
   }
 }
