@@ -30,7 +30,7 @@ let _currentPlan: string = 'HS25';
 
 function getSortedCourses(): Course[] {
   if (_sortedCourses === null) {
-    _sortedCourses = loadIdmsCourses(_currentPlan).sort((a, b) => {
+    _sortedCourses = loadCourseData(_currentPlan).sort((a, b) => {
       return a.label.localeCompare(b.label);
     });
   }
