@@ -3,14 +3,12 @@
   import { calculateSemesterCredits } from '$lib/data/courses';
 
   let { 
-    semester, 
-    yPosition, 
-    viewport, 
-    currentTemplate, 
-    userSelections 
+    semester,
+    viewport,
+    currentTemplate,
+    userSelections
   }: {
     semester: number;
-    yPosition: number;
     viewport: { x: number; y: number; zoom: number };
     currentTemplate: CurriculumTemplate;
     userSelections: Record<string, string>;
@@ -22,6 +20,7 @@
   const titleFontSize = $derived(Math.max(15, 12 / viewport.zoom));
   const creditsFontSize = $derived(Math.max(15, 10 / viewport.zoom));
   const semesterCredits = $derived(calculateSemesterCredits(semester, currentTemplate, userSelections));
+  const yPosition = (semester * 200) + 150;
 </script>
 
 <line 

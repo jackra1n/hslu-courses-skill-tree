@@ -53,8 +53,6 @@
     custom: CustomNode
   };
 
-  const SEMESTER_DIVIDER_STEP = 200;
-
   const nodes = $derived(getNodes());
   const edges = $derived(getEdges());
   const currentTemplate = $derived(getCurrentTemplate());
@@ -259,12 +257,12 @@
     >
     <svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
       <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
-        <SemesterDivider semester={1} yPosition={SEMESTER_DIVIDER_STEP * 1} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={2} yPosition={SEMESTER_DIVIDER_STEP * 2} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={3} yPosition={SEMESTER_DIVIDER_STEP * 3} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={4} yPosition={SEMESTER_DIVIDER_STEP * 4} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={5} yPosition={SEMESTER_DIVIDER_STEP * 5} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={6} yPosition={SEMESTER_DIVIDER_STEP * 6} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={1} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={2} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={3} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={4} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={5} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={6} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
       </g>
     </svg>
     <MiniMap />
