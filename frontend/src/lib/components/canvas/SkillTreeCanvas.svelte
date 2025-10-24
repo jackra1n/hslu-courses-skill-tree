@@ -61,6 +61,14 @@
   const viewport = $derived(getViewport());
   const showCourseTypeBadges = $derived(getShowCourseTypeBadges());
 
+  const totalSemesters = $derived.by(() => {
+    const semesters = currentTemplate?.slots?.map(slot => slot.semester) ?? [];
+    if (!semesters.length) return 1;
+    return Math.max(1, Math.max(...semesters));
+  });
+
+  const semesterNumbers = $derived.by(() => Array.from({ length: totalSemesters }, (_, idx) => idx + 1));
+
   const styledNodes = $derived.by(() => {
     const statuses = computeStatuses(currentTemplate, userSelections, progressStore.slotStatusMap);
 
@@ -257,12 +265,14 @@
     >
     <svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
       <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
-        <SemesterDivider semester={1} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={2} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={3} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={4} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={5} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={6} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        {#each semesterNumbers as sem}
+          <SemesterDivider
+            semester={sem}
+            viewport={viewport}
+            currentTemplate={currentTemplate}
+            userSelections={userSelections}
+          />
+        {/each}
       </g>
     </svg>
     <MiniMap />

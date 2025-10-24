@@ -29,6 +29,7 @@ let _activeDragNodeId: string | null = null;
 let _manualPositions = $state<Record<string, ManualPosition>>({});
 type SemesterOrderMap = Record<number, string[]>;
 let _semesterOrders = $state<SemesterOrderMap>({});
+let _slotSemesterOverrides = $state<Record<string, number>>({});
 
 const _totalCredits = $derived(calculateTotalCredits(_currentTemplate, _userSelections));
 
@@ -50,6 +51,7 @@ export function getUseELKLayout() { return _useELKLayout; }
 export function getTotalCredits() { return _totalCredits; }
 export function getAvailablePlans() { return _availablePlans; }
 export function getSemesterOrders() { return _semesterOrders; }
+export function getSlotSemesterOverrides() { return _slotSemesterOverrides; }
 
 export const courseStore = {
   get currentTemplate() { return _currentTemplate; },
@@ -63,6 +65,7 @@ export const courseStore = {
   get availablePlans() { return _availablePlans; },
   get manualPositions() { return _manualPositions; },
   get semesterOrders() { return _semesterOrders; },
+  get slotSemesterOverrides() { return _slotSemesterOverrides; },
   
   canSelectCourseForSlot(slotId: string, courseId: string): boolean {
     if (progressStore.hasCompletedInstance(courseId, _currentTemplate, _userSelections)) {
@@ -123,6 +126,7 @@ export const courseStore = {
     _selectedPlan = template.plan;
     _semesterOrders = loadSemesterOrders(template.id);
     _manualPositions = loadManualPositions(template.id);
+    _slotSemesterOverrides = loadSemesterOverrides(template.id);
     
     if (browser) {
       localStorage.setItem("currentTemplate", templateId);
@@ -200,6 +204,7 @@ export const courseStore = {
         setCoursePlan(template.plan);
         _semesterOrders = loadSemesterOrders(template.id);
         _manualPositions = loadManualPositions(template.id);
+        _slotSemesterOverrides = loadSemesterOverrides(template.id);
       }
     }
 
@@ -223,7 +228,10 @@ export const courseStore = {
     if (Object.keys(_manualPositions).length === 0) {
       _manualPositions = loadManualPositions(_currentTemplate.id);
     }
-    
+    if (Object.keys(_slotSemesterOverrides).length === 0) {
+      _slotSemesterOverrides = loadSemesterOverrides(_currentTemplate.id);
+    }
+
     updateGraph();
   },
 
@@ -236,15 +244,22 @@ export const courseStore = {
       _activeDragNodeId = nodeId;
     }
     updateNodePosition(nodeId, position, { persist: false, ensureBounds: false });
-    const preview = computeSemesterOrderWithNode(nodeId, position);
+    const preview = computeReorderedSemesterOrders(nodeId, position);
     if (preview) {
-      applyOrderPreview(preview.semester, preview.order, nodeId);
+      _semesterOrders = preview.orders;
+      applyOrderPreview(preview.orders, nodeId);
     }
   },
 
   handleNodeDragStop(nodeId: string, position: FlowNodePosition) {
     updateNodePosition(nodeId, position, { persist: false, ensureBounds: false });
-    reorderNodeInSemester(nodeId, position);
+    const result = computeReorderedSemesterOrders(nodeId, position);
+    if (result) {
+      applySemesterOverride(nodeId, result.targetSemester);
+      _semesterOrders = result.orders;
+      saveSemesterOrders(_currentTemplate.id, _semesterOrders);
+    }
+    initializeSemesterOrders(_nodes);
     applyOrderLayout();
     _activeDragNodeId = null;
   }
@@ -254,6 +269,8 @@ function updateGraph() {
   const g = toGraph(_currentTemplate, _userSelections, _showShortNamesOnly);
   _nodes = g.nodes;
   _edges = g.edges;
+  cleanupSemesterOverrides(_nodes);
+  saveSemesterOverrides(_currentTemplate.id, _slotSemesterOverrides);
 
   if (Object.keys(_semesterOrders).length === 0) {
     const derived = deriveSemesterOrdersFromManualPositions(_nodes);
@@ -332,7 +349,7 @@ function initializeSemesterOrders(nodes: Node[]): void {
     const data = node.data as ExtendedNodeData;
     const slot = data?.slot;
     if (!slot) return;
-    const semester = slot.semester;
+    const semester = getEffectiveSemesterForNode(node);
     if (!nodesBySemester[semester]) {
       nodesBySemester[semester] = [];
     }
@@ -381,7 +398,7 @@ function deriveSemesterOrdersFromManualPositions(nodes: Node[]): SemesterOrderMa
     const data = node.data as ExtendedNodeData;
     const slot = data?.slot;
     if (!slot) return;
-    const semester = slot.semester;
+    const semester = getEffectiveSemesterForNode(node);
     if (!nodesBySemester[semester]) {
       nodesBySemester[semester] = [];
     }
@@ -437,18 +454,20 @@ function applyOrderLayout(): void {
     });
   });
 
+  updatedNodes.forEach((node) => {
+    if (!manualPositions[node.id]) {
+      if (node.position) {
+        manualPositions[node.id] = node.position;
+      }
+    }
+  });
+
   _nodes = updatedNodes;
   _manualPositions = manualPositions;
   saveManualPositions(_currentTemplate.id, _manualPositions);
   saveSemesterOrders(_currentTemplate.id, _semesterOrders);
-}
-
-function reorderNodeInSemester(nodeId: string, dropPosition: FlowNodePosition): void {
-  const result = computeSemesterOrderWithNode(nodeId, dropPosition);
-  if (!result) return;
-
-  _semesterOrders = { ..._semesterOrders, [result.semester]: result.order };
-  saveSemesterOrders(_currentTemplate.id, _semesterOrders);
+  cleanupSemesterOverrides(_nodes);
+  saveSemesterOverrides(_currentTemplate.id, _slotSemesterOverrides);
 }
 
 function getNodeWidthForData(data: ExtendedNodeData | undefined): number {
@@ -461,7 +480,7 @@ function getNodeWidthForData(data: ExtendedNodeData | undefined): number {
   return getNodeWidth(6);
 }
 
-function computeSemesterOrderWithNode(nodeId: string, dropPosition: FlowNodePosition): { semester: number; order: string[] } | null {
+function computeReorderedSemesterOrders(nodeId: string, dropPosition: FlowNodePosition): { targetSemester: number; orders: SemesterOrderMap } | null {
   const node = _nodes.find((n) => n.id === nodeId);
   if (!node) return null;
 
@@ -469,12 +488,21 @@ function computeSemesterOrderWithNode(nodeId: string, dropPosition: FlowNodePosi
   const slot = data?.slot;
   if (!slot) return null;
 
-  const semester = slot.semester;
-  const currentOrder = (_semesterOrders[semester] ?? []).filter((id) => id !== nodeId);
+  const targetSemester = clampSemester(Math.max(1, Math.round(dropPosition.y / GRID_SIZE.y)));
+  const updatedOrders: SemesterOrderMap = {};
+
+  Object.entries(_semesterOrders).forEach(([semesterKey, ids]) => {
+    const filtered = ids.filter((id) => id !== nodeId);
+    if (filtered.length) {
+      updatedOrders[Number(semesterKey)] = filtered;
+    }
+  });
+
+  const targetOrderBase = [...(updatedOrders[targetSemester] ?? [])];
   const width = getNodeWidthForData(data);
   const dropCenter = dropPosition.x + width / 2;
 
-  const siblingCenters = currentOrder.map((id) => {
+  const siblingCenters = targetOrderBase.map((id) => {
     const siblingNode = _nodes.find((n) => n.id === id);
     if (!siblingNode) {
       return { id, center: Infinity };
@@ -490,39 +518,45 @@ function computeSemesterOrderWithNode(nodeId: string, dropPosition: FlowNodePosi
     insertIndex = siblingCenters.length;
   }
 
-  const order = [...currentOrder.slice(0, insertIndex), nodeId, ...currentOrder.slice(insertIndex)];
-  return { semester, order };
+  const nextOrder = [...targetOrderBase.slice(0, insertIndex), nodeId, ...targetOrderBase.slice(insertIndex)];
+  updatedOrders[targetSemester] = nextOrder;
+
+  return { targetSemester, orders: updatedOrders };
 }
 
-function applyOrderPreview(semester: number, order: string[], draggedNodeId: string): void {
+function applyOrderPreview(orders: SemesterOrderMap, draggedNodeId: string): void {
   const updatedNodes = _nodes.map((node) => ({ ...node }));
-  let x = GRID_SIZE.x * 2;
-  const y = semester * GRID_SIZE.y;
 
-  order.forEach((nodeId) => {
-    const index = updatedNodes.findIndex((n) => n.id === nodeId);
-    if (index === -1) return;
+  Object.entries(orders).forEach(([semesterKey, order]) => {
+    const semester = Number(semesterKey);
+    let x = GRID_SIZE.x * 2;
+    const y = semester * GRID_SIZE.y;
 
-    const node = updatedNodes[index];
-    const data = node.data as ExtendedNodeData;
-    const width = getNodeWidthForData(data);
+    order.forEach((nodeId) => {
+      const index = updatedNodes.findIndex((n) => n.id === nodeId);
+      if (index === -1) return;
 
-    if (nodeId === draggedNodeId) {
+      const node = updatedNodes[index];
+      const data = node.data as ExtendedNodeData;
+      const width = getNodeWidthForData(data);
+
+      if (nodeId === draggedNodeId) {
+        x += width + GRID_SIZE.x;
+        return;
+      }
+
+      const position = { x, y };
+      updatedNodes[index] = {
+        ...node,
+        position
+      };
+
+      if ('positionAbsolute' in node) {
+        (updatedNodes[index] as any).positionAbsolute = position;
+      }
+
       x += width + GRID_SIZE.x;
-      return;
-    }
-
-    const position = { x, y };
-    updatedNodes[index] = {
-      ...node,
-      position
-    };
-
-    if ('positionAbsolute' in node) {
-      (updatedNodes[index] as any).positionAbsolute = position;
-    }
-
-    x += width + GRID_SIZE.x;
+    });
   });
 
   _nodes = updatedNodes;
@@ -582,4 +616,89 @@ function saveSemesterOrders(templateId: string, orders: SemesterOrderMap): void 
 
 function getSemesterOrdersKey(templateId: string): string {
   return `semesterOrders:${templateId}`;
+}
+
+function loadSemesterOverrides(templateId: string): Record<string, number> {
+  if (!browser) return {};
+
+  try {
+    const stored = localStorage.getItem(getSemesterOverridesKey(templateId));
+    if (!stored) return {};
+    const parsed = JSON.parse(stored) as Record<string, number>;
+    return parsed || {};
+  } catch (error) {
+    console.error('Failed to load semester overrides from localStorage', error);
+    return {};
+  }
+}
+
+function saveSemesterOverrides(templateId: string, overrides: Record<string, number>): void {
+  if (!browser) return;
+
+  try {
+    localStorage.setItem(getSemesterOverridesKey(templateId), JSON.stringify(overrides));
+  } catch (error) {
+    console.error('Failed to save semester overrides to localStorage', error);
+  }
+}
+
+function getSemesterOverridesKey(templateId: string): string {
+  return `semesterOverrides:${templateId}`;
+}
+
+function getEffectiveSemesterForNode(node: Node): number {
+  const data = node.data as ExtendedNodeData;
+  const slot = data?.slot;
+  const override = _slotSemesterOverrides[node.id];
+  const base = slot?.semester ?? 1;
+  return override ?? base;
+}
+
+function applySemesterOverride(nodeId: string, semester: number): void {
+  const node = _nodes.find((n) => n.id === nodeId);
+  const baseSemester = (() => {
+    const data = node?.data as ExtendedNodeData | undefined;
+    return data?.slot?.semester ?? 1;
+  })();
+
+  const overrides = { ..._slotSemesterOverrides };
+  if (semester === baseSemester) {
+    if (overrides[nodeId] !== undefined) {
+      delete overrides[nodeId];
+    }
+  } else {
+    overrides[nodeId] = semester;
+  }
+  _slotSemesterOverrides = overrides;
+  saveSemesterOverrides(_currentTemplate.id, _slotSemesterOverrides);
+}
+
+function clampSemester(semester: number): number {
+  const semesters = _currentTemplate.slots.map((slot) => slot.semester);
+  if (!semesters.length) {
+    return Math.max(1, semester);
+  }
+  const maxSemester = Math.max(...semesters);
+  return Math.min(Math.max(1, semester), maxSemester);
+}
+
+function cleanupSemesterOverrides(nodes: Node[]): void {
+  if (Object.keys(_slotSemesterOverrides).length === 0) return;
+  const validIds = new Set(nodes.map((node) => node.id));
+  const overrides = { ..._slotSemesterOverrides };
+  Object.keys(overrides).forEach((id) => {
+    if (!validIds.has(id)) {
+      delete overrides[id];
+      return;
+    }
+    const node = nodes.find((n) => n.id === id);
+    const baseSemester = (() => {
+      const data = node?.data as ExtendedNodeData | undefined;
+      return data?.slot?.semester ?? 1;
+    })();
+    if (overrides[id] === baseSemester) {
+      delete overrides[id];
+    }
+  });
+  _slotSemesterOverrides = overrides;
 }
