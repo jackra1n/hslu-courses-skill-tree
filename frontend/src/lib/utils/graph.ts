@@ -10,7 +10,7 @@ function buildNode(slot: TemplateSlot, selectedCourse: Course | null, index: Tem
   let hasLaterPrerequisites = false;
   
   if (selectedCourse) {
-    hasLaterPrerequisites = hasPrereqAfter(slot, selectedCourse, index, { considerSameSemester: true });
+    hasLaterPrerequisites = hasPrereqAfter(slot, selectedCourse, index, { considerSameSemester: false });
   }
 
   return {
@@ -29,9 +29,14 @@ function buildNode(slot: TemplateSlot, selectedCourse: Course | null, index: Tem
   };
 }
 
-export function toGraph(template: CurriculumTemplate, selections: Record<string, string>, showShortNamesOnly: boolean): { nodes: Node[]; edges: Edge[] } {
+export function toGraph(
+  template: CurriculumTemplate,
+  selections: Record<string, string>,
+  showShortNamesOnly: boolean,
+  semesterOverrides: Record<string, number> = {}
+): { nodes: Node[]; edges: Edge[] } {
   // Build template index for fast lookups
-  const index = new TemplateIndex(template, selections);
+  const index = new TemplateIndex(template, selections, semesterOverrides);
   
   // Build nodes
   const nodes: Node[] = [];

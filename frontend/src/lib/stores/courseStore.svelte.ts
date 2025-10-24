@@ -259,14 +259,13 @@ export const courseStore = {
       _semesterOrders = result.orders;
       saveSemesterOrders(_currentTemplate.id, _semesterOrders);
     }
-    initializeSemesterOrders(_nodes);
-    applyOrderLayout();
+    updateGraph();
     _activeDragNodeId = null;
   }
 };
 
 function updateGraph() {
-  const g = toGraph(_currentTemplate, _userSelections, _showShortNamesOnly);
+  const g = toGraph(_currentTemplate, _userSelections, _showShortNamesOnly, _slotSemesterOverrides);
   _nodes = g.nodes;
   _edges = g.edges;
   cleanupSemesterOverrides(_nodes);
