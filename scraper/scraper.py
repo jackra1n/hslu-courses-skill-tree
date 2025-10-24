@@ -1,8 +1,11 @@
 import os
-import requests
 import json
-from pathlib import Path
 import time
+from pathlib import Path
+from typing import Any
+
+import requests
+from dotenv import load_dotenv
 
 
 def _get_required_env(name: str) -> str:
@@ -15,27 +18,17 @@ def _get_required_env(name: str) -> str:
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
-def _load_env_file():
-    candidate_paths = [
+def _load_env_files():
+    candidate_paths = (
         REPO_ROOT / ".env",
         REPO_ROOT / "scraper" / ".env",
-    ]
+    )
     for env_path in candidate_paths:
-        if not env_path.exists():
-            continue
-        with env_path.open() as env_file:
-            for raw_line in env_file:
-                line = raw_line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                key, value = line.split("=", 1)
-                key = key.strip()
-                value = value.strip().strip('"').strip("'")
-                os.environ.setdefault(key, value)
-        break
+        if load_dotenv(env_path, override=False):
+            break
 
 
-_load_env_file()
+_load_env_files()
 
 API_URL = _get_required_env("API_URL")
 ACCESS_KEY = _get_required_env("ACCESS_KEY")
@@ -45,9 +38,15 @@ BASE_DIR = (
 HEADERS = {"X-Access-Key": ACCESS_KEY}
 REQUEST_TIMEOUT = float(os.getenv("REQUEST_TIMEOUT_SECONDS", "10"))
 SESSION = requests.Session()
+REQUEST_DELAY = float(os.getenv("REQUEST_DELAY_SECONDS", "0.1"))
 
 
-def make_request(endpoint: str) -> dict | None:
+def _throttle():
+    if REQUEST_DELAY > 0:
+        time.sleep(REQUEST_DELAY)
+
+
+def make_request(endpoint: str) -> Any:
     full_url = f"{API_URL}{endpoint}"
     print(f"GET {full_url} ...", end=" ", flush=True)
     start = time.perf_counter()
@@ -64,8 +63,8 @@ def make_request(endpoint: str) -> dict | None:
         return None
 
 
-def save_json(data: dict, file_path: Path):
-    if not data:
+def save_json(data: Any, file_path: Path):
+    if data is None:
         print(f"No data to save for {file_path}. Skipping.")
         return
 
@@ -76,51 +75,67 @@ def save_json(data: dict, file_path: Path):
     print(f"Successfully saved data to {file_path}")
 
 
+def fetch_and_save(endpoint: str, relative_path: str | Path) -> Any:
+    data = make_request(endpoint)
+    save_json(data, BASE_DIR / Path(relative_path))
+    _throttle()
+    return data
+
+
+def _extract_list(payload: Any) -> list[Any]:
+    if isinstance(payload, dict):
+        maybe_list = payload.get("data")
+        if isinstance(maybe_list, list):
+            return maybe_list
+    if isinstance(payload, list):
+        return payload
+    return []
+
+
 def main():
     print("--- Starting HSLU Data Scraper ---")
 
     print("\nFetching primary lists...")
-    semesters_data = make_request("/semesters")
-    study_programmes_data = make_request("/study-programmes")
-
-    save_json(semesters_data, BASE_DIR / "semesters.json")
-    save_json(study_programmes_data, BASE_DIR / "study_programmes.json")
+    semesters_data = fetch_and_save("/semesters", "semesters.json")
+    study_programmes_data = fetch_and_save("/study-programmes", "study_programmes.json")
 
     print("\nFetching latest semester...")
-    latest_semester_data = make_request("/semesters/latest")
-    save_json(latest_semester_data, BASE_DIR / "latest_semester.json")
+    fetch_and_save("/semesters/latest", "latest_semester.json")
 
-    if semesters_data and "data" in semesters_data:
+    semesters_list = _extract_list(semesters_data)
+    if semesters_list:
         print("\nFetching modules for each semester...")
-        semesters_list = semesters_data["data"]
         for semester in semesters_list:
-            print(f"  - Fetching modules for {semester}...")
-            modules_data = make_request(f"/semesters/{semester}/modules")
-            save_json(modules_data, BASE_DIR / "modules" / f"{semester}_modules.json")
-            time.sleep(0.1)
+            semester_slug = semester if isinstance(semester, str) else str(semester)
+            print(f"  - Fetching modules for {semester_slug}...")
+            fetch_and_save(
+                f"/semesters/{semester_slug}/modules",
+                Path("modules") / f"{semester_slug}_modules.json",
+            )
     else:
         print("Could not fetch semester list. Skipping module downloads.")
 
-    if study_programmes_data and "data" in study_programmes_data:
+    programmes_list = _extract_list(study_programmes_data)
+    if programmes_list:
         print("\nFetching data for each study programme...")
-        programmes_list = study_programmes_data["data"]
         for programme in programmes_list:
+            if not isinstance(programme, dict):
+                continue
             short_name = programme.get("ShortName")
             if not short_name:
                 continue
 
             print(f"  - Fetching majors and minors for {short_name}...")
-            majors_minors_data = make_request(f"/majors-minors/{short_name.lower()}")
-            save_json(
-                majors_minors_data,
-                BASE_DIR / "majors_minors" / f"{short_name}_majors_minors.json",
+            fetch_and_save(
+                f"/majors-minors/{short_name.lower()}",
+                Path("majors_minors") / f"{short_name}_majors_minors.json",
             )
-            time.sleep(0.1)
 
             print(f"  - Fetching ECTS data for {short_name}...")
-            ects_data = make_request(f"/ects/{short_name.lower()}")
-            save_json(ects_data, BASE_DIR / "ects" / f"{short_name}_ects.json")
-            time.sleep(0.1)
+            fetch_and_save(
+                f"/ects/{short_name.lower()}",
+                Path("ects") / f"{short_name}_ects.json",
+            )
     else:
         print("Could not fetch study programme list. Skipping related downloads.")
 
