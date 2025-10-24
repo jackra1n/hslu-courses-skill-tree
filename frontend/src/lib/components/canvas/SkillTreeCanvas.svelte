@@ -6,7 +6,7 @@
     Controls,
     MiniMap,
     type OnMove,
-    type NodeChange,
+    type NodeTargetEventWithPointer,
     MarkerType,
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
@@ -52,6 +52,8 @@
   const nodeTypes = {
     custom: CustomNode
   };
+
+  const SEMESTER_DIVIDER_STEP = 200;
 
   const nodes = $derived(getNodes());
   const edges = $derived(getEdges());
@@ -193,9 +195,22 @@
     uiStore.updateViewport(viewportData);
   };
 
-  function handleNodesChange(changes: NodeChange[]) {
-    courseStore.handleNodesChange(changes);
-  }
+  const handleNodeDragStart: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
+    if (!targetNode) return;
+    courseStore.handleNodeDragStart(targetNode.id);
+  };
+
+  const handleNodeDrag: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
+    if (!targetNode) return;
+    const position = (targetNode as any).positionAbsolute || targetNode.position || { x: 0, y: 0 };
+    courseStore.handleNodeDrag(targetNode.id, position);
+  };
+
+  const handleNodeDragStop: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
+    if (!targetNode) return;
+    const position = (targetNode as any).positionAbsolute || targetNode.position || { x: 0, y: 0 };
+    courseStore.handleNodeDragStop(targetNode.id, position);
+  };
 
   function handleNodeClick(evt: { node: any; event: MouseEvent | TouchEvent }) {
     const node = evt.node;
@@ -233,23 +248,23 @@
     edges={styledEdges}
     {nodeTypes}
     onnodeclick={handleNodeClick}
+    onnodedragstart={handleNodeDragStart}
+    onnodedrag={handleNodeDrag}
+    onnodedragstop={handleNodeDragStop}
     onmove={handleMove}
-    onnodeschange={handleNodesChange}
     nodesDraggable={true}
     nodesConnectable={false}
-    snapToGrid={true}
-    snapGrid={[40, 200]}
     fitView
     colorMode={getTheme() === 'system' ? 'system' : getTheme()}
     >
     <svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
       <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
-        <SemesterDivider semester={1} yPosition={250} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={2} yPosition={450} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={3} yPosition={650} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={4} yPosition={850} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={5} yPosition={1050} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
-        <SemesterDivider semester={6} yPosition={1250} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={1} yPosition={SEMESTER_DIVIDER_STEP * 1} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={2} yPosition={SEMESTER_DIVIDER_STEP * 2} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={3} yPosition={SEMESTER_DIVIDER_STEP * 3} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={4} yPosition={SEMESTER_DIVIDER_STEP * 4} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={5} yPosition={SEMESTER_DIVIDER_STEP * 5} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
+        <SemesterDivider semester={6} yPosition={SEMESTER_DIVIDER_STEP * 6} viewport={viewport} currentTemplate={currentTemplate} userSelections={userSelections} />
       </g>
     </svg>
     <MiniMap />

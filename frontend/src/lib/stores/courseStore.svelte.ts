@@ -1,6 +1,5 @@
 import { browser } from '$app/environment';
-import type { Node, Edge, NodeChange } from '@xyflow/svelte';
-import { applyNodeChanges } from '@xyflow/svelte';
+import type { Node, Edge } from '@xyflow/svelte';
 import type { ExtendedNodeData, Course } from '$lib/data/courses';
 import {
   AVAILABLE_TEMPLATES,
@@ -11,7 +10,7 @@ import {
   setCoursePlan
 } from '$lib/data/courses';
 import { toGraph } from '$lib/utils/graph';
-import { layoutSemesterBased, layoutELK, getNodeLabel } from '$lib/utils/layout';
+import { getNodeLabel, getNodeWidth } from '$lib/utils/layout';
 import { progressStore } from './progressStore.svelte';
 
 let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
@@ -22,7 +21,14 @@ let _edges = $state<Edge[]>([]);
 let _showShortNamesOnly = $state(false);
 let _useELKLayout = $state(false);
 type ManualPosition = { x: number; y: number };
+type FlowNodePosition = { x: number; y: number };
+const GRID_SIZE = { x: 40, y: 200 };
+
+
+let _activeDragNodeId: string | null = null;
 let _manualPositions = $state<Record<string, ManualPosition>>({});
+type SemesterOrderMap = Record<number, string[]>;
+let _semesterOrders = $state<SemesterOrderMap>({});
 
 const _totalCredits = $derived(calculateTotalCredits(_currentTemplate, _userSelections));
 
@@ -43,6 +49,7 @@ export function getShowShortNamesOnly() { return _showShortNamesOnly; }
 export function getUseELKLayout() { return _useELKLayout; }
 export function getTotalCredits() { return _totalCredits; }
 export function getAvailablePlans() { return _availablePlans; }
+export function getSemesterOrders() { return _semesterOrders; }
 
 export const courseStore = {
   get currentTemplate() { return _currentTemplate; },
@@ -55,6 +62,7 @@ export const courseStore = {
   get totalCredits() { return _totalCredits; },
   get availablePlans() { return _availablePlans; },
   get manualPositions() { return _manualPositions; },
+  get semesterOrders() { return _semesterOrders; },
   
   canSelectCourseForSlot(slotId: string, courseId: string): boolean {
     if (progressStore.hasCompletedInstance(courseId, _currentTemplate, _userSelections)) {
@@ -113,6 +121,7 @@ export const courseStore = {
     
     _currentTemplate = template;
     _selectedPlan = template.plan;
+    _semesterOrders = loadSemesterOrders(template.id);
     _manualPositions = loadManualPositions(template.id);
     
     if (browser) {
@@ -189,6 +198,8 @@ export const courseStore = {
         _currentTemplate = template;
         _selectedPlan = template.plan;
         setCoursePlan(template.plan);
+        _semesterOrders = loadSemesterOrders(template.id);
+        _manualPositions = loadManualPositions(template.id);
       }
     }
 
@@ -206,45 +217,36 @@ export const courseStore = {
     } else {
       setCoursePlan(_selectedPlan);
     }
-
-    _manualPositions = loadManualPositions(_currentTemplate.id);
+    if (Object.keys(_semesterOrders).length === 0) {
+      _semesterOrders = loadSemesterOrders(_currentTemplate.id);
+    }
+    if (Object.keys(_manualPositions).length === 0) {
+      _manualPositions = loadManualPositions(_currentTemplate.id);
+    }
     
     updateGraph();
   },
 
-  handleNodesChange(changes: NodeChange[]) {
-    if (!changes.length) return;
+  handleNodeDragStart(nodeId: string) {
+    _activeDragNodeId = nodeId;
+  },
 
-    const updatedNodes = applyNodeChanges(changes, _nodes);
-    _nodes = updatedNodes;
-
-    const manualPositions: Record<string, ManualPosition> = { ..._manualPositions };
-    let shouldPersist = false;
-
-    changes.forEach((change) => {
-      if (change.type === 'position') {
-        const node = updatedNodes.find((n) => n.id === change.id);
-        if (node && node.position) {
-          manualPositions[change.id] = { x: node.position.x, y: node.position.y };
-          if (change.dragging !== true) {
-            shouldPersist = true;
-          }
-        }
-      }
-
-      if (change.type === 'remove') {
-        if (manualPositions[change.id]) {
-          delete manualPositions[change.id];
-          shouldPersist = true;
-        }
-      }
-    });
-
-    _manualPositions = manualPositions;
-
-    if (shouldPersist) {
-      saveManualPositions(_currentTemplate.id, _manualPositions);
+  handleNodeDrag(nodeId: string, position: FlowNodePosition) {
+    if (_activeDragNodeId !== nodeId) {
+      _activeDragNodeId = nodeId;
     }
+    updateNodePosition(nodeId, position, { persist: false, ensureBounds: false });
+    const preview = computeSemesterOrderWithNode(nodeId, position);
+    if (preview) {
+      applyOrderPreview(preview.semester, preview.order, nodeId);
+    }
+  },
+
+  handleNodeDragStop(nodeId: string, position: FlowNodePosition) {
+    updateNodePosition(nodeId, position, { persist: false, ensureBounds: false });
+    reorderNodeInSemester(nodeId, position);
+    applyOrderLayout();
+    _activeDragNodeId = null;
   }
 };
 
@@ -252,24 +254,20 @@ function updateGraph() {
   const g = toGraph(_currentTemplate, _userSelections, _showShortNamesOnly);
   _nodes = g.nodes;
   _edges = g.edges;
-  updateLayout();
+
+  if (Object.keys(_semesterOrders).length === 0) {
+    const derived = deriveSemesterOrdersFromManualPositions(_nodes);
+    if (Object.keys(derived).length > 0) {
+      _semesterOrders = derived;
+    }
+  }
+
+  initializeSemesterOrders(_nodes);
+  applyOrderLayout();
 }
 
 async function updateLayout() {
-  if (_useELKLayout) {
-    try {
-      const newNodes = await layoutELK(_nodes);
-      _nodes = applyManualPositionsToNodes(newNodes);
-    } catch (error) {
-      console.error("ELK layout failed, falling back to semester layout:", error);
-      _useELKLayout = false;
-      const newNodes = layoutSemesterBased(_currentTemplate, _userSelections, _nodes);
-      _nodes = applyManualPositionsToNodes(newNodes);
-    }
-  } else {
-    const newNodes = layoutSemesterBased(_currentTemplate, _userSelections, _nodes);
-    _nodes = applyManualPositionsToNodes(newNodes);
-  }
+  applyOrderLayout();
 }
 
 function updateNodeLabels() {
@@ -296,20 +294,18 @@ function updateNodeLabels() {
   _nodes = newNodes;
 }
 
-function applyManualPositionsToNodes(nodes: Node[]): Node[] {
-  if (!nodes.length) return nodes;
+function updateNodePosition(
+  nodeId: string,
+  rawPosition: FlowNodePosition,
+  options: { persist: boolean; ensureBounds?: boolean }
+) {
+  const nodeIndex = _nodes.findIndex((n) => n.id === nodeId);
+  if (nodeIndex === -1) return;
 
-  const currentManual = _manualPositions;
-  const updatedManual: Record<string, ManualPosition> = {};
+  const position = rawPosition;
 
-  const updatedNodes = nodes.map((node) => {
-    const manual = currentManual[node.id];
-    if (!manual) {
-      return node;
-    }
-
-    updatedManual[node.id] = manual;
-    const position = { x: manual.x, y: manual.y };
+  const nextNodes = _nodes.map((node, idx) => {
+    if (idx !== nodeIndex) return node;
     const updatedNode: Node = {
       ...node,
       position
@@ -322,12 +318,214 @@ function applyManualPositionsToNodes(nodes: Node[]): Node[] {
     return updatedNode;
   });
 
-  if (Object.keys(updatedManual).length !== Object.keys(currentManual).length) {
-    _manualPositions = updatedManual;
+  _nodes = nextNodes;
+  if (options.persist) {
+    _manualPositions = { ..._manualPositions, [nodeId]: position };
     saveManualPositions(_currentTemplate.id, _manualPositions);
   }
+}
+function initializeSemesterOrders(nodes: Node[]): void {
+  const updatedOrders: SemesterOrderMap = { ..._semesterOrders };
+  const nodesBySemester: Record<number, Node[]> = {};
 
-  return updatedNodes;
+  nodes.forEach((node) => {
+    const data = node.data as ExtendedNodeData;
+    const slot = data?.slot;
+    if (!slot) return;
+    const semester = slot.semester;
+    if (!nodesBySemester[semester]) {
+      nodesBySemester[semester] = [];
+    }
+    nodesBySemester[semester].push(node);
+  });
+
+  Object.entries(nodesBySemester).forEach(([semesterKey, semNodes]) => {
+    const semester = Number(semesterKey);
+    const existingOrder = updatedOrders[semester] ?? [];
+    const newOrder: string[] = [];
+
+    existingOrder.forEach((id) => {
+      if (semNodes.some((node) => node.id === id)) {
+        newOrder.push(id);
+      }
+    });
+
+    semNodes.forEach((node) => {
+      if (!newOrder.includes(node.id)) {
+        newOrder.push(node.id);
+      }
+    });
+
+    updatedOrders[semester] = newOrder;
+  });
+
+  Object.keys(updatedOrders).forEach((semesterKey) => {
+    const semester = Number(semesterKey);
+    if (!nodesBySemester[semester]) {
+      delete updatedOrders[semester];
+    }
+  });
+
+  _semesterOrders = updatedOrders;
+}
+
+function deriveSemesterOrdersFromManualPositions(nodes: Node[]): SemesterOrderMap {
+  if (Object.keys(_manualPositions).length === 0) {
+    return {};
+  }
+
+  const orders: SemesterOrderMap = {};
+  const nodesBySemester: Record<number, Node[]> = {};
+
+  nodes.forEach((node) => {
+    const data = node.data as ExtendedNodeData;
+    const slot = data?.slot;
+    if (!slot) return;
+    const semester = slot.semester;
+    if (!nodesBySemester[semester]) {
+      nodesBySemester[semester] = [];
+    }
+    nodesBySemester[semester].push(node);
+  });
+
+  Object.entries(nodesBySemester).forEach(([semesterKey, semNodes]) => {
+    const semester = Number(semesterKey);
+    const sorted = [...semNodes].sort((a, b) => {
+      const posA = _manualPositions[a.id]?.x ?? a.position?.x ?? 0;
+      const posB = _manualPositions[b.id]?.x ?? b.position?.x ?? 0;
+      return posA - posB;
+    });
+    orders[semester] = sorted.map((node) => node.id);
+  });
+
+  return orders;
+}
+
+function applyOrderLayout(): void {
+  if (!_nodes.length) {
+    return;
+  }
+
+  const updatedNodes = _nodes.map((node) => ({ ...node }));
+  const manualPositions: Record<string, ManualPosition> = {};
+
+  Object.entries(_semesterOrders).forEach(([semesterKey, order]) => {
+    const semester = Number(semesterKey);
+    let x = GRID_SIZE.x * 2;
+    const y = semester * GRID_SIZE.y;
+
+    order.forEach((nodeId) => {
+      const index = updatedNodes.findIndex((n) => n.id === nodeId);
+      if (index === -1) return;
+
+      const node = updatedNodes[index];
+      const data = node.data as ExtendedNodeData;
+      const width = getNodeWidthForData(data);
+      const position = { x, y };
+
+      updatedNodes[index] = {
+        ...node,
+        position
+      };
+
+      if ('positionAbsolute' in node) {
+        (updatedNodes[index] as any).positionAbsolute = position;
+      }
+
+      manualPositions[nodeId] = position;
+      x += width + GRID_SIZE.x;
+    });
+  });
+
+  _nodes = updatedNodes;
+  _manualPositions = manualPositions;
+  saveManualPositions(_currentTemplate.id, _manualPositions);
+  saveSemesterOrders(_currentTemplate.id, _semesterOrders);
+}
+
+function reorderNodeInSemester(nodeId: string, dropPosition: FlowNodePosition): void {
+  const result = computeSemesterOrderWithNode(nodeId, dropPosition);
+  if (!result) return;
+
+  _semesterOrders = { ..._semesterOrders, [result.semester]: result.order };
+  saveSemesterOrders(_currentTemplate.id, _semesterOrders);
+}
+
+function getNodeWidthForData(data: ExtendedNodeData | undefined): number {
+  if (!data) return getNodeWidth(6);
+  if (data.width) return data.width;
+  const course = data.course;
+  if (course?.ects) {
+    return getNodeWidth(course.ects);
+  }
+  return getNodeWidth(6);
+}
+
+function computeSemesterOrderWithNode(nodeId: string, dropPosition: FlowNodePosition): { semester: number; order: string[] } | null {
+  const node = _nodes.find((n) => n.id === nodeId);
+  if (!node) return null;
+
+  const data = node.data as ExtendedNodeData;
+  const slot = data?.slot;
+  if (!slot) return null;
+
+  const semester = slot.semester;
+  const currentOrder = (_semesterOrders[semester] ?? []).filter((id) => id !== nodeId);
+  const width = getNodeWidthForData(data);
+  const dropCenter = dropPosition.x + width / 2;
+
+  const siblingCenters = currentOrder.map((id) => {
+    const siblingNode = _nodes.find((n) => n.id === id);
+    if (!siblingNode) {
+      return { id, center: Infinity };
+    }
+    const siblingData = siblingNode.data as ExtendedNodeData;
+    const siblingWidth = getNodeWidthForData(siblingData);
+    const x = siblingNode.position?.x ?? _manualPositions[id]?.x ?? 0;
+    return { id, center: x + siblingWidth / 2 };
+  });
+
+  let insertIndex = siblingCenters.findIndex((sibling) => dropCenter < sibling.center);
+  if (insertIndex === -1) {
+    insertIndex = siblingCenters.length;
+  }
+
+  const order = [...currentOrder.slice(0, insertIndex), nodeId, ...currentOrder.slice(insertIndex)];
+  return { semester, order };
+}
+
+function applyOrderPreview(semester: number, order: string[], draggedNodeId: string): void {
+  const updatedNodes = _nodes.map((node) => ({ ...node }));
+  let x = GRID_SIZE.x * 2;
+  const y = semester * GRID_SIZE.y;
+
+  order.forEach((nodeId) => {
+    const index = updatedNodes.findIndex((n) => n.id === nodeId);
+    if (index === -1) return;
+
+    const node = updatedNodes[index];
+    const data = node.data as ExtendedNodeData;
+    const width = getNodeWidthForData(data);
+
+    if (nodeId === draggedNodeId) {
+      x += width + GRID_SIZE.x;
+      return;
+    }
+
+    const position = { x, y };
+    updatedNodes[index] = {
+      ...node,
+      position
+    };
+
+    if ('positionAbsolute' in node) {
+      (updatedNodes[index] as any).positionAbsolute = position;
+    }
+
+    x += width + GRID_SIZE.x;
+  });
+
+  _nodes = updatedNodes;
 }
 
 function loadManualPositions(templateId: string): Record<string, ManualPosition> {
@@ -356,4 +554,32 @@ function saveManualPositions(templateId: string, positions: Record<string, Manua
 
 function getManualPositionsKey(templateId: string): string {
   return `manualPositions:${templateId}`;
+}
+
+function loadSemesterOrders(templateId: string): SemesterOrderMap {
+  if (!browser) return {};
+
+  try {
+    const stored = localStorage.getItem(getSemesterOrdersKey(templateId));
+    if (!stored) return {};
+    const parsed = JSON.parse(stored) as SemesterOrderMap;
+    return parsed || {};
+  } catch (error) {
+    console.error('Failed to load semester orders from localStorage', error);
+    return {};
+  }
+}
+
+function saveSemesterOrders(templateId: string, orders: SemesterOrderMap): void {
+  if (!browser) return;
+
+  try {
+    localStorage.setItem(getSemesterOrdersKey(templateId), JSON.stringify(orders));
+  } catch (error) {
+    console.error('Failed to save semester orders to localStorage', error);
+  }
+}
+
+function getSemesterOrdersKey(templateId: string): string {
+  return `semesterOrders:${templateId}`;
 }
