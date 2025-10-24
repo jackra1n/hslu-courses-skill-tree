@@ -1,0 +1,23 @@
+# ## Secrets & Local Config
+.env
+.env.local
+.env.*.local
+*.log
+*.key
+
+# ## Operating System Files
+# macOS
+.DS_Store
+._*
+
+# ## Common Dependency Folders
+# These are managed by package managers and should be re-installed.
+node_modules/
+vendor/
+bower_components/
+
+# ## Common Build Output
+# Compiled or built files that don't need to be in version control.
+build/
+dist/
+out/
