@@ -3,8 +3,8 @@ export type {
   Course,
   Status,
   ModuleType,
-  IdmsPrerequisiteRule,
-  IdmsLink,
+  PrerequisiteRule,
+  PrerequisiteLink,
   TemplateSlot,
   CurriculumTemplate,
   ExtendedNodeData

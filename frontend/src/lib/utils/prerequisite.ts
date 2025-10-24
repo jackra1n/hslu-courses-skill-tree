@@ -1,6 +1,6 @@
 import type { 
   Course,
-  IdmsPrerequisiteRule
+  PrerequisiteRule
 } from '$lib/data/courses';
 import { 
   COURSES
@@ -9,7 +9,7 @@ import type { TemplateSlot, CurriculumTemplate } from '$lib/data/courses';
 import { TemplateIndex } from '$lib/utils/template-index';
 
 export function evaluatePrerequisiteRule(
-  rule: IdmsPrerequisiteRule,
+  rule: PrerequisiteRule,
   slotStatus: Map<string, 'attended' | 'completed'>,
   template: CurriculumTemplate,
   selections: Record<string, string>
@@ -41,7 +41,7 @@ export function evaluatePrerequisiteRule(
 }
 
 export function evaluatePrerequisites(
-  rules: IdmsPrerequisiteRule[],
+  rules: PrerequisiteRule[],
   slotStatus: Map<string, 'attended' | 'completed'>,
   template: CurriculumTemplate,
   selections: Record<string, string>
@@ -62,7 +62,7 @@ export function evaluatePrerequisites(
   }, false);
 }
 
-function ruleSatisfiedBefore(rule: IdmsPrerequisiteRule, dependentSlotId: string, index: TemplateIndex, considerSameSemester: boolean): boolean {
+function ruleSatisfiedBefore(rule: PrerequisiteRule, dependentSlotId: string, index: TemplateIndex, considerSameSemester: boolean): boolean {
   const dependentSemester = index.getSemesterBySlotId(dependentSlotId);
   if (dependentSemester === undefined) return false;
 
@@ -81,7 +81,7 @@ function ruleSatisfiedBefore(rule: IdmsPrerequisiteRule, dependentSlotId: string
 }
 
 function evaluatePrerequisitesSchedulableBefore(
-  rules: IdmsPrerequisiteRule[],
+  rules: PrerequisiteRule[],
   dependentSlotId: string,
   index: TemplateIndex,
   considerSameSemester: boolean

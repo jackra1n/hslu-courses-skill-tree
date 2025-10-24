@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { IdmsPrerequisiteRule } from "$lib/types";
+  import type { PrerequisiteRule } from "$lib/types";
   import { COURSES } from "$lib/data/courses";
   import { progressStore } from "$lib/stores/progressStore.svelte";
   import { evaluatePrerequisiteRule } from "$lib/utils/prerequisite";
@@ -10,7 +10,7 @@
     prerequisites,
     assessmentLevelPassed,
   }: {
-    prerequisites: IdmsPrerequisiteRule[];
+    prerequisites: PrerequisiteRule[];
     assessmentLevelPassed?: boolean;
   } = $props();
 
@@ -22,7 +22,7 @@
 
   const assessmentStageMet = $derived(completedCount >= 6);
 
-  function renderPrerequisiteRule(rule: IdmsPrerequisiteRule) {
+  function renderPrerequisiteRule(rule: PrerequisiteRule) {
     const ruleMet = evaluatePrerequisiteRule(
       rule,
       progressStore.slotStatusMap,

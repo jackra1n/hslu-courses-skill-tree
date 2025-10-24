@@ -1,17 +1,17 @@
 import informatikFulltimeTemplate from './templates/informatik-fulltime.json';
-import { loadIdmsCourses } from './idms-adapter';
+import { loadCourseData } from './course-data-adapter';
 
 export type Status = "locked" | "available" | "completed";
 
 export type ModuleType = "Kernmodul" | "Projektmodul" | "Erweiterungsmodul" | "Major-/Minormodul" | "Zusatzmodul";
 
-export type IdmsLink = "und" | "oder";
+export type PrerequisiteLink = "und" | "oder";
 
-export type IdmsPrerequisiteRule = {
+export type PrerequisiteRule = {
   modules: string[];
   mustBePassed: boolean;
-  moduleLinkType: IdmsLink;
-  prerequisiteLinkType?: IdmsLink;
+  moduleLinkType: PrerequisiteLink;
+  prerequisiteLinkType?: PrerequisiteLink;
 };
 
 
@@ -19,7 +19,7 @@ export type Course = {
   id: string;
   label: string;
   ects: number;
-  prerequisites: IdmsPrerequisiteRule[];
+  prerequisites: PrerequisiteRule[];
   prerequisiteNote?: string;
   assessmentLevelPassed?: boolean;
   type?: ModuleType;
