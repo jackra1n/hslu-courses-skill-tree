@@ -61,6 +61,8 @@
   const viewport = $derived(getViewport());
   const showCourseTypeBadges = $derived(getShowCourseTypeBadges());
 
+  let isDragging = $state(false);
+
   const totalSemesters = $derived.by(() => {
     const semesters = currentTemplate?.slots?.map(slot => slot.semester) ?? [];
     if (!semesters.length) return 1;
@@ -85,7 +87,7 @@
       const isSelected = selection?.id === n.id || (course && selection?.id === course.id);
       
       const nodeWidth = data.width || getNodeWidth(course?.ects || slot?.credits || 6);
-      let styleStr = `border-radius: 12px; font-weight: 500; font-size: 14px; text-align: center; min-width: ${nodeWidth}px; width: ${nodeWidth}px; font-family: Inter, sans-serif; transition: all 0.2s; `;
+      let styleStr = `border-radius: 12px; font-weight: 500; font-size: 14px; text-align: center; min-width: ${nodeWidth}px; width: ${nodeWidth}px; font-family: Inter, sans-serif; ${!isDragging ? 'transition: all 0.2s;' : ''}; `;
 
       if (isSelected) {
         styleStr += "border-width: 3px; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 4px 6px rgba(0,0,0,0.1); transform: scale(1.05); ";
@@ -160,7 +162,7 @@
       const targetSlot = currentTemplate.slots.find(slot => slot.id === e.target);
       const targetCompleted = targetSlot ? progressStore.getSlotStatus(targetSlot.id) === 'completed' : false;
       
-      let edgeStyle = "stroke-width: 2px; transition: all 0.2s; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); ";
+      let edgeStyle = "stroke-width: 2px; ${!isDragging ? 'transition: all 0.2s;' : ''}; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); ";
       let markerEnd = e.markerEnd;
       let animated = false;
       
@@ -203,6 +205,7 @@
 
   const handleNodeDragStart: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
     if (!targetNode) return;
+    isDragging = true;
     courseStore.handleNodeDragStart(targetNode.id);
   };
 
@@ -214,6 +217,7 @@
 
   const handleNodeDragStop: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
     if (!targetNode) return;
+    isDragging = false;
     const position = (targetNode as any).positionAbsolute || targetNode.position || { x: 0, y: 0 };
     courseStore.handleNodeDragStop(targetNode.id, position);
   };
