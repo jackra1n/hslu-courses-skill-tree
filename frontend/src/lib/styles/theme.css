@@ -47,6 +47,17 @@
   --legend-locked-border: 209 213 219; /* gray-300 */
 }
 
+html,
+body {
+  background-color: rgb(var(--bg-primary));
+  color: rgb(var(--text-primary));
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+}
+
 .dark {
   /* Dark theme colors */
   --bg-primary: 17 24 39; /* gray-900 */

@@ -1,6 +1,12 @@
 import { browser } from '$app/environment';
 
 export type Theme = 'light' | 'dark' | 'system';
+type ResolvedTheme = Exclude<Theme, 'system'>;
+
+const THEME_COLORS: Record<ResolvedTheme, string> = {
+  light: '#ffffff',
+  dark: '#111827'
+};
 
 // private state
 let _theme = $state<Theme>('light');
@@ -30,13 +36,21 @@ function applyTheme(themeValue: Theme) {
   if (!browser) return;
   
   const root = document.documentElement;
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const resolvedTheme: ResolvedTheme = themeValue === 'system'
+    ? (prefersDark ? 'dark' : 'light')
+    : themeValue;
   
-  if (themeValue === 'system') {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    root.classList.toggle('dark', prefersDark);
-  } else {
-    root.classList.toggle('dark', themeValue === 'dark');
-  }
+  root.classList.toggle('dark', resolvedTheme === 'dark');
+  root.style.colorScheme = resolvedTheme;
+  updateMetaThemeColor(resolvedTheme);
+}
+
+function updateMetaThemeColor(themeValue: ResolvedTheme) {
+  const metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  if (!metaTheme) return;
+
+  metaTheme.setAttribute('content', THEME_COLORS[themeValue]);
 }
 
 if (browser) {
