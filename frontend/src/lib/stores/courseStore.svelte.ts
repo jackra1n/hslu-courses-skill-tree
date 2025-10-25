@@ -7,7 +7,7 @@ import {
   getTemplatesByProgram,
   calculateTotalCredits,
   COURSES,
-  setCoursePlan
+  setCoursePlan,
 } from '$lib/data/courses';
 import { toGraph } from '$lib/utils/graph';
 import { getNodeLabel, getNodeWidth } from '$lib/utils/layout';
@@ -36,31 +36,52 @@ let _slotSemesterOverrides = $state<Record<string, number>>({});
 const _totalCredits = $derived(calculateTotalCredits(_currentTemplate, _userSelections));
 const _availablePlans = $derived(
   getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
-    .map(t => t.plan)
+    .map((t) => t.plan)
     .filter((plan, index, arr) => arr.indexOf(plan) === index)
-    .sort()
+    .sort(),
 );
 
-export function currentTemplate() { return _currentTemplate; }
-export function userSelections() { return _userSelections; }
-export function selectedPlan() { return _selectedPlan; }
-export function nodes() { return _nodes; }
-export function edges() { return _edges; }
-export function showShortNamesOnly() { return _showShortNamesOnly; }
-export function totalCredits() { return _totalCredits; }
-export function availablePlans() { return _availablePlans; }
-export function manualPositions() { return _manualPositions; }
-export function semesterOrders() { return _semesterOrders; }
-export function slotSemesterOverrides() { return _slotSemesterOverrides; }
+export function currentTemplate() {
+  return _currentTemplate;
+}
+export function userSelections() {
+  return _userSelections;
+}
+export function selectedPlan() {
+  return _selectedPlan;
+}
+export function nodes() {
+  return _nodes;
+}
+export function edges() {
+  return _edges;
+}
+export function showShortNamesOnly() {
+  return _showShortNamesOnly;
+}
+export function totalCredits() {
+  return _totalCredits;
+}
+export function availablePlans() {
+  return _availablePlans;
+}
+export function manualPositions() {
+  return _manualPositions;
+}
+export function semesterOrders() {
+  return _semesterOrders;
+}
+export function slotSemesterOverrides() {
+  return _slotSemesterOverrides;
+}
 
 export const courseStore = {
-
   canSelectCourseForSlot(slotId: string, courseId: string): boolean {
     if (progressStore.hasCompletedInstance(courseId, _currentTemplate, _userSelections)) {
       return false;
     }
 
-    const slot = _currentTemplate.slots.find(s => s.id === slotId);
+    const slot = _currentTemplate.slots.find((s) => s.id === slotId);
     if (!slot) {
       return false;
     }
@@ -68,8 +89,8 @@ export const courseStore = {
     // check if this is an elective/major slot and the course is a fixed course or core/project type
     const isElectiveLike = slot.type === 'elective' || slot.type === 'major';
     if (isElectiveLike) {
-      const course = COURSES.find(c => c.id === courseId);
-      const appearsFixed = _currentTemplate.slots.some(s => s.type === 'fixed' && s.courseId === courseId);
+      const course = COURSES.find((c) => c.id === courseId);
+      const appearsFixed = _currentTemplate.slots.some((s) => s.type === 'fixed' && s.courseId === courseId);
       const isCoreOrProject = course?.type === 'Kernmodul' || course?.type === 'Projektmodul';
 
       if (appearsFixed || isCoreOrProject) {
@@ -80,9 +101,7 @@ export const courseStore = {
 
         // require elective semester to be later than earliest fixed semester
         const earliestFixed = Math.min(
-          ..._currentTemplate.slots
-            .filter(s => s.type === 'fixed' && s.courseId === courseId)
-            .map(s => s.semester)
+          ..._currentTemplate.slots.filter((s) => s.type === 'fixed' && s.courseId === courseId).map((s) => s.semester),
         );
         if (Number.isFinite(earliestFixed) && slot.semester <= earliestFixed) {
           return false;
@@ -90,8 +109,8 @@ export const courseStore = {
       }
     }
 
-    const conflictingSlotId = Object.entries(_userSelections).find(([otherSlotId, otherCourseId]) =>
-      otherSlotId !== slotId && otherCourseId === courseId
+    const conflictingSlotId = Object.entries(_userSelections).find(
+      ([otherSlotId, otherCourseId]) => otherSlotId !== slotId && otherCourseId === courseId,
     )?.[0];
 
     if (!conflictingSlotId) {
@@ -100,7 +119,7 @@ export const courseStore = {
 
     // if course has attended instances, allow across semesters but only one per semester
     if (progressStore.hasAttendedInstance(courseId, _currentTemplate, _userSelections)) {
-      const conflictingSlot = _currentTemplate.slots.find(s => s.id === conflictingSlotId);
+      const conflictingSlot = _currentTemplate.slots.find((s) => s.id === conflictingSlotId);
       return conflictingSlot ? conflictingSlot.semester !== slot.semester : true;
     }
     return false;
@@ -117,8 +136,8 @@ export const courseStore = {
     _slotSemesterOverrides = loadSemesterOverrides(template.id);
 
     if (browser) {
-      localStorage.setItem("currentTemplate", templateId);
-      localStorage.setItem("selectedPlan", template.plan);
+      localStorage.setItem('currentTemplate', templateId);
+      localStorage.setItem('selectedPlan', template.plan);
     }
 
     updateGraph();
@@ -126,8 +145,9 @@ export const courseStore = {
 
   switchPlan(plan: string) {
     setCoursePlan(plan);
-    const newTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
-      .find(t => t.plan === plan);
+    const newTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell).find(
+      (t) => t.plan === plan,
+    );
     if (newTemplate) {
       this.switchTemplate(newTemplate.id);
     }
@@ -140,7 +160,7 @@ export const courseStore = {
 
     _userSelections = { ..._userSelections, [slotId]: courseId };
     if (browser) {
-      localStorage.setItem("userSelections", JSON.stringify(_userSelections));
+      localStorage.setItem('userSelections', JSON.stringify(_userSelections));
     }
 
     updateGraph();
@@ -151,7 +171,7 @@ export const courseStore = {
     delete newSelections[slotId];
     _userSelections = newSelections;
     if (browser) {
-      localStorage.setItem("userSelections", JSON.stringify(_userSelections));
+      localStorage.setItem('userSelections', JSON.stringify(_userSelections));
     }
 
     updateGraph();
@@ -160,7 +180,7 @@ export const courseStore = {
   toggleShortNames() {
     _showShortNamesOnly = !_showShortNamesOnly;
     if (browser) {
-      localStorage.setItem("showShortNamesOnly", JSON.stringify(_showShortNamesOnly));
+      localStorage.setItem('showShortNamesOnly', JSON.stringify(_showShortNamesOnly));
     }
     updateNodeLabels();
   },
@@ -168,17 +188,17 @@ export const courseStore = {
   init() {
     if (!browser) return;
 
-    const savedSelections = localStorage.getItem("userSelections");
+    const savedSelections = localStorage.getItem('userSelections');
     if (savedSelections) {
       _userSelections = JSON.parse(savedSelections);
     }
 
-    const savedShortNames = localStorage.getItem("showShortNamesOnly");
+    const savedShortNames = localStorage.getItem('showShortNamesOnly');
     if (savedShortNames) {
       _showShortNamesOnly = JSON.parse(savedShortNames);
     }
 
-    const savedTemplate = localStorage.getItem("currentTemplate");
+    const savedTemplate = localStorage.getItem('currentTemplate');
     if (savedTemplate) {
       const template = getTemplateById(savedTemplate);
       if (template) {
@@ -191,13 +211,14 @@ export const courseStore = {
       }
     }
 
-    const savedPlan = localStorage.getItem("selectedPlan");
+    const savedPlan = localStorage.getItem('selectedPlan');
     if (savedPlan) {
       _selectedPlan = savedPlan;
       setCoursePlan(savedPlan);
       if (!savedTemplate) {
-        const newTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
-          .find(t => t.plan === savedPlan);
+        const newTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell).find(
+          (t) => t.plan === savedPlan,
+        );
         if (newTemplate) {
           _currentTemplate = newTemplate;
         }
@@ -226,7 +247,10 @@ export const courseStore = {
     if (_activeDragNodeId !== nodeId) {
       _activeDragNodeId = nodeId;
     }
-    updateNodePosition(nodeId, position, { persist: false, ensureBounds: false });
+    updateNodePosition(nodeId, position, {
+      persist: false,
+      ensureBounds: false,
+    });
     const preview = computeReorderedSemesterOrders(nodeId, position);
     if (preview) {
       _semesterOrders = preview.orders;
@@ -235,7 +259,10 @@ export const courseStore = {
   },
 
   handleNodeDragStop(nodeId: string, position: FlowNodePosition) {
-    updateNodePosition(nodeId, position, { persist: false, ensureBounds: false });
+    updateNodePosition(nodeId, position, {
+      persist: false,
+      ensureBounds: false,
+    });
     const result = computeReorderedSemesterOrders(nodeId, position);
     if (result) {
       applySemesterOverride(nodeId, result.targetSemester);
@@ -244,7 +271,7 @@ export const courseStore = {
     }
     updateGraph();
     _activeDragNodeId = null;
-  }
+  },
 };
 
 function updateGraph() {
@@ -272,14 +299,16 @@ function updateNodeLabels() {
     const course = data.course;
 
     if (slot && course) {
-      return { ...n, data: { ...data, label: getNodeLabel(course, _showShortNamesOnly) } };
-    } else if (slot && (slot.type === "elective" || slot.type === "major")) {
+      return {
+        ...n,
+        data: { ...data, label: getNodeLabel(course, _showShortNamesOnly) },
+      };
+    } else if (slot && (slot.type === 'elective' || slot.type === 'major')) {
       const selectedCourseId = _userSelections[slot.id];
-      const selectedCourse = selectedCourseId ?
-        COURSES.find((c: Course) => c.id === selectedCourseId) : null;
-      const label = selectedCourse ?
-        getNodeLabel(selectedCourse, _showShortNamesOnly) :
-        `${slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course'} (${selectedCourse ? (selectedCourse as Course).ects : 0} ECTS)`;
+      const selectedCourse = selectedCourseId ? COURSES.find((c: Course) => c.id === selectedCourseId) : null;
+      const label = selectedCourse
+        ? getNodeLabel(selectedCourse, _showShortNamesOnly)
+        : `${slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course'} (${selectedCourse ? (selectedCourse as Course).ects : 0} ECTS)`;
       return { ...n, data: { ...data, label, course: selectedCourse } };
     }
 
@@ -292,7 +321,7 @@ function updateNodeLabels() {
 function updateNodePosition(
   nodeId: string,
   rawPosition: FlowNodePosition,
-  options: { persist: boolean; ensureBounds?: boolean }
+  options: { persist: boolean; ensureBounds?: boolean },
 ) {
   const nodeIndex = _nodes.findIndex((n) => n.id === nodeId);
   if (nodeIndex === -1) return;
@@ -303,7 +332,7 @@ function updateNodePosition(
     if (idx !== nodeIndex) return node;
     const updatedNode: Node = {
       ...node,
-      position
+      position,
     };
 
     if ('positionAbsolute' in node) {
@@ -420,7 +449,7 @@ function applyOrderLayout(): void {
 
       updatedNodes[index] = {
         ...node,
-        position
+        position,
       };
 
       if ('positionAbsolute' in node) {
@@ -458,7 +487,10 @@ function getNodeWidthForData(data: ExtendedNodeData | undefined): number {
   return getNodeWidth(6);
 }
 
-function computeReorderedSemesterOrders(nodeId: string, dropPosition: FlowNodePosition): { targetSemester: number; orders: SemesterOrderMap } | null {
+function computeReorderedSemesterOrders(
+  nodeId: string,
+  dropPosition: FlowNodePosition,
+): { targetSemester: number; orders: SemesterOrderMap } | null {
   const node = _nodes.find((n) => n.id === nodeId);
   if (!node) return null;
 
@@ -526,7 +558,7 @@ function applyOrderPreview(orders: SemesterOrderMap, draggedNodeId: string): voi
       const position = { x, y };
       updatedNodes[index] = {
         ...node,
-        position
+        position,
       };
 
       if ('positionAbsolute' in node) {

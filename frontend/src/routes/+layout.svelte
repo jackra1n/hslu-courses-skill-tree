@@ -1,16 +1,16 @@
 <script lang="ts">
-	import 'virtual:uno.css';
-	import '$lib/styles/theme.css';
-	import favicon from '$lib/assets/icon.png';
-	import { themeStore } from '$lib/stores/theme.svelte';
-	import MobileWarningPopup from '$lib/components/ui/MobileWarningPopup.svelte';
-	import { onMount } from 'svelte';
+  import 'virtual:uno.css';
+  import '$lib/styles/theme.css';
+  import favicon from '$lib/assets/icon.png';
+  import { themeStore } from '$lib/stores/theme.svelte';
+  import MobileWarningPopup from '$lib/components/ui/MobileWarningPopup.svelte';
+  import { onMount } from 'svelte';
 
-	let { children } = $props();
+  let { children } = $props();
 
-	onMount(() => {
-		themeStore.init();
-	});
+  onMount(() => {
+    themeStore.init();
+  });
 </script>
 
 <svelte:head>

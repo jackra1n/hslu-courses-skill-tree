@@ -5,7 +5,7 @@
   const themeOptions = [
     { value: 'light' as Theme, label: 'Light', icon: 'i-lucide-sun' },
     { value: 'dark' as Theme, label: 'Dark', icon: 'i-lucide-moon' },
-    { value: 'system' as Theme, label: 'System', icon: 'i-lucide-monitor' }
+    { value: 'system' as Theme, label: 'System', icon: 'i-lucide-monitor' },
   ];
 
   function selectTheme(selectedTheme: string) {

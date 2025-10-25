@@ -9,14 +9,14 @@ export class TemplateIndex {
   constructor(
     template: CurriculumTemplate,
     selections: Record<string, string>,
-    semesterOverrides: Record<string, number> = {}
+    semesterOverrides: Record<string, number> = {},
   ) {
     this.slotById = new Map();
     this.slotsByCourseId = new Map();
     this.semesterBySlotId = new Map();
     this.electiveSelections = new Map(Object.entries(selections));
 
-    template.slots.forEach(slot => {
+    template.slots.forEach((slot) => {
       this.slotById.set(slot.id, slot);
       const effectiveSemester = semesterOverrides[slot.id] ?? slot.semester;
       this.semesterBySlotId.set(slot.id, effectiveSemester);
@@ -66,8 +66,8 @@ export class TemplateIndex {
     const dependentSemester = this.semesterBySlotId.get(dependentSlotId);
     if (dependentSemester === undefined) return [];
 
-    return this.providerSlotsFor(courseId).filter(slot => 
-      (this.semesterBySlotId.get(slot.id) ?? slot.semester) < dependentSemester
+    return this.providerSlotsFor(courseId).filter(
+      (slot) => (this.semesterBySlotId.get(slot.id) ?? slot.semester) < dependentSemester,
     );
   }
 
@@ -78,8 +78,8 @@ export class TemplateIndex {
     const dependentSemester = this.semesterBySlotId.get(dependentSlotId);
     if (dependentSemester === undefined) return [];
 
-    return this.providerSlotsFor(courseId).filter(slot =>
-      (this.semesterBySlotId.get(slot.id) ?? slot.semester) <= dependentSemester
+    return this.providerSlotsFor(courseId).filter(
+      (slot) => (this.semesterBySlotId.get(slot.id) ?? slot.semester) <= dependentSemester,
     );
   }
 
@@ -90,8 +90,8 @@ export class TemplateIndex {
     const dependentSemester = this.semesterBySlotId.get(dependentSlotId);
     if (dependentSemester === undefined) return [];
 
-    return this.providerSlotsFor(courseId).filter(slot => 
-      (this.semesterBySlotId.get(slot.id) ?? slot.semester) >= dependentSemester
+    return this.providerSlotsFor(courseId).filter(
+      (slot) => (this.semesterBySlotId.get(slot.id) ?? slot.semester) >= dependentSemester,
     );
   }
 }

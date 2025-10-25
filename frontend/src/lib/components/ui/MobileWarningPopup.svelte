@@ -10,7 +10,7 @@
       const dismissedTime = parseInt(dismissedStorage);
       const now = Date.now();
       const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
-      
+
       if (now - dismissedTime < twentyFourHoursInMs) {
         dismissed = true;
         return;

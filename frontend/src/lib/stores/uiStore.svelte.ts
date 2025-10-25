@@ -10,22 +10,37 @@ let _showCourseTypeBadges = $state(false);
 let _showProgramSelector = $state(false);
 
 const _hasSelection = $derived(_selection !== null);
-const _isElectiveSlot = $derived(
-  _selection?.id.startsWith('elective') || _selection?.id.startsWith('major') || false
-);
+const _isElectiveSlot = $derived(_selection?.id.startsWith('elective') || _selection?.id.startsWith('major') || false);
 
-export function selection() { return _selection; }
-export function selectedSlotId() { return _selectedSlotId; }
-export function viewport() { return _viewport; }
-export function showAssessmentInfo() { return _showAssessmentInfo; }
-export function showMoreOptions() { return _showMoreOptions; }
-export function showCourseTypeBadges() { return _showCourseTypeBadges; }
-export function showProgramSelector() { return _showProgramSelector; }
-export function hasSelection() { return _hasSelection; }
-export function isElectiveSlot() { return _isElectiveSlot; }
+export function selection() {
+  return _selection;
+}
+export function selectedSlotId() {
+  return _selectedSlotId;
+}
+export function viewport() {
+  return _viewport;
+}
+export function showAssessmentInfo() {
+  return _showAssessmentInfo;
+}
+export function showMoreOptions() {
+  return _showMoreOptions;
+}
+export function showCourseTypeBadges() {
+  return _showCourseTypeBadges;
+}
+export function showProgramSelector() {
+  return _showProgramSelector;
+}
+export function hasSelection() {
+  return _hasSelection;
+}
+export function isElectiveSlot() {
+  return _isElectiveSlot;
+}
 
 export const uiStore = {
-
   selectCourse(course: Course | null, slotId?: string | null) {
     _selection = course;
     _selectedSlotId = slotId || null;
@@ -51,7 +66,7 @@ export const uiStore = {
   toggleCourseTypeBadges() {
     _showCourseTypeBadges = !_showCourseTypeBadges;
     if (browser) {
-      localStorage.setItem("showCourseTypeBadges", JSON.stringify(_showCourseTypeBadges));
+      localStorage.setItem('showCourseTypeBadges', JSON.stringify(_showCourseTypeBadges));
     }
   },
 
@@ -62,9 +77,9 @@ export const uiStore = {
   init() {
     if (!browser) return;
 
-    const savedShowCourseTypeBadges = localStorage.getItem("showCourseTypeBadges");
+    const savedShowCourseTypeBadges = localStorage.getItem('showCourseTypeBadges');
     if (savedShowCourseTypeBadges) {
       _showCourseTypeBadges = JSON.parse(savedShowCourseTypeBadges);
     }
-  }
+  },
 };

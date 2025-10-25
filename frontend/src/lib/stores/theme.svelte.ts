@@ -6,7 +6,9 @@ export type Theme = 'light' | 'dark' | 'system';
 let _theme = $state<Theme>('light');
 
 // export getter function
-export function theme() { return _theme; }
+export function theme() {
+  return _theme;
+}
 
 export const themeStore = {
   set: (newTheme: Theme) => {
@@ -23,14 +25,14 @@ export const themeStore = {
     const newTheme = stored || 'light';
     _theme = newTheme;
     applyTheme(newTheme);
-  }
+  },
 };
 
 function applyTheme(themeValue: Theme) {
   if (!browser) return;
-  
+
   const root = document.documentElement;
-  
+
   if (themeValue === 'system') {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     root.classList.toggle('dark', prefersDark);

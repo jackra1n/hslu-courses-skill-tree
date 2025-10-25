@@ -7,9 +7,8 @@ type StudyProgramme = {
 
 const PROGRAMME_DATA = (studyProgrammes.data ?? []) as StudyProgramme[];
 
-
-export const PROGRAMS = PROGRAMME_DATA.map(program => program.Name);
+export const PROGRAMS = PROGRAMME_DATA.map((program) => program.Name);
 
 export const PROGRAM_PLANS: Record<string, string[]> = {
-  Informatik: ['HS16', 'HS25']
+  Informatik: ['HS16', 'HS25'],
 };

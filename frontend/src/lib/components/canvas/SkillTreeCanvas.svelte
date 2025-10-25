@@ -1,27 +1,10 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import {
-    SvelteFlow,
-    Background,
-    Controls,
-    type OnMove,
-    type NodeTargetEventWithPointer,
-  } from "@xyflow/svelte";
-  import "@xyflow/svelte/dist/style.css";
-  
-  import {
-    nodes,
-    edges,
-    currentTemplate,
-    userSelections,
-    courseStore
-  } from '$lib/stores/courseStore.svelte';
-  import {
-    selection,
-    viewport,
-    showCourseTypeBadges,
-    uiStore
-  } from '$lib/stores/uiStore.svelte';
+  import { onMount } from 'svelte';
+  import { SvelteFlow, Background, Controls, type OnMove, type NodeTargetEventWithPointer } from '@xyflow/svelte';
+  import '@xyflow/svelte/dist/style.css';
+
+  import { nodes, edges, currentTemplate, userSelections, courseStore } from '$lib/stores/courseStore.svelte';
+  import { selection, viewport, showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
   import { slotStatusMap, progressStore } from '$lib/stores/progressStore.svelte';
   import { theme } from '$lib/stores/theme.svelte';
   import CustomNode from './CustomNode.svelte';
@@ -33,13 +16,13 @@
   import type { Course } from '$lib/types';
 
   const nodeTypes = {
-    custom: CustomNode
+    custom: CustomNode,
   };
 
   let isDragging = $state(false);
 
   const totalSemesters = $derived.by(() => {
-    const semesters = currentTemplate()?.slots?.map(slot => slot.semester) ?? [];
+    const semesters = currentTemplate()?.slots?.map((slot) => slot.semester) ?? [];
     if (!semesters.length) return 1;
     return Math.max(1, Math.max(...semesters));
   });
@@ -61,15 +44,13 @@
       const isCompleted = slotStatus === 'completed';
 
       const isSelected = selection()?.id === n.id || (course && selection()?.id === course.id);
-      
+
       const nodeWidth = data.width || getNodeWidth(course?.ects || slot?.credits || 6);
-      
-      const hasSelectedCourse = isElectiveSlot && slot 
-        ? !!userSelections()[slot.id] 
-        : false;
-      
+
+      const hasSelectedCourse = isElectiveSlot && slot ? !!userSelections()[slot.id] : false;
+
       const hasLaterPrerequisites = data.hasLaterPrerequisites || false;
-      
+
       const styleStr = getNodeStyle(
         status,
         isSelected,
@@ -79,23 +60,23 @@
         nodeWidth,
         hasSelectedCourse,
         hasLaterPrerequisites,
-        isDragging
+        isDragging,
       );
-      
-      return { 
-        ...n, 
+
+      return {
+        ...n,
         style: styleStr,
         data: {
           ...data,
-          showCourseTypeBadges: showCourseTypeBadges()
-        }
+          showCourseTypeBadges: showCourseTypeBadges(),
+        },
       };
     });
   });
 
   const styledEdges = $derived.by(() => {
     const statuses = computeStatuses(currentTemplate(), userSelections(), slotStatusMap());
-    
+
     return edges().map((e) => {
       const { style, markerEnd, animated } = getEdgeStyle(
         e,
@@ -103,14 +84,14 @@
         statuses,
         slotStatusMap(),
         currentTemplate(),
-        isDragging
+        isDragging,
       );
-      
+
       return {
         ...e,
         style,
         markerEnd,
-        animated
+        animated,
       };
     });
   });
@@ -153,7 +134,7 @@
         label: slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course',
         ects: 0,
         prerequisites: [],
-        type: slot.type === "major" ? "Major-/Minormodul" : "Erweiterungsmodul"
+        type: slot.type === 'major' ? 'Major-/Minormodul' : 'Erweiterungsmodul',
       };
       uiStore.selectCourse(electiveCourse, slot.id);
     } else if (course && slot) {

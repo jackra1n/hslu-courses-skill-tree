@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Course, TemplateSlot } from "$lib/data/courses";
-  import { Handle, Position } from "@xyflow/svelte";
+  import type { Course, TemplateSlot } from '$lib/data/courses';
+  import { Handle, Position } from '@xyflow/svelte';
 
-  let { 
-    id, 
-    data = {}, 
-    selected = false, 
-    width = 180 
+  let {
+    id,
+    data = {},
+    selected = false,
+    width = 180,
   }: {
     id: string;
     data: any;
@@ -35,35 +35,35 @@
 
   function getCourseTypeColor(type?: string): string {
     switch (type) {
-      case "Kernmodul":
-        return "bg-blue-500";
-      case "Projektmodul":
-        return "bg-orange-500";
-      case "Erweiterungsmodul":
-        return "bg-green-500";
-      case "Major-/Minormodul":
-        return "bg-purple-500";
-      case "Zusatzmodul":
-        return "bg-yellow-500";
+      case 'Kernmodul':
+        return 'bg-blue-500';
+      case 'Projektmodul':
+        return 'bg-orange-500';
+      case 'Erweiterungsmodul':
+        return 'bg-green-500';
+      case 'Major-/Minormodul':
+        return 'bg-purple-500';
+      case 'Zusatzmodul':
+        return 'bg-yellow-500';
       default:
-        return "bg-gray-500";
+        return 'bg-gray-500';
     }
   }
 
   function getCourseTypeLabel(type?: string): string {
     switch (type) {
-      case "Kernmodul":
-        return "Kern";
-      case "Projektmodul":
-        return "Projekt";
-      case "Erweiterungsmodul":
-        return "Wahl";
-      case "Major-/Minormodul":
-        return "Major/Minor";
-      case "Zusatzmodul":
-        return "Zusatz";
+      case 'Kernmodul':
+        return 'Kern';
+      case 'Projektmodul':
+        return 'Projekt';
+      case 'Erweiterungsmodul':
+        return 'Wahl';
+      case 'Major-/Minormodul':
+        return 'Major/Minor';
+      case 'Zusatzmodul':
+        return 'Zusatz';
       default:
-        return "Modul";
+        return 'Modul';
     }
   }
 </script>

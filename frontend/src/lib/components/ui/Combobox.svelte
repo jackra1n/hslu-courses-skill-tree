@@ -24,21 +24,18 @@
     options,
     selected,
     onSelect,
-    placeholder = "Select option",
-    minWidth = "auto",
-    searchPlaceholder = "Search...",
-    noResultsText = "No results found",
+    placeholder = 'Select option',
+    minWidth = 'auto',
+    searchPlaceholder = 'Search...',
+    noResultsText = 'No results found',
     normalize = (text: string) =>
       text
         .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, ""),
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, ''),
     filter = (query: string, option: Option) => {
       const normalizedQuery = normalize(query);
-      const searchTexts = [
-        normalize(option.label),
-        ...(option.keywords || []).map((k) => normalize(k)),
-      ];
+      const searchTexts = [normalize(option.label), ...(option.keywords || []).map((k) => normalize(k))];
       return searchTexts.some((text) => text.includes(normalizedQuery));
     },
   }: Props = $props();
@@ -58,7 +55,7 @@
   const selectedOption = $derived.by(() => {
     return (
       options.find((option) => option.value === selected) || {
-        value: "",
+        value: '',
         label: placeholder,
       }
     );
@@ -96,11 +93,7 @@
 
   function handleKeydown(event: KeyboardEvent) {
     if (!isOpen) {
-      if (
-        event.key === "Enter" ||
-        event.key === " " ||
-        event.key === "ArrowDown"
-      ) {
+      if (event.key === 'Enter' || event.key === ' ' || event.key === 'ArrowDown') {
         event.preventDefault();
         openCombobox();
       }
@@ -108,33 +101,27 @@
     }
 
     switch (event.key) {
-      case "Escape":
+      case 'Escape':
         event.preventDefault();
         closeCombobox();
         break;
-      case "ArrowDown":
+      case 'ArrowDown':
         event.preventDefault();
-        highlightedIndex = Math.min(
-          highlightedIndex + 1,
-          filteredOptions.length - 1
-        );
+        highlightedIndex = Math.min(highlightedIndex + 1, filteredOptions.length - 1);
         scrollToHighlighted();
         break;
-      case "ArrowUp":
+      case 'ArrowUp':
         event.preventDefault();
         highlightedIndex = Math.max(highlightedIndex - 1, -1);
         scrollToHighlighted();
         break;
-      case "Enter":
+      case 'Enter':
         event.preventDefault();
-        if (
-          highlightedIndex >= 0 &&
-          highlightedIndex < filteredOptions.length
-        ) {
+        if (highlightedIndex >= 0 && highlightedIndex < filteredOptions.length) {
           selectOption(filteredOptions[highlightedIndex]);
         }
         break;
-      case "Tab":
+      case 'Tab':
         closeCombobox();
         break;
     }
@@ -142,10 +129,8 @@
 
   function scrollToHighlighted() {
     if (highlightedIndex >= 0 && listboxElement) {
-      const highlightedElement = listboxElement.children[
-        highlightedIndex
-      ] as HTMLElement;
-      highlightedElement?.scrollIntoView({ block: "nearest" });
+      const highlightedElement = listboxElement.children[highlightedIndex] as HTMLElement;
+      highlightedElement?.scrollIntoView({ block: 'nearest' });
     }
   }
 
@@ -179,8 +164,8 @@
 
   $effect(() => {
     if (isOpen) {
-      document.addEventListener("click", handleClickOutside);
-      return () => document.removeEventListener("click", handleClickOutside);
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
     }
   });
 

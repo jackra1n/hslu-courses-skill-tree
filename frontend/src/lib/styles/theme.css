@@ -8,7 +8,7 @@
   --text-tertiary: 107 114 128; /* gray-500 */
   --border-primary: 229 231 235; /* gray-200 */
   --border-secondary: 209 213 219; /* gray-300 */
-  
+
   /* Node colors - Light theme */
   --node-completed-bg: 240 253 244; /* green-50 */
   --node-completed-border: 74 222 128; /* green-400 */
@@ -19,23 +19,23 @@
   --node-locked-bg: 249 250 251; /* gray-50 */
   --node-locked-border: 209 213 219; /* gray-300 */
   --node-locked-text: 156 163 175; /* gray-400 */
-  
+
   /* Button colors */
   --btn-primary-bg: 255 255 255; /* white */
   --btn-primary-border: 209 213 219; /* gray-300 */
   --btn-primary-text: 55 65 81; /* gray-700 */
   --btn-primary-hover: 249 250 251; /* gray-50 */
-  
+
   --btn-attended-bg: 254 243 199; /* amber-100 */
   --btn-attended-border: 251 191 36; /* amber-400 */
   --btn-attended-text: 146 64 14; /* amber-900 */
   --btn-attended-hover: 253 230 138; /* amber-200 */
-  
+
   --btn-completed-bg: 240 253 244; /* green-50 */
   --btn-completed-border: 74 222 128; /* green-400 */
   --btn-completed-text: 20 83 45; /* green-900 */
   --btn-completed-hover: 187 247 208; /* green-200 */
-  
+
   /* Status legend colors */
   --legend-completed-bg: 187 247 208; /* green-200 */
   --legend-completed-border: 74 222 128; /* green-400 */
@@ -56,7 +56,7 @@
   --text-tertiary: 107 114 128; /* gray-500 */
   --border-primary: 55 65 81; /* gray-700 */
   --border-secondary: 75 85 99; /* gray-600 */
-  
+
   /* Node colors - Dark theme */
   --node-completed-bg: 6 78 59; /* emerald-900 */
   --node-completed-border: 16 185 129; /* emerald-500 */
@@ -67,23 +67,23 @@
   --node-locked-bg: 31 41 55; /* gray-800 */
   --node-locked-border: 75 85 99; /* gray-600 */
   --node-locked-text: 107 114 128; /* gray-500 */
-  
+
   /* Button colors */
   --btn-primary-bg: 31 41 55; /* gray-800 */
   --btn-primary-border: 75 85 99; /* gray-600 */
   --btn-primary-text: 243 244 246; /* gray-100 */
   --btn-primary-hover: 55 65 81; /* gray-700 */
-  
+
   --btn-attended-bg: 120 53 15; /* amber-900 */
   --btn-attended-border: 245 158 11; /* amber-500 */
   --btn-attended-text: 254 243 199; /* amber-100 */
   --btn-attended-hover: 146 64 14; /* amber-800 */
-  
+
   --btn-completed-bg: 6 78 59; /* emerald-900 */
   --btn-completed-border: 16 185 129; /* emerald-500 */
   --btn-completed-text: 240 253 244; /* green-50 */
   --btn-completed-hover: 4 120 87; /* emerald-800 */
-  
+
   /* Status legend colors */
   --legend-completed-bg: 4 120 87; /* emerald-800 */
   --legend-completed-border: 16 185 129; /* emerald-500 */
@@ -97,5 +97,8 @@
 
 /* Transition for smooth theme switching */
 * {
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }

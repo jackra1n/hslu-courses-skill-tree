@@ -7,7 +7,7 @@ export type {
   PrerequisiteLink,
   TemplateSlot,
   CurriculumTemplate,
-  ExtendedNodeData
+  ExtendedNodeData,
 } from '$lib/data/courses';
 
 export type Viewport = {

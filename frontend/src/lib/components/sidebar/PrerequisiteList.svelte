@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { PrerequisiteRule } from "$lib/types";
-  import { COURSES } from "$lib/data/courses";
-  import { slotStatusMap } from "$lib/stores/progressStore.svelte";
-  import { evaluatePrerequisiteRule } from "$lib/utils/prerequisite";
-  import { uiStore } from "$lib/stores/uiStore.svelte";
-  import { currentTemplate, userSelections } from "$lib/stores/courseStore.svelte";
+  import type { PrerequisiteRule } from '$lib/types';
+  import { COURSES } from '$lib/data/courses';
+  import { slotStatusMap } from '$lib/stores/progressStore.svelte';
+  import { evaluatePrerequisiteRule } from '$lib/utils/prerequisite';
+  import { uiStore } from '$lib/stores/uiStore.svelte';
+  import { currentTemplate, userSelections } from '$lib/stores/courseStore.svelte';
 
   let {
     prerequisites,
@@ -15,20 +15,13 @@
   } = $props();
 
   const completedCount = $derived(
-    Array.from(slotStatusMap().values()).filter(
-      (status) => status === "completed"
-    ).length
+    Array.from(slotStatusMap().values()).filter((status) => status === 'completed').length,
   );
 
   const assessmentStageMet = $derived(completedCount >= 6);
 
   function renderPrerequisiteRule(rule: PrerequisiteRule) {
-    const ruleMet = evaluatePrerequisiteRule(
-      rule,
-      slotStatusMap(),
-      currentTemplate(),
-      userSelections()
-    );
+    const ruleMet = evaluatePrerequisiteRule(rule, slotStatusMap(), currentTemplate(), userSelections());
 
     return {
       rule,
@@ -38,18 +31,17 @@
 
   function isModuleMet(moduleId: string, mustBePassed: boolean): boolean {
     const slotsWithCourse = currentTemplate().slots.filter((slot) => {
-      if (slot.type === "fixed") return slot.courseId === moduleId;
-      if (slot.type === "elective" || slot.type === "major")
-        return userSelections()[slot.id] === moduleId;
+      if (slot.type === 'fixed') return slot.courseId === moduleId;
+      if (slot.type === 'elective' || slot.type === 'major') return userSelections()[slot.id] === moduleId;
       return false;
     });
 
     return slotsWithCourse.some((slot) => {
       const status = slotStatusMap().get(slot.id);
       if (mustBePassed) {
-        return status === "completed";
+        return status === 'completed';
       } else {
-        return status === "attended" || status === "completed";
+        return status === 'attended' || status === 'completed';
       }
     });
   }

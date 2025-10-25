@@ -1,7 +1,7 @@
 <script lang="ts">
   import { showAssessmentInfo, uiStore } from '$lib/stores/uiStore.svelte';
   import { fade, scale } from 'svelte/transition';
-  
+
   function closeModal() {
     uiStore.toggleAssessmentInfo();
   }

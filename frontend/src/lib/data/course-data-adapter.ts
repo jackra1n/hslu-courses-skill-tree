@@ -46,7 +46,7 @@ type RawModuleFile = {
 
 const moduleFileGlob = import.meta.glob('./hslu_data/modules/*_modules.json', {
   eager: true,
-  import: 'default'
+  import: 'default',
 }) as Record<string, RawModuleFile>;
 
 type SemesterCode = {
@@ -64,7 +64,7 @@ function parseSemesterFromPath(path: string): SemesterCode | null {
   return {
     raw: `${season}${yearSuffix}`,
     season: season as 'F' | 'H',
-    year
+    year,
   };
 }
 
@@ -114,22 +114,16 @@ function selectModuleType(module: RawModule, plan: string): ModuleType | undefin
   const preferredSeason: string = plan.startsWith('HS')
     ? 'Herbst'
     : plan.startsWith('FS')
-    ? 'Frühling'
-    : 'Frühling/Herbst';
+      ? 'Frühling'
+      : 'Frühling/Herbst';
 
-  const offersForInformatik = offers.filter(
-    (offer) => offer.DegreeProgramme === 'Informatik'
-  );
+  const offersForInformatik = offers.filter((offer) => offer.DegreeProgramme === 'Informatik');
   const candidateOffers = offersForInformatik.length > 0 ? offersForInformatik : offers;
 
-  const bySeasonPreference = candidateOffers.find(
-    (offer) => offer.CourseOffering === preferredSeason
-  );
+  const bySeasonPreference = candidateOffers.find((offer) => offer.CourseOffering === preferredSeason);
   if (bySeasonPreference) return mapModuleType(bySeasonPreference.ModuleType);
 
-  const flexibleOffer = candidateOffers.find(
-    (offer) => offer.CourseOffering === 'Frühling/Herbst'
-  );
+  const flexibleOffer = candidateOffers.find((offer) => offer.CourseOffering === 'Frühling/Herbst');
   if (flexibleOffer) return mapModuleType(flexibleOffer.ModuleType);
 
   return mapModuleType(candidateOffers[0]?.ModuleType);
@@ -156,7 +150,7 @@ function mapPrerequisites(prereqs: RawModule['Prerequisites']): PrerequisiteRule
     modules: rule.Modules,
     mustBePassed: rule.MustBePassed,
     moduleLinkType: normaliseLink(rule.ModuleLinkType) ?? 'und',
-    prerequisiteLinkType: normaliseLink(rule.PrerequisiteLinkType)
+    prerequisiteLinkType: normaliseLink(rule.PrerequisiteLinkType),
   }));
 }
 
@@ -170,7 +164,7 @@ function toCourse(module: RawModule, plan: string): Course {
     prerequisites: mapPrerequisites(module.Prerequisites ?? []),
     prerequisiteNote: module.PrerequisiteNote || undefined,
     assessmentLevelPassed: module.AssessmentLevelPassed ?? undefined,
-    type: selectModuleType(module, plan)
+    type: selectModuleType(module, plan),
   };
 }
 
@@ -179,9 +173,7 @@ export function loadCourseData(plan: string = 'HS25'): Course[] {
     return courseCache.get(plan)!;
   }
 
-  const courses = Array.from(moduleIndex.values()).map((module) =>
-    toCourse(module, plan)
-  );
+  const courses = Array.from(moduleIndex.values()).map((module) => toCourse(module, plan));
 
   courseCache.set(plan, courses);
   return courses;

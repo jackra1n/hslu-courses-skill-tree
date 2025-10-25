@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { CurriculumTemplate } from "$lib/data/courses";
-  import { calculateSemesterCredits } from "$lib/data/courses";
-  import { slotSemesterOverrides } from "$lib/stores/courseStore.svelte";
+  import type { CurriculumTemplate } from '$lib/data/courses';
+  import { calculateSemesterCredits } from '$lib/data/courses';
+  import { slotSemesterOverrides } from '$lib/stores/courseStore.svelte';
 
   let {
     semester,
@@ -24,14 +24,7 @@
   const dashArray = $derived(`${8 / viewport.zoom},${4 / viewport.zoom}`);
   const titleFontSize = $derived(Math.max(21, 12 / viewport.zoom));
   const yPosition = $derived(BASE_OFFSET + SEMESTER_SPACING * semester);
-  const semesterCredits = $derived(
-    calculateSemesterCredits(
-      semester,
-      currentTemplate,
-      userSelections,
-      overrides
-    )
-  );
+  const semesterCredits = $derived(calculateSemesterCredits(semester, currentTemplate, userSelections, overrides));
 </script>
 
 <line

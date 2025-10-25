@@ -1,15 +1,6 @@
 <script lang="ts">
-  import {
-    selection,
-    hasSelection,
-    isElectiveSlot,
-    uiStore
-  } from '$lib/stores/uiStore.svelte';
-  import {
-    currentTemplate,
-    userSelections,
-    slotSemesterOverrides
-  } from '$lib/stores/courseStore.svelte';
+  import { selection, hasSelection, isElectiveSlot, uiStore } from '$lib/stores/uiStore.svelte';
+  import { currentTemplate, userSelections, slotSemesterOverrides } from '$lib/stores/courseStore.svelte';
   import { COURSES } from '$lib/data/courses';
   import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
   import PrerequisiteList from './PrerequisiteList.svelte';
@@ -21,25 +12,27 @@
 
   const displayCourse = $derived.by(() => {
     if (!selection()) return null;
-    
+
     if (isElectiveSlot()) {
       const selectedCourseId = userSelections()[selection()!.id];
       if (selectedCourseId) {
-        return COURSES.find(c => c.id === selectedCourseId) || selection();
+        return COURSES.find((c) => c.id === selectedCourseId) || selection();
       }
     }
-    
+
     return selection();
   });
 
   const hasLaterPrerequisites = $derived.by(() => {
     if (!displayCourse || isElectiveSlot()) return false;
-    
-    const slot = currentTemplate().slots.find(s => s.courseId === displayCourse.id);
+
+    const slot = currentTemplate().slots.find((s) => s.courseId === displayCourse.id);
     if (!slot) return false;
-    
+
     const index = new TemplateIndex(currentTemplate(), userSelections(), slotSemesterOverrides());
-    return hasPrereqAfter(slot, displayCourse, index, { considerSameSemester: false });
+    return hasPrereqAfter(slot, displayCourse, index, {
+      considerSameSemester: false,
+    });
   });
 </script>
 

@@ -3,10 +3,10 @@
   import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
   import { theme, themeStore } from '$lib/stores/theme.svelte';
   import TemplateSelector from './TemplateSelector.svelte';
-  
+
   let programDropdownOpen = $state(false);
   let settingsDropdownOpen = $state(false);
-  
+
   function handleClickOutside(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (!target.closest('.program-dropdown') && programDropdownOpen) {
@@ -16,27 +16,27 @@
       settingsDropdownOpen = false;
     }
   }
-  
+
   $effect(() => {
     if (programDropdownOpen || settingsDropdownOpen) {
       document.addEventListener('click', handleClickOutside);
       return () => document.removeEventListener('click', handleClickOutside);
     }
   });
-  
+
   function toggleTheme() {
     const newTheme = theme() === 'dark' ? 'light' : 'dark';
     themeStore.set(newTheme);
   }
-  
+
   function toggleCourseNames() {
     courseStore.toggleShortNames();
   }
-  
+
   function toggleCourseBadges() {
     uiStore.toggleCourseTypeBadges();
   }
-  
+
   function toggleAssessmentInfo() {
     uiStore.toggleAssessmentInfo();
   }

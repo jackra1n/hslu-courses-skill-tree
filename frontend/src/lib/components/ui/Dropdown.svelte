@@ -15,7 +15,7 @@
     minWidth?: string;
   }
 
-  let { options, selected, onSelect, placeholder = "Select option", minWidth = "auto" }: Props = $props();
+  let { options, selected, onSelect, placeholder = 'Select option', minWidth = 'auto' }: Props = $props();
 
   let isOpen = $state(false);
   let dropdownElement: HTMLDivElement | undefined = $state();
@@ -44,7 +44,12 @@
   });
 
   const getCurrentOption = $derived.by(() => {
-    return options.find(option => option.value === selected) || { value: '', label: placeholder };
+    return (
+      options.find((option) => option.value === selected) || {
+        value: '',
+        label: placeholder,
+      }
+    );
   });
 </script>
 

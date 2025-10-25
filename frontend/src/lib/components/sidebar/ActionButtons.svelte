@@ -13,19 +13,19 @@
   const isAttended = $derived(slotStatus === 'attended');
   const isCompleted = $derived(slotStatus === 'completed');
   const statuses = $derived(computeStatuses(currentTemplate(), userSelections(), slotStatusMap()));
-  const isLocked = $derived(_selectedSlotId ? statuses[_selectedSlotId] === "locked" : true);
-  
+  const isLocked = $derived(_selectedSlotId ? statuses[_selectedSlotId] === 'locked' : true);
+
   // check if prerequisites are met (including assessment stage)
-  const course = $derived(COURSES.find(c => c.id === courseId));
+  const course = $derived(COURSES.find((c) => c.id === courseId));
   const prerequisitesMet = $derived.by(() => {
     if (!course) return false;
     const prereqsMet = evaluatePrerequisites(
       course.prerequisites,
       slotStatusMap(),
       currentTemplate(),
-      userSelections()
+      userSelections(),
     );
-    const completedSlotCount = Array.from(slotStatusMap().values()).filter(status => status === 'completed').length;
+    const completedSlotCount = Array.from(slotStatusMap().values()).filter((status) => status === 'completed').length;
     const assessmentStageMet = completedSlotCount >= 6;
     const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
     return prereqsMet && assessmentMet;

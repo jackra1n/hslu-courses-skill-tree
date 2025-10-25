@@ -1,56 +1,54 @@
 import type { Status, CurriculumTemplate } from '../types';
-import {
-  COURSES
-} from '../data/courses';
+import { COURSES } from '../data/courses';
 import { evaluatePrerequisites } from './prerequisite';
 
 export function computeStatuses(
   template: CurriculumTemplate,
   selections: Record<string, string>,
-  slotStatus: Map<string, 'attended' | 'completed'>
+  slotStatus: Map<string, 'attended' | 'completed'>,
 ): Record<string, Status> {
   const s: Record<string, Status> = {};
 
-  const completedSlotCount = Array.from(slotStatus.values()).filter(status => status === 'completed').length;
+  const completedSlotCount = Array.from(slotStatus.values()).filter((status) => status === 'completed').length;
   const assessmentStageMet = completedSlotCount >= 6;
 
-  template.slots.forEach(slot => {
-    if (slot.type === "fixed" && slot.courseId) {
-      const course = COURSES.find(c => c.id === slot.courseId);
+  template.slots.forEach((slot) => {
+    if (slot.type === 'fixed' && slot.courseId) {
+      const course = COURSES.find((c) => c.id === slot.courseId);
       if (course) {
         const slotStatusValue = slotStatus.get(slot.id);
         if (slotStatusValue === 'completed') {
-          s[slot.id] = "completed";
+          s[slot.id] = 'completed';
         } else {
           const prereqsMet = evaluatePrerequisites(course.prerequisites, slotStatus, template, selections);
           const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
           if (prereqsMet && assessmentMet) {
-            s[slot.id] = "available";
+            s[slot.id] = 'available';
           } else {
-            s[slot.id] = "locked";
+            s[slot.id] = 'locked';
           }
         }
       }
-    } else if (slot.type === "elective" || slot.type === "major") {
+    } else if (slot.type === 'elective' || slot.type === 'major') {
       const selectedCourseId = selections[slot.id];
       if (selectedCourseId) {
-        const course = COURSES.find(c => c.id === selectedCourseId);
+        const course = COURSES.find((c) => c.id === selectedCourseId);
         if (course) {
           const slotStatusValue = slotStatus.get(slot.id);
           if (slotStatusValue === 'completed') {
-            s[slot.id] = "completed";
+            s[slot.id] = 'completed';
           } else {
             const prereqsMet = evaluatePrerequisites(course.prerequisites, slotStatus, template, selections);
             const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
             if (prereqsMet && assessmentMet) {
-              s[slot.id] = "available";
+              s[slot.id] = 'available';
             } else {
-              s[slot.id] = "locked";
+              s[slot.id] = 'locked';
             }
           }
         }
       } else {
-        s[slot.id] = "available";
+        s[slot.id] = 'available';
       }
     }
   });
@@ -73,9 +71,9 @@ function buildBaseNodeStyle(nodeWidth: number, isDragging: boolean): string {
  */
 function buildSelectionStyle(isSelected: boolean): string {
   if (isSelected) {
-    return "border-width: 3px; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 4px 6px rgba(0,0,0,0.1); transform: scale(1.05); ";
+    return 'border-width: 3px; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 4px 6px rgba(0,0,0,0.1); transform: scale(1.05); ';
   }
-  return "border-width: 2px; ";
+  return 'border-width: 2px; ';
 }
 
 /**
@@ -89,32 +87,34 @@ function buildNodeStateStyle(
   isElectiveSlot: boolean,
   hasSelectedCourse: boolean,
   hasLaterPrerequisites: boolean,
-  isSelected: boolean
+  isSelected: boolean,
 ): string {
-  let style = "";
+  let style = '';
 
   // Special case: nodes with later prerequisites get red dashed border
   if (hasLaterPrerequisites) {
-    style += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.8;";
-    if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+    style +=
+      'background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.8;';
+    if (!isSelected) style += 'box-shadow: 0 1px 2px rgba(0,0,0,0.05);';
     return style;
   }
 
   // Elective slots have dashed borders and special handling when no course is selected
   if (isElectiveSlot) {
     if (!hasSelectedCourse) {
-      style += "background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); border-style: dashed; opacity: 0.6;";
+      style +=
+        'background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); border-style: dashed; opacity: 0.6;';
       return style;
     }
     // When course is selected, apply status-based styling with dashed border
-    style += buildStatusBasedStyle(status, isAttended, isCompleted) + "border-style: dashed; ";
-    if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+    style += buildStatusBasedStyle(status, isAttended, isCompleted) + 'border-style: dashed; ';
+    if (!isSelected) style += 'box-shadow: 0 1px 2px rgba(0,0,0,0.05);';
     return style;
   }
 
   // Regular nodes use status-based styling
   style += buildStatusBasedStyle(status, isAttended, isCompleted);
-  if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+  if (!isSelected) style += 'box-shadow: 0 1px 2px rgba(0,0,0,0.05);';
   return style;
 }
 
@@ -124,16 +124,16 @@ function buildNodeStateStyle(
  */
 function buildStatusBasedStyle(status: Status, isAttended: boolean, isCompleted: boolean): string {
   if (isCompleted) {
-    return "background: rgb(var(--node-completed-bg)); border-color: rgb(var(--node-completed-border)); color: rgb(var(--text-primary)); ";
+    return 'background: rgb(var(--node-completed-bg)); border-color: rgb(var(--node-completed-border)); color: rgb(var(--text-primary)); ';
   }
   if (isAttended) {
-    return "background: rgb(var(--node-attended-bg)); border-color: rgb(var(--node-attended-border)); color: rgb(var(--text-primary)); ";
+    return 'background: rgb(var(--node-attended-bg)); border-color: rgb(var(--node-attended-border)); color: rgb(var(--text-primary)); ';
   }
-  if (status === "available") {
-    return "background: rgb(var(--node-available-bg)); border-color: rgb(var(--node-available-border)); color: rgb(var(--text-primary)); ";
+  if (status === 'available') {
+    return 'background: rgb(var(--node-available-bg)); border-color: rgb(var(--node-available-border)); color: rgb(var(--text-primary)); ';
   }
   // locked state
-  return "background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); opacity: 0.6;";
+  return 'background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); opacity: 0.6;';
 }
 
 /**
@@ -149,12 +149,20 @@ export function getNodeStyle(
   nodeWidth: number,
   hasSelectedCourse: boolean,
   hasLaterPrerequisites: boolean,
-  isDragging: boolean
+  isDragging: boolean,
 ): string {
   return (
     buildBaseNodeStyle(nodeWidth, isDragging) +
     buildSelectionStyle(isSelected) +
-    buildNodeStateStyle(status, isAttended, isCompleted, isElectiveSlot, hasSelectedCourse, hasLaterPrerequisites, isSelected)
+    buildNodeStateStyle(
+      status,
+      isAttended,
+      isCompleted,
+      isElectiveSlot,
+      hasSelectedCourse,
+      hasLaterPrerequisites,
+      isSelected,
+    )
   );
 }
 
@@ -171,7 +179,7 @@ function resolveSelectedSlotId(selection: any, currentTemplate: CurriculumTempla
   }
 
   // Otherwise, find the slot that contains this course
-  const selectedSlot = currentTemplate.slots.find(slot => slot.courseId === selection.id);
+  const selectedSlot = currentTemplate.slots.find((slot) => slot.courseId === selection.id);
   return selectedSlot?.id;
 }
 
@@ -181,7 +189,7 @@ function resolveSelectedSlotId(selection: any, currentTemplate: CurriculumTempla
  */
 function getEdgeRelationship(
   edge: any,
-  selectedSlotId: string | undefined
+  selectedSlotId: string | undefined,
 ): { isSelected: boolean; isPrerequisite: boolean; isDependent: boolean } {
   const isSelected = selectedSlotId === edge.source || selectedSlotId === edge.target;
   const isPrerequisite = selectedSlotId === edge.target;
@@ -201,7 +209,7 @@ function buildEdgeStateStyle(
   sourceCompleted: boolean,
   targetCompleted: boolean,
   markerType: any,
-  isDragging: boolean
+  isDragging: boolean,
 ): { style: string; markerEnd: any; animated: boolean } {
   const transition = !isDragging ? 'transition: all 0.2s;' : '';
   let style = `stroke-width: 2px; ${transition} filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); `;
@@ -211,25 +219,25 @@ function buildEdgeStateStyle(
   if (isSelected) {
     // Highlight prerequisites in amber with dashed line
     if (isPrerequisite) {
-      style += "stroke: rgb(245 158 11); stroke-width: 3px; stroke-dasharray: 5,5; ";
-      markerEnd = { type: markerType.type, color: "rgb(245 158 11)" };
+      style += 'stroke: rgb(245 158 11); stroke-width: 3px; stroke-dasharray: 5,5; ';
+      markerEnd = { type: markerType.type, color: 'rgb(245 158 11)' };
     }
     // Highlight dependents in blue
     else if (isDependent) {
-      style += "stroke: rgb(59 130 246); stroke-width: 3px; ";
-      markerEnd = { type: markerType.type, color: "rgb(59 130 246)" };
+      style += 'stroke: rgb(59 130 246); stroke-width: 3px; ';
+      markerEnd = { type: markerType.type, color: 'rgb(59 130 246)' };
     }
   } else {
     // Show completion progress with green edges
     if (sourceCompleted && targetCompleted) {
-      style += "stroke: rgb(34 197 94); stroke-width: 3px; ";
-      markerEnd = { type: markerType.type, color: "rgb(34 197 94)" };
+      style += 'stroke: rgb(34 197 94); stroke-width: 3px; ';
+      markerEnd = { type: markerType.type, color: 'rgb(34 197 94)' };
     } else if (sourceCompleted) {
-      style += "stroke: rgb(34 197 94); stroke-width: 3px; ";
-      markerEnd = { type: markerType.type, color: "rgb(34 197 94)" };
+      style += 'stroke: rgb(34 197 94); stroke-width: 3px; ';
+      markerEnd = { type: markerType.type, color: 'rgb(34 197 94)' };
       animated = true;
     } else {
-      style += "stroke: rgb(var(--border-primary)); stroke-opacity: 0.6; ";
+      style += 'stroke: rgb(var(--border-primary)); stroke-opacity: 0.6; ';
       markerEnd = { type: markerType.type };
     }
   }
@@ -247,7 +255,7 @@ export function getEdgeStyle(
   statuses: Record<string, Status>,
   slotStatus: Map<string, 'attended' | 'completed'>,
   currentTemplate: CurriculumTemplate,
-  isDragging: boolean
+  isDragging: boolean,
 ): { style: string; markerEnd: any; animated: boolean } {
   const selectedSlotId = resolveSelectedSlotId(selection, currentTemplate);
   const { isSelected, isPrerequisite, isDependent } = getEdgeRelationship(edge, selectedSlotId);
@@ -262,11 +270,11 @@ export function getEdgeStyle(
     sourceCompleted,
     targetCompleted,
     edge.markerEnd,
-    isDragging
+    isDragging,
   );
 
   // Add animation for available targets with incomplete prerequisites
-  if (!result.animated && statuses[edge.target as string] === "available" && !sourceCompleted) {
+  if (!result.animated && statuses[edge.target as string] === 'available' && !sourceCompleted) {
     result.animated = true;
   }
 

@@ -1,11 +1,11 @@
 import informatikFulltimeTemplate from './templates/informatik-fulltime.json';
 import { loadCourseData } from './course-data-adapter';
 
-export type Status = "locked" | "available" | "completed";
+export type Status = 'locked' | 'available' | 'completed';
 
-export type ModuleType = "Kernmodul" | "Projektmodul" | "Erweiterungsmodul" | "Major-/Minormodul" | "Zusatzmodul";
+export type ModuleType = 'Kernmodul' | 'Projektmodul' | 'Erweiterungsmodul' | 'Major-/Minormodul' | 'Zusatzmodul';
 
-export type PrerequisiteLink = "und" | "oder";
+export type PrerequisiteLink = 'und' | 'oder';
 
 export type PrerequisiteRule = {
   modules: string[];
@@ -13,7 +13,6 @@ export type PrerequisiteRule = {
   moduleLinkType: PrerequisiteLink;
   prerequisiteLinkType?: PrerequisiteLink;
 };
-
 
 export type Course = {
   id: string;
@@ -60,54 +59,51 @@ export const COURSES: Course[] = new Proxy([], {
   getOwnPropertyDescriptor(_target, prop) {
     const sortedCourses = getSortedCourses();
     return Reflect.getOwnPropertyDescriptor(sortedCourses, prop);
-  }
+  },
 }) as Course[];
 
 export function getCourseById(id: string): Course | undefined {
-  return COURSES.find(course => course.id === id);
+  return COURSES.find((course) => course.id === id);
 }
-
 
 export function getPrerequisitesForCourse(courseId: string): Course[] {
   const course = getCourseById(courseId);
   if (!course) return [];
 
   const prerequisiteCourses: Course[] = [];
-  
-  course.prerequisites.forEach(rule => {
-    rule.modules.forEach(moduleId => {
+
+  course.prerequisites.forEach((rule) => {
+    rule.modules.forEach((moduleId) => {
       const prereqCourse = getCourseById(moduleId);
       if (prereqCourse) {
         prerequisiteCourses.push(prereqCourse);
       }
     });
   });
-  
+
   return prerequisiteCourses;
 }
 
-export function calculateCreditsCompleted(
-  completed: Set<string>, 
-  moduleType?: ModuleType
-): number {
-  return COURSES
-    .filter(course => completed.has(course.id) && (!moduleType || course.type === moduleType))
-    .reduce((total, course) => total + course.ects, 0);
+export function calculateCreditsCompleted(completed: Set<string>, moduleType?: ModuleType): number {
+  return COURSES.filter((course) => completed.has(course.id) && (!moduleType || course.type === moduleType)).reduce(
+    (total, course) => total + course.ects,
+    0,
+  );
 }
 
 export function calculateCreditsAttended(
-  attended: Set<string>, 
+  attended: Set<string>,
   completed: Set<string>,
-  moduleType?: ModuleType
+  moduleType?: ModuleType,
 ): number {
-  return COURSES
-    .filter(course => (attended.has(course.id) || completed.has(course.id)) && (!moduleType || course.type === moduleType))
-    .reduce((total, course) => total + course.ects, 0);
+  return COURSES.filter(
+    (course) => (attended.has(course.id) || completed.has(course.id)) && (!moduleType || course.type === moduleType),
+  ).reduce((total, course) => total + course.ects, 0);
 }
 
 export type TemplateSlot = {
   id: string;
-  type: "fixed" | "elective" | "major";
+  type: 'fixed' | 'elective' | 'major';
   courseId?: string; // for fixed courses
   semester: number;
 };
@@ -116,37 +112,33 @@ export type CurriculumTemplate = {
   id: string;
   name: string;
   studiengang: string;
-  modell: "fulltime" | "parttime";
+  modell: 'fulltime' | 'parttime';
   plan: string; // e.g., "HS16", "HS25"
   slots: TemplateSlot[];
 };
 
-export const AVAILABLE_TEMPLATES: CurriculumTemplate[] = [
-  informatikFulltimeTemplate as CurriculumTemplate
-];
+export const AVAILABLE_TEMPLATES: CurriculumTemplate[] = [informatikFulltimeTemplate as CurriculumTemplate];
 
 export function getTemplateById(id: string): CurriculumTemplate | undefined {
-  return AVAILABLE_TEMPLATES.find(template => template.id === id);
+  return AVAILABLE_TEMPLATES.find((template) => template.id === id);
 }
 
-export function getTemplatesByProgram(studiengang: string, modell: "fulltime" | "parttime"): CurriculumTemplate[] {
-  return AVAILABLE_TEMPLATES.filter(template => 
-    template.studiengang === studiengang && template.modell === modell
-  );
+export function getTemplatesByProgram(studiengang: string, modell: 'fulltime' | 'parttime'): CurriculumTemplate[] {
+  return AVAILABLE_TEMPLATES.filter((template) => template.studiengang === studiengang && template.modell === modell);
 }
 
-export function getAvailablePlans(studiengang: string, modell: "fulltime" | "parttime"): string[] {
+export function getAvailablePlans(studiengang: string, modell: 'fulltime' | 'parttime'): string[] {
   const templates = getTemplatesByProgram(studiengang, modell);
-  return [...new Set(templates.map(template => template.plan))].sort();
+  return [...new Set(templates.map((template) => template.plan))].sort();
 }
 
 export function getCoursesForSlot(slot: TemplateSlot, userSelections: Record<string, string>): Course[] {
-  if (slot.type === "fixed" && slot.courseId) {
+  if (slot.type === 'fixed' && slot.courseId) {
     const course = getCourseById(slot.courseId);
     return course ? [course] : [];
   }
-  
-  if (slot.type === "elective" || slot.type === "major") {
+
+  if (slot.type === 'elective' || slot.type === 'major') {
     const selectedCourseId = userSelections[slot.id];
     if (selectedCourseId) {
       const course = getCourseById(selectedCourseId);
@@ -154,7 +146,7 @@ export function getCoursesForSlot(slot: TemplateSlot, userSelections: Record<str
     }
     return [];
   }
-  
+
   return [];
 }
 
@@ -162,10 +154,10 @@ export function calculateSemesterCredits(
   semester: number,
   template: CurriculumTemplate,
   userSelections: Record<string, string>,
-  semesterOverrides: Record<string, number> = {}
+  semesterOverrides: Record<string, number> = {},
 ): number {
   return template.slots
-    .filter(slot => (semesterOverrides[slot.id] ?? slot.semester) === semester)
+    .filter((slot) => (semesterOverrides[slot.id] ?? slot.semester) === semester)
     .reduce((total, slot) => {
       const courses = getCoursesForSlot(slot, userSelections);
       return total + courses.reduce((sum, course) => sum + course.ects, 0);
@@ -178,7 +170,6 @@ export function calculateTotalCredits(template: CurriculumTemplate, userSelectio
     return total + courses.reduce((sum, course) => sum + course.ects, 0);
   }, 0);
 }
-
 
 export type ExtendedNodeData = {
   label: string;

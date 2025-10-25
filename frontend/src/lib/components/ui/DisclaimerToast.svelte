@@ -11,7 +11,7 @@
         const showTimer = setTimeout(() => {
           showToast = true;
         }, 1000);
-        
+
         return () => clearTimeout(showTimer);
       }
     }
@@ -22,7 +22,7 @@
       const autoHideTimer = setTimeout(() => {
         dismissToast();
       }, 30000);
-      
+
       return () => clearTimeout(autoHideTimer);
     }
   });
