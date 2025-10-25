@@ -25,10 +25,8 @@ function buildNode(planNode: PlanNode, plan: StudyPlan, showShortNamesOnly: bool
   const course = resolveCourse(planNode.courseId) ?? null;
   const slot = toSlotSnapshot(planNode);
   const isElectiveSlot = slot.type === 'elective' || slot.type === 'major';
-  const label = course
-    ? getNodeLabel(course, showShortNamesOnly)
-    : getFallbackLabel(slot.type);
-  const ects = course?.ects ?? 6;
+  const label = course ? getNodeLabel(course, showShortNamesOnly) : getFallbackLabel(slot.type);
+  const ects = course?.ects ?? 3;
 
   const node: Node = {
     id: planNode.id,

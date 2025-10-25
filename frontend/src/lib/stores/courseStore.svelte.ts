@@ -228,8 +228,12 @@ function layoutNodes(
   rows.forEach((row) => {
     let x = GRID_SIZE.x * 2;
     const y = row.semester * GRID_SIZE.y;
+    const placed = new Set<string>();
 
     row.nodeOrder.forEach((nodeId) => {
+      if (placed.has(nodeId)) {
+        return;
+      }
       const index = updated.findIndex((n) => n.id === nodeId);
       if (index === -1) return;
 
@@ -250,6 +254,7 @@ function layoutNodes(
       if ('positionAbsolute' in node) {
         (updated[index] as any).positionAbsolute = position;
       }
+      placed.add(nodeId);
       x += width + GRID_SIZE.x;
     });
   });
@@ -274,9 +279,9 @@ function applyDirectNodePosition(nodeId: string, position: FlowNodePosition): vo
 }
 
 function getNodeWidthForData(data?: ExtendedNodeData): number {
-  if (!data) return getNodeWidth(6);
+  if (!data) return getNodeWidth(3);
   const course = data.course as Course | undefined;
-  const ects = course?.ects ?? 6;
+  const ects = course?.ects ?? 3;
   return getNodeWidth(Math.max(ects, 3));
 }
 
