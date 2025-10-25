@@ -6,11 +6,13 @@
 		"useIgnoreFile": true
 	},
 	"files": {
+		"includes": ["**", "!**/hslu_data"],
 		"ignoreUnknown": false
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "space",
+		"lineWidth": 120
 	},
 	"linter": {
 		"enabled": true,
@@ -18,9 +20,14 @@
 			"recommended": true
 		}
 	},
+	"html": {
+		"formatter": {
+			"indentScriptAndStyle": true
+		}
+	},
 	"javascript": {
 		"formatter": {
-			"quoteStyle": "double"
+			"quoteStyle": "single"
 		}
 	},
 	"assist": {
