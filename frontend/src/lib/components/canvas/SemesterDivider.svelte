@@ -22,8 +22,7 @@
   const minStrokeWidth = $derived(2);
   const strokeWidth = $derived(Math.max(minStrokeWidth, 1 / viewport.zoom));
   const dashArray = $derived(`${8 / viewport.zoom},${4 / viewport.zoom}`);
-  const titleFontSize = $derived(Math.max(15, 12 / viewport.zoom));
-  const creditsFontSize = $derived(Math.max(15, 10 / viewport.zoom));
+  const titleFontSize = $derived(Math.max(21, 12 / viewport.zoom));
   const yPosition = $derived(BASE_OFFSET + SEMESTER_SPACING * semester);
   const semesterCredits = $derived(
     calculateSemesterCredits(
@@ -46,7 +45,7 @@
 />
 <text
   x="-100"
-  y={yPosition - 10}
+  y={yPosition - 50}
   fill="rgb(var(--text-secondary))"
   font-size={titleFontSize}
   font-weight="500"
@@ -55,9 +54,9 @@
 </text>
 <text
   x="-100"
-  y={yPosition + 20}
+  y={yPosition - 20}
   fill="rgb(var(--text-secondary))"
-  font-size={creditsFontSize}
+  font-size={titleFontSize}
 >
   {semesterCredits} ECTS
 </text>
