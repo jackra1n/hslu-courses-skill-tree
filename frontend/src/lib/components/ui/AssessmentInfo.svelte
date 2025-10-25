@@ -5,15 +5,7 @@
   function closeModal() {
     uiStore.toggleAssessmentInfo();
   }
-  
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      closeModal();
-    }
-  }
 </script>
-
-<svelte:window on:keydown={handleKeydown} />
 
 {#if showAssessmentInfo()}
   <!-- modal backdrop -->
