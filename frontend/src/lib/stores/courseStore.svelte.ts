@@ -16,14 +16,17 @@ import { progressStore } from './progressStore.svelte';
 let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
 let _userSelections = $state<Record<string, string>>({});
 let _selectedPlan = $state(AVAILABLE_TEMPLATES[0].plan);
+
+// Using $state.raw for nodes/edges arrays because they are fully replaced on updates,
+// not mutated. This avoids unnecessary deep reactivity tracking for better performance.
 let _nodes = $state.raw<Node[]>([]);
 let _edges = $state.raw<Edge[]>([]);
+
 let _showShortNamesOnly = $state(false);
 let _useELKLayout = $state(false);
 type ManualPosition = { x: number; y: number };
 type FlowNodePosition = { x: number; y: number };
 const GRID_SIZE = { x: 40, y: 200 };
-
 
 let _activeDragNodeId: string | null = null;
 let _manualPositions = $state<Record<string, ManualPosition>>({});
@@ -32,7 +35,6 @@ let _semesterOrders = $state<SemesterOrderMap>({});
 let _slotSemesterOverrides = $state<Record<string, number>>({});
 
 const _totalCredits = $derived(calculateTotalCredits(_currentTemplate, _userSelections));
-
 const _availablePlans = $derived(
   getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
     .map(t => t.plan)
@@ -40,33 +42,21 @@ const _availablePlans = $derived(
     .sort()
 );
 
-// export getter functions
-export function getCurrentTemplate() { return _currentTemplate; }
-export function getUserSelections() { return _userSelections; }
-export function getSelectedPlan() { return _selectedPlan; }
-export function getNodes() { return _nodes; }
-export function getEdges() { return _edges; }
-export function getShowShortNamesOnly() { return _showShortNamesOnly; }
-export function getUseELKLayout() { return _useELKLayout; }
-export function getTotalCredits() { return _totalCredits; }
-export function getAvailablePlans() { return _availablePlans; }
-export function getSemesterOrders() { return _semesterOrders; }
-export function getSlotSemesterOverrides() { return _slotSemesterOverrides; }
+export function currentTemplate() { return _currentTemplate; }
+export function userSelections() { return _userSelections; }
+export function selectedPlan() { return _selectedPlan; }
+export function nodes() { return _nodes; }
+export function edges() { return _edges; }
+export function showShortNamesOnly() { return _showShortNamesOnly; }
+export function useELKLayout() { return _useELKLayout; }
+export function totalCredits() { return _totalCredits; }
+export function availablePlans() { return _availablePlans; }
+export function manualPositions() { return _manualPositions; }
+export function semesterOrders() { return _semesterOrders; }
+export function slotSemesterOverrides() { return _slotSemesterOverrides; }
 
 export const courseStore = {
-  get currentTemplate() { return _currentTemplate; },
-  get userSelections() { return _userSelections; },
-  get selectedPlan() { return _selectedPlan; },
-  get nodes() { return _nodes; },
-  get edges() { return _edges; },
-  get showShortNamesOnly() { return _showShortNamesOnly; },
-  get useELKLayout() { return _useELKLayout; },
-  get totalCredits() { return _totalCredits; },
-  get availablePlans() { return _availablePlans; },
-  get manualPositions() { return _manualPositions; },
-  get semesterOrders() { return _semesterOrders; },
-  get slotSemesterOverrides() { return _slotSemesterOverrides; },
-  
+
   canSelectCourseForSlot(slotId: string, courseId: string): boolean {
     if (progressStore.hasCompletedInstance(courseId, _currentTemplate, _userSelections)) {
       return false;
@@ -76,20 +66,20 @@ export const courseStore = {
     if (!slot) {
       return false;
     }
-    
+
     // check if this is an elective/major slot and the course is a fixed course or core/project type
     const isElectiveLike = slot.type === 'elective' || slot.type === 'major';
     if (isElectiveLike) {
       const course = COURSES.find(c => c.id === courseId);
       const appearsFixed = _currentTemplate.slots.some(s => s.type === 'fixed' && s.courseId === courseId);
       const isCoreOrProject = course?.type === 'Kernmodul' || course?.type === 'Projektmodul';
-      
+
       if (appearsFixed || isCoreOrProject) {
         // require at least one attended instance to select in elective slot
         if (!progressStore.hasAttendedInstance(courseId, _currentTemplate, _userSelections)) {
           return false;
         }
-        
+
         // require elective semester to be later than earliest fixed semester
         const earliestFixed = Math.min(
           ..._currentTemplate.slots
@@ -101,15 +91,15 @@ export const courseStore = {
         }
       }
     }
-    
-    const conflictingSlotId = Object.entries(_userSelections).find(([otherSlotId, otherCourseId]) => 
+
+    const conflictingSlotId = Object.entries(_userSelections).find(([otherSlotId, otherCourseId]) =>
       otherSlotId !== slotId && otherCourseId === courseId
     )?.[0];
-    
+
     if (!conflictingSlotId) {
       return true;
     }
-    
+
     // if course has attended instances, allow across semesters but only one per semester
     if (progressStore.hasAttendedInstance(courseId, _currentTemplate, _userSelections)) {
       const conflictingSlot = _currentTemplate.slots.find(s => s.id === conflictingSlotId);
@@ -117,25 +107,25 @@ export const courseStore = {
     }
     return false;
   },
-  
+
   switchTemplate(templateId: string) {
     const template = getTemplateById(templateId);
     if (!template) return;
-    
+
     _currentTemplate = template;
     _selectedPlan = template.plan;
     _semesterOrders = loadSemesterOrders(template.id);
     _manualPositions = loadManualPositions(template.id);
     _slotSemesterOverrides = loadSemesterOverrides(template.id);
-    
+
     if (browser) {
       localStorage.setItem("currentTemplate", templateId);
       localStorage.setItem("selectedPlan", template.plan);
     }
-    
+
     updateGraph();
   },
-  
+
   switchPlan(plan: string) {
     setCoursePlan(plan);
     const newTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
@@ -144,20 +134,20 @@ export const courseStore = {
       this.switchTemplate(newTemplate.id);
     }
   },
-  
+
   selectCourseForSlot(slotId: string, courseId: string) {
     if (!this.canSelectCourseForSlot(slotId, courseId)) {
       return;
     }
-    
+
     _userSelections = { ..._userSelections, [slotId]: courseId };
     if (browser) {
       localStorage.setItem("userSelections", JSON.stringify(_userSelections));
     }
-    
+
     updateGraph();
   },
-  
+
   clearSlotSelection(slotId: string) {
     const newSelections = { ..._userSelections };
     delete newSelections[slotId];
@@ -165,10 +155,10 @@ export const courseStore = {
     if (browser) {
       localStorage.setItem("userSelections", JSON.stringify(_userSelections));
     }
-    
+
     updateGraph();
   },
-  
+
   toggleShortNames() {
     _showShortNamesOnly = !_showShortNamesOnly;
     if (browser) {
@@ -176,25 +166,25 @@ export const courseStore = {
     }
     updateNodeLabels();
   },
-  
+
   async toggleLayout() {
     _useELKLayout = !_useELKLayout;
     await updateLayout();
   },
-  
+
   init() {
     if (!browser) return;
-    
+
     const savedSelections = localStorage.getItem("userSelections");
     if (savedSelections) {
       _userSelections = JSON.parse(savedSelections);
     }
-    
+
     const savedShortNames = localStorage.getItem("showShortNamesOnly");
     if (savedShortNames) {
       _showShortNamesOnly = JSON.parse(savedShortNames);
     }
-    
+
     const savedTemplate = localStorage.getItem("currentTemplate");
     if (savedTemplate) {
       const template = getTemplateById(savedTemplate);
@@ -291,7 +281,7 @@ function updateNodeLabels() {
     const data = n.data as ExtendedNodeData;
     const slot = data.slot;
     const course = data.course;
-    
+
     if (slot && course) {
       return { ...n, data: { ...data, label: getNodeLabel(course, _showShortNamesOnly) } };
     } else if (slot && (slot.type === "elective" || slot.type === "major")) {
@@ -303,10 +293,10 @@ function updateNodeLabels() {
         `${slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course'} (${selectedCourse ? (selectedCourse as Course).ects : 0} ECTS)`;
       return { ...n, data: { ...data, label, course: selectedCourse } };
     }
-    
+
     return n;
   });
-  
+
   _nodes = newNodes;
 }
 

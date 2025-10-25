@@ -1,7 +1,6 @@
 import type { Course, Viewport } from '../types';
 import { browser } from '$app/environment';
 
-// private state
 let _selection = $state<Course | null>(null);
 let _selectedSlotId = $state<string | null>(null);
 let _viewport = $state<Viewport>({ x: 0, y: 0, zoom: 1 });
@@ -11,32 +10,21 @@ let _showCourseTypeBadges = $state(false);
 let _showProgramSelector = $state(false);
 
 const _hasSelection = $derived(_selection !== null);
-
 const _isElectiveSlot = $derived(
   _selection?.id.startsWith('elective') || _selection?.id.startsWith('major') || false
 );
 
-// export getter functions
-export function getSelection() { return _selection; }
-export function getSelectedSlotId() { return _selectedSlotId; }
-export function getViewport() { return _viewport; }
-export function getShowAssessmentInfo() { return _showAssessmentInfo; }
-export function getShowMoreOptions() { return _showMoreOptions; }
-export function getShowCourseTypeBadges() { return _showCourseTypeBadges; }
-export function getShowProgramSelector() { return _showProgramSelector; }
-export function getHasSelection() { return _hasSelection; }
-export function getIsElectiveSlot() { return _isElectiveSlot; }
+export function selection() { return _selection; }
+export function selectedSlotId() { return _selectedSlotId; }
+export function viewport() { return _viewport; }
+export function showAssessmentInfo() { return _showAssessmentInfo; }
+export function showMoreOptions() { return _showMoreOptions; }
+export function showCourseTypeBadges() { return _showCourseTypeBadges; }
+export function showProgramSelector() { return _showProgramSelector; }
+export function hasSelection() { return _hasSelection; }
+export function isElectiveSlot() { return _isElectiveSlot; }
 
 export const uiStore = {
-  get selection() { return _selection; },
-  get selectedSlotId() { return _selectedSlotId; },
-  get viewport() { return _viewport; },
-  get showAssessmentInfo() { return _showAssessmentInfo; },
-  get showMoreOptions() { return _showMoreOptions; },
-  get showCourseTypeBadges() { return _showCourseTypeBadges; },
-  get showProgramSelector() { return _showProgramSelector; },
-  get hasSelection() { return _hasSelection; },
-  get isElectiveSlot() { return _isElectiveSlot; },
 
   selectCourse(course: Course | null, slotId?: string | null) {
     _selection = course;

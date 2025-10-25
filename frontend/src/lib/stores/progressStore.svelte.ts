@@ -5,6 +5,7 @@ import { evaluatePrerequisites } from '$lib/utils/prerequisite';
 import { computeStatuses } from '$lib/utils/status';
 
 let _slotStatus = $state(new Map<string, 'attended' | 'completed'>());
+export function slotStatusMap() { return _slotStatus; }
 
 // helper functions
 function saveToLocalStorage() {
@@ -18,45 +19,44 @@ function saveToLocalStorage() {
 }
 
 export const progressStore = {
-  get slotStatusMap() { return _slotStatus; },
-  
+
   markSlotAttended(slotId: string) {
     const newMap = new Map(_slotStatus);
-    
+
     if (newMap.get(slotId) === 'attended') {
       newMap.delete(slotId);
     } else {
       newMap.set(slotId, 'attended');
     }
-    
+
     _slotStatus = newMap;
     saveToLocalStorage();
   },
-  
+
   markSlotCompleted(slotId: string) {
     const newMap = new Map(_slotStatus);
-    
+
     if (newMap.get(slotId) === 'completed') {
       newMap.delete(slotId);
     } else {
       newMap.set(slotId, 'completed');
     }
-    
+
     _slotStatus = newMap;
     saveToLocalStorage();
   },
-  
+
   clearSlotStatus(slotId: string) {
     const newMap = new Map(_slotStatus);
     newMap.delete(slotId);
     _slotStatus = newMap;
     saveToLocalStorage();
   },
-  
+
   getSlotStatus(slotId: string): 'attended' | 'completed' | null {
     return _slotStatus.get(slotId) ?? null;
   },
-  
+
   hasCompletedInstance(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): boolean {
     const slotsWithCourse = template.slots.filter(slot => {
       if (slot.type === 'fixed') return slot.courseId === courseId;
@@ -66,7 +66,7 @@ export const progressStore = {
 
     return slotsWithCourse.some(slot => _slotStatus.get(slot.id) === 'completed');
   },
-  
+
   hasAttendedInstance(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): boolean {
     const slotsWithCourse = template.slots.filter(slot => {
       if (slot.type === 'fixed') return slot.courseId === courseId;
@@ -76,8 +76,8 @@ export const progressStore = {
 
     return slotsWithCourse.some(slot => _slotStatus.get(slot.id) === 'attended');
   },
-  
-  getAllInstanceStatuses(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): Array<{slotId: string, status: 'attended' | 'completed'}> {
+
+  getAllInstanceStatuses(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): Array<{ slotId: string, status: 'attended' | 'completed' }> {
     const slotsWithCourse = template.slots.filter(slot => {
       if (slot.type === 'fixed') return slot.courseId === courseId;
       if (slot.type === 'elective' || slot.type === 'major') return selections[slot.id] === courseId;
@@ -89,27 +89,27 @@ export const progressStore = {
         const status = _slotStatus.get(slot.id);
         return status ? { slotId: slot.id, status } : null;
       })
-      .filter((item): item is {slotId: string, status: 'attended' | 'completed'} => item !== null);
+      .filter((item): item is { slotId: string, status: 'attended' | 'completed' } => item !== null);
   },
-  
+
   canTakeCourse(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): boolean {
     const course = COURSES.find(c => c.id === courseId);
     if (!course) return false;
-    
+
     const prereqsMet = evaluatePrerequisites(course.prerequisites, _slotStatus, template, selections);
     const completedSlotCount = Array.from(_slotStatus.values()).filter(status => status === 'completed').length;
     const assessmentStageMet = completedSlotCount >= 6;
     const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
-    
+
     return prereqsMet && assessmentMet;
   },
-  
+
   getCourseStatus(courseId: string, template: any, selections: Record<string, string>): Status {
     const statuses = computeStatuses(template, selections, _slotStatus);
     const slot = template.slots.find((s: any) => s.courseId === courseId);
     return slot ? statuses[slot.id] : "locked";
   },
-  
+
   init() {
     if (!browser) return;
 

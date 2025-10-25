@@ -6,9 +6,7 @@ export type Theme = 'light' | 'dark' | 'system';
 let _theme = $state<Theme>('light');
 
 // export getter function
-export function getTheme() {
-  return _theme;
-}
+export function theme() { return _theme; }
 
 export const themeStore = {
   set: (newTheme: Theme) => {
