@@ -6,9 +6,8 @@
     uiStore
   } from '$lib/stores/uiStore.svelte';
   import {
-    currentTemplate,
-    userSelections,
-    slotSemesterOverrides
+    studyPlan,
+    userSelections
   } from '$lib/stores/courseStore.svelte';
   import { COURSES } from '$lib/data/courses';
   import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
@@ -16,8 +15,7 @@
   import ActionButtons from './ActionButtons.svelte';
   import StatusLegend from './StatusLegend.svelte';
   import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
-  import { hasPrereqAfter } from '$lib/utils/prerequisite';
-  import { TemplateIndex } from '$lib/utils/template-index';
+  import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
 
   const displayCourse = $derived.by(() => {
     if (!selection()) return null;
@@ -32,14 +30,17 @@
     return selection();
   });
 
+  const activePlanNode = $derived.by(() => {
+    if (!selection()) return null;
+    const plan = studyPlan();
+    const slotMatch = plan.nodes[selection()!.id];
+    if (slotMatch) return slotMatch;
+    return Object.values(plan.nodes).find((node) => node.courseId === selection()!.id) ?? null;
+  });
+
   const hasLaterPrerequisites = $derived.by(() => {
-    if (!displayCourse || isElectiveSlot()) return false;
-    
-    const slot = currentTemplate().slots.find(s => s.courseId === displayCourse.id);
-    if (!slot) return false;
-    
-    const index = new TemplateIndex(currentTemplate(), userSelections(), slotSemesterOverrides());
-    return hasPrereqAfter(slot, displayCourse, index, { considerSameSemester: false });
+    if (!displayCourse || !activePlanNode || isElectiveSlot()) return false;
+    return hasPlanPrereqConflict(studyPlan(), activePlanNode.id, { considerSameSemester: false });
   });
 
   const isDrawerOpen = $derived(hasSelection());
@@ -79,7 +80,7 @@
           </div>
           <div class="flex items-center gap-1.5">
             <div class="i-lucide-calendar text-text-secondary"></div>
-            <span>Semester {isElectiveSlot() ? (currentTemplate().slots.find(s => s.id === selection()?.id)?.semester || '?') : (currentTemplate().slots.find(s => s.courseId === selection()?.id)?.semester || '?')}</span>
+            <span>Semester {activePlanNode?.semester ?? '?'}</span>
           </div>
         </div>
         

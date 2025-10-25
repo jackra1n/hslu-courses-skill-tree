@@ -1,61 +1,40 @@
-import type { Status, CurriculumTemplate } from '../types';
-import {
-  COURSES
-} from '../data/courses';
+import type { Status } from '../types';
+import type { StudyPlan } from '$lib/data/study-plan';
+import { resolveCourse } from '$lib/data/study-plan';
 import { evaluatePrerequisites } from './prerequisite';
 
 export function computeStatuses(
-  template: CurriculumTemplate,
-  selections: Record<string, string>,
+  plan: StudyPlan,
   slotStatus: Map<string, 'attended' | 'completed'>
 ): Record<string, Status> {
-  const s: Record<string, Status> = {};
+  const statuses: Record<string, Status> = {};
+  const completedCount = Array.from(slotStatus.values()).filter((status) => status === 'completed').length;
+  const assessmentStageMet = completedCount >= 6;
 
-  const completedSlotCount = Array.from(slotStatus.values()).filter(status => status === 'completed').length;
-  const assessmentStageMet = completedSlotCount >= 6;
-
-  template.slots.forEach(slot => {
-    if (slot.type === "fixed" && slot.courseId) {
-      const course = COURSES.find(c => c.id === slot.courseId);
-      if (course) {
-        const slotStatusValue = slotStatus.get(slot.id);
-        if (slotStatusValue === 'completed') {
-          s[slot.id] = "completed";
-        } else {
-          const prereqsMet = evaluatePrerequisites(course.prerequisites, slotStatus, template, selections);
-          const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
-          if (prereqsMet && assessmentMet) {
-            s[slot.id] = "available";
-          } else {
-            s[slot.id] = "locked";
-          }
-        }
-      }
-    } else if (slot.type === "elective" || slot.type === "major") {
-      const selectedCourseId = selections[slot.id];
-      if (selectedCourseId) {
-        const course = COURSES.find(c => c.id === selectedCourseId);
-        if (course) {
-          const slotStatusValue = slotStatus.get(slot.id);
-          if (slotStatusValue === 'completed') {
-            s[slot.id] = "completed";
-          } else {
-            const prereqsMet = evaluatePrerequisites(course.prerequisites, slotStatus, template, selections);
-            const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
-            if (prereqsMet && assessmentMet) {
-              s[slot.id] = "available";
-            } else {
-              s[slot.id] = "locked";
-            }
-          }
-        }
-      } else {
-        s[slot.id] = "available";
-      }
+  Object.values(plan.nodes).forEach((node) => {
+    const currentStatus = slotStatus.get(node.id);
+    if (currentStatus === 'completed') {
+      statuses[node.id] = 'completed';
+      return;
     }
+
+    if (!node.courseId) {
+      statuses[node.id] = node.kind === 'elective' ? 'available' : 'locked';
+      return;
+    }
+
+    const course = resolveCourse(node.courseId);
+    if (!course) {
+      statuses[node.id] = 'locked';
+      return;
+    }
+
+    const prereqsMet = evaluatePrerequisites(course.prerequisites, slotStatus, plan);
+    const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
+    statuses[node.id] = prereqsMet && assessmentMet ? 'available' : 'locked';
   });
 
-  return s;
+  return statuses;
 }
 
 /**
@@ -162,17 +141,15 @@ export function getNodeStyle(
  * Resolves the selected slot ID, handling both direct slot selection and course selection.
  * When a course is selected, finds the corresponding slot ID.
  */
-function resolveSelectedSlotId(selection: any, currentTemplate: CurriculumTemplate): string | undefined {
+function resolveSelectedSlotId(selection: any, plan: StudyPlan): string | undefined {
   if (!selection) return undefined;
 
-  // If selection is already a slot ID, use it directly
-  if (selection.id.startsWith('elective') || selection.id.startsWith('major')) {
+  if (plan.nodes[selection.id]) {
     return selection.id;
   }
 
-  // Otherwise, find the slot that contains this course
-  const selectedSlot = currentTemplate.slots.find(slot => slot.courseId === selection.id);
-  return selectedSlot?.id;
+  const matchingNode = Object.values(plan.nodes).find((node) => node.courseId === selection.id);
+  return matchingNode?.id;
 }
 
 /**
@@ -246,10 +223,10 @@ export function getEdgeStyle(
   selection: any,
   statuses: Record<string, Status>,
   slotStatus: Map<string, 'attended' | 'completed'>,
-  currentTemplate: CurriculumTemplate,
+  plan: StudyPlan,
   isDragging: boolean
 ): { style: string; markerEnd: any; animated: boolean } {
-  const selectedSlotId = resolveSelectedSlotId(selection, currentTemplate);
+  const selectedSlotId = resolveSelectedSlotId(selection, plan);
   const { isSelected, isPrerequisite, isDependent } = getEdgeRelationship(edge, selectedSlotId);
 
   const sourceCompleted = slotStatus.get(edge.source) === 'completed';

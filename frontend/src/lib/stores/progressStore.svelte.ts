@@ -1,8 +1,7 @@
 import { browser } from '$app/environment';
-import type { Status, CurriculumTemplate } from '$lib/data/courses';
-import { COURSES } from '$lib/data/courses';
+import type { StudyPlan } from '$lib/data/study-plan';
+import { resolveCourse } from '$lib/data/study-plan';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
-import { computeStatuses } from '$lib/utils/status';
 
 let _slotStatus = $state(new Map<string, 'attended' | 'completed'>());
 export function slotStatusMap() { return _slotStatus; }
@@ -57,57 +56,33 @@ export const progressStore = {
     return _slotStatus.get(slotId) ?? null;
   },
 
-  hasCompletedInstance(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): boolean {
-    const slotsWithCourse = template.slots.filter(slot => {
-      if (slot.type === 'fixed') return slot.courseId === courseId;
-      if (slot.type === 'elective' || slot.type === 'major') return selections[slot.id] === courseId;
-      return false;
-    });
-
-    return slotsWithCourse.some(slot => _slotStatus.get(slot.id) === 'completed');
+  hasCompletedInstance(courseId: string, plan: StudyPlan): boolean {
+    return getNodeIdsForCourse(plan, courseId).some((slotId) => _slotStatus.get(slotId) === 'completed');
   },
 
-  hasAttendedInstance(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): boolean {
-    const slotsWithCourse = template.slots.filter(slot => {
-      if (slot.type === 'fixed') return slot.courseId === courseId;
-      if (slot.type === 'elective' || slot.type === 'major') return selections[slot.id] === courseId;
-      return false;
-    });
-
-    return slotsWithCourse.some(slot => _slotStatus.get(slot.id) === 'attended');
+  hasAttendedInstance(courseId: string, plan: StudyPlan): boolean {
+    return getNodeIdsForCourse(plan, courseId).some((slotId) => _slotStatus.get(slotId) === 'attended');
   },
 
-  getAllInstanceStatuses(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): Array<{ slotId: string, status: 'attended' | 'completed' }> {
-    const slotsWithCourse = template.slots.filter(slot => {
-      if (slot.type === 'fixed') return slot.courseId === courseId;
-      if (slot.type === 'elective' || slot.type === 'major') return selections[slot.id] === courseId;
-      return false;
-    });
-
-    return slotsWithCourse
-      .map(slot => {
-        const status = _slotStatus.get(slot.id);
-        return status ? { slotId: slot.id, status } : null;
+  getAllInstanceStatuses(courseId: string, plan: StudyPlan): Array<{ slotId: string, status: 'attended' | 'completed' }> {
+    return getNodeIdsForCourse(plan, courseId)
+      .map((slotId) => {
+        const status = _slotStatus.get(slotId);
+        return status ? { slotId, status } : null;
       })
       .filter((item): item is { slotId: string, status: 'attended' | 'completed' } => item !== null);
   },
 
-  canTakeCourse(courseId: string, template: CurriculumTemplate, selections: Record<string, string>): boolean {
-    const course = COURSES.find(c => c.id === courseId);
+  canTakeCourse(courseId: string, plan: StudyPlan): boolean {
+    const course = resolveCourse(courseId);
     if (!course) return false;
 
-    const prereqsMet = evaluatePrerequisites(course.prerequisites, _slotStatus, template, selections);
+    const prereqsMet = evaluatePrerequisites(course.prerequisites, _slotStatus, plan);
     const completedSlotCount = Array.from(_slotStatus.values()).filter(status => status === 'completed').length;
     const assessmentStageMet = completedSlotCount >= 6;
     const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
 
     return prereqsMet && assessmentMet;
-  },
-
-  getCourseStatus(courseId: string, template: any, selections: Record<string, string>): Status {
-    const statuses = computeStatuses(template, selections, _slotStatus);
-    const slot = template.slots.find((s: any) => s.courseId === courseId);
-    return slot ? statuses[slot.id] : "locked";
   },
 
   init() {
@@ -125,3 +100,9 @@ export const progressStore = {
     }
   }
 };
+
+function getNodeIdsForCourse(plan: StudyPlan, courseId: string): string[] {
+  return Object.values(plan.nodes)
+    .filter((node) => node.courseId === courseId)
+    .map((node) => node.id);
+}

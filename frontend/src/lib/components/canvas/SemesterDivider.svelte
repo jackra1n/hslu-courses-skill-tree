@@ -1,37 +1,26 @@
 <script lang="ts">
-  import type { CurriculumTemplate } from "$lib/data/courses";
-  import { calculateSemesterCredits } from "$lib/data/courses";
-  import { slotSemesterOverrides } from "$lib/stores/courseStore.svelte";
+  import type { StudyPlan } from "$lib/data/study-plan";
+  import { calculatePlanSemesterCredits } from "$lib/data/study-plan";
 
   let {
     semester,
     viewport,
-    currentTemplate,
-    userSelections,
+    plan
   }: {
     semester: number;
     viewport: { x: number; y: number; zoom: number };
-    currentTemplate: CurriculumTemplate;
-    userSelections: Record<string, string>;
+    plan: StudyPlan;
   } = $props();
 
   const BASE_OFFSET = 150;
   const SEMESTER_SPACING = 200;
 
-  const overrides = $derived(slotSemesterOverrides());
   const minStrokeWidth = $derived(2);
   const strokeWidth = $derived(Math.max(minStrokeWidth, 1 / viewport.zoom));
   const dashArray = $derived(`${8 / viewport.zoom},${4 / viewport.zoom}`);
   const titleFontSize = $derived(Math.max(21, 12 / viewport.zoom));
   const yPosition = $derived(BASE_OFFSET + SEMESTER_SPACING * semester);
-  const semesterCredits = $derived(
-    calculateSemesterCredits(
-      semester,
-      currentTemplate,
-      userSelections,
-      overrides
-    )
-  );
+  const semesterCredits = $derived(calculatePlanSemesterCredits(plan, semester));
 </script>
 
 <line

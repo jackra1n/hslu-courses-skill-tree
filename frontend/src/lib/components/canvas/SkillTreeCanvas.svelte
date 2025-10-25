@@ -12,7 +12,7 @@
   import {
     nodes,
     edges,
-    currentTemplate,
+    studyPlan,
     userSelections,
     courseStore
   } from '$lib/stores/courseStore.svelte';
@@ -39,16 +39,11 @@
   let isDragging = $state(false);
   let hideAttribution = $state(false);
 
-  const totalSemesters = $derived.by(() => {
-    const semesters = currentTemplate()?.slots?.map(slot => slot.semester) ?? [];
-    if (!semesters.length) return 1;
-    return Math.max(1, Math.max(...semesters));
-  });
-
-  const semesterNumbers = $derived.by(() => Array.from({ length: totalSemesters }, (_, idx) => idx + 1));
+  const totalSemesters = $derived.by(() => Math.max(1, studyPlan().rows.length));
+  const semesterNumbers = $derived.by(() => studyPlan().rows.map((row) => row.semester));
 
   const styledNodes = $derived.by(() => {
-    const statuses = computeStatuses(currentTemplate(), userSelections(), slotStatusMap());
+    const statuses = computeStatuses(studyPlan(), slotStatusMap());
 
     return nodes().map((n) => {
       const status = statuses[n.id];
@@ -95,7 +90,7 @@
   });
 
   const styledEdges = $derived.by(() => {
-    const statuses = computeStatuses(currentTemplate(), userSelections(), slotStatusMap());
+    const statuses = computeStatuses(studyPlan(), slotStatusMap());
     
     return edges().map((e) => {
       const { style, markerEnd, animated } = getEdgeStyle(
@@ -103,7 +98,7 @@
         selection(),
         statuses,
         slotStatusMap(),
-        currentTemplate(),
+        studyPlan(),
         isDragging
       );
       
@@ -202,8 +197,7 @@
           <SemesterDivider
             semester={sem}
             viewport={viewport()}
-            currentTemplate={currentTemplate()}
-            userSelections={userSelections()}
+            plan={studyPlan()}
           />
         {/each}
       </g>
