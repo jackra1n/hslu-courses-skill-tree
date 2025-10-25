@@ -192,6 +192,7 @@ export const courseStore = {
     if (_activeDragNodeId !== nodeId) {
       _activeDragNodeId = nodeId;
     }
+    applyDirectNodePosition(nodeId, position);
     const preview = computeRowPreview(nodeId, position);
     if (preview) {
       _nodes = layoutNodes(_nodes, preview.rows, { skipNodeId: nodeId });
@@ -254,6 +255,22 @@ function layoutNodes(
   });
 
   return updated;
+}
+
+function applyDirectNodePosition(nodeId: string, position: FlowNodePosition): void {
+  let changed = false;
+  const updated = _nodes.map((node) => {
+    if (node.id !== nodeId) return node;
+    changed = true;
+    const next: Node = { ...node, position };
+    if ('positionAbsolute' in node) {
+      (next as any).positionAbsolute = position;
+    }
+    return next;
+  });
+  if (changed) {
+    _nodes = updated;
+  }
 }
 
 function getNodeWidthForData(data?: ExtendedNodeData): number {
