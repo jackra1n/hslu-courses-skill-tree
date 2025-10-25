@@ -1,22 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  const STORAGE_KEY = 'mobile-warning-dismissed';
+
   let showPopup = $state(false);
   let dismissed = $state(false);
 
   onMount(() => {
-    const dismissedStorage = localStorage.getItem('mobile-warning-dismissed');
-    if (dismissedStorage) {
-      const dismissedTime = parseInt(dismissedStorage);
-      const now = Date.now();
-      const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
-      
-      if (now - dismissedTime < twentyFourHoursInMs) {
-        dismissed = true;
-        return;
-      } else {
-        localStorage.removeItem('mobile-warning-dismissed');
-      }
+    if (localStorage.getItem(STORAGE_KEY) === 'true') {
+      dismissed = true;
+      return;
     }
 
     const checkMobile = () => {
@@ -39,16 +32,12 @@
   function dismissPopup() {
     showPopup = false;
     dismissed = true;
-    localStorage.setItem('mobile-warning-dismissed', Date.now().toString());
-  }
-
-  function continueAnyway() {
-    showPopup = false;
+    localStorage.setItem(STORAGE_KEY, 'true');
   }
 </script>
 
 {#if showPopup}
-  <div class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
+  <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full mx-4 p-6 text-center">
       <div class="mb-4">
         <div class="mx-auto w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mb-4">
@@ -57,10 +46,10 @@
           </svg>
         </div>
         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          Mobile Not Optimized
+          Best Experienced on Desktop
         </h2>
         <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-          This website is currently not optimized for mobile devices. The experience may be poor on small screens.
+          You can still navigate on mobile, but this app really shines on a laptop or desktop where you get the full overview.
         </p>
       </div>
       
@@ -70,12 +59,6 @@
           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
         >
           Got it, don't show again
-        </button>
-        <button
-          onclick={continueAnyway}
-          class="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-2 px-4 rounded-lg transition-colors"
-        >
-          Continue anyway
         </button>
       </div>
     </div>
