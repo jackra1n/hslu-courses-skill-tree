@@ -94,6 +94,10 @@
     closeCombobox();
   }
 
+  function getFirstSelectableOption() {
+    return filteredOptions.find((option) => !option.disabled);
+  }
+
   function handleKeydown(event: KeyboardEvent) {
     if (!isOpen) {
       if (
@@ -132,6 +136,11 @@
           highlightedIndex < filteredOptions.length
         ) {
           selectOption(filteredOptions[highlightedIndex]);
+        } else {
+          const firstAvailableOption = getFirstSelectableOption();
+          if (firstAvailableOption) {
+            selectOption(firstAvailableOption);
+          }
         }
         break;
       case "Tab":
