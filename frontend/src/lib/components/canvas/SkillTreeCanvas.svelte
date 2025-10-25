@@ -4,7 +4,6 @@
     SvelteFlow,
     Background,
     Controls,
-    MiniMap,
     type OnMove,
     type NodeTargetEventWithPointer,
   } from "@xyflow/svelte";
@@ -196,7 +195,6 @@
         {/each}
       </g>
     </svg>
-    <MiniMap />
     <Controls />
     <Background gap={16} />
   </SvelteFlow>
