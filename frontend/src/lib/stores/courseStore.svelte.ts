@@ -239,7 +239,7 @@ function layoutNodes(
 
       const node = updated[index];
       const data = node.data as ExtendedNodeData | undefined;
-      const width = getNodeWidthForData(data);
+      const width = data?.width ?? getNodeWidth(3);
 
       if (options.skipNodeId && nodeId === options.skipNodeId) {
         x += width + GRID_SIZE.x;
@@ -278,13 +278,6 @@ function applyDirectNodePosition(nodeId: string, position: FlowNodePosition): vo
   }
 }
 
-function getNodeWidthForData(data?: ExtendedNodeData): number {
-  if (!data) return getNodeWidth(3);
-  const course = data.course as Course | undefined;
-  const ects = course?.ects ?? 3;
-  return getNodeWidth(Math.max(ects, 3));
-}
-
 function computeRowPreview(nodeId: string, dropPosition: FlowNodePosition): { rows: PlanRow[] } | null {
   if (!_studyPlan.rows.length) return null;
 
@@ -300,13 +293,13 @@ function computeRowPreview(nodeId: string, dropPosition: FlowNodePosition): { ro
 
   const node = _nodes.find((n) => n.id === nodeId);
   const data = node?.data as ExtendedNodeData | undefined;
-  const nodeWidth = getNodeWidthForData(data);
+  const nodeWidth = data?.width ?? getNodeWidth(3);
   const dropCenter = dropPosition.x + nodeWidth / 2;
 
   const siblingCenters = targetRow.nodeOrder.map((id) => {
     const siblingNode = _nodes.find((n) => n.id === id);
     const siblingData = siblingNode?.data as ExtendedNodeData | undefined;
-    const siblingWidth = getNodeWidthForData(siblingData);
+    const siblingWidth = siblingData?.width ?? getNodeWidth(3);
     const center = (siblingNode?.position?.x ?? 0) + siblingWidth / 2;
     return { id, center };
   });

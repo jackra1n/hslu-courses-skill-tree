@@ -135,16 +135,6 @@ export function calculatePlanSemesterCredits(plan: StudyPlan, semester: number):
   }, 0);
 }
 
-export function planRowLookup(plan: StudyPlan): Record<string, number> {
-  const lookup: Record<string, number> = {};
-  plan.rows.forEach((row, index) => {
-    row.nodeOrder.forEach((nodeId) => {
-      lookup[nodeId] = index;
-    });
-  });
-  return lookup;
-}
-
 export function getPlanNodeCourse(node: PlanNode): Course | undefined {
   return resolveCourse(node.courseId);
 }
