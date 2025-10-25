@@ -8,6 +8,7 @@ let _showAssessmentInfo = $state(false);
 let _showMoreOptions = $state(false);
 let _showCourseTypeBadges = $state(false);
 let _showProgramSelector = $state(false);
+let _showHowToGuide = $state(false);
 
 const _hasSelection = $derived(_selection !== null);
 const _isElectiveSlot = $derived(
@@ -21,6 +22,7 @@ export function showAssessmentInfo() { return _showAssessmentInfo; }
 export function showMoreOptions() { return _showMoreOptions; }
 export function showCourseTypeBadges() { return _showCourseTypeBadges; }
 export function showProgramSelector() { return _showProgramSelector; }
+export function showHowToGuide() { return _showHowToGuide; }
 export function hasSelection() { return _hasSelection; }
 export function isElectiveSlot() { return _isElectiveSlot; }
 
@@ -57,6 +59,10 @@ export const uiStore = {
 
   toggleProgramSelector() {
     _showProgramSelector = !_showProgramSelector;
+  },
+
+  toggleHowToGuide() {
+    _showHowToGuide = !_showHowToGuide;
   },
 
   init() {

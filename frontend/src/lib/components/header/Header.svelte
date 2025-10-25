@@ -42,22 +42,31 @@
   }
 </script>
 
-<header class="flex items-center justify-between border-b border-border-primary bg-bg-primary px-4 py-3">
-  <div class="flex items-center gap-3">
-    <div>
-      <h1 class="text-lg font-semibold leading-none text-text-primary">HSLU Courses Skill Tree</h1>
-      <p class="text-xs text-text-secondary">Track your progress through courses</p>
+<header class="flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">
+  <div class="flex min-w-0 items-center gap-3">
+    <div class="leading-tight">
+      <h1 class="text-lg font-semibold text-text-primary sm:hidden">HCST</h1>
+      <h1 class="hidden text-lg font-semibold text-text-primary sm:block">HSLU Courses Skill Tree</h1>
+      <p class="hidden text-xs text-text-secondary sm:block">Track your progress through courses</p>
     </div>
   </div>
 
-  <div class="flex items-center gap-2">
+  <div class="flex flex-1 items-center justify-end gap-2">
+    <button
+      class="flex h-9 w-9 items-center justify-center rounded-lg border border-border-primary text-text-primary hover:bg-bg-secondary transition-colors md:hidden"
+      aria-label="How to use"
+      onclick={() => uiStore.toggleHowToGuide()}
+    >
+      <div class="i-lucide-info w-4 h-4"></div>
+    </button>
+
     <div class="relative program-dropdown">
       <button 
         onclick={() => programDropdownOpen = !programDropdownOpen}
-        class="flex items-center gap-2 px-3 py-2 rounded-lg border border-border-primary bg-transparent hover:bg-bg-secondary transition-colors text-text-primary"
-      >
+        class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary transition-colors"
+        >
         <div class="i-lucide-graduation-cap h-4 w-4 text-text-primary"></div>
-        <span class="hidden sm:inline text-sm font-medium text-text-primary">Program</span>
+        <span class="hidden md:inline text-sm font-medium text-text-primary">Program</span>
       </button>
       
       {#if programDropdownOpen}
@@ -72,7 +81,7 @@
     </div>
 
     <!-- ECTS progress badge -->
-    <div class="flex items-center gap-1.5 px-3 py-1.5 bg-bg-secondary rounded-md border border-border-primary">
+    <div class="hidden items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-1.5 md:flex">
       <span class="text-xs font-medium text-text-primary">{totalCredits()} ECTS Total</span>
     </div>
 

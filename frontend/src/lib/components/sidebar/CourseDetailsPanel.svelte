@@ -41,9 +41,23 @@
     const index = new TemplateIndex(currentTemplate(), userSelections(), slotSemesterOverrides());
     return hasPrereqAfter(slot, displayCourse, index, { considerSameSemester: false });
   });
+
+  const isDrawerOpen = $derived(hasSelection());
 </script>
 
-<aside class="border-l border-border-primary bg-bg-secondary overflow-y-auto">
+<!-- mobile backdrop -->
+<div
+  class={`fixed inset-0 z-30 bg-black/40 transition-opacity duration-200 lg:hidden ${isDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+  aria-hidden={!isDrawerOpen}
+  onclick={() => uiStore.deselectCourse()}
+></div>
+
+<aside
+  class={`bg-bg-secondary overflow-y-auto border border-border-primary transition-transform duration-300 ease-out
+    fixed top-[60px] sm:top-[72px] bottom-0 right-0 z-40 w-full max-w-md shadow-2xl
+    ${isDrawerOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'}
+    lg:static lg:top-auto lg:bottom-auto lg:right-auto lg:max-w-none lg:w-full lg:border-y-0 lg:border-r-0 lg:border-l lg:translate-x-0 lg:shadow-none lg:pointer-events-auto`}
+>
   {#if hasSelection()}
     <div class="p-6 space-y-6">
       <div>
@@ -99,7 +113,9 @@
         </p>
       </div>
       
-      <StatusLegend />
+      <div class="hidden lg:block">
+        <StatusLegend />
+      </div>
     </div>
   {/if}
 </aside>

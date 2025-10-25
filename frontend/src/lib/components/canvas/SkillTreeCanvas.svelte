@@ -37,6 +37,7 @@
   };
 
   let isDragging = $state(false);
+  let hideAttribution = $state(false);
 
   const totalSemesters = $derived.by(() => {
     const semesters = currentTemplate()?.slots?.map(slot => slot.semester) ?? [];
@@ -165,10 +166,21 @@
     courseStore.init();
     progressStore.init();
     uiStore.init();
+
+    const mediaQuery = window.matchMedia('(max-width: 1024px)');
+    const handleScreenChange = () => {
+      hideAttribution = mediaQuery.matches;
+    };
+    handleScreenChange();
+    mediaQuery.addEventListener('change', handleScreenChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleScreenChange);
+    };
   });
 </script>
 
-<div class="relative">
+<div class="relative h-full min-h-0">
   <SvelteFlow
     nodes={styledNodes}
     edges={styledEdges}
@@ -182,6 +194,7 @@
     nodesConnectable={false}
     fitView
     colorMode={theme() === 'system' ? 'system' : theme()}
+    proOptions={{ hideAttribution }}
     >
     <svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
       <g transform="translate({viewport().x}, {viewport().y}) scale({viewport().zoom})">

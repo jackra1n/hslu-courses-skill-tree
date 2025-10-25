@@ -1,6 +1,6 @@
 <div class="border-t border-border-primary pt-6">
   <h3 class="text-sm font-semibold text-text-primary mb-3">Status Legend</h3>
-  <div class="space-y-2.5">
+  <div class="space-y-2.5 mb-6">
     <div class="flex items-center gap-3">
       <div class="w-4 h-4 rounded-full bg-green-200 border-2 border-green-400 dark:bg-green-800 dark:border-green-500"></div>
       <span class="text-sm text-text-primary"><span class="font-medium">Completed</span> - Passed the course</span>
