@@ -3,7 +3,6 @@ import type { CurriculumTemplate, Course, TemplateSlot } from '$lib/types';
 import { 
   COURSES
 } from '$lib/data/courses';
-import ELK from "elkjs/lib/elk.bundled.js";
 
 export function getNodeWidth(credits: number): number {
   const blocks = credits / 3;
@@ -19,61 +18,6 @@ export function getNodeLabel(course: Course, showShortNamesOnly: boolean): strin
     return course.id;
   }
   return `${course.label} (${course.id})`;
-}
-
-export async function layoutELK(nodes: Node[]): Promise<Node[]> {
-  const elk = new ELK();
-  
-  const elkGraph = {
-    id: "root",
-    layoutOptions: {
-      "elk.algorithm": "layered",
-      "elk.direction": "DOWN",
-      "elk.spacing.nodeNode": "100",
-      "elk.spacing.edgeNode": "20",
-      "elk.layered.spacing.nodeNodeBetweenLayers": "150",
-      "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
-      "elk.layered.nodePlacement.strategy": "BRANDES_KOEPF",
-      "elk.edgeRouting": "ORTHOGONAL",
-      "elk.spacing.edgeEdge": "20"
-    },
-    children: nodes.map(node => {
-      const data = node.data as any;
-      const slot = data.slot;
-      const course = data.course;
-      const nodeWidth = data.width || getNodeWidth(course?.ects || 6);
-      return {
-        id: node.id,
-        width: nodeWidth,
-        height: 64,
-        layoutOptions: {
-          "elk.priority": String(slot?.semester || 1)
-        }
-      };
-    }),
-    edges: [] // we'll handle edges separately
-  };
-
-  try {
-    const layoutedGraph = await elk.layout(elkGraph);
-    
-    const nodePositions: Record<string, { x: number; y: number }> = {};
-    
-    layoutedGraph.children?.forEach(node => {
-      nodePositions[node.id] = {
-        x: (node as any).x || 0,
-        y: (node as any).y || 0
-      };
-    });
-
-    return nodes.map((n) => {
-      const position = nodePositions[n.id] || { x: 0, y: 0 };
-      return { ...n, position };
-    });
-  } catch (error) {
-    console.error("ELK layout failed:", error);
-    throw error;
-  }
 }
 
 export function layoutSemesterBased(

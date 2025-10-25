@@ -23,7 +23,6 @@ let _nodes = $state.raw<Node[]>([]);
 let _edges = $state.raw<Edge[]>([]);
 
 let _showShortNamesOnly = $state(false);
-let _useELKLayout = $state(false);
 type ManualPosition = { x: number; y: number };
 type FlowNodePosition = { x: number; y: number };
 const GRID_SIZE = { x: 40, y: 200 };
@@ -48,7 +47,6 @@ export function selectedPlan() { return _selectedPlan; }
 export function nodes() { return _nodes; }
 export function edges() { return _edges; }
 export function showShortNamesOnly() { return _showShortNamesOnly; }
-export function useELKLayout() { return _useELKLayout; }
 export function totalCredits() { return _totalCredits; }
 export function availablePlans() { return _availablePlans; }
 export function manualPositions() { return _manualPositions; }
@@ -167,11 +165,6 @@ export const courseStore = {
     updateNodeLabels();
   },
 
-  async toggleLayout() {
-    _useELKLayout = !_useELKLayout;
-    await updateLayout();
-  },
-
   init() {
     if (!browser) return;
 
@@ -269,10 +262,6 @@ function updateGraph() {
   }
 
   initializeSemesterOrders(_nodes);
-  applyOrderLayout();
-}
-
-async function updateLayout() {
   applyOrderLayout();
 }
 
