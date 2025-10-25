@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { progressStore } from '$lib/stores/progressStore.svelte';
+  import { slotStatusMap, progressStore } from '$lib/stores/progressStore.svelte';
   import { computeStatuses } from '$lib/utils/status';
-  import { courseStore } from '$lib/stores/courseStore.svelte';
+  import { currentTemplate, userSelections } from '$lib/stores/courseStore.svelte';
   import { COURSES } from '$lib/data/courses';
   import { evaluatePrerequisites } from '$lib/utils/prerequisite';
-  import { getSelectedSlotId } from '$lib/stores/uiStore.svelte';
+  import { selectedSlotId } from '$lib/stores/uiStore.svelte';
 
-  let { courseId, isElectiveSlot = false }: { courseId: string; isElectiveSlot?: boolean } = $props();
+  let { courseId }: { courseId: string } = $props();
 
-  const selectedSlotId = $derived(getSelectedSlotId());
-  const slotStatus = $derived(selectedSlotId ? progressStore.getSlotStatus(selectedSlotId) : null);
+  const _selectedSlotId = $derived(selectedSlotId());
+  const slotStatus = $derived(_selectedSlotId ? progressStore.getSlotStatus(_selectedSlotId) : null);
   const isAttended = $derived(slotStatus === 'attended');
   const isCompleted = $derived(slotStatus === 'completed');
-  const statuses = $derived(computeStatuses(courseStore.currentTemplate, courseStore.userSelections, progressStore.slotStatusMap));
-  const isLocked = $derived(selectedSlotId ? statuses[selectedSlotId] === "locked" : true);
+  const statuses = $derived(computeStatuses(currentTemplate(), userSelections(), slotStatusMap()));
+  const isLocked = $derived(_selectedSlotId ? statuses[_selectedSlotId] === "locked" : true);
   
   // check if prerequisites are met (including assessment stage)
   const course = $derived(COURSES.find(c => c.id === courseId));
@@ -21,11 +21,11 @@
     if (!course) return false;
     const prereqsMet = evaluatePrerequisites(
       course.prerequisites,
-      progressStore.slotStatusMap,
-      courseStore.currentTemplate,
-      courseStore.userSelections
+      slotStatusMap(),
+      currentTemplate(),
+      userSelections()
     );
-    const completedSlotCount = Array.from(progressStore.slotStatusMap.values()).filter(status => status === 'completed').length;
+    const completedSlotCount = Array.from(slotStatusMap().values()).filter(status => status === 'completed').length;
     const assessmentStageMet = completedSlotCount >= 6;
     const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
     return prereqsMet && assessmentMet;
@@ -34,9 +34,9 @@
 
 <div class="border-t border-border-primary pt-4 space-y-2">
   <button 
-    onclick={() => selectedSlotId && progressStore.markSlotAttended(selectedSlotId)}
-    disabled={!selectedSlotId || isLocked || isCompleted || !prerequisitesMet}
-    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {(!selectedSlotId || isLocked || isCompleted || !prerequisitesMet)
+    onclick={() => _selectedSlotId && progressStore.markSlotAttended(_selectedSlotId)}
+    disabled={!_selectedSlotId || isLocked || isCompleted || !prerequisitesMet}
+    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {(!_selectedSlotId || isLocked || isCompleted || !prerequisitesMet)
       ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700'
       : isAttended 
         ? 'bg-yellow-200 text-yellow-900 border-2 border-yellow-400 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:border-yellow-500 dark:hover:bg-yellow-700' 
@@ -53,9 +53,9 @@
   </button>
   
   <button 
-    onclick={() => selectedSlotId && progressStore.markSlotCompleted(selectedSlotId)}
-    disabled={!selectedSlotId || isLocked || !prerequisitesMet}
-    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {(!selectedSlotId || isLocked || !prerequisitesMet)
+    onclick={() => _selectedSlotId && progressStore.markSlotCompleted(_selectedSlotId)}
+    disabled={!_selectedSlotId || isLocked || !prerequisitesMet}
+    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {(!_selectedSlotId || isLocked || !prerequisitesMet)
       ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700'
       : isCompleted
         ? 'bg-green-200 text-green-900 border-2 border-green-400 hover:bg-green-300 dark:bg-green-800 dark:text-green-100 dark:border-green-500 dark:hover:bg-green-700'

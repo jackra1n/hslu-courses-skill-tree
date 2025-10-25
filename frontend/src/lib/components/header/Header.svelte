@@ -1,14 +1,8 @@
 <script lang="ts">
-  import { getTotalCredits } from '$lib/stores/courseStore.svelte';
-  import { uiStore } from '$lib/stores/uiStore.svelte';
-  import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { getTheme, themeStore } from '$lib/stores/theme.svelte';
+  import { totalCredits, showShortNamesOnly, courseStore } from '$lib/stores/courseStore.svelte';
+  import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
+  import { theme, themeStore } from '$lib/stores/theme.svelte';
   import TemplateSelector from './TemplateSelector.svelte';
-  
-  const totalCredits = $derived(getTotalCredits());
-  const showCourseTypeBadges = $derived(uiStore.showCourseTypeBadges);
-  const showShortNamesOnly = $derived(courseStore.showShortNamesOnly);
-  const currentTheme = $derived(getTheme());
   
   let programDropdownOpen = $state(false);
   let settingsDropdownOpen = $state(false);
@@ -31,7 +25,7 @@
   });
   
   function toggleTheme() {
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    const newTheme = theme() === 'dark' ? 'light' : 'dark';
     themeStore.set(newTheme);
   }
   
@@ -79,7 +73,7 @@
 
     <!-- ECTS progress badge -->
     <div class="flex items-center gap-1.5 px-3 py-1.5 bg-bg-secondary rounded-md border border-border-primary">
-      <span class="text-xs font-medium text-text-primary">{totalCredits} ECTS Total</span>
+      <span class="text-xs font-medium text-text-primary">{totalCredits()} ECTS Total</span>
     </div>
 
     <div class="h-6 w-px bg-border-primary"></div>
@@ -104,7 +98,7 @@
               class="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-bg-secondary rounded transition-colors text-text-primary"
             >
               <div class="w-4 h-4 flex items-center justify-center">
-                {#if !showShortNamesOnly}
+                {#if !showShortNamesOnly()}
                   <div class="i-lucide-check h-4 w-4 text-green-500"></div>
                 {/if}
               </div>
@@ -115,7 +109,7 @@
               class="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-bg-secondary rounded transition-colors text-text-primary"
             >
               <div class="w-4 h-4 flex items-center justify-center">
-                {#if showCourseTypeBadges}
+                {#if showCourseTypeBadges()}
                   <div class="i-lucide-check h-4 w-4 text-green-500"></div>
                 {/if}
               </div>

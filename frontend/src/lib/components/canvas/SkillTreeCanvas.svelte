@@ -12,20 +12,20 @@
   import "@xyflow/svelte/dist/style.css";
   
   import {
-    getNodes,
-    getEdges,
-    getCurrentTemplate,
-    getUserSelections,
+    nodes,
+    edges,
+    currentTemplate,
+    userSelections,
     courseStore
   } from '$lib/stores/courseStore.svelte';
   import {
-    getSelection,
-    getViewport,
-    getShowCourseTypeBadges,
+    selection,
+    viewport,
+    showCourseTypeBadges,
     uiStore
   } from '$lib/stores/uiStore.svelte';
-  import { progressStore } from '$lib/stores/progressStore.svelte';
-  import { getTheme } from '$lib/stores/theme.svelte';
+  import { slotStatusMap, progressStore } from '$lib/stores/progressStore.svelte';
+  import { theme } from '$lib/stores/theme.svelte';
   import CustomNode from './CustomNode.svelte';
   import SemesterDivider from './SemesterDivider.svelte';
   import DisclaimerToast from '$lib/components/ui/DisclaimerToast.svelte';
@@ -53,18 +53,10 @@
     custom: CustomNode
   };
 
-  const nodes = $derived(getNodes());
-  const edges = $derived(getEdges());
-  const currentTemplate = $derived(getCurrentTemplate());
-  const userSelections = $derived(getUserSelections());
-  const selection = $derived(getSelection());
-  const viewport = $derived(getViewport());
-  const showCourseTypeBadges = $derived(getShowCourseTypeBadges());
-
   let isDragging = $state(false);
 
   const totalSemesters = $derived.by(() => {
-    const semesters = currentTemplate?.slots?.map(slot => slot.semester) ?? [];
+    const semesters = currentTemplate()?.slots?.map(slot => slot.semester) ?? [];
     if (!semesters.length) return 1;
     return Math.max(1, Math.max(...semesters));
   });
@@ -72,9 +64,9 @@
   const semesterNumbers = $derived.by(() => Array.from({ length: totalSemesters }, (_, idx) => idx + 1));
 
   const styledNodes = $derived.by(() => {
-    const statuses = computeStatuses(currentTemplate, userSelections, progressStore.slotStatusMap);
+    const statuses = computeStatuses(currentTemplate(), userSelections(), slotStatusMap());
 
-    return nodes.map((n) => {
+    return nodes().map((n) => {
       const s = statuses[n.id];
       const data = n.data as any;
       const slot = data.slot;
@@ -84,7 +76,7 @@
       const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
       const isAttended = slotStatus === 'attended';
       const isCompleted = slotStatus === 'completed';
-      const isSelected = selection?.id === n.id || (course && selection?.id === course.id);
+      const isSelected = selection()?.id === n.id || (course && selection()?.id === course.id);
       
       const nodeWidth = data.width || getNodeWidth(course?.ects || slot?.credits || 6);
       let styleStr = `border-radius: 12px; font-weight: 500; font-size: 14px; text-align: center; min-width: ${nodeWidth}px; width: ${nodeWidth}px; font-family: Inter, sans-serif; ${!isDragging ? 'transition: all 0.2s;' : ''}; `;
@@ -98,7 +90,7 @@
       const hasLaterPrerequisites = data.hasLaterPrerequisites || false;
       
       if (isElectiveSlot) {
-        const selectedCourseId = userSelections[slot?.id || ''];
+        const selectedCourseId = userSelections()[slot?.id || ''];
         const selectedCourse = selectedCourseId ? COURSES.find((c: any) => c.id === selectedCourseId) : null;
         
         if (selectedCourse) {
@@ -137,18 +129,18 @@
         style: styleStr,
         data: {
           ...data,
-          showCourseTypeBadges: showCourseTypeBadges
+          showCourseTypeBadges: showCourseTypeBadges()
         }
       };
     });
   });
 
   const styledEdges = $derived.by(() => {
-    const statuses = computeStatuses(currentTemplate, userSelections, progressStore.slotStatusMap);
-    return edges.map((e) => {
-      let selectedSlotId = selection?.id;
-      if (selection && !selection.id.startsWith('elective') && !selection.id.startsWith('major')) {
-        const selectedSlot = currentTemplate.slots.find(slot => slot.courseId === selection!.id);
+    const statuses = computeStatuses(currentTemplate(), userSelections(), slotStatusMap());
+    return edges().map((e) => {
+      let selectedSlotId = selection()?.id;
+      if (selection() && !selection()!.id.startsWith('elective') && !selection()!.id.startsWith('major')) {
+        const selectedSlot = currentTemplate().slots.find(slot => slot.courseId === selection()!.id);
         selectedSlotId = selectedSlot?.id;
       }
       
@@ -156,10 +148,10 @@
       const isPrerequisite = selectedSlotId === e.target;
       const isDependent = selectedSlotId === e.source;
       
-      const sourceSlot = currentTemplate.slots.find(slot => slot.id === e.source);
+      const sourceSlot = currentTemplate().slots.find((slot: any) => slot.id === e.source);
       const sourceCompleted = sourceSlot ? progressStore.getSlotStatus(sourceSlot.id) === 'completed' : false;
 
-      const targetSlot = currentTemplate.slots.find(slot => slot.id === e.target);
+      const targetSlot = currentTemplate().slots.find((slot: any) => slot.id === e.target);
       const targetCompleted = targetSlot ? progressStore.getSlotStatus(targetSlot.id) === 'completed' : false;
       
       let edgeStyle = "stroke-width: 2px; ${!isDragging ? 'transition: all 0.2s;' : ''}; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); ";
@@ -199,7 +191,7 @@
     });
   });
 
-  const handleMove: OnMove = (event, viewportData) => {
+  const handleMove: OnMove = (_event, viewportData) => {
     uiStore.updateViewport(viewportData);
   };
 
@@ -265,16 +257,16 @@
     nodesDraggable={true}
     nodesConnectable={false}
     fitView
-    colorMode={getTheme() === 'system' ? 'system' : getTheme()}
+    colorMode={theme() === 'system' ? 'system' : theme()}
     >
     <svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
-      <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
+      <g transform="translate({viewport().x}, {viewport().y}) scale({viewport().zoom})">
         {#each semesterNumbers as sem}
           <SemesterDivider
             semester={sem}
-            viewport={viewport}
-            currentTemplate={currentTemplate}
-            userSelections={userSelections}
+            viewport={viewport()}
+            currentTemplate={currentTemplate()}
+            userSelections={userSelections()}
           />
         {/each}
       </g>

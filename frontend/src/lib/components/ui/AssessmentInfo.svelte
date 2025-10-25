@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { uiStore } from '$lib/stores/uiStore.svelte';
+  import { showAssessmentInfo, uiStore } from '$lib/stores/uiStore.svelte';
   import { fade, scale } from 'svelte/transition';
-  
-  const showAssessmentInfo = $derived(uiStore.showAssessmentInfo);
   
   function closeModal() {
     uiStore.toggleAssessmentInfo();
@@ -17,7 +15,7 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-{#if showAssessmentInfo}
+{#if showAssessmentInfo()}
   <!-- modal backdrop -->
   <div 
     class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"

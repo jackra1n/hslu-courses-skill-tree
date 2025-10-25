@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { courseStore } from '$lib/stores/courseStore.svelte';
+  import { currentTemplate, userSelections, slotSemesterOverrides, courseStore } from '$lib/stores/courseStore.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
   import { COURSES } from '$lib/data/courses';
   import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
@@ -11,36 +11,34 @@
 
   let { slotId }: { slotId: string } = $props();
 
-  const selectedCourseId = $derived(courseStore.userSelections[slotId]);
+  const selectedCourseId = $derived(userSelections()[slotId]);
   const selectedCourse = $derived(selectedCourseId ? COURSES.find(c => c.id === selectedCourseId) : null);
-  const currentTemplate = $derived(courseStore.currentTemplate);
-  const slotSemesterOverrides = $derived(courseStore.slotSemesterOverrides);
   
   const hasLaterPrerequisites = $derived.by(() => {
     if (!selectedCourse) return false;
     
-    const slot = currentTemplate.slots.find(s => s.id === slotId);
+    const slot = currentTemplate().slots.find(s => s.id === slotId);
     if (!slot) return false;
     
     // use the same logic as the graph builder
-    const index = new TemplateIndex(currentTemplate, courseStore.userSelections, slotSemesterOverrides);
+    const index = new TemplateIndex(currentTemplate(), userSelections(), slotSemesterOverrides());
     return hasPrereqAfter(slot, selectedCourse, index, { considerSameSemester: false });
   });
 
-  const electiveSlot = $derived(currentTemplate.slots.find(s => s.id === slotId));
+  const electiveSlot = $derived(currentTemplate().slots.find(s => s.id === slotId));
   
   const availableCourses = $derived(
     COURSES.filter(course => {
       if (!electiveSlot) return false;
       if (selectedCourseId === course.id) return true;
-      if (progressStore.hasCompletedInstance(course.id, currentTemplate, courseStore.userSelections)) return false;
+      if (progressStore.hasCompletedInstance(course.id, currentTemplate(), userSelections())) return false;
 
-      const appearsFixed = currentTemplate.slots.some(s => s.type === 'fixed' && s.courseId === course.id);
+      const appearsFixed = currentTemplate().slots.some(s => s.type === 'fixed' && s.courseId === course.id);
       const isCoreOrProject = course.type === 'Kernmodul' || course.type === 'Projektmodul';
       
       if (appearsFixed || isCoreOrProject) {
-        if (!progressStore.hasAttendedInstance(course.id, currentTemplate, courseStore.userSelections)) return false;
-        const fixedSemesters = currentTemplate.slots
+        if (!progressStore.hasAttendedInstance(course.id, currentTemplate(), userSelections())) return false;
+        const fixedSemesters = currentTemplate().slots
           .filter(s => s.type === 'fixed' && s.courseId === course.id)
           .map(s => s.semester);
         const earliest = fixedSemesters.length ? Math.min(...fixedSemesters) : undefined;
@@ -111,5 +109,5 @@
   {/if}
   
   <PrerequisiteList prerequisites={selectedCourse.prerequisites || []} assessmentLevelPassed={selectedCourse.assessmentLevelPassed} />
-  <ActionButtons courseId={selectedCourse.id} isElectiveSlot={true} />
+  <ActionButtons courseId={selectedCourse.id} />
 {/if}

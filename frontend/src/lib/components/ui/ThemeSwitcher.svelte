@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getTheme, themeStore, type Theme } from '$lib/stores/theme.svelte';
+  import { theme, themeStore, type Theme } from '$lib/stores/theme.svelte';
   import Dropdown from './Dropdown.svelte';
 
   const themeOptions = [
@@ -15,6 +15,6 @@
 
 <Dropdown 
   options={themeOptions}
-  selected={getTheme()}
+  selected={theme()}
   onSelect={selectTheme}
 />

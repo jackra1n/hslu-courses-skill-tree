@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { PrerequisiteRule } from "$lib/types";
   import { COURSES } from "$lib/data/courses";
-  import { progressStore } from "$lib/stores/progressStore.svelte";
+  import { slotStatusMap } from "$lib/stores/progressStore.svelte";
   import { evaluatePrerequisiteRule } from "$lib/utils/prerequisite";
   import { uiStore } from "$lib/stores/uiStore.svelte";
-  import { courseStore } from "$lib/stores/courseStore.svelte";
+  import { currentTemplate, userSelections } from "$lib/stores/courseStore.svelte";
 
   let {
     prerequisites,
@@ -15,7 +15,7 @@
   } = $props();
 
   const completedCount = $derived(
-    Array.from(progressStore.slotStatusMap.values()).filter(
+    Array.from(slotStatusMap().values()).filter(
       (status) => status === "completed"
     ).length
   );
@@ -25,9 +25,9 @@
   function renderPrerequisiteRule(rule: PrerequisiteRule) {
     const ruleMet = evaluatePrerequisiteRule(
       rule,
-      progressStore.slotStatusMap,
-      courseStore.currentTemplate,
-      courseStore.userSelections
+      slotStatusMap(),
+      currentTemplate(),
+      userSelections()
     );
 
     return {
@@ -37,15 +37,15 @@
   }
 
   function isModuleMet(moduleId: string, mustBePassed: boolean): boolean {
-    const slotsWithCourse = courseStore.currentTemplate.slots.filter((slot) => {
+    const slotsWithCourse = currentTemplate().slots.filter((slot) => {
       if (slot.type === "fixed") return slot.courseId === moduleId;
       if (slot.type === "elective" || slot.type === "major")
-        return courseStore.userSelections[slot.id] === moduleId;
+        return userSelections()[slot.id] === moduleId;
       return false;
     });
 
     return slotsWithCourse.some((slot) => {
-      const status = progressStore.slotStatusMap.get(slot.id);
+      const status = slotStatusMap().get(slot.id);
       if (mustBePassed) {
         return status === "completed";
       } else {
