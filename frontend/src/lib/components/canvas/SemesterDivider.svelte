@@ -6,11 +6,13 @@
   let {
     semester,
     plan,
-    isPreview = false
+    isPreview = false,
+    length = 1500
   }: {
     semester: number;
     plan: StudyPlan;
     isPreview?: boolean;
+    length?: number;
   } = $props();
 
   const viewportSignal = useViewport();
@@ -27,12 +29,14 @@
   const semesterCredits = $derived(calculatePlanSemesterCredits(plan, semester));
   const lineOpacity = $derived(isPreview ? 0.35 : 1);
   const textOpacity = $derived(isPreview ? 0.5 : 1);
+  const LINE_START = -150;
+  const lineEnd = $derived(LINE_START + length);
 </script>
 
 <line
-  x1="-150"
+  x1={LINE_START}
   y1={yPosition}
-  x2="2000"
+  x2={lineEnd}
   y2={yPosition}
   stroke="rgb(var(--border-primary))"
   stroke-width={strokeWidth}

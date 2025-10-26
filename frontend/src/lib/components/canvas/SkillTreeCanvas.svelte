@@ -194,6 +194,7 @@
             semester={divider.semester}
             plan={studyPlan()}
             isPreview={divider.isPreview}
+            length={divider.length}
           />
         {/each}
       </g>

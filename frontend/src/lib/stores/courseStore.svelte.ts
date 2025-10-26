@@ -24,6 +24,11 @@ import { progressStore } from './progressStore.svelte';
 type FlowNodePosition = { x: number; y: number };
 const GRID_SIZE = { x: 40, y: 200 };
 const MAX_SEMESTERS = 12;
+const MIN_DIVIDER_NODE_COUNT = 5;
+const MIN_DIVIDER_WIDTH = GRID_SIZE.x * 2 + (getNodeWidth(3) + GRID_SIZE.x) * MIN_DIVIDER_NODE_COUNT;
+const DIVIDER_MARGIN = GRID_SIZE.x * 2;
+const DIVIDER_LINE_START = -150; // keep in sync with SemesterDivider.svelte
+const DEFAULT_NODE_WIDTH = getNodeWidth(3);
 
 let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
 let _selectedPlan = $state(AVAILABLE_TEMPLATES[0].plan);
@@ -54,14 +59,23 @@ export function edges() { return _graph.edges; }
 export function showShortNamesOnly() { return _showShortNamesOnly; }
 export function totalCredits() { return _totalCredits; }
 export function availablePlans() { return _availablePlans; }
-type SemesterIndicator = { semester: number; isPreview: boolean };
+type SemesterIndicator = { semester: number; isPreview: boolean; length: number };
 
 export function semesterDividerData(): SemesterIndicator[] {
   const rows = (_previewRows ?? _studyPlan.rows).slice(0, MAX_SEMESTERS);
+  if (!rows.length) return [];
+
+  const nodeLookup = buildNodeLookup(getActiveNodes());
+  const rowEnds = rows.map((row) => calculateRowRightEdge(row, nodeLookup));
+  const longestEnd = rowEnds.length ? Math.max(...rowEnds) : GRID_SIZE.x * 2 + DEFAULT_NODE_WIDTH;
+  const rawLength = longestEnd + DIVIDER_MARGIN - DIVIDER_LINE_START;
+  const dividerLength = Math.max(MIN_DIVIDER_WIDTH, rawLength);
   const actualCount = Math.min(_studyPlan.rows.length, rows.length);
+
   return rows.map((_, index) => ({
     semester: index + 1,
-    isPreview: _previewRows ? index >= actualCount : false
+    isPreview: _previewRows ? index >= actualCount : false,
+    length: dividerLength
   }));
 }
 
@@ -329,6 +343,39 @@ function computeRowPreview(
   ];
 
   return { rows: normalizeRows(rows) };
+}
+
+function calculateRowRightEdge(row: PlanRow, nodeLookup: Map<string, Node>): number {
+  let fallbackCursor = GRID_SIZE.x * 2;
+  let rightEdge = fallbackCursor + DEFAULT_NODE_WIDTH;
+
+  row.nodeOrder.forEach((nodeId) => {
+    const node = nodeLookup.get(nodeId);
+    const width = resolveNodeWidth(node);
+
+    if (node?.position?.x != null) {
+      const end = node.position.x + width;
+      rightEdge = Math.max(rightEdge, end);
+      fallbackCursor = Math.max(fallbackCursor, end + GRID_SIZE.x);
+      return;
+    }
+
+    const end = fallbackCursor + width;
+    rightEdge = Math.max(rightEdge, end);
+    fallbackCursor = end + GRID_SIZE.x;
+  });
+
+  return rightEdge;
+}
+
+function resolveNodeWidth(node: Node | undefined): number {
+  if (!node) return DEFAULT_NODE_WIDTH;
+  const data = node.data as ExtendedNodeData | undefined;
+  return data?.width ?? DEFAULT_NODE_WIDTH;
+}
+
+function buildNodeLookup(nodes: Node[]): Map<string, Node> {
+  return new Map(nodes.map((node) => [node.id, node]));
 }
 
 function normalizeRows(rows: PlanRow[]): PlanRow[] {
