@@ -4,8 +4,8 @@
     SvelteFlow,
     Background,
     Controls,
-    type OnMove,
     type NodeTargetEventWithPointer,
+    useViewport,
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
   
@@ -18,7 +18,6 @@
   } from '$lib/stores/courseStore.svelte';
   import {
     selection,
-    viewport,
     showCourseTypeBadges,
     uiStore
   } from '$lib/stores/uiStore.svelte';
@@ -39,6 +38,8 @@
   let isDragging = $state(false);
   let hideAttribution = $state(false);
 
+  const viewportSignal = useViewport();
+  const viewport = $derived(viewportSignal.current);
   const totalSemesters = $derived.by(() => Math.max(1, studyPlan().rows.length));
   const semesterNumbers = $derived.by(() => studyPlan().rows.map((row) => row.semester));
 
@@ -111,10 +112,6 @@
     });
   });
 
-  const handleMove: OnMove = (_event, viewportData) => {
-    uiStore.updateViewport(viewportData);
-  };
-
   const handleNodeDragStart: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
     if (!targetNode) return;
     isDragging = true;
@@ -184,7 +181,6 @@
     onnodedragstart={handleNodeDragStart}
     onnodedrag={handleNodeDrag}
     onnodedragstop={handleNodeDragStop}
-    onmove={handleMove}
     nodesDraggable={true}
     nodesConnectable={false}
     fitView
@@ -192,11 +188,10 @@
     proOptions={{ hideAttribution }}
     >
     <svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
-      <g transform="translate({viewport().x}, {viewport().y}) scale({viewport().zoom})">
+      <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
         {#each semesterNumbers as sem}
           <SemesterDivider
             semester={sem}
-            viewport={viewport()}
             plan={studyPlan()}
           />
         {/each}

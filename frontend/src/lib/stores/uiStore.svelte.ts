@@ -1,9 +1,8 @@
-import type { Course, Viewport } from '../types';
+import type { Course } from '../types';
 import { browser } from '$app/environment';
 
 let _selection = $state<Course | null>(null);
 let _selectedSlotId = $state<string | null>(null);
-let _viewport = $state<Viewport>({ x: 0, y: 0, zoom: 1 });
 let _showAssessmentInfo = $state(false);
 let _showMoreOptions = $state(false);
 let _showCourseTypeBadges = $state(false);
@@ -17,7 +16,6 @@ const _isElectiveSlot = $derived(
 
 export function selection() { return _selection; }
 export function selectedSlotId() { return _selectedSlotId; }
-export function viewport() { return _viewport; }
 export function showAssessmentInfo() { return _showAssessmentInfo; }
 export function showMoreOptions() { return _showMoreOptions; }
 export function showCourseTypeBadges() { return _showCourseTypeBadges; }
@@ -36,10 +34,6 @@ export const uiStore = {
   deselectCourse() {
     _selection = null;
     _selectedSlotId = null;
-  },
-
-  updateViewport(newViewport: Viewport) {
-    _viewport = newViewport;
   },
 
   toggleAssessmentInfo() {

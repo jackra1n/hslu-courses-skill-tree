@@ -1,16 +1,18 @@
 <script lang="ts">
   import type { StudyPlan } from "$lib/data/study-plan";
   import { calculatePlanSemesterCredits } from "$lib/data/study-plan";
+  import { useViewport } from "@xyflow/svelte";
 
   let {
     semester,
-    viewport,
     plan
   }: {
     semester: number;
-    viewport: { x: number; y: number; zoom: number };
     plan: StudyPlan;
   } = $props();
+
+  const viewportSignal = useViewport();
+  const viewport = $derived(viewportSignal.current);
 
   const BASE_OFFSET = 150;
   const SEMESTER_SPACING = 200;

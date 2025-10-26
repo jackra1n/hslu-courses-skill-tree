@@ -10,12 +10,6 @@ export type {
   ExtendedNodeData
 } from '$lib/data/courses';
 
-export type Viewport = {
-  x: number;
-  y: number;
-  zoom: number;
-};
-
 export type NodeHandleCounts = {
   source: number;
   target: number;

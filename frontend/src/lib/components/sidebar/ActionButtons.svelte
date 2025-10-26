@@ -2,7 +2,7 @@
   import { slotStatusMap, progressStore } from '$lib/stores/progressStore.svelte';
   import { computeStatuses } from '$lib/utils/status';
   import { studyPlan } from '$lib/stores/courseStore.svelte';
-  import { COURSES } from '$lib/data/courses';
+  import { getCourseById } from '$lib/data/courses';
   import { evaluatePrerequisites } from '$lib/utils/prerequisite';
   import { selectedSlotId } from '$lib/stores/uiStore.svelte';
 
@@ -16,7 +16,7 @@
   const isLocked = $derived(_selectedSlotId ? statuses[_selectedSlotId] === "locked" : true);
   
   // check if prerequisites are met (including assessment stage)
-  const course = $derived(COURSES.find(c => c.id === courseId));
+  const course = $derived.by(() => getCourseById(courseId));
   const prerequisitesMet = $derived.by(() => {
     if (!course) return false;
     const prereqsMet = evaluatePrerequisites(course.prerequisites, slotStatusMap(), studyPlan());

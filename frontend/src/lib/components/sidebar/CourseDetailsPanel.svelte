@@ -9,7 +9,7 @@
     studyPlan,
     userSelections
   } from '$lib/stores/courseStore.svelte';
-  import { COURSES } from '$lib/data/courses';
+  import { getCourseById } from '$lib/data/courses';
   import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
   import PrerequisiteList from './PrerequisiteList.svelte';
   import ActionButtons from './ActionButtons.svelte';
@@ -23,7 +23,11 @@
     if (isElectiveSlot()) {
       const selectedCourseId = userSelections()[selection()!.id];
       if (selectedCourseId) {
-        return COURSES.find(c => c.id === selectedCourseId) || selection();
+        const selectedCourse = getCourseById(selectedCourseId);
+        if (selectedCourse) {
+          return selectedCourse;
+        }
+        return selection();
       }
     }
     

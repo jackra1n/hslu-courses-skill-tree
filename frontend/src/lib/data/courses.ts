@@ -26,45 +26,78 @@ export type Course = {
 };
 
 let _sortedCourses: Course[] | null = null;
+let _coursesById: Record<string, Course> | null = null;
 let _currentPlan: string = 'HS25';
 
-function getSortedCourses(): Course[] {
-  if (_sortedCourses === null) {
-    _sortedCourses = loadCourseData(_currentPlan).sort((a, b) => {
-      return a.label.localeCompare(b.label);
-    });
+function buildCourseCollections(): { sortedCourses: Course[]; coursesMap: Record<string, Course> } {
+  if (_sortedCourses && _coursesById) {
+    return { sortedCourses: _sortedCourses, coursesMap: _coursesById };
   }
-  return _sortedCourses;
+
+  const courses = loadCourseData(_currentPlan);
+  const map: Record<string, Course> = {};
+  courses.forEach((course) => {
+    map[course.id] = course;
+  });
+
+  _coursesById = map;
+  _sortedCourses = [...courses].sort((a, b) => a.label.localeCompare(b.label));
+
+  return { sortedCourses: _sortedCourses, coursesMap: _coursesById };
 }
 
 export function setCoursePlan(plan: string): void {
   if (_currentPlan !== plan) {
     _currentPlan = plan;
     _sortedCourses = null;
+    _coursesById = null;
   }
 }
 
 export const COURSES: Course[] = new Proxy([], {
   get(_target, prop) {
-    const sortedCourses = getSortedCourses();
+    const { sortedCourses } = buildCourseCollections();
     return Reflect.get(sortedCourses, prop);
   },
   has(_target, prop) {
-    const sortedCourses = getSortedCourses();
+    const { sortedCourses } = buildCourseCollections();
     return Reflect.has(sortedCourses, prop);
   },
   ownKeys(_target) {
-    const sortedCourses = getSortedCourses();
+    const { sortedCourses } = buildCourseCollections();
     return Reflect.ownKeys(sortedCourses);
   },
   getOwnPropertyDescriptor(_target, prop) {
-    const sortedCourses = getSortedCourses();
+    const { sortedCourses } = buildCourseCollections();
     return Reflect.getOwnPropertyDescriptor(sortedCourses, prop);
   }
 }) as Course[];
 
+export const COURSES_MAP: Record<string, Course> = new Proxy(
+  {},
+  {
+    get(_target, prop) {
+      const { coursesMap } = buildCourseCollections();
+      return Reflect.get(coursesMap, prop);
+    },
+    has(_target, prop) {
+      const { coursesMap } = buildCourseCollections();
+      return Reflect.has(coursesMap, prop);
+    },
+    ownKeys(_target) {
+      const { coursesMap } = buildCourseCollections();
+      return Reflect.ownKeys(coursesMap);
+    },
+    getOwnPropertyDescriptor(_target, prop) {
+      const { coursesMap } = buildCourseCollections();
+      return Reflect.getOwnPropertyDescriptor(coursesMap, prop);
+    }
+  }
+) as Record<string, Course>;
+
 export function getCourseById(id: string): Course | undefined {
-  return COURSES.find(course => course.id === id);
+  const { coursesMap } = buildCourseCollections();
+  return coursesMap[id];
 }
 
 

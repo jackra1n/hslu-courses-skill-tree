@@ -1,11 +1,11 @@
 import { browser } from '$app/environment';
-import type { Node, Edge } from '@xyflow/svelte';
-import type { ExtendedNodeData, Course, CurriculumTemplate } from '$lib/data/courses';
+import type { Node } from '@xyflow/svelte';
+import type { ExtendedNodeData, CurriculumTemplate } from '$lib/data/courses';
 import {
   AVAILABLE_TEMPLATES,
   getTemplateById,
   getTemplatesByProgram,
-  COURSES,
+  getCourseById,
   setCoursePlan
 } from '$lib/data/courses';
 import {
@@ -28,8 +28,7 @@ let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
 let _selectedPlan = $state(AVAILABLE_TEMPLATES[0].plan);
 let _studyPlan = $state<StudyPlan>(createStudyPlan(_currentTemplate, {}));
 
-let _nodes = $state.raw<Node[]>([]);
-let _edges = $state.raw<Edge[]>([]);
+let _nodeOverride = $state.raw<Node[] | null>(null);
 let _showShortNamesOnly = $state(false);
 let _activeDragNodeId: string | null = null;
 
@@ -41,13 +40,15 @@ const _availablePlans = $derived(
     .filter((plan, index, arr) => arr.indexOf(plan) === index)
     .sort()
 );
+const _graph = $derived.by(() => toGraph(_studyPlan, _showShortNamesOnly));
+const _layoutedNodes = $derived.by(() => layoutNodes(_graph.nodes, _studyPlan.rows));
 
 export function currentTemplate() { return _currentTemplate; }
 export function studyPlan() { return _studyPlan; }
 export function userSelections() { return _userSelections; }
 export function selectedPlan() { return _selectedPlan; }
-export function nodes() { return _nodes; }
-export function edges() { return _edges; }
+export function nodes() { return _nodeOverride ?? _layoutedNodes; }
+export function edges() { return _graph.edges; }
 export function showShortNamesOnly() { return _showShortNamesOnly; }
 export function totalCredits() { return _totalCredits; }
 export function availablePlans() { return _availablePlans; }
@@ -62,7 +63,7 @@ export const courseStore = {
       return false;
     }
 
-    const course = COURSES.find((c) => c.id === courseId);
+    const course = getCourseById(courseId);
     const appearsFixed = Object.values(_studyPlan.nodes).some(
       (planNode) => planNode.kind === 'fixed' && planNode.courseId === courseId
     );
@@ -115,7 +116,6 @@ export const courseStore = {
       localStorage.setItem('selectedPlan', template.plan);
     }
 
-    updateGraph();
   },
 
   switchPlan(plan: string) {
@@ -130,20 +130,18 @@ export const courseStore = {
   selectCourseForSlot(slotId: string, courseId: string) {
     if (!this.canSelectCourseForSlot(slotId, courseId)) return;
     setStudyPlan(updateNodeCourse(_studyPlan, slotId, courseId));
-    updateGraph();
   },
 
   clearSlotSelection(slotId: string) {
     setStudyPlan(updateNodeCourse(_studyPlan, slotId, null));
-    updateGraph();
   },
 
   toggleShortNames() {
     _showShortNamesOnly = !_showShortNamesOnly;
+    clearNodeOverride();
     if (browser) {
       localStorage.setItem('showShortNamesOnly', JSON.stringify(_showShortNamesOnly));
     }
-    updateGraph();
   },
 
   init() {
@@ -181,11 +179,11 @@ export const courseStore = {
       setStudyPlan(storedPlan);
     }
 
-    updateGraph();
   },
 
   handleNodeDragStart(nodeId: string) {
     _activeDragNodeId = nodeId;
+    ensureNodeOverride();
   },
 
   handleNodeDrag(nodeId: string, position: FlowNodePosition) {
@@ -193,30 +191,21 @@ export const courseStore = {
       _activeDragNodeId = nodeId;
     }
     applyDirectNodePosition(nodeId, position);
-    const preview = computeRowPreview(nodeId, position);
+    const preview = computeRowPreview(nodeId, position, getActiveNodes());
     if (preview) {
-      _nodes = layoutNodes(_nodes, preview.rows, { skipNodeId: nodeId });
+      _nodeOverride = layoutNodes(getActiveNodes(), preview.rows, { skipNodeId: nodeId });
     }
   },
 
   handleNodeDragStop(nodeId: string, position: FlowNodePosition) {
-    const result = computeRowPreview(nodeId, position);
+    const result = computeRowPreview(nodeId, position, getActiveNodes());
     if (result) {
       setStudyPlan({ ..._studyPlan, rows: result.rows });
-      updateGraph();
-    } else {
-      updateGraph();
     }
+    clearNodeOverride();
     _activeDragNodeId = null;
   }
 };
-
-function updateGraph(): void {
-  _studyPlan = normalizePlan(_studyPlan);
-  const graph = toGraph(_studyPlan, _showShortNamesOnly);
-  _nodes = layoutNodes(graph.nodes, _studyPlan.rows);
-  _edges = graph.edges;
-}
 
 function layoutNodes(
   sourceNodes: Node[],
@@ -263,8 +252,9 @@ function layoutNodes(
 }
 
 function applyDirectNodePosition(nodeId: string, position: FlowNodePosition): void {
+  const nodes = ensureNodeOverride();
   let changed = false;
-  const updated = _nodes.map((node) => {
+  const updated = nodes.map((node) => {
     if (node.id !== nodeId) return node;
     changed = true;
     const next: Node = { ...node, position };
@@ -274,11 +264,15 @@ function applyDirectNodePosition(nodeId: string, position: FlowNodePosition): vo
     return next;
   });
   if (changed) {
-    _nodes = updated;
+    _nodeOverride = updated;
   }
 }
 
-function computeRowPreview(nodeId: string, dropPosition: FlowNodePosition): { rows: PlanRow[] } | null {
+function computeRowPreview(
+  nodeId: string,
+  dropPosition: FlowNodePosition,
+  nodesSnapshot: Node[]
+): { rows: PlanRow[] } | null {
   if (!_studyPlan.rows.length) return null;
 
   const targetSemester = clampSemester(Math.max(1, Math.round(dropPosition.y / GRID_SIZE.y)));
@@ -291,13 +285,13 @@ function computeRowPreview(nodeId: string, dropPosition: FlowNodePosition): { ro
   const targetRow = rows[targetIndex];
   if (!targetRow) return null;
 
-  const node = _nodes.find((n) => n.id === nodeId);
+  const node = nodesSnapshot.find((n) => n.id === nodeId);
   const data = node?.data as ExtendedNodeData | undefined;
   const nodeWidth = data?.width ?? getNodeWidth(3);
   const dropCenter = dropPosition.x + nodeWidth / 2;
 
   const siblingCenters = targetRow.nodeOrder.map((id) => {
-    const siblingNode = _nodes.find((n) => n.id === id);
+    const siblingNode = nodesSnapshot.find((n) => n.id === id);
     const siblingData = siblingNode?.data as ExtendedNodeData | undefined;
     const siblingWidth = siblingData?.width ?? getNodeWidth(3);
     const center = (siblingNode?.position?.x ?? 0) + siblingWidth / 2;
@@ -324,6 +318,7 @@ function clampSemester(semester: number): number {
 
 function setStudyPlan(nextPlan: StudyPlan): void {
   _studyPlan = normalizePlan(nextPlan);
+  clearNodeOverride();
   saveStudyPlan(_studyPlan);
 }
 
@@ -384,4 +379,32 @@ function loadLegacySelections(): Record<string, string> {
     console.error('Failed to parse legacy user selections', error);
     return {};
   }
+}
+
+function getActiveNodes(): Node[] {
+  return _nodeOverride ?? _layoutedNodes;
+}
+
+function ensureNodeOverride(): Node[] {
+  if (_nodeOverride) return _nodeOverride;
+  const cloned = cloneNodes(_layoutedNodes);
+  _nodeOverride = cloned;
+  return cloned;
+}
+
+function cloneNodes(nodes: Node[]): Node[] {
+  return nodes.map((node) => {
+    const cloned: Node = {
+      ...node,
+      position: node.position ? { ...node.position } : node.position
+    };
+    if ('positionAbsolute' in node && (node as any).positionAbsolute) {
+      (cloned as any).positionAbsolute = { ...(node as any).positionAbsolute };
+    }
+    return cloned;
+  });
+}
+
+function clearNodeOverride(): void {
+  _nodeOverride = null;
 }

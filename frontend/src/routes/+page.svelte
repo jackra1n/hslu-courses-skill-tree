@@ -6,6 +6,7 @@
   import CourseDetailsPanel from '$lib/components/sidebar/CourseDetailsPanel.svelte';
   import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
   import { hasSelection } from '$lib/stores/uiStore.svelte';
+  import { SvelteFlowProvider } from '@xyflow/svelte';
 
   let legendOpen = $state(false);
 
@@ -19,10 +20,12 @@
 <div class="font-sans h-screen flex flex-col">
   <Header />
   
-  <div class="flex-1 min-h-0 lg:grid lg:grid-cols-[1fr_400px]">
-    <SkillTreeCanvas />
-    <CourseDetailsPanel />
-  </div>
+  <SvelteFlowProvider>
+    <div class="flex-1 min-h-0 lg:grid lg:grid-cols-[1fr_400px]">
+      <SkillTreeCanvas />
+      <CourseDetailsPanel />
+    </div>
+  </SvelteFlowProvider>
   
   <!-- assessment info modal -->
   <AssessmentInfo />

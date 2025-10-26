@@ -1,5 +1,5 @@
 import type { Course, CurriculumTemplate, TemplateSlot } from '$lib/data/courses';
-import { COURSES } from '$lib/data/courses';
+import { getCourseById } from '$lib/data/courses';
 
 export type PlanNodeKind = 'fixed' | 'elective' | 'custom';
 
@@ -35,7 +35,7 @@ function getDefaultLabel(slotType: TemplateSlot['type'] | 'custom'): string {
 
 export function resolveCourse(id?: string | null): Course | undefined {
   if (!id) return undefined;
-  return COURSES.find((course) => course.id === id);
+  return getCourseById(id);
 }
 
 function toPlanNode(slot: TemplateSlot, selections: Record<string, string>): PlanNode {

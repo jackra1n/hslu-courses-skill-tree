@@ -1,7 +1,7 @@
 <script lang="ts">
   import { studyPlan, userSelections, courseStore } from '$lib/stores/courseStore.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
-  import { COURSES } from '$lib/data/courses';
+  import { COURSES, getCourseById } from '$lib/data/courses';
   import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
   import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
   import Combobox from '$lib/components/ui/Combobox.svelte';
@@ -11,7 +11,10 @@
   let { slotId }: { slotId: string } = $props();
 
   const selectedCourseId = $derived(userSelections()[slotId]);
-  const selectedCourse = $derived(selectedCourseId ? COURSES.find(c => c.id === selectedCourseId) : null);
+  const selectedCourse = $derived.by(() => {
+    if (!selectedCourseId) return null;
+    return getCourseById(selectedCourseId) ?? null;
+  });
 
   const slotNode = $derived(studyPlan().nodes[slotId]);
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PrerequisiteRule } from "$lib/types";
-  import { COURSES } from "$lib/data/courses";
+  import { getCourseById } from "$lib/data/courses";
   import { slotStatusMap } from "$lib/stores/progressStore.svelte";
   import { evaluatePrerequisiteRule } from "$lib/utils/prerequisite";
   import { uiStore } from "$lib/stores/uiStore.svelte";
@@ -123,7 +123,7 @@
               >
               <div class="ml-2 mt-1 space-y-1">
                 {#each rule.modules as moduleId}
-                  {@const course = COURSES.find((c) => c.id === moduleId)}
+                  {@const course = getCourseById(moduleId)}
                   {@const moduleMet = isModuleMet(moduleId, rule.mustBePassed)}
                   <div class="flex items-center gap-1.5 text-xs">
                     <div
