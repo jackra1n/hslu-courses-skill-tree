@@ -72,7 +72,7 @@
       {#if programDropdownOpen}
         <div
           class="fixed inset-x-4 top-[64px] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl overflow-visible
-                 sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-80 sm:shadow-lg sm:max-h-[70vh] sm:overflow-y-auto"
+                 sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-80 sm:shadow-lg sm:max-h-[70vh] sm:overflow-visible"
         >
           <div class="text-xs font-medium text-text-secondary mb-2">Program Selection</div>
           <div class="border-b border-border-primary mb-3"></div>
