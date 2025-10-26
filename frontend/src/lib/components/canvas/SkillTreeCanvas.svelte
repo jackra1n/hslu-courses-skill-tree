@@ -14,7 +14,8 @@
     edges,
     studyPlan,
     userSelections,
-    courseStore
+    courseStore,
+    semesterDividerData
   } from '$lib/stores/courseStore.svelte';
   import {
     selection,
@@ -40,8 +41,7 @@
 
   const viewportSignal = useViewport();
   const viewport = $derived(viewportSignal.current);
-  const totalSemesters = $derived.by(() => Math.max(1, studyPlan().rows.length));
-  const semesterNumbers = $derived.by(() => studyPlan().rows.map((row) => row.semester));
+  const semesterIndicators = $derived.by(() => semesterDividerData());
 
   const styledNodes = $derived.by(() => {
     const statuses = computeStatuses(studyPlan(), slotStatusMap());
@@ -189,10 +189,11 @@
     >
     <svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
       <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
-        {#each semesterNumbers as sem}
+        {#each semesterIndicators as divider}
           <SemesterDivider
-            semester={sem}
+            semester={divider.semester}
             plan={studyPlan()}
+            isPreview={divider.isPreview}
           />
         {/each}
       </g>

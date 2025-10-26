@@ -23,6 +23,7 @@ import { progressStore } from './progressStore.svelte';
 
 type FlowNodePosition = { x: number; y: number };
 const GRID_SIZE = { x: 40, y: 200 };
+const MAX_SEMESTERS = 12;
 
 let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
 let _selectedPlan = $state(AVAILABLE_TEMPLATES[0].plan);
@@ -31,6 +32,7 @@ let _studyPlan = $state<StudyPlan>(createStudyPlan(_currentTemplate, {}));
 let _nodeOverride = $state.raw<Node[] | null>(null);
 let _showShortNamesOnly = $state(false);
 let _activeDragNodeId: string | null = null;
+let _previewRows = $state<PlanRow[] | null>(null);
 
 const _userSelections = $derived(deriveSelections(_studyPlan));
 const _totalCredits = $derived(calculatePlanTotalCredits(_studyPlan));
@@ -52,6 +54,16 @@ export function edges() { return _graph.edges; }
 export function showShortNamesOnly() { return _showShortNamesOnly; }
 export function totalCredits() { return _totalCredits; }
 export function availablePlans() { return _availablePlans; }
+type SemesterIndicator = { semester: number; isPreview: boolean };
+
+export function semesterDividerData(): SemesterIndicator[] {
+  const rows = (_previewRows ?? _studyPlan.rows).slice(0, MAX_SEMESTERS);
+  const actualCount = Math.min(_studyPlan.rows.length, rows.length);
+  return rows.map((_, index) => ({
+    semester: index + 1,
+    isPreview: _previewRows ? index >= actualCount : false
+  }));
+}
 
 export const courseStore = {
 
@@ -183,6 +195,7 @@ export const courseStore = {
 
   handleNodeDragStart(nodeId: string) {
     _activeDragNodeId = nodeId;
+    _previewRows = null;
     ensureNodeOverride();
   },
 
@@ -193,7 +206,10 @@ export const courseStore = {
     applyDirectNodePosition(nodeId, position);
     const preview = computeRowPreview(nodeId, position, getActiveNodes());
     if (preview) {
+      _previewRows = preview.rows;
       _nodeOverride = layoutNodes(getActiveNodes(), preview.rows, { skipNodeId: nodeId });
+    } else {
+      _previewRows = null;
     }
   },
 
@@ -275,17 +291,22 @@ function computeRowPreview(
 ): { rows: PlanRow[] } | null {
   if (!_studyPlan.rows.length) return null;
 
-  const targetSemester = clampSemester(Math.max(1, Math.round(dropPosition.y / GRID_SIZE.y)));
-  const targetIndex = targetSemester - 1;
+  const desiredSemester = Math.max(1, Math.round(dropPosition.y / GRID_SIZE.y));
+  const targetSemester = Math.min(MAX_SEMESTERS, desiredSemester);
   const rows = _studyPlan.rows.map((row) => ({
     semester: row.semester,
     nodeOrder: row.nodeOrder.filter((id) => id !== nodeId)
   }));
 
-  const targetRow = rows[targetIndex];
+  while (rows.length < targetSemester) {
+    rows.push({ semester: rows.length + 1, nodeOrder: [] });
+  }
+
+  const targetRow = rows[targetSemester - 1];
   if (!targetRow) return null;
 
   const node = nodesSnapshot.find((n) => n.id === nodeId);
+  if (!node) return null;
   const data = node?.data as ExtendedNodeData | undefined;
   const nodeWidth = data?.width ?? getNodeWidth(3);
   const dropCenter = dropPosition.x + nodeWidth / 2;
@@ -307,13 +328,23 @@ function computeRowPreview(
     ...targetRow.nodeOrder.slice(insertIndex)
   ];
 
-  return { rows };
+  return { rows: normalizeRows(rows) };
 }
 
-function clampSemester(semester: number): number {
-  const maxSemester = _studyPlan.rows.length;
-  if (maxSemester === 0) return 1;
-  return Math.min(Math.max(semester, 1), maxSemester);
+function normalizeRows(rows: PlanRow[]): PlanRow[] {
+  const normalized = rows.map((row) => ({
+    semester: row.semester,
+    nodeOrder: [...row.nodeOrder]
+  }));
+
+  while (normalized.length > 1 && normalized[normalized.length - 1].nodeOrder.length === 0) {
+    normalized.pop();
+  }
+
+  return normalized.map((row, index) => ({
+    semester: index + 1,
+    nodeOrder: [...row.nodeOrder]
+  }));
 }
 
 function setStudyPlan(nextPlan: StudyPlan): void {
@@ -407,4 +438,5 @@ function cloneNodes(nodes: Node[]): Node[] {
 
 function clearNodeOverride(): void {
   _nodeOverride = null;
+  _previewRows = null;
 }

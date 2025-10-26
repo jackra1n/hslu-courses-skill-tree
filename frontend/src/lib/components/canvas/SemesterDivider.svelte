@@ -5,10 +5,12 @@
 
   let {
     semester,
-    plan
+    plan,
+    isPreview = false
   }: {
     semester: number;
     plan: StudyPlan;
+    isPreview?: boolean;
   } = $props();
 
   const viewportSignal = useViewport();
@@ -23,6 +25,8 @@
   const titleFontSize = $derived(Math.max(21, 12 / viewport.zoom));
   const yPosition = $derived(BASE_OFFSET + SEMESTER_SPACING * semester);
   const semesterCredits = $derived(calculatePlanSemesterCredits(plan, semester));
+  const lineOpacity = $derived(isPreview ? 0.35 : 1);
+  const textOpacity = $derived(isPreview ? 0.5 : 1);
 </script>
 
 <line
@@ -33,6 +37,7 @@
   stroke="rgb(var(--border-primary))"
   stroke-width={strokeWidth}
   stroke-dasharray={dashArray}
+  stroke-opacity={lineOpacity}
 />
 <text
   x="-100"
@@ -40,6 +45,7 @@
   fill="rgb(var(--text-secondary))"
   font-size={titleFontSize}
   font-weight="500"
+  opacity={textOpacity}
 >
   Semester {semester}
 </text>
@@ -48,6 +54,7 @@
   y={yPosition - 20}
   fill="rgb(var(--text-secondary))"
   font-size={titleFontSize}
+  opacity={textOpacity}
 >
   {semesterCredits} ECTS
 </text>
