@@ -1,103 +1,128 @@
 import type { Node, Edge } from '@xyflow/svelte';
-import type { CurriculumTemplate, ExtendedNodeData, TemplateSlot, Course } from '$lib/types';
-import { COURSES } from '$lib/data/courses';
+import type { ExtendedNodeData, Course, TemplateSlot } from '$lib/types';
+import type { StudyPlan, PlanNode } from '$lib/data/study-plan';
+import { resolveCourse, buildPlanRowIndex, mapPlanCourseProviders } from '$lib/data/study-plan';
 import { getNodeWidth, getNodeLabel } from '$lib/utils/layout';
-import { MarkerType } from "@xyflow/svelte";
-import { TemplateIndex } from '$lib/utils/template-index';
-import { hasPrereqAfter, planEdges } from '$lib/utils/prerequisite';
+import { MarkerType } from '@xyflow/svelte';
+import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
 
-function buildNode(slot: TemplateSlot, selectedCourse: Course | null, index: TemplateIndex, showShortNamesOnly: boolean): Node {
-  let hasLaterPrerequisites = false;
-  
-  if (selectedCourse) {
-    hasLaterPrerequisites = hasPrereqAfter(slot, selectedCourse, index, { considerSameSemester: false });
-  }
+type HandleUsage = Record<string, { source: number; target: number }>;
 
-  return {
-    id: slot.id,
+export function toGraph(plan: StudyPlan, showShortNamesOnly: boolean): { nodes: Node[]; edges: Edge[] } {
+  const rowIndexByNode = buildPlanRowIndex(plan);
+  const courseProviders = mapPlanCourseProviders(plan);
+  const nodes = Object.values(plan.nodes).map((planNode) =>
+    buildNode(planNode, plan, showShortNamesOnly)
+  );
+
+  const { edges, usage } = buildEdges(plan, courseProviders);
+  applyHandleUsage(nodes, usage);
+
+  return { nodes, edges };
+}
+
+function buildNode(planNode: PlanNode, plan: StudyPlan, showShortNamesOnly: boolean): Node {
+  const course = resolveCourse(planNode.courseId) ?? null;
+  const slot = toSlotSnapshot(planNode);
+  const isElectiveSlot = slot.type === 'elective' || slot.type === 'major';
+  const label = course ? getNodeLabel(course, showShortNamesOnly) : getFallbackLabel(slot.type);
+  const ects = course?.ects ?? 3;
+
+  const node: Node = {
+    id: planNode.id,
     position: { x: 0, y: 0 },
-    type: "custom",
-    data: { 
-      label: selectedCourse ? getNodeLabel(selectedCourse, showShortNamesOnly) : `${slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course'} (${selectedCourse ? (selectedCourse as Course).ects : 0} ECTS)`,
-      slot: slot,
-      course: selectedCourse,
-      isElectiveSlot: slot.type === "elective" || slot.type === "major",
-      width: getNodeWidth(selectedCourse ? selectedCourse.ects : 3),
-      hasLaterPrerequisites: hasLaterPrerequisites
+    type: 'custom',
+    data: {
+      label,
+      slot,
+      course,
+      isElectiveSlot,
+      width: getNodeWidth(ects),
+      hasLaterPrerequisites: hasPlanPrereqConflict(plan, planNode.id)
     } as ExtendedNodeData,
-    style: "",
+    style: ''
+  };
+
+  return node;
+}
+
+function toSlotSnapshot(planNode: PlanNode): TemplateSlot {
+  const type = planNode.slotType === 'custom' ? 'elective' : planNode.slotType;
+  return {
+    id: planNode.id,
+    type,
+    semester: planNode.semester,
+    courseId: planNode.baseCourseId
   };
 }
 
-export function toGraph(
-  template: CurriculumTemplate,
-  selections: Record<string, string>,
-  showShortNamesOnly: boolean,
-  semesterOverrides: Record<string, number> = {}
-): { nodes: Node[]; edges: Edge[] } {
-  // Build template index for fast lookups
-  const index = new TemplateIndex(template, selections, semesterOverrides);
-  
-  // Build nodes
-  const nodes: Node[] = [];
-  
-  template.slots.forEach(slot => {
-    if (slot.type === "fixed" && slot.courseId) {
-      const course = COURSES.find(c => c.id === slot.courseId);
-      if (course) {
-        nodes.push(buildNode(slot, course, index, showShortNamesOnly));
-      }
-    } else if (slot.type === "elective" || slot.type === "major") {
-      const selectedCourseId = selections[slot.id];
-      const selectedCourse = selectedCourseId ? COURSES.find(c => c.id === selectedCourseId) || null : null;
-      nodes.push(buildNode(slot, selectedCourse, index, showShortNamesOnly));
-    }
-  });
+function getFallbackLabel(slotType: TemplateSlot['type']): string {
+  if (slotType === 'elective') return 'Wahl-Modul';
+  if (slotType === 'major') return 'Major-Modul';
+  return 'Course';
+}
 
-  // Plan edges using the new approach
-  const edgePairs = planEdges(template, selections, index);
-  
-  // Build edges from planned pairs
+function buildEdges(
+  plan: StudyPlan,
+  courseProviders: Map<string, string[]>
+): { edges: Edge[]; usage: HandleUsage } {
   const edges: Edge[] = [];
-  const handleUsage: Record<string, { source: number; target: number }> = {};
-  
-  // Initialize handle usage tracking
-  nodes.forEach(node => {
-    handleUsage[node.id] = { source: 0, target: 0 };
-  });
-  
-  // Create edges and track handle usage
-  edgePairs.forEach(pair => {
-    const targetHandleIndex = handleUsage[pair.target.id]?.target || 0;
-    const sourceHandleIndex = handleUsage[pair.source.id]?.source || 0;
-    
-    edges.push({
-      id: `${pair.source.id}=>${pair.target.id}`,
-      source: pair.source.id,
-      sourceHandle: `source-${sourceHandleIndex}`,
-      target: pair.target.id,
-      targetHandle: `target-${targetHandleIndex}`,
-      markerEnd: { type: MarkerType.ArrowClosed },
-      animated: false,
-      style: "stroke-width: 2px;",
-      type: "bezier",
-    });
+  const usage: HandleUsage = {};
+  const seen = new Set<string>();
 
-    if (handleUsage[pair.target.id]) handleUsage[pair.target.id].target++;
-    if (handleUsage[pair.source.id]) handleUsage[pair.source.id].source++;
+  Object.keys(plan.nodes).forEach((nodeId) => {
+    usage[nodeId] = { source: 0, target: 0 };
   });
-  
-  // Compute handle counts from edge usage and attach to nodes
-  nodes.forEach(node => {
-    const usage = handleUsage[node.id];
-    if (usage) {
-      node.data = {
-        ...node.data,
-        sourceHandles: Math.min(usage.source, 7),
-        targetHandles: Math.min(usage.target, 7)
-      };
-    }
+
+  Object.values(plan.nodes).forEach((planNode) => {
+    if (!planNode.courseId) return;
+    const course = resolveCourse(planNode.courseId);
+    if (!course) return;
+
+    course.prerequisites.forEach((rule) => {
+      rule.modules.forEach((moduleId) => {
+        const providers = courseProviders.get(moduleId);
+        if (!providers) return;
+
+        providers.forEach((providerId) => {
+          if (providerId === planNode.id) return;
+          const edgeId = `${providerId}=>${planNode.id}`;
+          if (seen.has(edgeId)) return;
+          seen.add(edgeId);
+
+          const sourceHandle = usage[providerId]?.source ?? 0;
+          const targetHandle = usage[planNode.id]?.target ?? 0;
+
+          edges.push({
+            id: edgeId,
+            source: providerId,
+            sourceHandle: `source-${sourceHandle}`,
+            target: planNode.id,
+            targetHandle: `target-${targetHandle}`,
+            markerEnd: { type: MarkerType.ArrowClosed },
+            animated: false,
+            style: 'stroke-width: 2px;',
+            type: 'bezier'
+          });
+
+          if (usage[providerId]) usage[providerId].source++;
+          if (usage[planNode.id]) usage[planNode.id].target++;
+        });
+      });
+    });
   });
-  
-  return { nodes, edges };
+
+  return { edges, usage };
+}
+
+function applyHandleUsage(nodes: Node[], usage: HandleUsage): void {
+  nodes.forEach((node) => {
+    const nodeUsage = usage[node.id];
+    if (!nodeUsage) return;
+    node.data = {
+      ...(node.data as ExtendedNodeData),
+      sourceHandles: Math.min(nodeUsage.source, 7),
+      targetHandles: Math.min(nodeUsage.target, 7)
+    };
+  });
 }

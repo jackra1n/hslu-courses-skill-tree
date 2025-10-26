@@ -1,7 +1,7 @@
 <script lang="ts">
   import { slotStatusMap, progressStore } from '$lib/stores/progressStore.svelte';
   import { computeStatuses } from '$lib/utils/status';
-  import { currentTemplate, userSelections } from '$lib/stores/courseStore.svelte';
+  import { studyPlan } from '$lib/stores/courseStore.svelte';
   import { COURSES } from '$lib/data/courses';
   import { evaluatePrerequisites } from '$lib/utils/prerequisite';
   import { selectedSlotId } from '$lib/stores/uiStore.svelte';
@@ -12,19 +12,14 @@
   const slotStatus = $derived(_selectedSlotId ? progressStore.getSlotStatus(_selectedSlotId) : null);
   const isAttended = $derived(slotStatus === 'attended');
   const isCompleted = $derived(slotStatus === 'completed');
-  const statuses = $derived(computeStatuses(currentTemplate(), userSelections(), slotStatusMap()));
+  const statuses = $derived(computeStatuses(studyPlan(), slotStatusMap()));
   const isLocked = $derived(_selectedSlotId ? statuses[_selectedSlotId] === "locked" : true);
   
   // check if prerequisites are met (including assessment stage)
   const course = $derived(COURSES.find(c => c.id === courseId));
   const prerequisitesMet = $derived.by(() => {
     if (!course) return false;
-    const prereqsMet = evaluatePrerequisites(
-      course.prerequisites,
-      slotStatusMap(),
-      currentTemplate(),
-      userSelections()
-    );
+    const prereqsMet = evaluatePrerequisites(course.prerequisites, slotStatusMap(), studyPlan());
     const completedSlotCount = Array.from(slotStatusMap().values()).filter(status => status === 'completed').length;
     const assessmentStageMet = completedSlotCount >= 6;
     const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;

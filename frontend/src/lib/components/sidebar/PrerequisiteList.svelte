@@ -4,7 +4,7 @@
   import { slotStatusMap } from "$lib/stores/progressStore.svelte";
   import { evaluatePrerequisiteRule } from "$lib/utils/prerequisite";
   import { uiStore } from "$lib/stores/uiStore.svelte";
-  import { currentTemplate, userSelections } from "$lib/stores/courseStore.svelte";
+  import { studyPlan } from "$lib/stores/courseStore.svelte";
 
   let {
     prerequisites,
@@ -23,12 +23,7 @@
   const assessmentStageMet = $derived(completedCount >= 6);
 
   function renderPrerequisiteRule(rule: PrerequisiteRule) {
-    const ruleMet = evaluatePrerequisiteRule(
-      rule,
-      slotStatusMap(),
-      currentTemplate(),
-      userSelections()
-    );
+    const ruleMet = evaluatePrerequisiteRule(rule, slotStatusMap(), studyPlan());
 
     return {
       rule,
@@ -37,19 +32,13 @@
   }
 
   function isModuleMet(moduleId: string, mustBePassed: boolean): boolean {
-    const slotsWithCourse = currentTemplate().slots.filter((slot) => {
-      if (slot.type === "fixed") return slot.courseId === moduleId;
-      if (slot.type === "elective" || slot.type === "major")
-        return userSelections()[slot.id] === moduleId;
-      return false;
-    });
-
-    return slotsWithCourse.some((slot) => {
-      const status = slotStatusMap().get(slot.id);
+    const nodes = Object.values(studyPlan().nodes).filter((node) => node.courseId === moduleId);
+    return nodes.some((node) => {
+      const status = slotStatusMap().get(node.id);
       if (mustBePassed) {
-        return status === "completed";
+        return status === 'completed';
       } else {
-        return status === "attended" || status === "completed";
+        return status === 'attended' || status === 'completed';
       }
     });
   }
