@@ -1,6 +1,7 @@
 <script lang="ts">
   import { studyPlan, userSelections, courseStore } from '$lib/stores/courseStore.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
+  import { uiStore } from '$lib/stores/uiStore.svelte';
   import { COURSES, getCourseById } from '$lib/data/courses';
   import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
   import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
@@ -56,6 +57,11 @@
   function handleCourseSelect(courseId: string) {
     if (courseId) {
       courseStore.selectCourseForSlot(slotId, courseId);
+      // Update the selection to show the selected course details
+      const course = getCourseById(courseId);
+      if (course) {
+        uiStore.selectCourse(course, slotId);
+      }
     } else {
       courseStore.clearSlotSelection(slotId);
     }

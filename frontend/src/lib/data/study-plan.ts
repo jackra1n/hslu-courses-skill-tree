@@ -88,7 +88,7 @@ export function deriveSelections(plan: StudyPlan): Record<string, string> {
   const selections: Record<string, string> = {};
 
   Object.values(plan.nodes).forEach((node) => {
-    if (node.kind === 'elective' && node.courseId) {
+    if ((node.kind === 'elective' || node.kind === 'custom') && node.courseId) {
       selections[node.id] = node.courseId;
     }
   });

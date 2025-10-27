@@ -61,7 +61,11 @@ export const progressStore = {
   },
 
   hasAttendedInstance(courseId: string, plan: StudyPlan): boolean {
-    return getNodeIdsForCourse(plan, courseId).some((slotId) => _slotStatus.get(slotId) === 'attended');
+    const hasCurrentAttended = getNodeIdsForCourse(plan, courseId).some((slotId) => _slotStatus.get(slotId) === 'attended');
+    if (hasCurrentAttended) return true;
+
+    const potentialSlotId = courseId.toLowerCase();
+    return _slotStatus.get(potentialSlotId) === 'attended';
   },
 
   getAllInstanceStatuses(courseId: string, plan: StudyPlan): Array<{ slotId: string, status: 'attended' | 'completed' }> {

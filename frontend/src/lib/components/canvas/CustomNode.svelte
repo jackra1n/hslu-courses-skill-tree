@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { Course, TemplateSlot } from "$lib/data/courses";
   import { Handle, Position } from "@xyflow/svelte";
+  import { studyPlan } from "$lib/stores/courseStore.svelte";
+  import { progressStore } from "$lib/stores/progressStore.svelte";
 
   let {
     id,
@@ -22,6 +24,7 @@
     label: string;
     slot?: TemplateSlot;
     course?: Course;
+    courseId?: string;
     isElectiveSlot?: boolean;
     showCourseTypeBadges?: boolean;
     width?: number;
@@ -40,6 +43,29 @@
   const targetHandles = $derived(nodeData.targetHandles ?? 0);
   const showRemoveBtn = $derived(nodeData.showRemoveButton ?? showRemoveButton);
   const removeHandler = $derived(nodeData.onRemove ?? onRemove);
+
+  const hasMissingPrerequisites = $derived.by(() => {
+    const courseId = course?.id || nodeData.courseId;
+    if (!courseId) return false;
+
+    if (!course?.prerequisites || course.prerequisites.length === 0) return false;
+
+    const status = progressStore.getSlotStatus(id);
+    if (status !== 'completed' && status !== 'attended') return false;
+
+    const plan = studyPlan();
+    return course.prerequisites.some(rule => {
+      const modulesInPlan = rule.modules.map(moduleId => 
+        Object.values(plan.nodes).some(node => node.courseId === moduleId)
+      );
+      
+      if (rule.moduleLinkType === 'oder') {
+        return !modulesInPlan.some(Boolean);
+      } else {
+        return !modulesInPlan.every(Boolean);
+      }
+    });
+  });
 
   function getCourseTypeColor(type?: string): string {
     switch (type) {
@@ -97,6 +123,16 @@
     >
       <div class="i-lucide-x w-3.5 h-3.5"></div>
     </button>
+  {/if}
+
+  <!-- Missing prerequisite warning badge -->
+  {#if hasMissingPrerequisites}
+    <div
+      class="absolute -top-2 -left-2 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center z-10 shadow-md"
+      title="This course has missing prerequisites in your study plan"
+    >
+      <span class="text-white text-xs font-bold">!</span>
+    </div>
   {/if}
 
   <!-- Source handles (bottom) -->

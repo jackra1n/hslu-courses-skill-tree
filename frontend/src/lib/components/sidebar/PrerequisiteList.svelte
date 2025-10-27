@@ -23,7 +23,11 @@
   const assessmentStageMet = $derived(completedCount >= 6);
 
   function renderPrerequisiteRule(rule: PrerequisiteRule) {
-    const ruleMet = evaluatePrerequisiteRule(rule, slotStatusMap(), studyPlan());
+    const ruleMet = evaluatePrerequisiteRule(
+      rule,
+      slotStatusMap(),
+      studyPlan()
+    );
 
     return {
       rule,
@@ -32,15 +36,22 @@
   }
 
   function isModuleMet(moduleId: string, mustBePassed: boolean): boolean {
-    const nodes = Object.values(studyPlan().nodes).filter((node) => node.courseId === moduleId);
+    const nodes = Object.values(studyPlan().nodes).filter(
+      (node) => node.courseId === moduleId
+    );
     return nodes.some((node) => {
       const status = slotStatusMap().get(node.id);
       if (mustBePassed) {
-        return status === 'completed';
+        return status === "completed";
       } else {
-        return status === 'attended' || status === 'completed';
+        return status === "attended" || status === "completed";
       }
     });
+  }
+
+  function isPrerequisiteInPlan(moduleId: string): boolean {
+    const plan = studyPlan();
+    return Object.values(plan.nodes).some((node) => node.courseId === moduleId);
   }
 
   function openAssessmentInfo() {
@@ -105,36 +116,60 @@
           </li>
         {/if}
 
+        {@const anyInPlan = rule.modules.some((id) => isPrerequisiteInPlan(id))}
+        {@const allInPlan = rule.modules.every((id) =>
+          isPrerequisiteInPlan(id)
+        )}
+        {@const shouldShowRuleWarning =
+          rule.moduleLinkType === "oder" ? !anyInPlan : !allInPlan}
+
         <li class="flex items-start gap-2 text-sm">
           <div
             class="{ruleData.met
               ? 'i-lucide-check text-green-500'
-              : 'i-lucide-circle text-gray-400'} mt-0.5"
+              : shouldShowRuleWarning
+                ? 'i-lucide-triangle-alert text-yellow-600 dark:text-yellow-500'
+                : 'i-lucide-circle text-gray-400'} mt-0.5"
+            title={shouldShowRuleWarning
+              ? "This prerequisite is not in your current study plan"
+              : ""}
           ></div>
           <div class="flex-1">
             <div
-              class={ruleData.met ? "text-text-primary" : "text-text-secondary"}
+              class={ruleData.met
+                ? "text-text-primary"
+                : shouldShowRuleWarning
+                  ? "text-yellow-600 dark:text-yellow-500"
+                  : "text-text-secondary"}
             >
-              <span class="font-semibold"
-                >{rule.mustBePassed ? "Completed" : "Attended"}</span
-              >
-              <span class="ml-1"
-                >{rule.moduleLinkType === "oder" ? "one of:" : "all of:"}</span
-              >
+              <div class="flex items-center gap-1">
+                <span class="font-semibold"
+                  >{rule.mustBePassed ? "Completed" : "Attended"}</span
+                >
+                <span
+                  >{rule.moduleLinkType === "oder"
+                    ? "one of:"
+                    : "all of:"}</span
+                >
+              </div>
               <div class="ml-2 mt-1 space-y-1">
                 {#each rule.modules as moduleId}
                   {@const course = getCourseById(moduleId)}
                   {@const moduleMet = isModuleMet(moduleId, rule.mustBePassed)}
+                  {@const inPlan = isPrerequisiteInPlan(moduleId)}
+                  {@const shouldApplyOpacity = !shouldShowRuleWarning && !inPlan}
                   <div class="flex items-center gap-1.5 text-xs">
                     <div
                       class="{moduleMet
                         ? 'i-lucide-check text-green-500'
-                        : 'i-lucide-minus text-gray-400'} text-xs"
+                        : 'i-lucide-minus text-gray-400'} text-xs {shouldApplyOpacity
+                        ? 'opacity-60'
+                        : ''}"
                     ></div>
                     <span
-                      class={moduleMet
-                        ? "text-text-primary"
-                        : "text-text-secondary"}
+                      class="{moduleMet
+                        ? 'text-text-primary'
+                        : 'text-text-secondary'} {shouldApplyOpacity ? 'opacity-60' : ''}"
                     >
                       {course?.label || moduleId}
                     </span>

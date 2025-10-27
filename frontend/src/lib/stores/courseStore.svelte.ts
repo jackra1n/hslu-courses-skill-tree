@@ -100,12 +100,15 @@ export const courseStore = {
     }
 
     const course = getCourseById(courseId);
-    const appearsFixed = Object.values(_studyPlan.nodes).some(
+    
+    // Check if course appears as fixed in current plan
+    const appearsFixedInPlan = Object.values(_studyPlan.nodes).some(
       (planNode) => planNode.kind === 'fixed' && planNode.courseId === courseId
     );
+    
     const isCoreOrProject = course?.type === 'Kernmodul' || course?.type === 'Projektmodul';
 
-    if (appearsFixed || isCoreOrProject) {
+    if (appearsFixedInPlan || isCoreOrProject) {
       if (!progressStore.hasAttendedInstance(courseId, _studyPlan)) {
         return false;
       }
@@ -366,9 +369,9 @@ function addAddNodeButtons(nodes: Node[], rows: PlanRow[]): Node[] {
     const semester = i + 1;
     const row = rows[i];
     const y = semester * GRID_SIZE.y;
-    
+
     let x = GRID_SIZE.x * 2;
-    
+
     if (row && row.nodeOrder.length > 0) {
       row.nodeOrder.forEach((nodeId) => {
         const node = _studyPlan.nodes[nodeId];
@@ -378,7 +381,7 @@ function addAddNodeButtons(nodes: Node[], rows: PlanRow[]): Node[] {
         }
       });
     }
-    
+
     addNodes.push({
       id: `add-node-${semester}`,
       type: 'addNode',
@@ -550,13 +553,18 @@ function loadStoredPlan(template: CurriculumTemplate, fallbackSelections: Record
 
 function isPlanCompatible(plan: StudyPlan, template: CurriculumTemplate): boolean {
   if (plan.templateId !== template.id) return false;
-  const templateIds = new Set(template.slots.map((slot) => slot.id));
-  const planNodeIds = Object.keys(plan.nodes);
-  if (templateIds.size !== planNodeIds.length) return false;
-  if (!planNodeIds.every((id) => templateIds.has(id))) return false;
 
+  // Verify that all nodes in rows actually exist in the nodes object
   const rowNodeCount = plan.rows.reduce((count, row) => count + row.nodeOrder.length, 0);
-  return rowNodeCount === planNodeIds.length;
+  const planNodeIds = Object.keys(plan.nodes);
+  
+  if (rowNodeCount !== planNodeIds.length) return false;
+
+  // Verify all nodes referenced in rows exist in the nodes object
+  const allRowNodeIds = plan.rows.flatMap((row) => row.nodeOrder);
+  const allNodesExist = allRowNodeIds.every((nodeId) => plan.nodes[nodeId]);
+  
+  return allNodesExist;
 }
 
 function loadLegacySelections(): Record<string, string> {

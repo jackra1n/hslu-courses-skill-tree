@@ -11,7 +11,10 @@ let _showHowToGuide = $state(false);
 
 const _hasSelection = $derived(_selection !== null);
 const _isElectiveSlot = $derived(
-  _selection?.id.startsWith('elective') || _selection?.id.startsWith('major') || false
+  _selection?.id.startsWith('elective') || 
+  _selection?.id.startsWith('major') || 
+  _selection?.id.startsWith('custom-') || 
+  false
 );
 
 export function selection() { return _selection; }
