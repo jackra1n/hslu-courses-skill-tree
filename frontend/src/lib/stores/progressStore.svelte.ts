@@ -61,7 +61,8 @@ export const progressStore = {
   },
 
   hasAttendedInstance(courseId: string, plan: StudyPlan): boolean {
-    const hasCurrentAttended = getNodeIdsForCourse(plan, courseId).some((slotId) => _slotStatus.get(slotId) === 'attended');
+    const nodeIds = getNodeIdsForCourse(plan, courseId);
+    const hasCurrentAttended = nodeIds.some((slotId) => _slotStatus.get(slotId) === 'attended');
     if (hasCurrentAttended) return true;
 
     const potentialSlotId = courseId.toLowerCase();

@@ -95,20 +95,14 @@ export const courseStore = {
     const node = _studyPlan.nodes[slotId];
     if (!node || node.slotType === 'fixed') return false;
 
-    if (progressStore.hasCompletedInstance(courseId, _studyPlan)) {
-      return false;
-    }
+    if (progressStore.hasCompletedInstance(courseId, _studyPlan)) return false;
 
-    const course = getCourseById(courseId);
-    
-    // Check if course appears as fixed in current plan
+    // check if course appears as fixed in current plan
     const appearsFixedInPlan = Object.values(_studyPlan.nodes).some(
       (planNode) => planNode.kind === 'fixed' && planNode.courseId === courseId
     );
-    
-    const isCoreOrProject = course?.type === 'Kernmodul' || course?.type === 'Projektmodul';
 
-    if (appearsFixedInPlan || isCoreOrProject) {
+    if (appearsFixedInPlan) {
       if (!progressStore.hasAttendedInstance(courseId, _studyPlan)) {
         return false;
       }
@@ -288,6 +282,7 @@ export const courseStore = {
     const { [nodeId]: removedNode, ...remainingNodes } = _studyPlan.nodes;
 
     if (!removedNode) return;
+    progressStore.clearSlotStatus(nodeId);
 
     const updatedRows = _studyPlan.rows
       .map((row) => ({

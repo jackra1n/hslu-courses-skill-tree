@@ -34,12 +34,16 @@
         node => node.kind === 'fixed' && node.courseId === course.id
       );
       const appearsFixed = fixedNodes.length > 0;
-      const isCoreOrProject = course.type === 'Kernmodul' || course.type === 'Projektmodul';
-      
-      if (appearsFixed || isCoreOrProject) {
-        if (!progressStore.hasAttendedInstance(course.id, studyPlan())) return false;
-        const earliest = fixedNodes.length ? Math.min(...fixedNodes.map(node => node.semester)) : undefined;
-        if (earliest !== undefined && slotNode.semester <= earliest) return false;
+
+      if (appearsFixed) {
+        if (!progressStore.hasAttendedInstance(course.id, studyPlan())) {
+          return false;
+        }
+        
+        const earliest = Math.min(...fixedNodes.map(node => node.semester));
+        if (slotNode.semester <= earliest) {
+          return false;
+        }
       }
 
       return courseStore.canSelectCourseForSlot(slotId, course.id);
