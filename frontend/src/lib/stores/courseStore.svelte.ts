@@ -135,14 +135,19 @@ export const courseStore = {
     return false;
   },
 
-  switchTemplate(templateId: string) {
+  switchTemplate(templateId: string, forceReset: boolean = false) {
     const template = getTemplateById(templateId);
     if (!template) return;
 
     _currentTemplate = template;
     _selectedPlan = template.plan;
     setCoursePlan(template.plan);
-    setStudyPlan(loadStoredPlan(template));
+    
+    if (forceReset) {
+      setStudyPlan(createStudyPlan(template, {}));
+    } else {
+      setStudyPlan(loadStoredPlan(template));
+    }
 
     if (browser) {
       localStorage.setItem('currentTemplate', templateId);

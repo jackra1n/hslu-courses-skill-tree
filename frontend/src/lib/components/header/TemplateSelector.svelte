@@ -5,12 +5,10 @@
     availablePlans,
     courseStore,
   } from "$lib/stores/courseStore.svelte";
-  import {
-    AVAILABLE_TEMPLATES,
-    getTemplatesByProgram,
-  } from "$lib/data/courses";
+  import { AVAILABLE_TEMPLATES } from "$lib/data/courses";
   import { PROGRAMS, PROGRAM_PLANS } from "$lib/data/programs";
   import Dropdown from "$lib/components/ui/Dropdown.svelte";
+  import ConfirmationDialog from "$lib/components/ui/ConfirmationDialog.svelte";
 
   const programOptions = PROGRAMS.map((p) => ({
     value: p,
@@ -48,29 +46,61 @@
     }));
   });
 
+  let showWarningDialog = $state(false);
+  let pendingProgram = $state<string | null>(null);
+  let pendingModel = $state<string | null>(null);
+
   function handleProgramChange(value: string) {
-    const template = AVAILABLE_TEMPLATES.find(
-      (t) => t.studiengang === value && t.modell === currentTemplate().modell
-    );
-    if (template) courseStore.switchTemplate(template.id);
+    pendingProgram = value;
   }
 
   function handleModelChange(value: string) {
-    const modell = value as "fulltime" | "parttime" | "berufsbegleitend";
-    const template =
-      getTemplatesByProgram(
-        currentTemplate().studiengang,
-        modell as "fulltime" | "parttime"
-      ).find((t) => t.plan === selectedPlan()) ||
-      getTemplatesByProgram(
-        currentTemplate().studiengang,
-        modell as "fulltime" | "parttime"
-      )[0];
-    if (template) courseStore.switchTemplate(template.id);
+    pendingModel = value;
   }
 
   function handlePlanChange(value: string) {
     courseStore.switchPlan(value);
+  }
+
+  function findTemplateForCurrentSelections() {
+    const program = pendingProgram ?? currentTemplate().studiengang;
+    const model = pendingModel ?? currentTemplate().modell;
+    const plan = selectedPlan();
+
+    return AVAILABLE_TEMPLATES.find(
+      (t) =>
+        t.studiengang === program &&
+        t.modell === model &&
+        t.plan === plan
+    );
+  }
+
+  function handleLoadClick() {
+    const targetTemplate = findTemplateForCurrentSelections();
+    if (!targetTemplate) return;
+
+    if (courseStore.isStudyPlanCustomized()) {
+      showWarningDialog = true;
+    } else {
+      courseStore.switchTemplate(targetTemplate.id, true);
+    }
+  }
+
+  function confirmTemplateSwitch() {
+    const targetTemplate = findTemplateForCurrentSelections();
+    
+    if (targetTemplate) {
+      courseStore.switchTemplate(targetTemplate.id, true);
+      showWarningDialog = false;
+      pendingProgram = null;
+      pendingModel = null;
+    }
+  }
+
+  function cancelTemplateSwitch() {
+    showWarningDialog = false;
+    pendingProgram = null;
+    pendingModel = null;
   }
 </script>
 
@@ -81,7 +111,7 @@
     >
     <Dropdown
       options={programOptions}
-      selected={currentTemplate().studiengang}
+      selected={pendingProgram ?? currentTemplate().studiengang}
       onSelect={handleProgramChange}
       minWidth="100%"
     />
@@ -93,7 +123,7 @@
     >
     <Dropdown
       options={modelOptions}
-      selected={currentTemplate().modell}
+      selected={pendingModel ?? currentTemplate().modell}
       onSelect={handleModelChange}
       minWidth="100%"
     />
@@ -110,4 +140,24 @@
       minWidth="100%"
     />
   </div>
+
+  <button
+    onclick={handleLoadClick}
+    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm dark:bg-blue-500 dark:hover:bg-blue-600"
+  >
+    <div class="i-lucide-download"></div>
+    Load Template
+  </button>
 </div>
+
+{#if showWarningDialog}
+  <ConfirmationDialog
+    title="Load New Template?"
+    message="Your customized study plan will be overwritten. Any custom nodes you've added or courses you've removed will be lost."
+    confirmText="Load Template"
+    cancelText="Cancel"
+    variant="warning"
+    onConfirm={confirmTemplateSwitch}
+    onCancel={cancelTemplateSwitch}
+  />
+{/if}
