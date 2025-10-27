@@ -77,11 +77,6 @@
   function handleCourseSelect(courseId: string) {
     if (courseId) {
       courseStore.selectCourseForSlot(slotId, courseId);
-      // Update the selection to show the selected course details
-      const course = getCourseById(courseId);
-      if (course) {
-        uiStore.selectCourse(course, slotId);
-      }
     } else {
       courseStore.clearSlotSelection(slotId);
     }
