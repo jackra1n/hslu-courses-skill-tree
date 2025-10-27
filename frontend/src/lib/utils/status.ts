@@ -2,6 +2,7 @@ import type { Status } from '../types';
 import type { StudyPlan } from '$lib/data/study-plan';
 import { resolveCourse } from '$lib/data/study-plan';
 import { evaluatePrerequisites } from './prerequisite';
+import { getTemplateById } from '$lib/data/courses';
 
 export function computeStatuses(
   plan: StudyPlan,
@@ -38,6 +39,62 @@ export function computeStatuses(
 }
 
 /**
+ * Checks if a course has prerequisite requirements where none of the required courses exist in the study plan.
+ * Handles both OR rules (all modules missing) and AND rules (any module missing).
+ */
+export function hasMissingPrerequisites(plan: StudyPlan, nodeId: string): boolean {
+  const node = plan.nodes[nodeId];
+  if (!node?.courseId) return false;
+
+  const course = resolveCourse(node.courseId);
+  if (!course || course.prerequisites.length === 0) return false;
+
+  // Build a set of all course IDs in the plan for quick lookup
+  const coursesInPlan = new Set<string>();
+  Object.values(plan.nodes).forEach((n) => {
+    if (n.courseId) {
+      coursesInPlan.add(n.courseId);
+    }
+  });
+
+  // Check each prerequisite rule
+  return course.prerequisites.some((rule) => {
+    // Check which modules from this rule exist in the plan
+    const modulesInPlan = rule.modules.filter((moduleId) => coursesInPlan.has(moduleId));
+
+    if (rule.moduleLinkType === 'oder') {
+      // OR rule: return true if ALL modules are missing (none in plan)
+      return modulesInPlan.length === 0;
+    } else {
+      // AND rule: return true if ANY module is missing (not all in plan)
+      return modulesInPlan.length < rule.modules.length;
+    }
+  });
+}
+
+/**
+ * Checks if a course requiring "assessment stage passed" is placed in assessment stage semesters.
+ * Assessment stage is semesters 1-2 for full-time programs and 1-3 for part-time programs.
+ */
+export function hasAssessmentStageViolation(plan: StudyPlan, nodeId: string): boolean {
+  const node = plan.nodes[nodeId];
+  if (!node?.courseId) return false;
+
+  const course = resolveCourse(node.courseId);
+  if (!course?.assessmentLevelPassed) return false;
+
+  // Get the template to determine the model type
+  const template = getTemplateById(plan.templateId);
+  if (!template) return false;
+
+  // Determine assessment stage semesters based on model
+  const assessmentStageSemesters = template.modell === 'parttime' ? 3 : 2;
+
+  // Check if the node is in the assessment stage
+  return node.semester <= assessmentStageSemesters;
+}
+
+/**
  * Builds base node styles including dimensions, typography, and transitions.
  * These styles are common to all nodes regardless of their state.
  */
@@ -59,7 +116,7 @@ function buildSelectionStyle(isSelected: boolean): string {
 
 /**
  * Builds state-specific styles for nodes based on their status and progress.
- * Handles special cases like later prerequisites (red dashed border).
+ * Handles special cases like later prerequisites (red dashed border) and missing prerequisites.
  */
 function buildNodeStateStyle(
   status: Status,
@@ -68,13 +125,23 @@ function buildNodeStateStyle(
   isElectiveSlot: boolean,
   hasSelectedCourse: boolean,
   hasLaterPrerequisites: boolean,
+  hasMissingPrerequisites: boolean,
   isSelected: boolean
 ): string {
   let style = "";
 
-  // Special case: nodes with later prerequisites get red dashed border
+  // Priority order: later prerequisites > missing prerequisites > regular status
+  
+  // Special case: nodes with later prerequisites get red dashed border (highest priority)
   if (hasLaterPrerequisites) {
     style += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.8;";
+    if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+    return style;
+  }
+
+  // Special case: nodes with missing prerequisites get red dashed border (second priority)
+  if (hasMissingPrerequisites) {
+    style += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.7;";
     if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
     return style;
   }
@@ -128,12 +195,13 @@ export function getNodeStyle(
   nodeWidth: number,
   hasSelectedCourse: boolean,
   hasLaterPrerequisites: boolean,
+  hasMissingPrerequisites: boolean,
   isDragging: boolean
 ): string {
   return (
     buildBaseNodeStyle(nodeWidth, isDragging) +
     buildSelectionStyle(isSelected) +
-    buildNodeStateStyle(status, isAttended, isCompleted, isElectiveSlot, hasSelectedCourse, hasLaterPrerequisites, isSelected)
+    buildNodeStateStyle(status, isAttended, isCompleted, isElectiveSlot, hasSelectedCourse, hasLaterPrerequisites, hasMissingPrerequisites, isSelected)
   );
 }
 

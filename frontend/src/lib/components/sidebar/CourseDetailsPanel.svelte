@@ -16,6 +16,7 @@
   import StatusLegend from './StatusLegend.svelte';
   import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
   import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
+  import { hasMissingPrerequisites, hasAssessmentStageViolation } from '$lib/utils/status';
 
   const displayCourse = $derived.by(() => {
     if (!selection()) return null;
@@ -42,9 +43,24 @@
     return Object.values(plan.nodes).find((node) => node.courseId === selection()!.id) ?? null;
   });
 
-  const hasLaterPrerequisites = $derived.by(() => {
-    if (!displayCourse || !activePlanNode || isElectiveSlot()) return false;
-    return hasPlanPrereqConflict(studyPlan(), activePlanNode.id, { considerSameSemester: false });
+  const warningType = $derived.by(() => {
+    if (!displayCourse || !activePlanNode) return null;
+    
+    const plan = studyPlan();
+
+    if (hasPlanPrereqConflict(plan, activePlanNode.id, { considerSameSemester: false })) {
+      return 'later-prerequisites';
+    }
+
+    if (hasMissingPrerequisites(plan, activePlanNode.id)) {
+      return 'missing-prerequisites';
+    }
+
+    if (hasAssessmentStageViolation(plan, activePlanNode.id)) {
+      return 'assessment-stage';
+    }
+    
+    return null;
   });
 
   const isDrawerOpen = $derived(hasSelection());
@@ -99,8 +115,8 @@
       {#if isElectiveSlot()}
         <ElectiveCourseSelector slotId={selection()?.id || ''} />
       {:else}
-        {#if hasLaterPrerequisites}
-          <PrerequisiteWarning />
+        {#if warningType}
+          <PrerequisiteWarning type={warningType} />
         {/if}
         <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} assessmentLevelPassed={displayCourse?.assessmentLevelPassed} />
         <ActionButtons courseId={displayCourse?.id || ''} />

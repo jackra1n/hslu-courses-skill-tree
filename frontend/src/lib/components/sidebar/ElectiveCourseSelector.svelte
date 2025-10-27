@@ -8,6 +8,7 @@
   import Combobox from '$lib/components/ui/Combobox.svelte';
   import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
   import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
+  import { hasMissingPrerequisites, hasAssessmentStageViolation } from '$lib/utils/status';
 
   let { slotId }: { slotId: string } = $props();
 
@@ -19,9 +20,24 @@
 
   const slotNode = $derived(studyPlan().nodes[slotId]);
 
-  const hasLaterPrerequisites = $derived.by(() => {
-    if (!selectedCourse) return false;
-    return hasPlanPrereqConflict(studyPlan(), slotId, { considerSameSemester: false });
+  const warningType = $derived.by(() => {
+    if (!selectedCourse) return null;
+    
+    const plan = studyPlan();
+
+    if (hasPlanPrereqConflict(plan, slotId, { considerSameSemester: false })) {
+      return 'later-prerequisites';
+    }
+
+    if (hasMissingPrerequisites(plan, slotId)) {
+      return 'missing-prerequisites';
+    }
+
+    if (hasAssessmentStageViolation(plan, slotId)) {
+      return 'assessment-stage';
+    }
+    
+    return null;
   });
   
   const availableCourses = $derived(
@@ -110,8 +126,8 @@
 </div>
 
 {#if selectedCourse}
-  {#if hasLaterPrerequisites}
-    <PrerequisiteWarning showBorder={true} />
+  {#if warningType}
+    <PrerequisiteWarning showBorder={true} type={warningType} />
   {/if}
   
   <PrerequisiteList prerequisites={selectedCourse.prerequisites || []} assessmentLevelPassed={selectedCourse.assessmentLevelPassed} />

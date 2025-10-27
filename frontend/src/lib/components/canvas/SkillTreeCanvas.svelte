@@ -35,6 +35,7 @@
     computeStatuses,
     getNodeStyle,
     getEdgeStyle,
+    hasMissingPrerequisites,
   } from "$lib/utils/status";
   import { getNodeWidth } from "$lib/utils/layout";
 
@@ -87,6 +88,7 @@
         isElectiveSlot && slot ? !!userSelections()[slot.id] : false;
 
       const hasLaterPrerequisites = data.hasLaterPrerequisites || false;
+      const hasMissingPrereqs = hasMissingPrerequisites(studyPlan(), n.id);
 
       const styleStr = getNodeStyle(
         status,
@@ -97,6 +99,7 @@
         nodeWidth,
         hasSelectedCourse,
         hasLaterPrerequisites,
+        hasMissingPrereqs,
         isDragging
       );
 
@@ -108,6 +111,7 @@
           showCourseTypeBadges: showCourseTypeBadges(),
           showRemoveButton: selectedNodeId === n.id,
           onRemove: handleRemoveClick,
+          hasMissingPrerequisites: hasMissingPrereqs,
         },
       };
     });
