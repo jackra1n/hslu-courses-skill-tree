@@ -116,7 +116,7 @@ function buildSelectionStyle(isSelected: boolean): string {
 
 /**
  * Builds state-specific styles for nodes based on their status and progress.
- * Handles special cases like later prerequisites (red dashed border) and missing prerequisites.
+ * Handles special cases like later prerequisites (red dashed border), missing prerequisites, and assessment stage violations.
  */
 function buildNodeStateStyle(
   status: Status,
@@ -126,11 +126,12 @@ function buildNodeStateStyle(
   hasSelectedCourse: boolean,
   hasLaterPrerequisites: boolean,
   hasMissingPrerequisites: boolean,
+  hasAssessmentStageViolation: boolean,
   isSelected: boolean
 ): string {
   let style = "";
 
-  // Priority order: later prerequisites > missing prerequisites > regular status
+  // Priority order: later prerequisites > missing prerequisites > assessment stage violation > regular status
   
   // Special case: nodes with later prerequisites get red dashed border (highest priority)
   if (hasLaterPrerequisites) {
@@ -141,6 +142,13 @@ function buildNodeStateStyle(
 
   // Special case: nodes with missing prerequisites get red dashed border (second priority)
   if (hasMissingPrerequisites) {
+    style += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.7;";
+    if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+    return style;
+  }
+
+  // Special case: nodes with assessment stage violations get red dashed border (third priority)
+  if (hasAssessmentStageViolation) {
     style += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.7;";
     if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
     return style;
@@ -196,12 +204,13 @@ export function getNodeStyle(
   hasSelectedCourse: boolean,
   hasLaterPrerequisites: boolean,
   hasMissingPrerequisites: boolean,
+  hasAssessmentStageViolation: boolean,
   isDragging: boolean
 ): string {
   return (
     buildBaseNodeStyle(nodeWidth, isDragging) +
     buildSelectionStyle(isSelected) +
-    buildNodeStateStyle(status, isAttended, isCompleted, isElectiveSlot, hasSelectedCourse, hasLaterPrerequisites, hasMissingPrerequisites, isSelected)
+    buildNodeStateStyle(status, isAttended, isCompleted, isElectiveSlot, hasSelectedCourse, hasLaterPrerequisites, hasMissingPrerequisites, hasAssessmentStageViolation, isSelected)
   );
 }
 

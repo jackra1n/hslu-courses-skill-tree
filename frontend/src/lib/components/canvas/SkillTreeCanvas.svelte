@@ -36,6 +36,7 @@
     getNodeStyle,
     getEdgeStyle,
     hasMissingPrerequisites,
+    hasAssessmentStageViolation,
   } from "$lib/utils/status";
   import { getNodeWidth } from "$lib/utils/layout";
 
@@ -89,6 +90,7 @@
 
       const hasLaterPrerequisites = data.hasLaterPrerequisites || false;
       const hasMissingPrereqs = hasMissingPrerequisites(studyPlan(), n.id);
+      const hasAssessmentViolation = hasAssessmentStageViolation(studyPlan(), n.id);
 
       const styleStr = getNodeStyle(
         status,
@@ -100,6 +102,7 @@
         hasSelectedCourse,
         hasLaterPrerequisites,
         hasMissingPrereqs,
+        hasAssessmentViolation,
         isDragging
       );
 
