@@ -15,20 +15,25 @@ import {
   calculatePlanTotalCredits,
   normalizePlan,
   type StudyPlan,
-  type PlanRow
+  type PlanRow,
+  type PlanNode
 } from '$lib/data/study-plan';
 import { toGraph } from '$lib/utils/graph';
 import { getNodeWidth } from '$lib/utils/layout';
 import { progressStore } from './progressStore.svelte';
 
 type FlowNodePosition = { x: number; y: number };
-const GRID_SIZE = { x: 40, y: 200 };
-const MAX_SEMESTERS = 12;
+export const GRID_SIZE = { x: 40, y: 200 };
+export const MAX_SEMESTERS = 12;
 const MIN_DIVIDER_NODE_COUNT = 5;
 const MIN_DIVIDER_WIDTH = GRID_SIZE.x * 2 + (getNodeWidth(3) + GRID_SIZE.x) * MIN_DIVIDER_NODE_COUNT;
 const DIVIDER_MARGIN = GRID_SIZE.x * 2;
 const DIVIDER_LINE_START = -150; // keep in sync with SemesterDivider.svelte
 const DEFAULT_NODE_WIDTH = getNodeWidth(3);
+
+function generateNodeId(): string {
+  return `custom-${crypto.randomUUID()}`;
+}
 
 let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
 let _selectedPlan = $state(AVAILABLE_TEMPLATES[0].plan);
@@ -48,7 +53,12 @@ const _availablePlans = $derived(
     .sort()
 );
 const _graph = $derived.by(() => toGraph(_studyPlan, _showShortNamesOnly));
-const _layoutedNodes = $derived.by(() => layoutNodes(_graph.nodes, _studyPlan.rows));
+const _layoutedNodes = $derived.by(() => {
+  const layouted = layoutNodes(_graph.nodes, _studyPlan.rows);
+  const withAddButtons = addAddNodeButtons(layouted, _studyPlan.rows);
+  // Return as raw to avoid deep reactivity on node objects
+  return withAddButtons;
+});
 
 export function currentTemplate() { return _currentTemplate; }
 export function studyPlan() { return _studyPlan; }
@@ -234,6 +244,73 @@ export const courseStore = {
     }
     clearNodeOverride();
     _activeDragNodeId = null;
+  },
+
+  addCustomNode(semester: number) {
+    const nodeId = generateNodeId();
+    const newNode: PlanNode = {
+      id: nodeId,
+      kind: 'custom',
+      slotType: 'custom',
+      semester,
+      courseId: null,
+      ects: 0,
+      label: 'Custom-Modul'
+    };
+
+    const updatedNodes = {
+      ..._studyPlan.nodes,
+      [nodeId]: newNode
+    };
+
+    const updatedRows = _studyPlan.rows.map((row) => ({ ...row, nodeOrder: [...row.nodeOrder] }));
+
+    while (updatedRows.length < semester) {
+      updatedRows.push({ semester: updatedRows.length + 1, nodeOrder: [] });
+    }
+
+    const targetRow = updatedRows[semester - 1];
+    if (targetRow) {
+      targetRow.nodeOrder.push(nodeId);
+    }
+
+    setStudyPlan({
+      ..._studyPlan,
+      nodes: updatedNodes,
+      rows: updatedRows
+    });
+  },
+
+  removeNode(nodeId: string) {
+    const { [nodeId]: removedNode, ...remainingNodes } = _studyPlan.nodes;
+
+    if (!removedNode) return;
+
+    const updatedRows = _studyPlan.rows
+      .map((row) => ({
+        ...row,
+        nodeOrder: row.nodeOrder.filter((id) => id !== nodeId)
+      }))
+      .filter((row) => row.nodeOrder.length > 0);
+
+    setStudyPlan({
+      ..._studyPlan,
+      nodes: remainingNodes,
+      rows: updatedRows
+    });
+  },
+
+  isStudyPlanCustomized(): boolean {
+    const template = getTemplateById(_studyPlan.templateId);
+    if (!template) return false;
+
+    const templateSlotIds = new Set(template.slots.map((slot) => slot.id));
+    const planNodeIds = Object.keys(_studyPlan.nodes);
+
+    const hasCustomNodes = planNodeIds.some((id) => !templateSlotIds.has(id));
+    const hasRemovedNodes = template.slots.some((slot) => !_studyPlan.nodes[slot.id]);
+
+    return hasCustomNodes || hasRemovedNodes;
   }
 };
 
@@ -279,6 +356,44 @@ function layoutNodes(
   });
 
   return updated;
+}
+
+function addAddNodeButtons(nodes: Node[], rows: PlanRow[]): Node[] {
+  const addNodes: Node[] = [];
+  const semestersToShow = Math.min(rows.length + 1, MAX_SEMESTERS);
+
+  for (let i = 0; i < semestersToShow; i++) {
+    const semester = i + 1;
+    const row = rows[i];
+    const y = semester * GRID_SIZE.y;
+    
+    let x = GRID_SIZE.x * 2;
+    
+    if (row && row.nodeOrder.length > 0) {
+      row.nodeOrder.forEach((nodeId) => {
+        const node = _studyPlan.nodes[nodeId];
+        if (node) {
+          const nodeWidth = node.ects ? getNodeWidth(node.ects) : getNodeWidth(3);
+          x += nodeWidth + GRID_SIZE.x;
+        }
+      });
+    }
+    
+    addNodes.push({
+      id: `add-node-${semester}`,
+      type: 'addNode',
+      position: { x, y },
+      data: { semester },
+      draggable: false,
+      selectable: false,
+      connectable: false,
+      width: 80,
+      height: 80,
+      style: 'width: 80px; height: 80px;'
+    });
+  }
+
+  return [...nodes, ...addNodes];
 }
 
 function applyDirectNodePosition(nodeId: string, position: FlowNodePosition): void {

@@ -8,45 +8,65 @@
     useViewport,
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
-  
+
   import {
     nodes,
     edges,
     studyPlan,
     userSelections,
     courseStore,
-    semesterDividerData
-  } from '$lib/stores/courseStore.svelte';
+    semesterDividerData,
+  } from "$lib/stores/courseStore.svelte";
   import {
     selection,
     showCourseTypeBadges,
-    uiStore
-  } from '$lib/stores/uiStore.svelte';
-  import { slotStatusMap, progressStore } from '$lib/stores/progressStore.svelte';
-  import { theme } from '$lib/stores/theme.svelte';
-  import CustomNode from './CustomNode.svelte';
-  import SemesterDivider from './SemesterDivider.svelte';
-  import DisclaimerToast from '$lib/components/ui/DisclaimerToast.svelte';
-  import { computeStatuses, getNodeStyle, getEdgeStyle } from '$lib/utils/status';
-  import { getNodeWidth } from '$lib/utils/layout';
+    uiStore,
+  } from "$lib/stores/uiStore.svelte";
+  import {
+    slotStatusMap,
+    progressStore,
+  } from "$lib/stores/progressStore.svelte";
+  import { theme } from "$lib/stores/theme.svelte";
+  import CustomNode from "./CustomNode.svelte";
+  import AddNodeButton from "./AddNodeButton.svelte";
+  import SemesterDivider from "./SemesterDivider.svelte";
+  import DisclaimerToast from "$lib/components/ui/DisclaimerToast.svelte";
+  import {
+    computeStatuses,
+    getNodeStyle,
+    getEdgeStyle,
+  } from "$lib/utils/status";
+  import { getNodeWidth } from "$lib/utils/layout";
 
-  import type { Course } from '$lib/types';
+  import type { Course } from "$lib/types";
 
   const nodeTypes = {
-    custom: CustomNode
+    custom: CustomNode,
+    addNode: AddNodeButton,
   };
 
   let isDragging = $state(false);
   let hideAttribution = $state(false);
+  let selectedNodeId = $state<string | null>(null);
 
   const viewportSignal = useViewport();
   const viewport = $derived(viewportSignal.current);
   const semesterIndicators = $derived.by(() => semesterDividerData());
 
-  const styledNodes = $derived.by(() => {
+  let styledNodes = $state.raw<any[]>([]);
+  
+  $effect(() => {
     const statuses = computeStatuses(studyPlan(), slotStatusMap());
 
-    return nodes().map((n) => {
+    styledNodes = nodes().map((n) => {
+      // Handle addNode type separately
+      if (n.type === 'addNode') {
+        return {
+          ...n,
+          style: 'width: 80px; height: 80px; min-width: 80px; max-width: 80px;'
+        };
+      }
+
       const status = statuses[n.id];
       const data = n.data as any;
       const slot = data.slot;
@@ -54,19 +74,20 @@
       const isElectiveSlot = data.isElectiveSlot;
 
       const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
-      const isAttended = slotStatus === 'attended';
-      const isCompleted = slotStatus === 'completed';
+      const isAttended = slotStatus === "attended";
+      const isCompleted = slotStatus === "completed";
 
-      const isSelected = selection()?.id === n.id || (course && selection()?.id === course.id);
-      
-      const nodeWidth = data.width || getNodeWidth(course?.ects || slot?.credits || 6);
-      
-      const hasSelectedCourse = isElectiveSlot && slot 
-        ? !!userSelections()[slot.id] 
-        : false;
-      
+      const isSelected =
+        selection()?.id === n.id || (course && selection()?.id === course.id);
+
+      const nodeWidth =
+        data.width || getNodeWidth(course?.ects || slot?.credits || 6);
+
+      const hasSelectedCourse =
+        isElectiveSlot && slot ? !!userSelections()[slot.id] : false;
+
       const hasLaterPrerequisites = data.hasLaterPrerequisites || false;
-      
+
       const styleStr = getNodeStyle(
         status,
         isSelected,
@@ -78,22 +99,26 @@
         hasLaterPrerequisites,
         isDragging
       );
-      
-      return { 
-        ...n, 
+
+      return {
+        ...n,
         style: styleStr,
         data: {
           ...data,
-          showCourseTypeBadges: showCourseTypeBadges()
-        }
+          showCourseTypeBadges: showCourseTypeBadges(),
+          showRemoveButton: selectedNodeId === n.id,
+          onRemove: handleRemoveClick,
+        },
       };
     });
   });
 
-  const styledEdges = $derived.by(() => {
+  let styledEdges = $state.raw<any[]>([]);
+  
+  $effect(() => {
     const statuses = computeStatuses(studyPlan(), slotStatusMap());
-    
-    return edges().map((e) => {
+
+    styledEdges = edges().map((e) => {
       const { style, markerEnd, animated } = getEdgeStyle(
         e,
         selection(),
@@ -102,38 +127,49 @@
         studyPlan(),
         isDragging
       );
-      
+
       return {
         ...e,
         style,
         markerEnd,
-        animated
+        animated,
       };
     });
   });
 
-  const handleNodeDragStart: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
+  const handleNodeDragStart: NodeTargetEventWithPointer<
+    MouseEvent | TouchEvent
+  > = ({ targetNode }) => {
     if (!targetNode) return;
     isDragging = true;
     courseStore.handleNodeDragStart(targetNode.id);
   };
 
-  const handleNodeDrag: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
+  const handleNodeDrag: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({
+    targetNode,
+  }) => {
     if (!targetNode) return;
-    const position = (targetNode as any).positionAbsolute || targetNode.position || { x: 0, y: 0 };
+    const position = (targetNode as any).positionAbsolute ||
+      targetNode.position || { x: 0, y: 0 };
     courseStore.handleNodeDrag(targetNode.id, position);
   };
 
-  const handleNodeDragStop: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
+  const handleNodeDragStop: NodeTargetEventWithPointer<
+    MouseEvent | TouchEvent
+  > = ({ targetNode }) => {
     if (!targetNode) return;
     isDragging = false;
-    const position = (targetNode as any).positionAbsolute || targetNode.position || { x: 0, y: 0 };
+    const position = (targetNode as any).positionAbsolute ||
+      targetNode.position || { x: 0, y: 0 };
     courseStore.handleNodeDragStop(targetNode.id, position);
   };
 
   function handleNodeClick(evt: { node: any; event: MouseEvent | TouchEvent }) {
     const node = evt.node;
     if (!node) return;
+
+    // Set selected node for showing remove button
+    selectedNodeId = node.id;
 
     const data = node.data;
     const slot = data.slot;
@@ -143,10 +179,15 @@
     if (isElectiveSlot && slot) {
       const electiveCourse: Course = {
         id: slot.id,
-        label: slot.type === 'elective' ? 'Wahl-Modul' : slot.type === 'major' ? 'Major-Modul' : 'Course',
+        label:
+          slot.type === "elective"
+            ? "Wahl-Modul"
+            : slot.type === "major"
+              ? "Major-Modul"
+              : "Course",
         ects: 0,
         prerequisites: [],
-        type: slot.type === "major" ? "Major-/Minormodul" : "Erweiterungsmodul"
+        type: slot.type === "major" ? "Major-/Minormodul" : "Erweiterungsmodul",
       };
       uiStore.selectCourse(electiveCourse, slot.id);
     } else if (course && slot) {
@@ -154,20 +195,30 @@
     }
   }
 
+  function handleCanvasClick() {
+    // Clear selected node when clicking canvas background
+    selectedNodeId = null;
+  }
+
+  function handleRemoveClick(nodeId: string) {
+    courseStore.removeNode(nodeId);
+    selectedNodeId = null;
+  }
+
   onMount(() => {
     courseStore.init();
     progressStore.init();
     uiStore.init();
 
-    const mediaQuery = window.matchMedia('(max-width: 1024px)');
+    const mediaQuery = window.matchMedia("(max-width: 1024px)");
     const handleScreenChange = () => {
       hideAttribution = mediaQuery.matches;
     };
     handleScreenChange();
-    mediaQuery.addEventListener('change', handleScreenChange);
+    mediaQuery.addEventListener("change", handleScreenChange);
 
     return () => {
-      mediaQuery.removeEventListener('change', handleScreenChange);
+      mediaQuery.removeEventListener("change", handleScreenChange);
     };
   });
 </script>
@@ -181,14 +232,19 @@
     onnodedragstart={handleNodeDragStart}
     onnodedrag={handleNodeDrag}
     onnodedragstop={handleNodeDragStop}
+    onpaneclick={handleCanvasClick}
     nodesDraggable={true}
     nodesConnectable={false}
     fitView
-    colorMode={theme() === 'system' ? 'system' : theme()}
+    colorMode={theme() === "system" ? "system" : theme()}
     proOptions={{ hideAttribution }}
+  >
+    <svg
+      class="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
     >
-    <svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
-      <g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
+      <g
+        transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})"
+      >
         {#each semesterIndicators as divider}
           <SemesterDivider
             semester={divider.semester}
@@ -202,6 +258,6 @@
     <Controls />
     <Background gap={16} />
   </SvelteFlow>
-  
+
   <DisclaimerToast />
 </div>
