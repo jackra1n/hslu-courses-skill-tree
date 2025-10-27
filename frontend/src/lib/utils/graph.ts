@@ -21,6 +21,22 @@ export function toGraph(plan: StudyPlan, showShortNamesOnly: boolean): { nodes: 
   return { nodes, edges };
 }
 
+function calculateTargetHandles(course: Course | null): number {
+  if (!course || !course.prerequisites || course.prerequisites.length === 0) {
+    return 0;
+  }
+  
+  const totalHandles = course.prerequisites.reduce((count, rule) => {
+    if (rule.moduleLinkType === 'oder') {
+      return count + 1;
+    } else {
+      return count + rule.modules.length;
+    }
+  }, 0);
+  
+  return totalHandles;
+}
+
 function buildNode(planNode: PlanNode, plan: StudyPlan, showShortNamesOnly: boolean): Node {
   const course = resolveCourse(planNode.courseId) ?? null;
   const slot = toSlotSnapshot(planNode);
@@ -38,7 +54,8 @@ function buildNode(planNode: PlanNode, plan: StudyPlan, showShortNamesOnly: bool
       course,
       isElectiveSlot,
       width: getNodeWidth(ects),
-      hasLaterPrerequisites: hasPlanPrereqConflict(plan, planNode.id)
+      hasLaterPrerequisites: hasPlanPrereqConflict(plan, planNode.id),
+      targetHandles: Math.min(calculateTargetHandles(course), 7)
     } as ExtendedNodeData,
     style: ''
   };
@@ -121,8 +138,8 @@ function applyHandleUsage(nodes: Node[], usage: HandleUsage): void {
     if (!nodeUsage) return;
     node.data = {
       ...(node.data as ExtendedNodeData),
-      sourceHandles: Math.min(nodeUsage.source, 7),
-      targetHandles: Math.min(nodeUsage.target, 7)
+      sourceHandles: Math.min(nodeUsage.source, 7)
+      // targetHandles are now set in buildNode based on course prerequisites
     };
   });
 }
