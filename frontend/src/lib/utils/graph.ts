@@ -25,16 +25,29 @@ function calculateTargetHandles(course: Course | null): number {
   if (!course || !course.prerequisites || course.prerequisites.length === 0) {
     return 0;
   }
-  
-  const totalHandles = course.prerequisites.reduce((count, rule) => {
+
+  // calculate handles needed for each rule
+  const handlesPerRule = course.prerequisites.map((rule) => {
     if (rule.moduleLinkType === 'oder') {
-      return count + 1;
+      // OR within rule: only need 1 handle (any one module satisfies)
+      return 1;
     } else {
-      return count + rule.modules.length;
+      // AND within rule: need 1 handle per module (all required)
+      return rule.modules.length;
     }
-  }, 0);
-  
-  return totalHandles;
+  });
+
+  // check how prerequisite rules are connected
+  const firstRule = course.prerequisites[0];
+  const prerequisiteLinkType = firstRule.prerequisiteLinkType || 'oder';
+
+  if (prerequisiteLinkType === 'oder') {
+    // OR between rules: only need handles for the rule with most handles
+    return Math.max(...handlesPerRule);
+  } else {
+    // AND between rules: need sum of all handles
+    return handlesPerRule.reduce((sum, handles) => sum + handles, 0);
+  }
 }
 
 function buildNode(planNode: PlanNode, plan: StudyPlan, showShortNamesOnly: boolean): Node {

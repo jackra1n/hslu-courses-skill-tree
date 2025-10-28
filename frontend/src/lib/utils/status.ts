@@ -41,6 +41,8 @@ export function computeStatuses(
 /**
  * Checks if a course has prerequisite requirements where none of the required courses exist in the study plan.
  * Handles both OR rules (all modules missing) and AND rules (any module missing).
+ * When multiple prerequisite rules exist, they are connected with OR logic (PrerequisiteLinkType).
+ * Returns true only if ALL rule groups have missing prerequisites.
  */
 export function hasMissingPrerequisites(plan: StudyPlan, nodeId: string): boolean {
   const node = plan.nodes[nodeId];
@@ -57,19 +59,16 @@ export function hasMissingPrerequisites(plan: StudyPlan, nodeId: string): boolea
     }
   });
 
-  // Check each prerequisite rule
-  return course.prerequisites.some((rule) => {
-    // Check which modules from this rule exist in the plan
+  const allRulesHaveMissing = course.prerequisites.every((rule) => {
     const modulesInPlan = rule.modules.filter((moduleId) => coursesInPlan.has(moduleId));
 
     if (rule.moduleLinkType === 'oder') {
-      // OR rule: return true if ALL modules are missing (none in plan)
       return modulesInPlan.length === 0;
     } else {
-      // AND rule: return true if ANY module is missing (not all in plan)
       return modulesInPlan.length < rule.modules.length;
     }
   });
+  return allRulesHaveMissing;
 }
 
 /**
@@ -132,7 +131,6 @@ function buildNodeStateStyle(
   let style = "";
 
   // Priority order: later prerequisites > missing prerequisites > assessment stage violation > regular status
-  
   // Special case: nodes with later prerequisites get red dashed border (highest priority)
   if (hasLaterPrerequisites) {
     style += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.8;";
