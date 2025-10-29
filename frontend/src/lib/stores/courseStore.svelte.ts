@@ -13,6 +13,8 @@ import {
   deriveSelections,
   updateNodeCourse,
   calculatePlanTotalCredits,
+  calculateAttendedCredits,
+  calculateCompletedCredits,
   normalizePlan,
   type StudyPlan,
   type PlanRow,
@@ -20,7 +22,7 @@ import {
 } from '$lib/data/study-plan';
 import { toGraph } from '$lib/utils/graph';
 import { getNodeWidth } from '$lib/utils/layout';
-import { progressStore } from './progressStore.svelte';
+import { progressStore, slotStatusMap } from './progressStore.svelte';
 
 type FlowNodePosition = { x: number; y: number };
 export const GRID_SIZE = { x: 40, y: 200 };
@@ -46,6 +48,9 @@ let _previewRows = $state<PlanRow[] | null>(null);
 
 const _userSelections = $derived(deriveSelections(_studyPlan));
 const _totalCredits = $derived(calculatePlanTotalCredits(_studyPlan));
+const _attendedCredits = $derived.by(() => calculateAttendedCredits(_studyPlan, slotStatusMap()));
+const _completedCredits = $derived.by(() => calculateCompletedCredits(_studyPlan, slotStatusMap()));
+const _calculatedTotalCredits = $derived(Math.max(0, _totalCredits - _attendedCredits));
 const _availablePlans = $derived(
   getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
     .map((t) => t.plan)
@@ -68,6 +73,9 @@ export function nodes() { return _nodeOverride ?? _layoutedNodes; }
 export function edges() { return _graph.edges; }
 export function showShortNamesOnly() { return _showShortNamesOnly; }
 export function totalCredits() { return _totalCredits; }
+export function attendedCredits() { return _attendedCredits; }
+export function completedCredits() { return _completedCredits; }
+export function calculatedTotalCredits() { return _calculatedTotalCredits; }
 export function availablePlans() { return _availablePlans; }
 type SemesterIndicator = { semester: number; isPreview: boolean; length: number };
 

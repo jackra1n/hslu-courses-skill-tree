@@ -1,5 +1,13 @@
 <script lang="ts">
-  import { totalCredits, showShortNamesOnly, courseStore } from '$lib/stores/courseStore.svelte';
+  import { onMount } from 'svelte';
+  import {
+    totalCredits,
+    calculatedTotalCredits,
+    attendedCredits,
+    completedCredits,
+    showShortNamesOnly,
+    courseStore
+  } from '$lib/stores/courseStore.svelte';
   import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
   import { theme, themeStore } from '$lib/stores/theme.svelte';
   import TemplateSelector from './TemplateSelector.svelte';
@@ -13,20 +21,18 @@
     );
   }
 
-  function handleClickOutside(event: MouseEvent) {
-    if (!eventPathIncludesClass(event, 'program-dropdown') && programDropdownOpen) {
-      programDropdownOpen = false;
-    }
-    if (!eventPathIncludesClass(event, 'settings-dropdown') && settingsDropdownOpen) {
-      settingsDropdownOpen = false;
-    }
-  }
-  
-  $effect(() => {
-    if (programDropdownOpen || settingsDropdownOpen) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
+  onMount(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (programDropdownOpen && !eventPathIncludesClass(event, 'program-dropdown')) {
+        programDropdownOpen = false;
+      }
+      if (settingsDropdownOpen && !eventPathIncludesClass(event, 'settings-dropdown')) {
+        settingsDropdownOpen = false;
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   });
   
   function toggleTheme() {
@@ -45,6 +51,19 @@
   function toggleAssessmentInfo() {
     uiStore.toggleAssessmentInfo();
   }
+
+  const plannedCredits = $derived(totalCredits());
+  const calculatedTotal = $derived(calculatedTotalCredits());
+  const attended = $derived(attendedCredits());
+  const completed = $derived(completedCredits());
+  const ectsTooltip = $derived(
+    [
+      `${calculatedTotal} ECTS total (calculated)`,
+      `${plannedCredits} ECTS in plan`,
+      `${attended} ECTS attended (failed)`,
+      `${completed} ECTS completed`
+    ].join('\n')
+  );
 </script>
 
 <header class="flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">
@@ -89,8 +108,11 @@
     </div>
 
     <!-- ECTS progress badge -->
-    <div class="hidden items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-1.5 md:flex">
-      <span class="text-xs font-medium text-text-primary">{totalCredits()} ECTS Total</span>
+    <div
+      class="hidden items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-1.5 md:flex"
+      title={ectsTooltip}
+    >
+      <span class="text-xs font-medium text-text-primary">{calculatedTotal} ECTS Total</span>
     </div>
 
     <div class="h-6 w-px bg-border-primary"></div>

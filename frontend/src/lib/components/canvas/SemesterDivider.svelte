@@ -1,7 +1,11 @@
 <script lang="ts">
   import type { StudyPlan } from "$lib/data/study-plan";
-  import { calculatePlanSemesterCredits } from "$lib/data/study-plan";
+  import {
+    calculatePlanSemesterCredits,
+    calculatePlanSemesterAttendedCredits
+  } from "$lib/data/study-plan";
   import { useViewport } from "@xyflow/svelte";
+  import { slotStatusMap } from "$lib/stores/progressStore.svelte";
 
   let {
     semester,
@@ -27,6 +31,13 @@
   const titleFontSize = $derived(Math.max(21, 12 / viewport.zoom));
   const yPosition = $derived(BASE_OFFSET + SEMESTER_SPACING * semester);
   const semesterCredits = $derived(calculatePlanSemesterCredits(plan, semester));
+  const slotStatuses = $derived(slotStatusMap());
+  const attendedSemesterCredits = $derived(
+    calculatePlanSemesterAttendedCredits(plan, semester, slotStatuses)
+  );
+  const calculatedSemesterCredits = $derived(
+    Math.max(0, semesterCredits - attendedSemesterCredits)
+  );
   const lineOpacity = $derived(isPreview ? 0.35 : 1);
   const textOpacity = $derived(isPreview ? 0.5 : 1);
   const LINE_START = -150;
@@ -60,5 +71,8 @@
   font-size={titleFontSize}
   opacity={textOpacity}
 >
-  {semesterCredits} ECTS
+  {calculatedSemesterCredits !== semesterCredits
+    ? `${calculatedSemesterCredits} / ${semesterCredits}`
+    : `${semesterCredits}`
+  } ECTS
 </text>

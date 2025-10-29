@@ -135,6 +135,48 @@ export function calculatePlanSemesterCredits(plan: StudyPlan, semester: number):
   }, 0);
 }
 
+function sumCreditsForStatus(
+  plan: StudyPlan,
+  slotStatus: Map<string, 'attended' | 'completed'>,
+  status: 'attended' | 'completed'
+): number {
+  if (!slotStatus.size) return 0;
+
+  return Object.values(plan.nodes).reduce((sum, node) => {
+    if (!node) return sum;
+    return slotStatus.get(node.id) === status ? sum + (node.ects || 0) : sum;
+  }, 0);
+}
+
+export function calculateAttendedCredits(
+  plan: StudyPlan,
+  slotStatus: Map<string, 'attended' | 'completed'>
+): number {
+  return sumCreditsForStatus(plan, slotStatus, 'attended');
+}
+
+export function calculateCompletedCredits(
+  plan: StudyPlan,
+  slotStatus: Map<string, 'attended' | 'completed'>
+): number {
+  return sumCreditsForStatus(plan, slotStatus, 'completed');
+}
+
+export function calculatePlanSemesterAttendedCredits(
+  plan: StudyPlan,
+  semester: number,
+  slotStatus: Map<string, 'attended' | 'completed'>
+): number {
+  const row = plan.rows.find((r) => r.semester === semester);
+  if (!row) return 0;
+
+  return row.nodeOrder.reduce((sum, nodeId) => {
+    if (slotStatus.get(nodeId) !== 'attended') return sum;
+    const node = plan.nodes[nodeId];
+    return sum + (node?.ects || 0);
+  }, 0);
+}
+
 export function getPlanNodeCourse(node: PlanNode): Course | undefined {
   return resolveCourse(node.courseId);
 }
