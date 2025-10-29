@@ -1,0 +1,261 @@
+{
+  "id": "informatik-fulltime-hs24",
+  "name": "Informatik Fulltime HS24",
+  "studiengang": "Informatik",
+  "modell": "fulltime",
+  "plan": "HS24",
+  "slots": [
+    {
+      "id": "ana-g",
+      "type": "fixed",
+      "courseId": "ANA-G",
+      "semester": 1
+    },
+    {
+      "id": "dmath-algo",
+      "type": "fixed",
+      "courseId": "DMATH-ALGO",
+      "semester": 1
+    },
+    {
+      "id": "oop",
+      "type": "fixed",
+      "courseId": "OOP",
+      "semester": 1
+    },
+    {
+      "id": "cna",
+      "type": "fixed",
+      "courseId": "CNA",
+      "semester": 1
+    },
+    {
+      "id": "elective1-s1",
+      "type": "elective",
+      "semester": 1
+    },
+    {
+      "id": "elective2-s1",
+      "type": "elective",
+      "semester": 1
+    },
+    {
+      "id": "pta",
+      "type": "fixed",
+      "courseId": "PTA",
+      "semester": 1
+    },
+    {
+      "id": "ana-f",
+      "type": "fixed",
+      "courseId": "ANA-F_MM",
+      "semester": 2
+    },
+    {
+      "id": "dmath-code",
+      "type": "fixed",
+      "courseId": "DMATH-CODE",
+      "semester": 2
+    },
+    {
+      "id": "ad",
+      "type": "fixed",
+      "courseId": "AD",
+      "semester": 2
+    },
+    {
+      "id": "iteo",
+      "type": "fixed",
+      "courseId": "ITEO",
+      "semester": 2
+    },
+    {
+      "id": "isf",
+      "type": "fixed",
+      "courseId": "ISF",
+      "semester": 2
+    },
+    {
+      "id": "mod",
+      "type": "fixed",
+      "courseId": "MOD_MM",
+      "semester": 2
+    },
+    {
+      "id": "fkom",
+      "type": "fixed",
+      "courseId": "FKOM",
+      "semester": 2
+    },
+    {
+      "id": "pmb",
+      "type": "fixed",
+      "courseId": "PMB",
+      "semester": 2
+    },
+    {
+      "id": "dbs",
+      "type": "fixed",
+      "courseId": "DBS",
+      "semester": 3
+    },
+    {
+      "id": "vsk",
+      "type": "fixed",
+      "courseId": "VSK_MM",
+      "semester": 3
+    },
+    {
+      "id": "astat",
+      "type": "fixed",
+      "courseId": "ASTAT_MM",
+      "semester": 3
+    },
+    {
+      "id": "elective1-s3",
+      "type": "elective",
+      "semester": 3
+    },
+    {
+      "id": "elective2-s3",
+      "type": "elective",
+      "semester": 3
+    },
+    {
+      "id": "pren1",
+      "type": "fixed",
+      "courseId": "PREN1",
+      "semester": 3
+    },
+    {
+      "id": "major1-s3",
+      "type": "elective",
+      "semester": 3
+    },
+    {
+      "id": "elective1-s4",
+      "type": "elective",
+      "semester": 4
+    },
+    {
+      "id": "pmre",
+      "type": "fixed",
+      "courseId": "PMRE",
+      "semester": 4
+    },
+    {
+      "id": "swda",
+      "type": "fixed",
+      "courseId": "SWDA_MM",
+      "semester": 4
+    },
+    {
+      "id": "major1-s4",
+      "type": "major",
+      "semester": 4
+    },
+    {
+      "id": "elective2-s4",
+      "type": "elective",
+      "semester": 4
+    },
+    {
+      "id": "elective3-s4",
+      "type": "elective",
+      "semester": 4
+    },
+    {
+      "id": "elective4-s4",
+      "type": "elective",
+      "semester": 4
+    },
+    {
+      "id": "pren2",
+      "type": "fixed",
+      "courseId": "PREN2",
+      "semester": 4
+    },
+    {
+      "id": "elective1-s5",
+      "type": "elective",
+      "semester": 5
+    },
+    {
+      "id": "elective2-s5",
+      "type": "elective",
+      "semester": 5
+    },
+    {
+      "id": "elective3-s5",
+      "type": "elective",
+      "semester": 5
+    },
+    {
+      "id": "major1-s5",
+      "type": "major",
+      "semester": 5
+    },
+    {
+      "id": "major2-s5",
+      "type": "major",
+      "semester": 5
+    },
+    {
+      "id": "major3-s5",
+      "type": "major",
+      "semester": 5
+    },
+    {
+      "id": "elective4-s5",
+      "type": "elective",
+      "semester": 5
+    },
+    {
+      "id": "elective5-s5",
+      "type": "elective",
+      "semester": 5
+    },
+    {
+      "id": "wipro",
+      "type": "fixed",
+      "courseId": "WIPRO",
+      "semester": 5
+    },
+    {
+      "id": "elective1-s6",
+      "type": "elective",
+      "semester": 6
+    },
+    {
+      "id": "elective2-s6",
+      "type": "elective",
+      "semester": 6
+    },
+    {
+      "id": "elective3-s6",
+      "type": "elective",
+      "semester": 6
+    },
+    {
+      "id": "major1-s6",
+      "type": "major",
+      "semester": 6
+    },
+    {
+      "id": "major2-s6",
+      "type": "major",
+      "semester": 6
+    },
+    {
+      "id": "major3-s6",
+      "type": "major",
+      "semester": 6
+    },
+    {
+      "id": "baa",
+      "type": "fixed",
+      "courseId": "BAA",
+      "semester": 6
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-import informatikFulltimeTemplate from './templates/informatik-fulltime.json';
 import { loadCourseData } from './course-data-adapter';
+import studyProgrammes from './hslu_data/study_programmes.json';
 
 export type Status = "locked" | "available" | "completed";
 
@@ -25,9 +25,140 @@ export type Course = {
   type?: ModuleType;
 };
 
+export type TemplateSlot = {
+  id: string;
+  type: "fixed" | "elective" | "major";
+  courseId?: string; // for fixed courses
+  semester: number;
+};
+
+export type StudyModel = "fulltime" | "parttime";
+
+export type CurriculumTemplate = {
+  id: string;
+  name: string;
+  studiengang: string;
+  modell: StudyModel;
+  plan: string; // e.g., "HS16", "HS25"
+  slots: TemplateSlot[];
+  programShortName?: string;
+  programName?: string;
+};
+
+type StudyProgramme = {
+  ShortName: string;
+  Name: string;
+};
+
+const STUDY_PROGRAMMES = (studyProgrammes.data ?? []) as StudyProgramme[];
+
+const PROGRAM_NAME_BY_SHORT = new Map<string, string>(
+  STUDY_PROGRAMMES.map((program) => [program.ShortName.toUpperCase(), program.Name])
+);
+
+const TEMPLATE_PATH_REGEX = /\.\/templates\/([^/]+)\/([^/]+)\/([^/]+)\.json$/i;
+
+const templateModules = import.meta.glob('./templates/**/**/*.json', {
+  eager: true,
+  import: 'default'
+}) as Record<string, CurriculumTemplate>;
+
+function normaliseProgram(segment: string): string {
+  return segment.toUpperCase();
+}
+
+function normaliseModel(segment: string): StudyModel {
+  return segment.toLowerCase() as StudyModel;
+}
+
+function normalisePlan(segment: string): string {
+  return segment.toUpperCase();
+}
+
+function buildAvailableTemplates(): CurriculumTemplate[] {
+  const templates: CurriculumTemplate[] = [];
+
+  for (const [path, rawTemplate] of Object.entries(templateModules)) {
+    const match = TEMPLATE_PATH_REGEX.exec(path);
+    if (!match) {
+      console.warn(`Skipping template with unexpected path: ${path}`);
+      continue;
+    }
+
+    const [, programSegment, modelSegment, planSegment] = match;
+    const programShortName = normaliseProgram(programSegment);
+    const model = normaliseModel(modelSegment);
+    const plan = normalisePlan(planSegment);
+    const programName =
+      PROGRAM_NAME_BY_SHORT.get(programShortName) ??
+      rawTemplate.programName ??
+      rawTemplate.studiengang ??
+      programShortName;
+
+    const template: CurriculumTemplate = {
+      ...rawTemplate,
+      id:
+        rawTemplate.id ??
+        `${programShortName.toLowerCase()}-${model}-${plan.toLowerCase()}`,
+      studiengang: programShortName,
+      modell: model,
+      plan,
+      programShortName,
+      programName
+    };
+
+    templates.push(template);
+  }
+
+  if (!templates.length) {
+    console.warn('No curriculum templates found in templates directory.');
+  }
+
+  return templates.sort((a, b) => {
+    if ((a.programName ?? '') !== (b.programName ?? '')) {
+      return (a.programName ?? '').localeCompare(b.programName ?? '');
+    }
+    if (a.modell !== b.modell) {
+      return a.modell.localeCompare(b.modell);
+    }
+    return a.plan.localeCompare(b.plan);
+  });
+}
+
+export const AVAILABLE_TEMPLATES: CurriculumTemplate[] = buildAvailableTemplates();
+
+const DEFAULT_TEMPLATE = AVAILABLE_TEMPLATES[0];
+
+const TEMPLATE_BY_ID = new Map(AVAILABLE_TEMPLATES.map((template) => [template.id, template]));
+
+export function getTemplateById(id: string): CurriculumTemplate | undefined {
+  return TEMPLATE_BY_ID.get(id);
+}
+
+export function getTemplatesByProgram(studiengang: string, modell: StudyModel): CurriculumTemplate[] {
+  return AVAILABLE_TEMPLATES.filter(
+    (template) => template.studiengang === studiengang && template.modell === modell
+  );
+}
+
+export function getAvailablePlans(studiengang: string, modell: StudyModel): string[] {
+  const templates = getTemplatesByProgram(studiengang, modell);
+  return [...new Set(templates.map((template) => template.plan))].sort();
+}
+
+export function getAvailableModels(studiengang: string): StudyModel[] {
+  const models = new Set<StudyModel>();
+  AVAILABLE_TEMPLATES.forEach((template) => {
+    if (template.studiengang === studiengang) {
+      models.add(template.modell);
+    }
+  });
+  return Array.from(models).sort((a, b) => a.localeCompare(b));
+}
+
 let _sortedCourses: Course[] | null = null;
 let _coursesById: Record<string, Course> | null = null;
-let _currentPlan: string = 'HS25';
+let _currentPlan: string = DEFAULT_TEMPLATE?.plan ?? 'HS25';
 
 function buildCourseCollections(): { sortedCourses: Course[]; coursesMap: Record<string, Course> } {
   if (_sortedCourses && _coursesById) {
@@ -136,41 +267,6 @@ export function calculateCreditsAttended(
   return COURSES
     .filter(course => (attended.has(course.id) || completed.has(course.id)) && (!moduleType || course.type === moduleType))
     .reduce((total, course) => total + course.ects, 0);
-}
-
-export type TemplateSlot = {
-  id: string;
-  type: "fixed" | "elective" | "major";
-  courseId?: string; // for fixed courses
-  semester: number;
-};
-
-export type CurriculumTemplate = {
-  id: string;
-  name: string;
-  studiengang: string;
-  modell: "fulltime" | "parttime";
-  plan: string; // e.g., "HS16", "HS25"
-  slots: TemplateSlot[];
-};
-
-export const AVAILABLE_TEMPLATES: CurriculumTemplate[] = [
-  informatikFulltimeTemplate as CurriculumTemplate
-];
-
-export function getTemplateById(id: string): CurriculumTemplate | undefined {
-  return AVAILABLE_TEMPLATES.find(template => template.id === id);
-}
-
-export function getTemplatesByProgram(studiengang: string, modell: "fulltime" | "parttime"): CurriculumTemplate[] {
-  return AVAILABLE_TEMPLATES.filter(template => 
-    template.studiengang === studiengang && template.modell === modell
-  );
-}
-
-export function getAvailablePlans(studiengang: string, modell: "fulltime" | "parttime"): string[] {
-  const templates = getTemplatesByProgram(studiengang, modell);
-  return [...new Set(templates.map(template => template.plan))].sort();
 }
 
 export function getCoursesForSlot(slot: TemplateSlot, userSelections: Record<string, string>): Course[] {
