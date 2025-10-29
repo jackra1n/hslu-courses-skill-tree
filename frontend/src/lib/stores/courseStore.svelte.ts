@@ -306,14 +306,61 @@ export const courseStore = {
   isStudyPlanCustomized(): boolean {
     const template = getTemplateById(_studyPlan.templateId);
     if (!template) return false;
+    const defaultPlan = createStudyPlan(template, {});
 
     const templateSlotIds = new Set(template.slots.map((slot) => slot.id));
     const planNodeIds = Object.keys(_studyPlan.nodes);
 
-    const hasCustomNodes = planNodeIds.some((id) => !templateSlotIds.has(id));
-    const hasRemovedNodes = template.slots.some((slot) => !_studyPlan.nodes[slot.id]);
+    if (planNodeIds.length !== templateSlotIds.size) {
+      return true;
+    }
 
-    return hasCustomNodes || hasRemovedNodes;
+    for (const nodeId of planNodeIds) {
+      if (!templateSlotIds.has(nodeId)) {
+        return true;
+      }
+    }
+
+    for (const slot of template.slots) {
+      const nodeId = slot.id;
+      const currentNode = _studyPlan.nodes[nodeId];
+      const defaultNode = defaultPlan.nodes[nodeId];
+
+      if (!currentNode || !defaultNode) {
+        return true;
+      }
+
+      if (currentNode.semester !== defaultNode.semester) {
+        return true;
+      }
+
+      const currentCourseId = currentNode.courseId ?? null;
+      const defaultCourseId = defaultNode.courseId ?? null;
+      if (currentCourseId !== defaultCourseId) {
+        return true;
+      }
+    }
+
+    if (_studyPlan.rows.length !== defaultPlan.rows.length) {
+      return true;
+    }
+
+    for (let index = 0; index < _studyPlan.rows.length; index += 1) {
+      const currentRow = _studyPlan.rows[index];
+      const defaultRow = defaultPlan.rows[index];
+
+      if (currentRow.nodeOrder.length !== defaultRow.nodeOrder.length) {
+        return true;
+      }
+
+      for (let orderIndex = 0; orderIndex < currentRow.nodeOrder.length; orderIndex += 1) {
+        if (currentRow.nodeOrder[orderIndex] !== defaultRow.nodeOrder[orderIndex]) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 };
 
