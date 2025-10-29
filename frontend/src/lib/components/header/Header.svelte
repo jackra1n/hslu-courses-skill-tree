@@ -7,12 +7,17 @@
   let programDropdownOpen = $state(false);
   let settingsDropdownOpen = $state(false);
   
+  function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
+    return event.composedPath().some(
+      (node) => node instanceof HTMLElement && node.classList.contains(className)
+    );
+  }
+
   function handleClickOutside(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.program-dropdown') && programDropdownOpen) {
+    if (!eventPathIncludesClass(event, 'program-dropdown') && programDropdownOpen) {
       programDropdownOpen = false;
     }
-    if (!target.closest('.settings-dropdown') && settingsDropdownOpen) {
+    if (!eventPathIncludesClass(event, 'settings-dropdown') && settingsDropdownOpen) {
       settingsDropdownOpen = false;
     }
   }
