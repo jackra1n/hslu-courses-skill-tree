@@ -63,6 +63,7 @@
     return null;
   });
 
+  const prerequisiteNote = $derived.by(() => displayCourse?.prerequisiteNote?.trim() ?? '');
   const isDrawerOpen = $derived(hasSelection());
 </script>
 
@@ -88,6 +89,7 @@
             onclick={() => uiStore.deselectCourse()}
             class="flex items-center justify-center w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary transition-all"
             title="Deselect course"
+            aria-label="Deselect course"
           >
             <div class="i-lucide-x w-4 h-4"></div>
           </button>
@@ -119,6 +121,20 @@
           <PrerequisiteWarning type={warningType} />
         {/if}
         <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} assessmentLevelPassed={displayCourse?.assessmentLevelPassed} />
+      {/if}
+
+      {#if prerequisiteNote}
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+          <div class="flex items-start gap-2">
+            <div class="i-lucide-info text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"></div>
+            <p class="text-sm text-blue-700 dark:text-blue-200">
+              {prerequisiteNote}
+            </p>
+          </div>
+        </div>
+      {/if}
+
+      {#if !isElectiveSlot()}
         <ActionButtons courseId={displayCourse?.id || ''} />
       {/if}
     </div>
