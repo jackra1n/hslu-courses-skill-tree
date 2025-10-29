@@ -1,0 +1,230 @@
+{
+    "id": "aiml-fulltime-hs23",
+    "name": "Artificial Intelligence & Machine Learning Fulltime HS23",
+    "studiengang": "Artificial Intelligence & Machine Learning",
+    "modell": "fulltime",
+    "plan": "HS23",
+    "slots": [
+        {
+            "id": "anlis",
+            "type": "fixed",
+            "courseId": "ANLIS",
+            "semester": 1
+        },
+        {
+            "id": "iai",
+            "type": "fixed",
+            "courseId": "IAI",
+            "semester": 1
+        },
+        {
+            "id": "isf",
+            "type": "fixed",
+            "courseId": "ISF",
+            "semester": 1
+        },
+        {
+            "id": "lial",
+            "type": "fixed",
+            "courseId": "LIAL_MM",
+            "semester": 1
+        },
+        {
+            "id": "pmb",
+            "type": "fixed",
+            "courseId": "PMB",
+            "semester": 1
+        },
+        {
+            "id": "prog",
+            "type": "fixed",
+            "courseId": "PROG_MM",
+            "semester": 1
+        },
+        {
+            "id": "elective1-1",
+            "type": "elective",
+            "semester": 1
+        },
+        {
+            "id": "astat",
+            "type": "fixed",
+            "courseId": "ASTAT_MM",
+            "semester": 2
+        },
+        {
+            "id": "dmath",
+            "type": "fixed",
+            "courseId": "DMATH",
+            "semester": 2
+        },
+        {
+            "id": "fkom",
+            "type": "fixed",
+            "courseId": "FKOM",
+            "semester": 2
+        },
+        {
+            "id": "oop",
+            "type": "fixed",
+            "courseId": "OOP",
+            "semester": 2
+        },
+        {
+            "id": "phki",
+            "type": "fixed",
+            "courseId": "PHKI",
+            "semester": 2
+        },
+        {
+            "id": "elective1-2",
+            "type": "elective",
+            "semester": 2
+        },
+        {
+            "id": "elective2-2",
+            "type": "elective",
+            "semester": 2
+        },
+        {
+            "id": "dspro1",
+            "type": "fixed",
+            "courseId": "DSPRO1",
+            "semester": 3
+        },
+        {
+            "id": "dviz",
+            "type": "fixed",
+            "courseId": "DVIZ",
+            "semester": 3
+        },
+        {
+            "id": "iopt",
+            "type": "fixed",
+            "courseId": "IOPT",
+            "semester": 3
+        },
+        {
+            "id": "krr",
+            "type": "fixed",
+            "courseId": "KRR_MM",
+            "semester": 3
+        },
+        {
+            "id": "elective1-3",
+            "type": "elective",
+            "semester": 3
+        },
+        {
+            "id": "elective2-3",
+            "type": "elective",
+            "semester": 3
+        },
+        {
+            "id": "abiz",
+            "type": "fixed",
+            "courseId": "ABIZ_MM",
+            "semester": 4
+        },
+        {
+            "id": "adml",
+            "type": "fixed",
+            "courseId": "ADML_MM",
+            "semester": 4
+        },
+        {
+            "id": "dspro2",
+            "type": "fixed",
+            "courseId": "DSPRO2",
+            "semester": 4
+        },
+        {
+            "id": "rl",
+            "type": "fixed",
+            "courseId": "RL_MM",
+            "semester": 4
+        },
+        {
+            "id": "elective1-4",
+            "type": "elective",
+            "semester": 4
+        },
+        {
+            "id": "elective2-4",
+            "type": "elective",
+            "semester": 4
+        },
+        {
+            "id": "elective3-4",
+            "type": "elective",
+            "semester": 4
+        },
+        {
+            "id": "aicomp",
+            "type": "fixed",
+            "courseId": "AICOMP",
+            "semester": 5
+        },
+        {
+            "id": "cvai",
+            "type": "fixed",
+            "courseId": "CVAI_MM",
+            "semester": 5
+        },
+        {
+            "id": "game",
+            "type": "fixed",
+            "courseId": "GAME_MM",
+            "semester": 5
+        },
+        {
+            "id": "robo",
+            "type": "fixed",
+            "courseId": "ROBO",
+            "semester": 5
+        },
+        {
+            "id": "elective1-5",
+            "type": "elective",
+            "semester": 5
+        },
+        {
+            "id": "elective2-5",
+            "type": "elective",
+            "semester": 5
+        },
+        {
+            "id": "elective3-5",
+            "type": "elective",
+            "semester": 5
+        },
+        {
+            "id": "baa",
+            "type": "fixed",
+            "courseId": "BAA",
+            "semester": 6
+        },
+        {
+            "id": "ethai",
+            "type": "fixed",
+            "courseId": "ETHAI",
+            "semester": 6
+        },
+        {
+            "id": "nlp",
+            "type": "fixed",
+            "courseId": "NLP",
+            "semester": 6
+        },
+        {
+            "id": "elective1-6",
+            "type": "elective",
+            "semester": 6
+        },
+        {
+            "id": "elective2-6",
+            "type": "elective",
+            "semester": 6
+        }
+    ]
+}

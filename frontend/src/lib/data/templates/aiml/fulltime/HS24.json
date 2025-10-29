@@ -1,0 +1,259 @@
+{
+    "id": "aiml-fulltime-hs24",
+    "name": "Artificial Intelligence & Machine Learning Fulltime HS24",
+    "studiengang": "Artificial Intelligence & Machine Learning",
+    "modell": "fulltime",
+    "plan": "HS24",
+    "slots": [
+        {
+            "id": "ana-g",
+            "type": "fixed",
+            "courseId": "ANA-G",
+            "semester": 1
+        },
+        {
+            "id": "dmath-algo",
+            "type": "fixed",
+            "courseId": "DMATH-ALGO",
+            "semester": 1
+        },
+        {
+            "id": "iai",
+            "type": "fixed",
+            "courseId": "IAI",
+            "semester": 1
+        },
+        {
+            "id": "isf",
+            "type": "fixed",
+            "courseId": "ISF",
+            "semester": 1
+        },
+        {
+            "id": "lial",
+            "type": "fixed",
+            "courseId": "LIAL_MM",
+            "semester": 1
+        },
+        {
+            "id": "pmb",
+            "type": "fixed",
+            "courseId": "PMB",
+            "semester": 1
+        },
+        {
+            "id": "prog",
+            "type": "fixed",
+            "courseId": "PROG_MM",
+            "semester": 1
+        },
+        {
+            "id": "elective1-1",
+            "type": "elective",
+            "semester": 1
+        },
+        {
+            "id": "ads",
+            "type": "fixed",
+            "courseId": "ADS",
+            "semester": 2
+        },
+        {
+            "id": "ana-f",
+            "type": "fixed",
+            "courseId": "ANA-F_MM",
+            "semester": 2
+        },
+        {
+            "id": "astat",
+            "type": "fixed",
+            "courseId": "ASTAT_MM",
+            "semester": 2
+        },
+        {
+            "id": "dmath-code",
+            "type": "fixed",
+            "courseId": "DMATH-CODE",
+            "semester": 2
+        },
+        {
+            "id": "dviz",
+            "type": "fixed",
+            "courseId": "DVIZ",
+            "semester": 2
+        },
+        {
+            "id": "fkom",
+            "type": "fixed",
+            "courseId": "FKOM",
+            "semester": 2
+        },
+        {
+            "id": "oop",
+            "type": "fixed",
+            "courseId": "OOP",
+            "semester": 2
+        },
+        {
+            "id": "phki",
+            "type": "fixed",
+            "courseId": "PHKI",
+            "semester": 2
+        },
+        {
+            "id": "elective1-2",
+            "type": "elective",
+            "semester": 2
+        },
+        {
+            "id": "adml",
+            "type": "fixed",
+            "courseId": "ADML_MM",
+            "semester": 3
+        },
+        {
+            "id": "dbs",
+            "type": "fixed",
+            "courseId": "DBS",
+            "semester": 3
+        },
+        {
+            "id": "dspro1",
+            "type": "fixed",
+            "courseId": "DSPRO1",
+            "semester": 3
+        },
+        {
+            "id": "krr",
+            "type": "fixed",
+            "courseId": "KRR_MM",
+            "semester": 3
+        },
+        {
+            "id": "robo",
+            "type": "fixed",
+            "courseId": "ROBO",
+            "semester": 3
+        },
+        {
+            "id": "elective1-3",
+            "type": "elective",
+            "semester": 3
+        },
+        {
+            "id": "cvai",
+            "type": "fixed",
+            "courseId": "CVAI_MM",
+            "semester": 4
+        },
+        {
+            "id": "deng",
+            "type": "fixed",
+            "courseId": "DENG",
+            "semester": 4
+        },
+        {
+            "id": "dspro2",
+            "type": "fixed",
+            "courseId": "DSPRO2",
+            "semester": 4
+        },
+        {
+            "id": "ethai",
+            "type": "fixed",
+            "courseId": "ETHAI",
+            "semester": 4
+        },
+        {
+            "id": "mlops",
+            "type": "fixed",
+            "courseId": "MLOPS",
+            "semester": 4
+        },
+        {
+            "id": "elective1-4",
+            "type": "elective",
+            "semester": 4
+        },
+        {
+            "id": "elective2-4",
+            "type": "elective",
+            "semester": 4
+        },
+        {
+            "id": "elective3-4",
+            "type": "elective",
+            "semester": 4
+        },
+        {
+            "id": "abiz",
+            "type": "fixed",
+            "courseId": "ABIZ_MM",
+            "semester": 5
+        },
+        {
+            "id": "aicomp",
+            "type": "fixed",
+            "courseId": "AICOMP",
+            "semester": 5
+        },
+        {
+            "id": "nlp",
+            "type": "fixed",
+            "courseId": "NLP",
+            "semester": 5
+        },
+        {
+            "id": "elective1-5",
+            "type": "elective",
+            "semester": 5
+        },
+        {
+            "id": "elective2-5",
+            "type": "elective",
+            "semester": 5
+        },
+        {
+            "id": "elective3-5",
+            "type": "elective",
+            "semester": 5
+        },
+        {
+            "id": "elective4-5",
+            "type": "elective",
+            "semester": 5
+        },
+        {
+            "id": "baa",
+            "type": "fixed",
+            "courseId": "BAA",
+            "semester": 6
+        },
+        {
+            "id": "rl",
+            "type": "fixed",
+            "courseId": "RL_MM",
+            "semester": 6
+        },
+        {
+            "id": "elective1-6",
+            "type": "elective",
+            "semester": 6
+        },
+        {
+            "id": "elective2-6",
+            "type": "elective",
+            "semester": 6
+        },
+        {
+            "id": "elective3-6",
+            "type": "elective",
+            "semester": 6
+        },
+        {
+            "id": "elective4-6",
+            "type": "elective",
+            "semester": 6
+        }
+    ]
+}
