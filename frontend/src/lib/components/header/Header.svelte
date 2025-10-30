@@ -97,10 +97,10 @@
 
     <!-- ECTS progress badge -->
     <div
-      class="hidden items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-1.5 md:flex"
+      class="flex h-9 items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-2"
       title={ectsTooltip}
     >
-      <span class="text-xs font-medium text-text-primary">{calculatedTotal} ECTS Total</span>
+      <span class="text-xs font-bold text-text-primary">{calculatedTotal} ECTS</span>
     </div>
 
     <div class="h-6 w-px bg-border-primary"></div>
@@ -110,7 +110,7 @@
       href="https://github.com/jackra1n/hslu-courses-skill-tree"
       target="_blank"
       rel="noopener noreferrer"
-      class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary"
+      class="hidden md:flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary"
       aria-label="View on GitHub"
     >
       <div class="i-lucide-github h-4 w-4 text-text-primary"></div>
