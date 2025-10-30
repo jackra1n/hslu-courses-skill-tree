@@ -4,16 +4,15 @@
     totalCredits,
     calculatedTotalCredits,
     attendedCredits,
-    completedCredits,
-    showShortNamesOnly,
-    courseStore
+    completedCredits
   } from '$lib/stores/courseStore.svelte';
-  import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
+  import { uiStore } from '$lib/stores/uiStore.svelte';
   import { theme, themeStore } from '$lib/stores/theme.svelte';
   import TemplateSelector from './TemplateSelector.svelte';
+  import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
   
   let programDropdownOpen = $state(false);
-  let settingsDropdownOpen = $state(false);
+  let settingsSidebarOpen = $state(false);
   
   function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
     return event.composedPath().some(
@@ -26,9 +25,6 @@
       if (programDropdownOpen && !eventPathIncludesClass(event, 'program-dropdown')) {
         programDropdownOpen = false;
       }
-      if (settingsDropdownOpen && !eventPathIncludesClass(event, 'settings-dropdown')) {
-        settingsDropdownOpen = false;
-      }
     };
 
     document.addEventListener('click', handleClickOutside);
@@ -40,16 +36,8 @@
     themeStore.set(newTheme);
   }
   
-  function toggleCourseNames() {
-    courseStore.toggleShortNames();
-  }
-  
-  function toggleCourseBadges() {
-    uiStore.toggleCourseTypeBadges();
-  }
-  
-  function toggleAssessmentInfo() {
-    uiStore.toggleAssessmentInfo();
+  function toggleSettings() {
+    settingsSidebarOpen = !settingsSidebarOpen;
   }
 
   const plannedCredits = $derived(totalCredits());
@@ -117,58 +105,6 @@
 
     <div class="h-6 w-px bg-border-primary"></div>
 
-    <!-- settings dropdown -->
-    <div class="relative settings-dropdown">
-      <button 
-        onclick={() => settingsDropdownOpen = !settingsDropdownOpen}
-        class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary"
-        aria-label="View settings"
-      >
-        <div class="i-lucide-settings2 h-4 w-4 text-text-primary"></div>
-      </button>
-      
-      {#if settingsDropdownOpen}
-        <div class="absolute top-full right-0 mt-1 w-56 bg-bg-primary border border-border-primary rounded-lg shadow-lg z-50 p-2">
-          <div class="text-xs font-medium text-text-secondary mb-2">View Settings</div>
-          <div class="border-b border-border-primary mb-3"></div>
-          <div class="space-y-1">
-            <button 
-              onclick={() => { toggleCourseNames(); settingsDropdownOpen = false; }}
-              class="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-bg-secondary rounded transition-colors text-text-primary"
-            >
-              <div class="w-4 h-4 flex items-center justify-center">
-                {#if !showShortNamesOnly()}
-                  <div class="i-lucide-check h-4 w-4 text-green-500"></div>
-                {/if}
-              </div>
-              Show Full Course Names
-            </button>
-            <button 
-              onclick={() => { toggleCourseBadges(); settingsDropdownOpen = false; }}
-              class="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-bg-secondary rounded transition-colors text-text-primary"
-            >
-              <div class="w-4 h-4 flex items-center justify-center">
-                {#if showCourseTypeBadges()}
-                  <div class="i-lucide-check h-4 w-4 text-green-500"></div>
-                {/if}
-              </div>
-              Show Course Badges
-            </button>
-            <div class="border-b border-border-primary my-1"></div>
-            <button 
-              onclick={() => { toggleAssessmentInfo(); settingsDropdownOpen = false; }}
-              class="w-full flex items-center gap-2 px-2 py-1.5 text-left text-sm hover:bg-bg-secondary rounded transition-colors text-text-primary"
-            >
-              <div class="w-4 h-4 flex items-center justify-center">
-                <div class="i-lucide-info h-4 w-4 text-text-primary"></div>
-              </div>
-              Assessment Info
-            </button>
-          </div>
-        </div>
-      {/if}
-    </div>
-
     <!-- github link -->
     <a 
       href="https://github.com/jackra1n/hslu-courses-skill-tree"
@@ -189,5 +125,17 @@
       <div class="i-lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-text-primary"></div>
       <div class="i-lucide-moon h-4 w-4 absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-text-primary"></div>
     </button>
+
+    <!-- settings button -->
+    <button
+      onclick={toggleSettings}
+      class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary"
+      aria-label="Settings"
+    >
+      <div class="i-lucide-settings h-4 w-4 text-text-primary"></div>
+    </button>
   </div>
 </header>
+
+<!-- settings sidebar -->
+<SettingsSidebar bind:isOpen={settingsSidebarOpen} />
