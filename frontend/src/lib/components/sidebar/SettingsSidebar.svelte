@@ -5,8 +5,12 @@
   import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
   import { currentTemplate, courseStore as store, studyPlan } from '$lib/stores/courseStore.svelte';
+  import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte';
 
   let { isOpen = $bindable(false) }: { isOpen: boolean } = $props();
+
+  let showResetProgressDialog = $state(false);
+  let showResetAllDataDialog = $state(false);
 
   function closeSidebar() {
     isOpen = false;
@@ -26,25 +30,31 @@
   }
 
   function handleResetProgress() {
-    if (confirm('Are you sure you want to reset all progress? This will clear all completed and attended course statuses.')) {
-      const plan = studyPlan();
-      Object.keys(plan.nodes).forEach((slotId) => {
-        progressStore.clearSlotStatus(slotId);
-      });
-      closeSidebar();
-    }
+    showResetProgressDialog = true;
+  }
+
+  function confirmResetProgress() {
+    const plan = studyPlan();
+    Object.keys(plan.nodes).forEach((slotId) => {
+      progressStore.clearSlotStatus(slotId);
+    });
+    showResetProgressDialog = false;
+    closeSidebar();
   }
 
   function handleResetAllData() {
-    if (confirm('Are you sure you want to reset all data? This will clear all progress AND your course selections. This cannot be undone.')) {
-      const template = currentTemplate();
-      store.switchTemplate(template.id, true);
-      const plan = studyPlan();
-      Object.keys(plan.nodes).forEach((slotId) => {
-        progressStore.clearSlotStatus(slotId);
-      });
-      closeSidebar();
-    }
+    showResetAllDataDialog = true;
+  }
+
+  function confirmResetAllData() {
+    const template = currentTemplate();
+    store.switchTemplate(template.id, true);
+    const plan = studyPlan();
+    Object.keys(plan.nodes).forEach((slotId) => {
+      progressStore.clearSlotStatus(slotId);
+    });
+    showResetAllDataDialog = false;
+    closeSidebar();
   }
 
   onMount(() => {
@@ -224,3 +234,27 @@
   </aside>
 {/if}
 
+<!-- Confirmation Dialogs -->
+{#if showResetProgressDialog}
+  <ConfirmationDialog
+    title="Reset Progress"
+    message="Are you sure you want to reset all progress? This will clear all completed and attended course statuses."
+    confirmText="Reset Progress"
+    cancelText="Cancel"
+    onConfirm={confirmResetProgress}
+    onCancel={() => showResetProgressDialog = false}
+    variant="warning"
+  />
+{/if}
+
+{#if showResetAllDataDialog}
+  <ConfirmationDialog
+    title="Reset All Data"
+    message="Are you sure you want to reset all data? This will clear all progress AND your course selections. This cannot be undone."
+    confirmText="Reset All Data"
+    cancelText="Cancel"
+    onConfirm={confirmResetAllData}
+    onCancel={() => showResetAllDataDialog = false}
+    variant="danger"
+  />
+{/if}
