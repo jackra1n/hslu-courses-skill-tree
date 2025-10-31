@@ -240,6 +240,7 @@
     onnodedrag={handleNodeDrag}
     onnodedragstop={handleNodeDragStop}
     onpaneclick={handleCanvasClick}
+    panOnScroll={true}
     nodesDraggable={true}
     nodesConnectable={false}
     fitView
