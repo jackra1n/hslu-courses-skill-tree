@@ -1,6 +1,7 @@
 import type { PrerequisiteRule } from '$lib/data/courses';
 import type { StudyPlan } from '$lib/data/study-plan';
 import { resolveCourse, mapPlanCourseProviders, buildPlanRowIndex } from '$lib/data/study-plan';
+import { selectProviderForRule } from './graph';
 
 type SlotStatus = Map<string, 'attended' | 'completed'>;
 
@@ -60,17 +61,16 @@ export function hasPlanPrereqConflict(
   const dependentRow = rowIndex[targetNodeId] ?? 0;
   const considerSameSemester = options.considerSameSemester ?? true;
 
-  return course.prerequisites.some((rule) =>
-    rule.modules.some((moduleId) => {
-      const providerIds = providers.get(moduleId);
-      if (!providerIds || providerIds.length === 0) return false;
+  return course.prerequisites.some((rule) => {
+    const selectedProviders = selectProviderForRule(rule, providers, rowIndex);
 
-      return providerIds.every((providerId) => {
-        const providerRow = rowIndex[providerId] ?? 0;
-        return considerSameSemester ? providerRow >= dependentRow : providerRow > dependentRow;
-      });
-    })
-  );
+    if (selectedProviders.length === 0) return true;
+
+    return selectedProviders.every((providerId) => {
+      const providerRow = rowIndex[providerId] ?? 0;
+      return considerSameSemester ? providerRow >= dependentRow : providerRow > dependentRow;
+    });
+  });
 }
 
 function getNodesForCourse(plan: StudyPlan, courseId: string): string[] {
