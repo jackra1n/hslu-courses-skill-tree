@@ -145,7 +145,31 @@ function buildEdges(
     const course = resolveCourse(planNode.courseId);
     if (!course) return;
 
-    course.prerequisites.forEach((rule) => {
+    let rulesToProcess: PrerequisiteRule[];
+    
+    if (course.prerequisites.length === 0) {
+      rulesToProcess = [];
+    } else if (course.prerequisites.length === 1) {
+      rulesToProcess = course.prerequisites;
+    } else {
+      const firstRule = course.prerequisites[0];
+      const prerequisiteLinkType = firstRule.prerequisiteLinkType || 'und';
+      
+      if (prerequisiteLinkType === 'oder') {
+        const ruleScores = course.prerequisites.map((rule) => {
+          const providers = selectProviderForRule(rule, courseProviders, rowIndex);
+          if (providers.length === 0) return Infinity;
+          return Math.min(...providers.map(id => rowIndex[id] ?? Infinity));
+        });
+        
+        const bestRuleIndex = ruleScores.indexOf(Math.min(...ruleScores));
+        rulesToProcess = [course.prerequisites[bestRuleIndex]];
+      } else {
+        rulesToProcess = course.prerequisites;
+      }
+    }
+
+    rulesToProcess.forEach((rule) => {
       const selectedProviders = selectProviderForRule(rule, courseProviders, rowIndex);
 
       selectedProviders.forEach((providerId) => {

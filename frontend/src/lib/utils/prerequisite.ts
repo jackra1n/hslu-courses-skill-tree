@@ -61,16 +61,44 @@ export function hasPlanPrereqConflict(
   const dependentRow = rowIndex[targetNodeId] ?? 0;
   const considerSameSemester = options.considerSameSemester ?? true;
 
-  return course.prerequisites.some((rule) => {
+  let rulesToCheck: PrerequisiteRule[];
+
+  if (course.prerequisites.length === 0) {
+    return false;
+  } else if (course.prerequisites.length === 1) {
+    rulesToCheck = course.prerequisites;
+  } else {
+    const firstRule = course.prerequisites[0];
+    const prerequisiteLinkType = firstRule.prerequisiteLinkType || 'und';
+
+    if (prerequisiteLinkType === 'oder') {
+      const ruleScores = course.prerequisites.map((rule) => {
+        const selectedProviders = selectProviderForRule(rule, providers, rowIndex);
+        if (selectedProviders.length === 0) return Infinity;
+        return Math.min(...selectedProviders.map((id) => rowIndex[id] ?? Infinity));
+      });
+
+      const bestRuleIndex = ruleScores.indexOf(Math.min(...ruleScores));
+      rulesToCheck = [course.prerequisites[bestRuleIndex]];
+    } else {
+      rulesToCheck = course.prerequisites;
+    }
+  }
+
+  const ruleConflicts = rulesToCheck.map((rule) => {
     const selectedProviders = selectProviderForRule(rule, providers, rowIndex);
 
     if (selectedProviders.length === 0) return true;
 
-    return selectedProviders.every((providerId) => {
+    return selectedProviders.some((providerId) => {
       const providerRow = rowIndex[providerId] ?? 0;
       return considerSameSemester ? providerRow >= dependentRow : providerRow > dependentRow;
     });
   });
+
+  if (ruleConflicts.length === 1) return ruleConflicts[0];
+
+  return ruleConflicts.some((conflict) => conflict);
 }
 
 function getNodesForCourse(plan: StudyPlan, courseId: string): string[] {
