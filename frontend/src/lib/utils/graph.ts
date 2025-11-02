@@ -1,5 +1,5 @@
 import type { Node, Edge } from '@xyflow/svelte';
-import type { ExtendedNodeData, Course, TemplateSlot } from '$lib/types';
+import type { ExtendedNodeData, Course, TemplateSlot, PrerequisiteRule } from '$lib/types';
 import type { StudyPlan, PlanNode } from '$lib/data/study-plan';
 import { resolveCourse, buildPlanRowIndex, mapPlanCourseProviders } from '$lib/data/study-plan';
 import { getNodeWidth, getNodeLabel } from '$lib/utils/layout';
@@ -92,10 +92,46 @@ function getFallbackLabel(slotType: TemplateSlot['type']): string {
   return 'Course';
 }
 
+export function selectProviderForRule(
+  rule: PrerequisiteRule,
+  courseProviders: Map<string, string[]>,
+  rowIndex: Record<string, number>
+): string[] {
+  if (rule.moduleLinkType === 'oder') {
+    const allProviders = rule.modules.flatMap(moduleId =>
+      courseProviders.get(moduleId) ?? []
+    );
+
+    if (allProviders.length === 0) return [];
+
+    const earliest = allProviders.reduce((best, current) => {
+      const bestRow = rowIndex[best] ?? Infinity;
+      const currentRow = rowIndex[current] ?? Infinity;
+      return currentRow < bestRow ? current : best;
+    });
+
+    return [earliest];
+  } else {
+    return rule.modules.flatMap(moduleId => {
+      const providers = courseProviders.get(moduleId);
+      if (!providers || providers.length === 0) return [];
+
+      const earliest = providers.reduce((best, current) => {
+        const bestRow = rowIndex[best] ?? Infinity;
+        const currentRow = rowIndex[current] ?? Infinity;
+        return currentRow < bestRow ? current : best;
+      });
+
+      return [earliest];
+    });
+  }
+}
+
 function buildEdges(
   plan: StudyPlan,
   courseProviders: Map<string, string[]>
 ): { edges: Edge[]; usage: HandleUsage } {
+  const rowIndex = buildPlanRowIndex(plan);
   const edges: Edge[] = [];
   const usage: HandleUsage = {};
   const seen = new Set<string>();
@@ -109,35 +145,56 @@ function buildEdges(
     const course = resolveCourse(planNode.courseId);
     if (!course) return;
 
-    course.prerequisites.forEach((rule) => {
-      rule.modules.forEach((moduleId) => {
-        const providers = courseProviders.get(moduleId);
-        if (!providers) return;
-
-        providers.forEach((providerId) => {
-          if (providerId === planNode.id) return;
-          const edgeId = `${providerId}=>${planNode.id}`;
-          if (seen.has(edgeId)) return;
-          seen.add(edgeId);
-
-          const sourceHandle = usage[providerId]?.source ?? 0;
-          const targetHandle = usage[planNode.id]?.target ?? 0;
-
-          edges.push({
-            id: edgeId,
-            source: providerId,
-            sourceHandle: `source-${sourceHandle}`,
-            target: planNode.id,
-            targetHandle: `target-${targetHandle}`,
-            markerEnd: { type: MarkerType.ArrowClosed },
-            animated: false,
-            style: 'stroke-width: 2px;',
-            type: 'bezier'
-          });
-
-          if (usage[providerId]) usage[providerId].source++;
-          if (usage[planNode.id]) usage[planNode.id].target++;
+    let rulesToProcess: PrerequisiteRule[];
+    
+    if (course.prerequisites.length === 0) {
+      rulesToProcess = [];
+    } else if (course.prerequisites.length === 1) {
+      rulesToProcess = course.prerequisites;
+    } else {
+      const firstRule = course.prerequisites[0];
+      const prerequisiteLinkType = firstRule.prerequisiteLinkType || 'und';
+      
+      if (prerequisiteLinkType === 'oder') {
+        const ruleScores = course.prerequisites.map((rule) => {
+          const providers = selectProviderForRule(rule, courseProviders, rowIndex);
+          if (providers.length === 0) return Infinity;
+          return Math.min(...providers.map(id => rowIndex[id] ?? Infinity));
         });
+        
+        const bestRuleIndex = ruleScores.indexOf(Math.min(...ruleScores));
+        rulesToProcess = [course.prerequisites[bestRuleIndex]];
+      } else {
+        rulesToProcess = course.prerequisites;
+      }
+    }
+
+    rulesToProcess.forEach((rule) => {
+      const selectedProviders = selectProviderForRule(rule, courseProviders, rowIndex);
+
+      selectedProviders.forEach((providerId) => {
+        if (providerId === planNode.id) return;
+        const edgeId = `${providerId}=>${planNode.id}`;
+        if (seen.has(edgeId)) return;
+        seen.add(edgeId);
+
+        const sourceHandle = usage[providerId]?.source ?? 0;
+        const targetHandle = usage[planNode.id]?.target ?? 0;
+
+        edges.push({
+          id: edgeId,
+          source: providerId,
+          sourceHandle: `source-${sourceHandle}`,
+          target: planNode.id,
+          targetHandle: `target-${targetHandle}`,
+          markerEnd: { type: MarkerType.ArrowClosed },
+          animated: false,
+          style: 'stroke-width: 2px;',
+          type: 'bezier'
+        });
+
+        if (usage[providerId]) usage[providerId].source++;
+        if (usage[planNode.id]) usage[planNode.id].target++;
       });
     });
   });
