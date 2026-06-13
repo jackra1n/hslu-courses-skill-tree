@@ -39,14 +39,14 @@ class CourseStore {
   studyPlan = $state<StudyPlan>(createStudyPlan(AVAILABLE_TEMPLATES[0], {}));
   showShortNamesOnly = $state(false);
 
-  #graph = $derived.by(() => toGraph(this.studyPlan, this.showShortNamesOnly));
-  #layoutedNodes = $derived.by(() =>
-    addAddNodeButtons(layoutNodes(this.#graph.nodes, this.studyPlan.rows), this.studyPlan.rows)
+  private graph = $derived.by(() => toGraph(this.studyPlan, this.showShortNamesOnly));
+  private layoutedNodes = $derived.by(() =>
+    addAddNodeButtons(layoutNodes(this.graph.nodes, this.studyPlan.rows), this.studyPlan.rows)
   );
-  #drag = new DragController({
-    layoutedNodes: () => this.#layoutedNodes,
+  private drag = new DragController({
+    layoutedNodes: () => this.layoutedNodes,
     plan: () => this.studyPlan,
-    commitRows: (rows) => this.#setStudyPlan({ ...this.studyPlan, rows })
+    commitRows: (rows) => this.setStudyPlan({ ...this.studyPlan, rows })
   });
 
   userSelections = $derived(deriveSelections(this.studyPlan));
@@ -61,19 +61,19 @@ class CourseStore {
       .sort()
   );
   selectedPlan = $derived(this.currentTemplate.plan);
-  nodes = $derived.by(() => this.#drag.activeNodes);
-  edges = $derived.by(() => this.#graph.edges);
+  nodes = $derived.by(() => this.drag.activeNodes);
+  edges = $derived.by(() => this.graph.edges);
 
   semesterDividerData: SemesterIndicator[] = $derived.by(() => {
-    const rows = (this.#drag.previewRows ?? this.studyPlan.rows).slice(0, MAX_SEMESTERS);
+    const rows = (this.drag.previewRows ?? this.studyPlan.rows).slice(0, MAX_SEMESTERS);
     if (!rows.length) return [];
 
-    const dividerLength = computeDividerLength(rows, this.#drag.activeNodes);
+    const dividerLength = computeDividerLength(rows, this.drag.activeNodes);
     const actualCount = Math.min(this.studyPlan.rows.length, rows.length);
 
     return rows.map((_, index) => ({
       semester: index + 1,
-      isPreview: this.#drag.previewRows ? index >= actualCount : false,
+      isPreview: this.drag.previewRows ? index >= actualCount : false,
       length: dividerLength
     }));
   });
@@ -89,7 +89,7 @@ class CourseStore {
     this.currentTemplate = template;
     setCoursePlan(template.plan);
 
-    this.#setStudyPlan(forceReset ? createStudyPlan(template, {}) : loadPlan(template));
+    this.setStudyPlan(forceReset ? createStudyPlan(template, {}) : loadPlan(template));
     planPrefs.saveTemplate(templateId, template.plan);
   }
 
@@ -104,16 +104,16 @@ class CourseStore {
 
   selectCourseForSlot(slotId: string, courseId: string) {
     if (!this.canSelectCourseForSlot(slotId, courseId)) return;
-    this.#setStudyPlan(updateNodeCourse(this.studyPlan, slotId, courseId));
+    this.setStudyPlan(updateNodeCourse(this.studyPlan, slotId, courseId));
   }
 
   clearSlotSelection(slotId: string) {
-    this.#setStudyPlan(updateNodeCourse(this.studyPlan, slotId, null));
+    this.setStudyPlan(updateNodeCourse(this.studyPlan, slotId, null));
   }
 
   toggleShortNames() {
     this.showShortNamesOnly = !this.showShortNamesOnly;
-    this.#drag.clear();
+    this.drag.clear();
     planPrefs.saveShortNames(this.showShortNamesOnly);
   }
 
@@ -140,19 +140,19 @@ class CourseStore {
     setCoursePlan(this.currentTemplate.plan);
 
     const legacySelections = loadLegacySelections();
-    this.#setStudyPlan(loadPlan(this.currentTemplate, legacySelections));
+    this.setStudyPlan(loadPlan(this.currentTemplate, legacySelections));
   }
 
   handleNodeDragStart(nodeId: string) {
-    this.#drag.start(nodeId);
+    this.drag.start(nodeId);
   }
 
   handleNodeDrag(nodeId: string, position: FlowNodePosition) {
-    this.#drag.drag(nodeId, position);
+    this.drag.drag(nodeId, position);
   }
 
   handleNodeDragStop(nodeId: string, position: FlowNodePosition) {
-    this.#drag.stop(nodeId, position);
+    this.drag.stop(nodeId, position);
   }
 
   addCustomNode(semester: number) {
@@ -173,7 +173,7 @@ class CourseStore {
     }
     updatedRows[semester - 1]?.nodeOrder.push(nodeId);
 
-    this.#setStudyPlan({
+    this.setStudyPlan({
       ...this.studyPlan,
       nodes: { ...this.studyPlan.nodes, [nodeId]: newNode },
       rows: updatedRows
@@ -189,7 +189,7 @@ class CourseStore {
       .map((row) => ({ ...row, nodeOrder: row.nodeOrder.filter((id) => id !== nodeId) }))
       .filter((row) => row.nodeOrder.length > 0);
 
-    this.#setStudyPlan({
+    this.setStudyPlan({
       ...this.studyPlan,
       nodes: remainingNodes,
       rows: updatedRows
@@ -200,9 +200,9 @@ class CourseStore {
     return isPlanCustomized(this.studyPlan);
   }
 
-  #setStudyPlan(nextPlan: StudyPlan): void {
+  private setStudyPlan(nextPlan: StudyPlan): void {
     this.studyPlan = normalizePlan(nextPlan);
-    this.#drag.clear();
+    this.drag.clear();
     savePlan(this.studyPlan);
   }
 }

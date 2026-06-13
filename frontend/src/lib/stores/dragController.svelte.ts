@@ -13,78 +13,75 @@ type DragDeps = {
 };
 
 export class DragController {
-  #override = $state.raw<Node[] | null>(null);
-  #previewRows = $state<PlanRow[] | null>(null);
-  #activeNodeId: string | null = null;
-  readonly #deps: DragDeps;
+  previewRows = $state<PlanRow[] | null>(null);
+
+  private override = $state.raw<Node[] | null>(null);
+  private activeNodeId: string | null = null;
+  private readonly deps: DragDeps;
 
   constructor(deps: DragDeps) {
-    this.#deps = deps;
+    this.deps = deps;
   }
 
   get activeNodes(): Node[] {
-    return this.#override ?? this.#deps.layoutedNodes();
-  }
-
-  get previewRows(): PlanRow[] | null {
-    return this.#previewRows;
+    return this.override ?? this.deps.layoutedNodes();
   }
 
   start(nodeId: string): void {
-    this.#activeNodeId = nodeId;
-    this.#previewRows = null;
-    this.#ensureOverride();
+    this.activeNodeId = nodeId;
+    this.previewRows = null;
+    this.ensureOverride();
   }
 
   drag(nodeId: string, position: Position): void {
-    this.#activeNodeId = nodeId;
-    this.#applyDirectPosition(nodeId, position);
+    this.activeNodeId = nodeId;
+    this.applyDirectPosition(nodeId, position);
 
-    const preview = this.#computeRowPreview(nodeId, position);
+    const preview = this.computeRowPreview(nodeId, position);
     if (preview) {
-      this.#previewRows = preview;
-      this.#override = layoutNodes(this.activeNodes, preview, { skipNodeId: nodeId });
+      this.previewRows = preview;
+      this.override = layoutNodes(this.activeNodes, preview, { skipNodeId: nodeId });
     } else {
-      this.#previewRows = null;
+      this.previewRows = null;
     }
   }
 
   stop(nodeId: string, position: Position): void {
-    const preview = this.#computeRowPreview(nodeId, position);
-    if (preview) this.#deps.commitRows(preview);
+    const preview = this.computeRowPreview(nodeId, position);
+    if (preview) this.deps.commitRows(preview);
     this.clear();
-    this.#activeNodeId = null;
+    this.activeNodeId = null;
   }
 
   clear(): void {
-    this.#override = null;
-    this.#previewRows = null;
+    this.override = null;
+    this.previewRows = null;
   }
 
-  #ensureOverride(): Node[] {
-    if (this.#override) return this.#override;
-    const cloned = this.#deps.layoutedNodes().map((node) => ({
+  private ensureOverride(): Node[] {
+    if (this.override) return this.override;
+    const cloned = this.deps.layoutedNodes().map((node) => ({
       ...node,
       position: node.position ? { ...node.position } : node.position
     }));
-    this.#override = cloned;
+    this.override = cloned;
     return cloned;
   }
 
-  #applyDirectPosition(nodeId: string, position: Position): void {
-    const nodes = this.#ensureOverride();
+  private applyDirectPosition(nodeId: string, position: Position): void {
+    const nodes = this.ensureOverride();
     let changed = false;
     const updated = nodes.map((node) => {
       if (node.id !== nodeId) return node;
       changed = true;
       return { ...node, position };
     });
-    if (changed) this.#override = updated;
+    if (changed) this.override = updated;
   }
 
   // Row arrangement a drop would produce, inserting by horizontal center.
-  #computeRowPreview(nodeId: string, dropPosition: Position): PlanRow[] | null {
-    const plan = this.#deps.plan();
+  private computeRowPreview(nodeId: string, dropPosition: Position): PlanRow[] | null {
+    const plan = this.deps.plan();
     if (!plan.rows.length) return null;
 
     const desiredSemester = Math.max(1, Math.round(dropPosition.y / GRID_SIZE.y));
