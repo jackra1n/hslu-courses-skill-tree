@@ -56,40 +56,40 @@
   // overhead, so populate the raw arrays from an effect rather than deriving.
   let styledNodes = $state.raw<any[]>([]);
   $effect(() => {
-    styledNodes = courseStore.nodes.map((n) =>
-      n.type === "addNode" ? { ...n, style: ADD_NODE_STYLE } : styleCourseNode(n)
+    styledNodes = courseStore.nodes.map((flowNode) =>
+      flowNode.type === "addNode" ? { ...flowNode, style: ADD_NODE_STYLE } : styleCourseNode(flowNode)
     );
   });
 
-  function styleCourseNode(n: Node) {
-    const data = n.data as any;
-    const { slot, course, isElectiveSlot } = data;
+  function styleCourseNode(flowNode: Node) {
+    const nodeData = flowNode.data as any;
+    const { slot, course, isElectiveSlot } = nodeData;
 
     const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
-    const hasMissingPrereqs = hasMissingPrerequisites(courseStore.studyPlan, n.id);
+    const hasMissingPrereqs = hasMissingPrerequisites(courseStore.studyPlan, flowNode.id);
     const selected = selection();
 
     const style = getNodeStyle({
-      status: statuses[n.id],
-      isSelected: selected?.id === n.id || (!!course && selected?.id === course.id),
+      status: statuses[flowNode.id],
+      isSelected: selected?.id === flowNode.id || (!!course && selected?.id === course.id),
       isAttended: slotStatus === "attended",
       isCompleted: slotStatus === "completed",
       isElectiveSlot,
-      nodeWidth: data.width || getNodeWidth(course?.ects || slot?.credits || 6),
+      nodeWidth: nodeData.width || getNodeWidth(course?.ects || slot?.credits || 6),
       hasSelectedCourse: isElectiveSlot && slot ? !!courseStore.userSelections[slot.id] : false,
-      hasLaterPrerequisites: data.hasLaterPrerequisites || false,
+      hasLaterPrerequisites: nodeData.hasLaterPrerequisites || false,
       hasMissingPrerequisites: hasMissingPrereqs,
-      hasAssessmentStageViolation: hasAssessmentStageViolation(courseStore.studyPlan, n.id),
+      hasAssessmentStageViolation: hasAssessmentStageViolation(courseStore.studyPlan, flowNode.id),
       isDragging,
     });
 
     return {
-      ...n,
+      ...flowNode,
       style,
       data: {
-        ...data,
+        ...nodeData,
         showCourseTypeBadges: showCourseTypeBadges(),
-        showRemoveButton: selectedNodeId === n.id,
+        showRemoveButton: selectedNodeId === flowNode.id,
         onRemove: handleRemoveClick,
         hasMissingPrerequisites: hasMissingPrereqs,
       },
@@ -98,16 +98,16 @@
 
   let styledEdges = $state.raw<any[]>([]);
   $effect(() => {
-    styledEdges = courseStore.edges.map((e) => {
+    styledEdges = courseStore.edges.map((edge) => {
       const { style, markerEnd, animated } = getEdgeStyle(
-        e,
+        edge,
         selection(),
         statuses,
         slotStatusMap(),
         courseStore.studyPlan,
         isDragging
       );
-      return { ...e, style, markerEnd, animated };
+      return { ...edge, style, markerEnd, animated };
     });
   });
 
@@ -134,17 +134,16 @@
     courseStore.handleNodeDragStop(targetNode.id, targetNode.position ?? { x: 0, y: 0 });
   };
 
-  function handleNodeClick(evt: { node: any; event: MouseEvent | TouchEvent }) {
-    const node = evt.node;
-    if (!node) return;
+  function handleNodeClick({ node: clickedNode }: { node: any; event: MouseEvent | TouchEvent }) {
+    if (!clickedNode) return;
 
     // Set selected node for showing remove button
-    selectedNodeId = node.id;
+    selectedNodeId = clickedNode.id;
 
-    const data = node.data;
-    const slot = data.slot;
-    const course = data.course;
-    const isElectiveSlot = data.isElectiveSlot;
+    const nodeData = clickedNode.data;
+    const slot = nodeData.slot;
+    const course = nodeData.course;
+    const isElectiveSlot = nodeData.isElectiveSlot;
 
     if (isElectiveSlot && slot) {
       const electiveCourse: Course = {
