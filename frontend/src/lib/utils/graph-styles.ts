@@ -1,4 +1,5 @@
-import type { Status } from '../types';
+import type { Edge, EdgeMarker } from '@xyflow/svelte';
+import type { Course, Status } from '../types';
 import type { StudyPlan } from '$lib/data/study-plan';
 
 /**
@@ -124,7 +125,7 @@ export function getNodeStyle(
  * Resolves the selected slot ID, handling both direct slot selection and course selection.
  * When a course is selected, finds the corresponding slot ID.
  */
-function resolveSelectedSlotId(selection: any, plan: StudyPlan): string | undefined {
+function resolveSelectedSlotId(selection: Course | null, plan: StudyPlan): string | undefined {
   if (!selection) return undefined;
 
   if (plan.nodes[selection.id]) {
@@ -140,7 +141,7 @@ function resolveSelectedSlotId(selection: any, plan: StudyPlan): string | undefi
  * Returns whether edge is a prerequisite, dependent, or unrelated to selection.
  */
 function getEdgeRelationship(
-  edge: any,
+  edge: Edge,
   selectedSlotId: string | undefined
 ): { isSelected: boolean; isPrerequisite: boolean; isDependent: boolean } {
   const isSelected = selectedSlotId === edge.source || selectedSlotId === edge.target;
@@ -160,9 +161,9 @@ function buildEdgeStateStyle(
   isDependent: boolean,
   sourceCompleted: boolean,
   targetCompleted: boolean,
-  markerType: any,
+  markerType: EdgeMarker,
   isDragging: boolean
-): { style: string; markerEnd: any; animated: boolean } {
+): { style: string; markerEnd: EdgeMarker; animated: boolean } {
   const transition = !isDragging ? 'transition: all 0.2s;' : '';
   let style = `stroke-width: 2px; ${transition} filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); `;
   let markerEnd = markerType;
@@ -202,13 +203,13 @@ function buildEdgeStateStyle(
  * This is the main entry point for edge styling.
  */
 export function getEdgeStyle(
-  edge: any,
-  selection: any,
+  edge: Edge,
+  selection: Course | null,
   statuses: Record<string, Status>,
   slotStatus: Map<string, 'attended' | 'completed'>,
   plan: StudyPlan,
   isDragging: boolean
-): { style: string; markerEnd: any; animated: boolean } {
+): { style: string; markerEnd: EdgeMarker; animated: boolean } {
   const selectedSlotId = resolveSelectedSlotId(selection, plan);
   const { isSelected, isPrerequisite, isDependent } = getEdgeRelationship(edge, selectedSlotId);
 
@@ -221,7 +222,7 @@ export function getEdgeStyle(
     isDependent,
     sourceCompleted,
     targetCompleted,
-    edge.markerEnd,
+    edge.markerEnd as EdgeMarker,
     isDragging
   );
 
