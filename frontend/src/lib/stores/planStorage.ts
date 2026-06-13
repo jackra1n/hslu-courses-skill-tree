@@ -79,6 +79,12 @@ export const planPrefs = {
   },
   loadShortNames(): boolean | null {
     const raw = read(KEYS.shortNames);
-    return raw ? JSON.parse(raw) : null;
+    if (raw === null) return null;
+    try {
+      const value = JSON.parse(raw);
+      return typeof value === 'boolean' ? value : null;
+    } catch {
+      return null;
+    }
   }
 };
