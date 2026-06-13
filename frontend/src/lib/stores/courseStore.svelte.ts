@@ -2,6 +2,7 @@ import {
   AVAILABLE_TEMPLATES,
   getTemplateById,
   getTemplatesByProgram,
+  getAvailablePlans,
   setCoursePlan
 } from '$lib/data/courses';
 import {
@@ -27,7 +28,17 @@ import { progressStore, slotStatusMap } from './progressStore.svelte';
 import { loadPlan, savePlan, loadLegacySelections, planPrefs } from './planStorage';
 import { DragController } from './dragController.svelte';
 import { canSelectCourse, isPlanCustomized } from '$lib/data/plan-rules';
-import { seasonOfSemester, termOfSemester, formatTerm, planIntroYear, type Season } from '$lib/data/season';
+import {
+  seasonOfSemester,
+  termOfSemester,
+  formatTerm,
+  planIntroYear,
+  resolvePlan,
+  currentStartTerm,
+  type Season
+} from '$lib/data/season';
+
+const INITIAL_TERM = currentStartTerm();
 
 type FlowNodePosition = { x: number; y: number };
 type SemesterIndicator = { semester: number; isPreview: boolean; length: number };
@@ -40,8 +51,8 @@ class CourseStore {
   currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
   studyPlan = $state<StudyPlan>(createStudyPlan(AVAILABLE_TEMPLATES[0], {}));
   showShortNamesOnly = $state(false);
-  startSeason = $state<Season>('HS');
-  startYear = $state<number>(planIntroYear(AVAILABLE_TEMPLATES[0].plan) ?? new Date().getFullYear());
+  startSeason = $state<Season>(INITIAL_TERM.season);
+  startYear = $state<number>(INITIAL_TERM.year);
 
   private graph = $derived.by(() => toGraph(this.studyPlan, this.showShortNamesOnly));
   private positionedNodes = $derived.by(() => layoutNodes(this.graph.nodes, this.studyPlan.rows));
@@ -149,20 +160,33 @@ class CourseStore {
 
     const savedTemplateId = planPrefs.loadTemplateId();
     const savedPlanCode = planPrefs.loadPlanCode();
+    const savedTemplate = savedTemplateId
+      ? getTemplateById(savedTemplateId)
+      : savedPlanCode
+        ? getTemplatesByProgram(this.currentTemplate.studiengang, this.currentTemplate.modell)
+            .find((t) => t.plan === savedPlanCode)
+        : undefined;
 
-    const savedTemplate = savedTemplateId ? getTemplateById(savedTemplateId) : undefined;
     if (savedTemplate) {
+      // returning user: keep their curriculum and start term
       this.currentTemplate = savedTemplate;
-    } else if (savedPlanCode) {
-      const matchingTemplate = getTemplatesByProgram(this.currentTemplate.studiengang, this.currentTemplate.modell)
-        .find((t) => t.plan === savedPlanCode);
-      if (matchingTemplate) {
-        this.currentTemplate = matchingTemplate;
-      }
+      this.startSeason = planPrefs.loadStartSeason() ?? 'HS';
+      this.startYear = planPrefs.loadStartYear() ?? planIntroYear(savedTemplate.plan) ?? this.startYear;
+    } else {
+      // new user: default to the current calendar term and derive the curriculum
+      const term = currentStartTerm();
+      this.startSeason = term.season;
+      this.startYear = term.year;
+      const plan = resolvePlan(
+        getAvailablePlans(this.currentTemplate.studiengang, this.currentTemplate.modell),
+        term
+      );
+      const template = plan
+        ? getTemplatesByProgram(this.currentTemplate.studiengang, this.currentTemplate.modell)
+            .find((t) => t.plan === plan)
+        : undefined;
+      if (template) this.currentTemplate = template;
     }
-
-    this.startSeason = planPrefs.loadStartSeason() ?? 'HS';
-    this.startYear = planPrefs.loadStartYear() ?? planIntroYear(this.currentTemplate.plan) ?? this.startYear;
 
     setCoursePlan(this.currentTemplate.plan);
 
