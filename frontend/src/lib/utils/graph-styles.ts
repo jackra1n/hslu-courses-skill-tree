@@ -2,19 +2,11 @@ import type { Edge, EdgeMarker } from '@xyflow/svelte';
 import type { Course, Status } from '../types';
 import type { StudyPlan } from '$lib/data/study-plan';
 
-/**
- * Builds base node styles including dimensions, typography, and transitions.
- * These styles are common to all nodes regardless of their state.
- */
 function buildBaseNodeStyle(nodeWidth: number, isDragging: boolean): string {
   const transition = !isDragging ? 'transition: all 0.2s;' : '';
   return `border-radius: 12px; font-weight: 500; font-size: 14px; text-align: center; min-width: ${nodeWidth}px; width: ${nodeWidth}px; font-family: Inter, sans-serif; ${transition} `;
 }
 
-/**
- * Builds selection-specific styles for nodes.
- * Selected nodes have thicker borders, shadows, and scale transforms.
- */
 function buildSelectionStyle(isSelected: boolean): string {
   if (isSelected) {
     return "border-width: 3px; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 4px 6px rgba(0,0,0,0.1); transform: scale(1.05); ";
@@ -22,10 +14,6 @@ function buildSelectionStyle(isSelected: boolean): string {
   return "border-width: 2px; ";
 }
 
-/**
- * Builds state-specific styles for nodes based on their status and progress.
- * Handles special cases like later prerequisites (red dashed border), missing prerequisites, and assessment stage violations.
- */
 const NODE_SHADOW = "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
 
 function shadowUnlessSelected(isSelected: boolean): string {
@@ -63,10 +51,7 @@ function buildNodeStateStyle(
   return buildStatusBasedStyle(status, isAttended, isCompleted) + shadowUnlessSelected(isSelected);
 }
 
-/**
- * Builds status-based color and opacity styles.
- * Priority: completed > attended > available > locked
- */
+// Priority: completed > attended > available > locked
 function buildStatusBasedStyle(status: Status, isAttended: boolean, isCompleted: boolean): string {
   if (isCompleted) {
     return "background: rgb(var(--node-completed-bg)); border-color: rgb(var(--node-completed-border)); color: rgb(var(--text-primary)); ";
@@ -113,10 +98,7 @@ export function getNodeStyle(input: NodeStyleInput): string {
   );
 }
 
-/**
- * Resolves the selected slot ID, handling both direct slot selection and course selection.
- * When a course is selected, finds the corresponding slot ID.
- */
+// The selection may be a slot id or a course id; resolve to the slot it sits in.
 function resolveSelectedSlotId(selection: Course | null, plan: StudyPlan): string | undefined {
   if (!selection) return undefined;
 
@@ -128,10 +110,6 @@ function resolveSelectedSlotId(selection: Course | null, plan: StudyPlan): strin
   return matchingNode?.id;
 }
 
-/**
- * Determines edge relationship to selected node.
- * Returns whether edge is a prerequisite, dependent, or unrelated to selection.
- */
 function getEdgeRelationship(
   edge: Edge,
   selectedSlotId: string | undefined
@@ -143,10 +121,6 @@ function getEdgeRelationship(
   return { isSelected, isPrerequisite, isDependent };
 }
 
-/**
- * Builds edge style based on completion status and selection state.
- * Handles prerequisite highlighting, completion visualization, and animations.
- */
 function buildEdgeStateStyle(
   isSelected: boolean,
   isPrerequisite: boolean,
@@ -190,10 +164,6 @@ function buildEdgeStateStyle(
   return { style, markerEnd, animated };
 }
 
-/**
- * Computes complete edge styling including color, width, animation, and markers.
- * This is the main entry point for edge styling.
- */
 export function getEdgeStyle(
   edge: Edge,
   selection: Course | null,
