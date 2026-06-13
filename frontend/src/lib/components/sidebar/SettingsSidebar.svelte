@@ -1,10 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
-  import { showShortNamesOnly, courseStore } from '$lib/stores/courseStore.svelte';
+  import { courseStore } from '$lib/stores/courseStore.svelte';
   import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
-  import { currentTemplate, courseStore as store, studyPlan } from '$lib/stores/courseStore.svelte';
   import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte';
 
   let { isOpen = $bindable(false) }: { isOpen: boolean } = $props();
@@ -34,7 +33,7 @@
   }
 
   function confirmResetProgress() {
-    const plan = studyPlan();
+    const plan = courseStore.studyPlan;
     Object.keys(plan.nodes).forEach((slotId) => {
       progressStore.clearSlotStatus(slotId);
     });
@@ -47,9 +46,9 @@
   }
 
   function confirmResetAllData() {
-    const template = currentTemplate();
-    store.switchTemplate(template.id, true);
-    const plan = studyPlan();
+    const template = courseStore.currentTemplate;
+    courseStore.switchTemplate(template.id, true);
+    const plan = courseStore.studyPlan;
     Object.keys(plan.nodes).forEach((slotId) => {
       progressStore.clearSlotStatus(slotId);
     });
@@ -116,13 +115,13 @@
               <button
                 id="show-full-course-names"
                 onclick={toggleCourseNames}
-                class="relative w-11 h-6 rounded-full transition-colors duration-200 {!showShortNamesOnly()
+                class="relative w-11 h-6 rounded-full transition-colors duration-200 {!courseStore.showShortNamesOnly
                   ? 'bg-blue-600 dark:bg-blue-500'
                   : 'bg-gray-300 dark:bg-gray-600'}"
                 aria-label="Toggle full course names"
               >
                 <div
-                  class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {!showShortNamesOnly()
+                  class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {!courseStore.showShortNamesOnly
                     ? 'translate-x-5'
                     : 'translate-x-0.5'}"
                 ></div>
