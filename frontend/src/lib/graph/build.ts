@@ -2,7 +2,7 @@ import type { Node, Edge } from '@xyflow/svelte';
 import type { ExtendedNodeData, Course, TemplateSlot, PrerequisiteRule } from '$lib/types';
 import type { StudyPlan, PlanNode } from '$lib/data/study-plan';
 import { resolveCourse, buildPlanRowIndex, mapPlanCourseProviders } from '$lib/data/study-plan';
-import { getNodeWidth, getNodeLabel } from '$lib/utils/layout';
+import { getNodeWidth, getNodeLabel } from './layout';
 import { MarkerType } from '@xyflow/svelte';
 import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
 

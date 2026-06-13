@@ -30,8 +30,8 @@
     hasMissingPrerequisites,
     hasAssessmentStageViolation,
   } from "$lib/utils/status";
-  import { getNodeStyle, getEdgeStyle } from "$lib/utils/graph-styles";
-  import { getNodeWidth } from "$lib/utils/layout";
+  import { getNodeStyle, getEdgeStyle } from "$lib/graph/styles";
+  import { getNodeWidth } from "$lib/graph/layout";
 
   import type { Course } from "$lib/types";
 

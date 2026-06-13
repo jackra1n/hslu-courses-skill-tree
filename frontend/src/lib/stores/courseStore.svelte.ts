@@ -15,13 +15,13 @@ import {
   type StudyPlan,
   type PlanNode
 } from '$lib/data/study-plan';
-import { toGraph } from '$lib/utils/graph';
+import { toGraph } from '$lib/graph/build';
 import {
   MAX_SEMESTERS,
   layoutNodes,
   addAddNodeButtons,
   computeDividerLength
-} from '$lib/utils/plan-layout';
+} from '$lib/graph/plan-layout';
 import { progressStore, slotStatusMap } from './progressStore.svelte';
 import { loadPlan, savePlan, loadLegacySelections, planPrefs } from './planStorage';
 import { DragController } from './dragController.svelte';
