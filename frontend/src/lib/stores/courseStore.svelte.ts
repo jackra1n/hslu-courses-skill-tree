@@ -34,7 +34,6 @@ function generateNodeId(): string {
 }
 
 let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
-let _selectedPlan = $state(AVAILABLE_TEMPLATES[0].plan);
 let _studyPlan = $state<StudyPlan>(createStudyPlan(_currentTemplate, {}));
 
 let _showShortNamesOnly = $state(false);
@@ -65,7 +64,7 @@ const drag = new DragController({
 export function currentTemplate() { return _currentTemplate; }
 export function studyPlan() { return _studyPlan; }
 export function userSelections() { return _userSelections; }
-export function selectedPlan() { return _selectedPlan; }
+export function selectedPlan() { return _currentTemplate.plan; }
 export function nodes() { return drag.activeNodes; }
 export function edges() { return _graph.edges; }
 export function showShortNamesOnly() { return _showShortNamesOnly; }
@@ -101,9 +100,8 @@ export const courseStore = {
     if (!template) return;
 
     _currentTemplate = template;
-    _selectedPlan = template.plan;
     setCoursePlan(template.plan);
-    
+
     setStudyPlan(forceReset ? createStudyPlan(template, {}) : loadPlan(template));
     planPrefs.saveTemplate(templateId, template.plan);
   },
@@ -142,14 +140,12 @@ export const courseStore = {
     const savedPlanCode = planPrefs.loadPlanCode();
 
     if (savedPlanCode) {
-      _selectedPlan = savedPlanCode;
       setCoursePlan(savedPlanCode);
     }
 
     const savedTemplate = savedTemplateId ? getTemplateById(savedTemplateId) : undefined;
     if (savedTemplate) {
       _currentTemplate = savedTemplate;
-      _selectedPlan = savedTemplate.plan;
       setCoursePlan(savedTemplate.plan);
     } else if (savedPlanCode) {
       const matchingTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
