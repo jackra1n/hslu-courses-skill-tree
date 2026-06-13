@@ -118,6 +118,26 @@ export function selectProviderForRule(
   });
 }
 
+// Which prerequisite rules get edges drawn. OR-linked rules show only the one
+// whose providers appear earliest; AND-linked rules all show.
+function selectRulesToProcess(
+  course: Course,
+  courseProviders: Map<string, string[]>,
+  rowIndex: Record<string, number>
+): PrerequisiteRule[] {
+  const rules = course.prerequisites;
+  if (rules.length <= 1) return rules;
+  if ((rules[0].prerequisiteLinkType || 'und') !== 'oder') return rules;
+
+  const ruleRows = rules.map((rule) => {
+    const providers = selectProviderForRule(rule, courseProviders, rowIndex);
+    return providers.length === 0
+      ? Infinity
+      : Math.min(...providers.map((id) => rowIndex[id] ?? Infinity));
+  });
+  return [rules[ruleRows.indexOf(Math.min(...ruleRows))]];
+}
+
 function buildEdges(
   plan: StudyPlan,
   courseProviders: Map<string, string[]>
@@ -136,31 +156,7 @@ function buildEdges(
     const course = resolveCourse(planNode.courseId);
     if (!course) return;
 
-    let rulesToProcess: PrerequisiteRule[];
-    
-    if (course.prerequisites.length === 0) {
-      rulesToProcess = [];
-    } else if (course.prerequisites.length === 1) {
-      rulesToProcess = course.prerequisites;
-    } else {
-      const firstRule = course.prerequisites[0];
-      const prerequisiteLinkType = firstRule.prerequisiteLinkType || 'und';
-      
-      if (prerequisiteLinkType === 'oder') {
-        const ruleScores = course.prerequisites.map((rule) => {
-          const providers = selectProviderForRule(rule, courseProviders, rowIndex);
-          if (providers.length === 0) return Infinity;
-          return Math.min(...providers.map(id => rowIndex[id] ?? Infinity));
-        });
-        
-        const bestRuleIndex = ruleScores.indexOf(Math.min(...ruleScores));
-        rulesToProcess = [course.prerequisites[bestRuleIndex]];
-      } else {
-        rulesToProcess = course.prerequisites;
-      }
-    }
-
-    rulesToProcess.forEach((rule) => {
+    selectRulesToProcess(course, courseProviders, rowIndex).forEach((rule) => {
       const selectedProviders = selectProviderForRule(rule, courseProviders, rowIndex);
 
       selectedProviders.forEach((providerId) => {
