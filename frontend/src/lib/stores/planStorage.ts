@@ -8,6 +8,7 @@ const KEYS = {
   plan: 'selectedPlan',
   shortNames: 'showShortNamesOnly',
   startSeason: 'startSeason',
+  startYear: 'startYear',
   legacySelections: 'userSelections',
   planFor: (templateId: string) => `studyPlan:${templateId}`
 } as const;
@@ -82,6 +83,14 @@ export const planPrefs = {
   loadStartSeason(): Season | null {
     const raw = read(KEYS.startSeason);
     return raw === 'HS' || raw === 'FS' ? raw : null;
+  },
+  saveStartYear(year: number): void {
+    write(KEYS.startYear, String(year));
+  },
+  loadStartYear(): number | null {
+    const raw = read(KEYS.startYear);
+    const year = raw ? Number(raw) : NaN;
+    return Number.isInteger(year) ? year : null;
   },
   saveShortNames(value: boolean): void {
     write(KEYS.shortNames, JSON.stringify(value));

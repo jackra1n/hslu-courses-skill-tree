@@ -27,7 +27,7 @@ import { progressStore, slotStatusMap } from './progressStore.svelte';
 import { loadPlan, savePlan, loadLegacySelections, planPrefs } from './planStorage';
 import { DragController } from './dragController.svelte';
 import { canSelectCourse, isPlanCustomized } from '$lib/data/plan-rules';
-import { seasonOfSemester, type Season } from '$lib/data/season';
+import { seasonOfSemester, termOfSemester, formatTerm, planIntroYear, type Season } from '$lib/data/season';
 
 type FlowNodePosition = { x: number; y: number };
 type SemesterIndicator = { semester: number; isPreview: boolean; length: number };
@@ -41,6 +41,7 @@ class CourseStore {
   studyPlan = $state<StudyPlan>(createStudyPlan(AVAILABLE_TEMPLATES[0], {}));
   showShortNamesOnly = $state(false);
   startSeason = $state<Season>('HS');
+  startYear = $state<number>(planIntroYear(AVAILABLE_TEMPLATES[0].plan) ?? new Date().getFullYear());
 
   private graph = $derived.by(() => toGraph(this.studyPlan, this.showShortNamesOnly));
   private positionedNodes = $derived.by(() => layoutNodes(this.graph.nodes, this.studyPlan.rows));
@@ -124,20 +125,32 @@ class CourseStore {
     planPrefs.saveStartSeason(season);
   }
 
+  // Switch to `templateId` and record the start term that derived it. When only
+  // the start term changes within the same plan, the curriculum is left intact.
+  applyStart(templateId: string, year: number, season: Season, forceReset = false) {
+    this.startYear = year;
+    this.startSeason = season;
+    planPrefs.saveStartYear(year);
+    planPrefs.saveStartSeason(season);
+    if (forceReset || templateId !== this.currentTemplate.id) {
+      this.switchTemplate(templateId, forceReset);
+    }
+  }
+
   // The calendar season (HS/FS) a given 1-indexed plan semester falls in.
   seasonOf(semester: number): Season {
     return seasonOfSemester(semester, this.startSeason);
+  }
+
+  // The calendar term label (e.g. "FS 2026") for a 1-indexed plan semester.
+  semesterLabel(semester: number): string {
+    return formatTerm(termOfSemester(semester, { year: this.startYear, season: this.startSeason }));
   }
 
   init() {
     const savedShortNames = planPrefs.loadShortNames();
     if (savedShortNames !== null) {
       this.showShortNamesOnly = savedShortNames;
-    }
-
-    const savedStartSeason = planPrefs.loadStartSeason();
-    if (savedStartSeason !== null) {
-      this.startSeason = savedStartSeason;
     }
 
     const savedTemplateId = planPrefs.loadTemplateId();
@@ -153,6 +166,9 @@ class CourseStore {
         this.currentTemplate = matchingTemplate;
       }
     }
+
+    this.startSeason = planPrefs.loadStartSeason() ?? 'HS';
+    this.startYear = planPrefs.loadStartYear() ?? planIntroYear(this.currentTemplate.plan) ?? this.startYear;
 
     setCoursePlan(this.currentTemplate.plan);
 
