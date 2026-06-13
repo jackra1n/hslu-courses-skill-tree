@@ -1,11 +1,13 @@
 import { browser } from '$app/environment';
 import type { CurriculumTemplate } from '$lib/data/courses';
+import type { Season } from '$lib/data/season';
 import { createStudyPlan, normalizePlan, type StudyPlan } from '$lib/data/study-plan';
 
 const KEYS = {
   template: 'currentTemplate',
   plan: 'selectedPlan',
   shortNames: 'showShortNamesOnly',
+  startSeason: 'startSeason',
   legacySelections: 'userSelections',
   planFor: (templateId: string) => `studyPlan:${templateId}`
 } as const;
@@ -74,6 +76,13 @@ export const planPrefs = {
   },
   loadTemplateId: (): string | null => read(KEYS.template),
   loadPlanCode: (): string | null => read(KEYS.plan),
+  saveStartSeason(season: Season): void {
+    write(KEYS.startSeason, season);
+  },
+  loadStartSeason(): Season | null {
+    const raw = read(KEYS.startSeason);
+    return raw === 'HS' || raw === 'FS' ? raw : null;
+  },
   saveShortNames(value: boolean): void {
     write(KEYS.shortNames, JSON.stringify(value));
   },

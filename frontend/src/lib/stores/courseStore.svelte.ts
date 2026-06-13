@@ -27,6 +27,7 @@ import { progressStore, slotStatusMap } from './progressStore.svelte';
 import { loadPlan, savePlan, loadLegacySelections, planPrefs } from './planStorage';
 import { DragController } from './dragController.svelte';
 import { canSelectCourse, isPlanCustomized } from '$lib/data/plan-rules';
+import { seasonOfSemester, type Season } from '$lib/data/season';
 
 type FlowNodePosition = { x: number; y: number };
 type SemesterIndicator = { semester: number; isPreview: boolean; length: number };
@@ -39,6 +40,7 @@ class CourseStore {
   currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
   studyPlan = $state<StudyPlan>(createStudyPlan(AVAILABLE_TEMPLATES[0], {}));
   showShortNamesOnly = $state(false);
+  startSeason = $state<Season>('HS');
 
   private graph = $derived.by(() => toGraph(this.studyPlan, this.showShortNamesOnly));
   private positionedNodes = $derived.by(() => layoutNodes(this.graph.nodes, this.studyPlan.rows));
@@ -117,10 +119,25 @@ class CourseStore {
     planPrefs.saveShortNames(this.showShortNamesOnly);
   }
 
+  setStartSeason(season: Season) {
+    this.startSeason = season;
+    planPrefs.saveStartSeason(season);
+  }
+
+  // The calendar season (HS/FS) a given 1-indexed plan semester falls in.
+  seasonOf(semester: number): Season {
+    return seasonOfSemester(semester, this.startSeason);
+  }
+
   init() {
     const savedShortNames = planPrefs.loadShortNames();
     if (savedShortNames !== null) {
       this.showShortNamesOnly = savedShortNames;
+    }
+
+    const savedStartSeason = planPrefs.loadStartSeason();
+    if (savedStartSeason !== null) {
+      this.startSeason = savedStartSeason;
     }
 
     const savedTemplateId = planPrefs.loadTemplateId();
