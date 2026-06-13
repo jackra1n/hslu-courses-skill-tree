@@ -8,6 +8,9 @@ import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
 
 type HandleUsage = Record<string, { source: number; target: number }>;
 
+// Cap on source/target handles per node, to avoid crowding the connector edge.
+const MAX_HANDLES = 7;
+
 export function toGraph(plan: StudyPlan, showShortNamesOnly: boolean): { nodes: Node[]; edges: Edge[] } {
   const courseProviders = mapPlanCourseProviders(plan);
   const nodes = Object.values(plan.nodes).map((planNode) =>
@@ -25,28 +28,16 @@ function calculateTargetHandles(course: Course | null): number {
     return 0;
   }
 
-  // calculate handles needed for each rule
-  const handlesPerRule = course.prerequisites.map((rule) => {
-    if (rule.moduleLinkType === 'oder') {
-      // OR within rule: only need 1 handle (any one module satisfies)
-      return 1;
-    } else {
-      // AND within rule: need 1 handle per module (all required)
-      return rule.modules.length;
-    }
-  });
+  // OR within a rule needs 1 handle (any module satisfies); AND needs one per module.
+  const handlesPerRule = course.prerequisites.map((rule) =>
+    rule.moduleLinkType === 'oder' ? 1 : rule.modules.length
+  );
 
-  // check how prerequisite rules are connected
-  const firstRule = course.prerequisites[0];
-  const prerequisiteLinkType = firstRule.prerequisiteLinkType || 'und';
-
-  if (prerequisiteLinkType === 'oder') {
-    // OR between rules: only need handles for the rule with most handles
-    return Math.max(...handlesPerRule);
-  } else {
-    // AND between rules: need sum of all handles
-    return handlesPerRule.reduce((sum, handles) => sum + handles, 0);
-  }
+  // OR between rules shows only one rule (the widest); AND shows them all.
+  const prerequisiteLinkType = course.prerequisites[0].prerequisiteLinkType || 'und';
+  return prerequisiteLinkType === 'oder'
+    ? Math.max(...handlesPerRule)
+    : handlesPerRule.reduce((sum, handles) => sum + handles, 0);
 }
 
 function buildNode(planNode: PlanNode, plan: StudyPlan, showShortNamesOnly: boolean): Node {
@@ -67,7 +58,7 @@ function buildNode(planNode: PlanNode, plan: StudyPlan, showShortNamesOnly: bool
       isElectiveSlot,
       width: getNodeWidth(ects),
       hasLaterPrerequisites: hasPlanPrereqConflict(plan, planNode.id),
-      targetHandles: Math.min(calculateTargetHandles(course), 7)
+      targetHandles: Math.min(calculateTargetHandles(course), MAX_HANDLES)
     } as ExtendedNodeData,
     style: ''
   };
@@ -195,8 +186,8 @@ function applyHandleUsage(nodes: Node[], usage: HandleUsage): void {
     if (!nodeUsage) return;
     node.data = {
       ...(node.data as ExtendedNodeData),
-      sourceHandles: Math.min(nodeUsage.source, 7)
-      // targetHandles are now set in buildNode based on course prerequisites
+      sourceHandles: Math.min(nodeUsage.source, MAX_HANDLES)
+      // targetHandles are set in buildNode from the course prerequisites
     };
   });
 }
