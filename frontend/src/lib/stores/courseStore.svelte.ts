@@ -218,18 +218,3 @@ class CourseStore {
 }
 
 export const courseStore = new CourseStore();
-
-// Transitional getter wrappers kept while call sites migrate to courseStore.*
-export function currentTemplate() { return courseStore.currentTemplate; }
-export function studyPlan() { return courseStore.studyPlan; }
-export function userSelections() { return courseStore.userSelections; }
-export function selectedPlan() { return courseStore.selectedPlan; }
-export function nodes() { return courseStore.nodes; }
-export function edges() { return courseStore.edges; }
-export function showShortNamesOnly() { return courseStore.showShortNamesOnly; }
-export function totalCredits() { return courseStore.totalCredits; }
-export function attendedCredits() { return courseStore.attendedCredits; }
-export function completedCredits() { return courseStore.completedCredits; }
-export function calculatedTotalCredits() { return courseStore.calculatedTotalCredits; }
-export function availablePlans() { return courseStore.availablePlans; }
-export function semesterDividerData() { return courseStore.semesterDividerData; }
