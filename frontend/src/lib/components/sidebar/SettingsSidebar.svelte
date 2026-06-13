@@ -150,6 +150,35 @@
 
         <div class="border-b border-border-primary"></div>
 
+        <!-- Study Start -->
+        <div>
+          <div class="text-base font-bold text-text-primary mb-1">Study Start</div>
+          <p class="text-sm text-text-secondary mb-4">Sets which semesters run in autumn vs spring.</p>
+          <div class="flex items-center justify-between">
+            <span class="text-base text-text-primary">Started semester</span>
+            <div class="flex rounded-lg border border-border-primary overflow-hidden text-sm" role="group" aria-label="Started semester">
+              <button
+                onclick={() => courseStore.setStartSeason('HS')}
+                class="px-3 py-1.5 transition-colors {courseStore.startSeason === 'HS'
+                  ? 'bg-blue-600 dark:bg-blue-500 text-white'
+                  : 'text-text-primary hover:bg-bg-secondary'}"
+              >
+                Herbst
+              </button>
+              <button
+                onclick={() => courseStore.setStartSeason('FS')}
+                class="px-3 py-1.5 transition-colors {courseStore.startSeason === 'FS'
+                  ? 'bg-blue-600 dark:bg-blue-500 text-white'
+                  : 'text-text-primary hover:bg-bg-secondary'}"
+              >
+                Frühling
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-b border-border-primary"></div>
+
         <!-- Data Management -->
         <div>
           <div class="text-base font-bold text-text-primary mb-4">Data Management</div>
