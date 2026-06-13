@@ -26,11 +26,10 @@
   import DisclaimerToast from "$lib/components/ui/DisclaimerToast.svelte";
   import {
     computeStatuses,
-    getNodeStyle,
-    getEdgeStyle,
     hasMissingPrerequisites,
     hasAssessmentStageViolation,
   } from "$lib/utils/status";
+  import { getNodeStyle, getEdgeStyle } from "$lib/utils/graph-styles";
   import { getNodeWidth } from "$lib/utils/layout";
 
   import type { Course } from "$lib/types";
@@ -85,7 +84,7 @@
       const hasMissingPrereqs = hasMissingPrerequisites(courseStore.studyPlan, n.id);
       const hasAssessmentViolation = hasAssessmentStageViolation(courseStore.studyPlan, n.id);
 
-      const styleStr = getNodeStyle(
+      const styleStr = getNodeStyle({
         status,
         isSelected,
         isAttended,
@@ -94,10 +93,10 @@
         nodeWidth,
         hasSelectedCourse,
         hasLaterPrerequisites,
-        hasMissingPrereqs,
-        hasAssessmentViolation,
-        isDragging
-      );
+        hasMissingPrerequisites: hasMissingPrereqs,
+        hasAssessmentStageViolation: hasAssessmentViolation,
+        isDragging,
+      });
 
       return {
         ...n,
