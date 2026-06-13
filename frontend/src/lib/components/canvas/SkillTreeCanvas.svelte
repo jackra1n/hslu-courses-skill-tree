@@ -9,14 +9,7 @@
   } from "@xyflow/svelte";
   import "@xyflow/svelte/dist/style.css";
 
-  import {
-    nodes,
-    edges,
-    studyPlan,
-    userSelections,
-    courseStore,
-    semesterDividerData,
-  } from "$lib/stores/courseStore.svelte";
+  import { courseStore } from "$lib/stores/courseStore.svelte";
   import {
     selection,
     showCourseTypeBadges,
@@ -53,14 +46,14 @@
 
   const viewportSignal = useViewport();
   const viewport = $derived(viewportSignal.current);
-  const semesterIndicators = $derived.by(() => semesterDividerData());
+  const semesterIndicators = $derived(courseStore.semesterDividerData);
 
   let styledNodes = $state.raw<any[]>([]);
   
   $effect(() => {
-    const statuses = computeStatuses(studyPlan(), slotStatusMap());
+    const statuses = computeStatuses(courseStore.studyPlan, slotStatusMap());
 
-    styledNodes = nodes().map((n) => {
+    styledNodes = courseStore.nodes.map((n) => {
       // Handle addNode type separately
       if (n.type === 'addNode') {
         return {
@@ -86,11 +79,11 @@
         data.width || getNodeWidth(course?.ects || slot?.credits || 6);
 
       const hasSelectedCourse =
-        isElectiveSlot && slot ? !!userSelections()[slot.id] : false;
+        isElectiveSlot && slot ? !!courseStore.userSelections[slot.id] : false;
 
       const hasLaterPrerequisites = data.hasLaterPrerequisites || false;
-      const hasMissingPrereqs = hasMissingPrerequisites(studyPlan(), n.id);
-      const hasAssessmentViolation = hasAssessmentStageViolation(studyPlan(), n.id);
+      const hasMissingPrereqs = hasMissingPrerequisites(courseStore.studyPlan, n.id);
+      const hasAssessmentViolation = hasAssessmentStageViolation(courseStore.studyPlan, n.id);
 
       const styleStr = getNodeStyle(
         status,
@@ -123,15 +116,15 @@
   let styledEdges = $state.raw<any[]>([]);
   
   $effect(() => {
-    const statuses = computeStatuses(studyPlan(), slotStatusMap());
+    const statuses = computeStatuses(courseStore.studyPlan, slotStatusMap());
 
-    styledEdges = edges().map((e) => {
+    styledEdges = courseStore.edges.map((e) => {
       const { style, markerEnd, animated } = getEdgeStyle(
         e,
         selection(),
         statuses,
         slotStatusMap(),
-        studyPlan(),
+        courseStore.studyPlan,
         isDragging
       );
 
@@ -252,7 +245,7 @@
         {#each semesterIndicators as divider}
           <SemesterDivider
             semester={divider.semester}
-            plan={studyPlan()}
+            plan={courseStore.studyPlan}
             isPreview={divider.isPreview}
             length={divider.length}
           />
