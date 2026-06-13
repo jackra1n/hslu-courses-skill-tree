@@ -39,7 +39,7 @@ function calculateTargetHandles(course: Course | null): number {
 
   // check how prerequisite rules are connected
   const firstRule = course.prerequisites[0];
-  const prerequisiteLinkType = firstRule.prerequisiteLinkType || 'oder';
+  const prerequisiteLinkType = firstRule.prerequisiteLinkType || 'und';
 
   if (prerequisiteLinkType === 'oder') {
     // OR between rules: only need handles for the rule with most handles
