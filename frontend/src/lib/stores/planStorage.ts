@@ -46,8 +46,11 @@ function isPlanCompatible(plan: StudyPlan, template: CurriculumTemplate): boolea
   if (plan.templateId !== template.id) return false;
 
   const rowNodeIds = plan.rows.flatMap((row) => row.nodeOrder);
-  if (rowNodeIds.length !== Object.keys(plan.nodes).length) return false;
-  return rowNodeIds.every((nodeId) => plan.nodes[nodeId]);
+  const uniqueRowIds = new Set(rowNodeIds);
+  if (uniqueRowIds.size !== rowNodeIds.length) return false;
+
+  const nodeIds = Object.keys(plan.nodes);
+  return uniqueRowIds.size === nodeIds.length && nodeIds.every((id) => uniqueRowIds.has(id));
 }
 
 export function loadLegacySelections(): Record<string, string> {
