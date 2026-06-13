@@ -32,6 +32,7 @@ const MIN_DIVIDER_WIDTH = GRID_SIZE.x * 2 + (getNodeWidth(3) + GRID_SIZE.x) * MI
 const DIVIDER_MARGIN = GRID_SIZE.x * 2;
 const DIVIDER_LINE_START = -150; // keep in sync with SemesterDivider.svelte
 const DEFAULT_NODE_WIDTH = getNodeWidth(3);
+const ROW_START_X = GRID_SIZE.x * 2;
 
 function generateNodeId(): string {
   return `custom-${crypto.randomUUID()}`;
@@ -372,47 +373,46 @@ export const courseStore = {
   }
 };
 
+// Walk a row left-to-right, invoking `visit` with each node's x offset.
+// Returns the x cursor just past the last node (where the next slot sits).
+function walkRow(
+  nodeOrder: string[],
+  widthOf: (nodeId: string) => number,
+  visit?: (nodeId: string, x: number) => void
+): number {
+  let x = ROW_START_X;
+  for (const nodeId of nodeOrder) {
+    visit?.(nodeId, x);
+    x += widthOf(nodeId) + GRID_SIZE.x;
+  }
+  return x;
+}
+
 function layoutNodes(
   sourceNodes: Node[],
   rows: PlanRow[],
   options: { skipNodeId?: string } = {}
 ): Node[] {
-  const updated = sourceNodes.map((node) => ({ ...node }));
+  const byId = new Map(sourceNodes.map((node) => [node.id, node] as const));
 
   rows.forEach((row) => {
-    let x = GRID_SIZE.x * 2;
     const y = row.semester * GRID_SIZE.y;
-    const placed = new Set<string>();
-
-    row.nodeOrder.forEach((nodeId) => {
-      if (placed.has(nodeId)) {
-        return;
+    walkRow(
+      row.nodeOrder,
+      (nodeId) => resolveNodeWidth(byId.get(nodeId)),
+      (nodeId, x) => {
+        if (nodeId === options.skipNodeId) return;
+        const node = byId.get(nodeId);
+        if (node) byId.set(nodeId, { ...node, position: { x, y } });
       }
-      const index = updated.findIndex((n) => n.id === nodeId);
-      if (index === -1) return;
-
-      const node = updated[index];
-      const data = node.data as ExtendedNodeData | undefined;
-      const width = data?.width ?? getNodeWidth(3);
-
-      if (options.skipNodeId && nodeId === options.skipNodeId) {
-        x += width + GRID_SIZE.x;
-        return;
-      }
-
-      updated[index] = {
-        ...node,
-        position: { x, y }
-      };
-      placed.add(nodeId);
-      x += width + GRID_SIZE.x;
-    });
+    );
   });
 
-  return updated;
+  return sourceNodes.map((node) => byId.get(node.id) ?? node);
 }
 
 function addAddNodeButtons(nodes: Node[], rows: PlanRow[]): Node[] {
+  const byId = new Map(nodes.map((node) => [node.id, node] as const));
   const addNodes: Node[] = [];
   const semestersToShow = Math.min(rows.length + 1, MAX_SEMESTERS);
 
@@ -420,18 +420,7 @@ function addAddNodeButtons(nodes: Node[], rows: PlanRow[]): Node[] {
     const semester = i + 1;
     const row = rows[i];
     const y = semester * GRID_SIZE.y;
-
-    let x = GRID_SIZE.x * 2;
-
-    if (row && row.nodeOrder.length > 0) {
-      row.nodeOrder.forEach((nodeId) => {
-        const node = _studyPlan.nodes[nodeId];
-        if (node) {
-          const nodeWidth = node.ects ? getNodeWidth(node.ects) : getNodeWidth(3);
-          x += nodeWidth + GRID_SIZE.x;
-        }
-      });
-    }
+    const x = row ? walkRow(row.nodeOrder, (nodeId) => resolveNodeWidth(byId.get(nodeId))) : ROW_START_X;
 
     addNodes.push({
       id: `add-node-${semester}`,
