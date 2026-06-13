@@ -15,7 +15,7 @@ type DragDeps = {
 export class DragController {
   previewRows = $state<PlanRow[] | null>(null);
 
-  private override = $state.raw<Node[] | null>(null);
+  private overrideNodes = $state.raw<Node[] | null>(null);
   private activeNodeId: string | null = null;
   private readonly deps: DragDeps;
 
@@ -24,7 +24,7 @@ export class DragController {
   }
 
   get activeNodes(): Node[] {
-    return this.override ?? this.deps.layoutedNodes();
+    return this.overrideNodes ?? this.deps.layoutedNodes();
   }
 
   start(nodeId: string): void {
@@ -40,7 +40,7 @@ export class DragController {
     const preview = this.computeRowPreview(nodeId, position);
     if (preview) {
       this.previewRows = preview;
-      this.override = layoutNodes(this.activeNodes, preview, { skipNodeId: nodeId });
+      this.overrideNodes = layoutNodes(this.activeNodes, preview, { skipNodeId: nodeId });
     } else {
       this.previewRows = null;
     }
@@ -54,17 +54,17 @@ export class DragController {
   }
 
   clear(): void {
-    this.override = null;
+    this.overrideNodes = null;
     this.previewRows = null;
   }
 
   private ensureOverride(): Node[] {
-    if (this.override) return this.override;
+    if (this.overrideNodes) return this.overrideNodes;
     const cloned = this.deps.layoutedNodes().map((node) => ({
       ...node,
       position: node.position ? { ...node.position } : node.position
     }));
-    this.override = cloned;
+    this.overrideNodes = cloned;
     return cloned;
   }
 
@@ -76,7 +76,7 @@ export class DragController {
       changed = true;
       return { ...node, position };
     });
-    if (changed) this.override = updated;
+    if (changed) this.overrideNodes = updated;
   }
 
   // Row arrangement a drop would produce, inserting by horizontal center.
