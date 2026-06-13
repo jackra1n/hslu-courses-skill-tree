@@ -20,18 +20,17 @@ import {
 } from '$lib/data/study-plan';
 import { toGraph } from '$lib/utils/graph';
 import { getNodeWidth } from '$lib/utils/layout';
+import {
+  GRID_SIZE,
+  MAX_SEMESTERS,
+  layoutNodes,
+  addAddNodeButtons,
+  computeDividerLength
+} from '$lib/utils/plan-layout';
 import { progressStore, slotStatusMap } from './progressStore.svelte';
 import { loadPlan, savePlan, loadLegacySelections, planPrefs } from './planStorage';
 
 type FlowNodePosition = { x: number; y: number };
-export const GRID_SIZE = { x: 40, y: 200 };
-export const MAX_SEMESTERS = 12;
-const MIN_DIVIDER_NODE_COUNT = 5;
-const MIN_DIVIDER_WIDTH = GRID_SIZE.x * 2 + (getNodeWidth(3) + GRID_SIZE.x) * MIN_DIVIDER_NODE_COUNT;
-const DIVIDER_MARGIN = GRID_SIZE.x * 2;
-const DIVIDER_LINE_START = -150; // keep in sync with SemesterDivider.svelte
-const DEFAULT_NODE_WIDTH = getNodeWidth(3);
-const ROW_START_X = GRID_SIZE.x * 2;
 
 function generateNodeId(): string {
   return `custom-${crypto.randomUUID()}`;
@@ -83,11 +82,7 @@ export function semesterDividerData(): SemesterIndicator[] {
   const rows = (_previewRows ?? _studyPlan.rows).slice(0, MAX_SEMESTERS);
   if (!rows.length) return [];
 
-  const nodeLookup = buildNodeLookup(getActiveNodes());
-  const rowEnds = rows.map((row) => calculateRowRightEdge(row, nodeLookup));
-  const longestEnd = rowEnds.length ? Math.max(...rowEnds) : GRID_SIZE.x * 2 + DEFAULT_NODE_WIDTH;
-  const rawLength = longestEnd + DIVIDER_MARGIN - DIVIDER_LINE_START;
-  const dividerLength = Math.max(MIN_DIVIDER_WIDTH, rawLength);
+  const dividerLength = computeDividerLength(rows, getActiveNodes());
   const actualCount = Math.min(_studyPlan.rows.length, rows.length);
 
   return rows.map((_, index) => ({
@@ -355,72 +350,6 @@ export const courseStore = {
   }
 };
 
-// Walk a row left-to-right, invoking `visit` with each node's x offset.
-// Returns the x cursor just past the last node (where the next slot sits).
-function walkRow(
-  nodeOrder: string[],
-  widthOf: (nodeId: string) => number,
-  visit?: (nodeId: string, x: number) => void
-): number {
-  let x = ROW_START_X;
-  for (const nodeId of nodeOrder) {
-    visit?.(nodeId, x);
-    x += widthOf(nodeId) + GRID_SIZE.x;
-  }
-  return x;
-}
-
-function layoutNodes(
-  sourceNodes: Node[],
-  rows: PlanRow[],
-  options: { skipNodeId?: string } = {}
-): Node[] {
-  const byId = new Map(sourceNodes.map((node) => [node.id, node] as const));
-
-  rows.forEach((row) => {
-    const y = row.semester * GRID_SIZE.y;
-    walkRow(
-      row.nodeOrder,
-      (nodeId) => resolveNodeWidth(byId.get(nodeId)),
-      (nodeId, x) => {
-        if (nodeId === options.skipNodeId) return;
-        const node = byId.get(nodeId);
-        if (node) byId.set(nodeId, { ...node, position: { x, y } });
-      }
-    );
-  });
-
-  return sourceNodes.map((node) => byId.get(node.id) ?? node);
-}
-
-function addAddNodeButtons(nodes: Node[], rows: PlanRow[]): Node[] {
-  const byId = new Map(nodes.map((node) => [node.id, node] as const));
-  const addNodes: Node[] = [];
-  const semestersToShow = Math.min(rows.length + 1, MAX_SEMESTERS);
-
-  for (let i = 0; i < semestersToShow; i++) {
-    const semester = i + 1;
-    const row = rows[i];
-    const y = semester * GRID_SIZE.y;
-    const x = row ? walkRow(row.nodeOrder, (nodeId) => resolveNodeWidth(byId.get(nodeId))) : ROW_START_X;
-
-    addNodes.push({
-      id: `add-node-${semester}`,
-      type: 'addNode',
-      position: { x, y },
-      data: { semester },
-      draggable: false,
-      selectable: false,
-      connectable: false,
-      width: 80,
-      height: 80,
-      style: 'width: 80px; height: 80px;'
-    });
-  }
-
-  return [...nodes, ...addNodes];
-}
-
 function applyDirectNodePosition(nodeId: string, position: FlowNodePosition): void {
   const nodes = ensureNodeOverride();
   let changed = false;
@@ -479,39 +408,6 @@ function computeRowPreview(
   ];
 
   return { rows: normalizeRows(rows) };
-}
-
-function calculateRowRightEdge(row: PlanRow, nodeLookup: Map<string, Node>): number {
-  let fallbackCursor = GRID_SIZE.x * 2;
-  let rightEdge = fallbackCursor + DEFAULT_NODE_WIDTH;
-
-  row.nodeOrder.forEach((nodeId) => {
-    const node = nodeLookup.get(nodeId);
-    const width = resolveNodeWidth(node);
-
-    if (node?.position?.x != null) {
-      const end = node.position.x + width;
-      rightEdge = Math.max(rightEdge, end);
-      fallbackCursor = Math.max(fallbackCursor, end + GRID_SIZE.x);
-      return;
-    }
-
-    const end = fallbackCursor + width;
-    rightEdge = Math.max(rightEdge, end);
-    fallbackCursor = end + GRID_SIZE.x;
-  });
-
-  return rightEdge;
-}
-
-function resolveNodeWidth(node: Node | undefined): number {
-  if (!node) return DEFAULT_NODE_WIDTH;
-  const data = node.data as ExtendedNodeData | undefined;
-  return data?.width ?? DEFAULT_NODE_WIDTH;
-}
-
-function buildNodeLookup(nodes: Node[]): Map<string, Node> {
-  return new Map(nodes.map((node) => [node.id, node]));
 }
 
 function normalizeRows(rows: PlanRow[]): PlanRow[] {
