@@ -9,7 +9,6 @@ import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
 type HandleUsage = Record<string, { source: number; target: number }>;
 
 export function toGraph(plan: StudyPlan, showShortNamesOnly: boolean): { nodes: Node[]; edges: Edge[] } {
-  const rowIndexByNode = buildPlanRowIndex(plan);
   const courseProviders = mapPlanCourseProviders(plan);
   const nodes = Object.values(plan.nodes).map((planNode) =>
     buildNode(planNode, plan, showShortNamesOnly)
@@ -92,39 +91,31 @@ function getFallbackLabel(slotType: TemplateSlot['type']): string {
   return 'Course';
 }
 
+// The provider node sitting in the earliest semester row, or undefined if none.
+function earliestByRow(ids: string[], rowIndex: Record<string, number>): string | undefined {
+  if (ids.length === 0) return undefined;
+  return ids.reduce((best, current) =>
+    (rowIndex[current] ?? Infinity) < (rowIndex[best] ?? Infinity) ? current : best
+  );
+}
+
 export function selectProviderForRule(
   rule: PrerequisiteRule,
   courseProviders: Map<string, string[]>,
   rowIndex: Record<string, number>
 ): string[] {
   if (rule.moduleLinkType === 'oder') {
-    const allProviders = rule.modules.flatMap(moduleId =>
-      courseProviders.get(moduleId) ?? []
-    );
-
-    if (allProviders.length === 0) return [];
-
-    const earliest = allProviders.reduce((best, current) => {
-      const bestRow = rowIndex[best] ?? Infinity;
-      const currentRow = rowIndex[current] ?? Infinity;
-      return currentRow < bestRow ? current : best;
-    });
-
-    return [earliest];
-  } else {
-    return rule.modules.flatMap(moduleId => {
-      const providers = courseProviders.get(moduleId);
-      if (!providers || providers.length === 0) return [];
-
-      const earliest = providers.reduce((best, current) => {
-        const bestRow = rowIndex[best] ?? Infinity;
-        const currentRow = rowIndex[current] ?? Infinity;
-        return currentRow < bestRow ? current : best;
-      });
-
-      return [earliest];
-    });
+    // any one module satisfies the rule: pick the single earliest provider
+    const allProviders = rule.modules.flatMap((moduleId) => courseProviders.get(moduleId) ?? []);
+    const earliest = earliestByRow(allProviders, rowIndex);
+    return earliest ? [earliest] : [];
   }
+
+  // every module required: pick the earliest provider of each
+  return rule.modules.flatMap((moduleId) => {
+    const earliest = earliestByRow(courseProviders.get(moduleId) ?? [], rowIndex);
+    return earliest ? [earliest] : [];
+  });
 }
 
 function buildEdges(
