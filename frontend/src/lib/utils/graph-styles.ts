@@ -1,6 +1,11 @@
-import type { Edge, EdgeMarker } from '@xyflow/svelte';
+import { MarkerType, type Edge, type EdgeMarker } from '@xyflow/svelte';
 import type { Course, Status } from '../types';
 import type { StudyPlan } from '$lib/data/study-plan';
+
+// Edge.markerEnd may be a string id or undefined; normalise to an object marker.
+function toEdgeMarker(marker: Edge['markerEnd']): EdgeMarker {
+  return marker && typeof marker === 'object' ? marker : { type: MarkerType.ArrowClosed };
+}
 
 function buildBaseNodeStyle(nodeWidth: number, isDragging: boolean): string {
   const transition = !isDragging ? 'transition: all 0.2s;' : '';
@@ -184,7 +189,7 @@ export function getEdgeStyle(
     isDependent,
     sourceCompleted,
     targetCompleted,
-    edge.markerEnd as EdgeMarker,
+    toEdgeMarker(edge.markerEnd),
     isDragging
   );
 
