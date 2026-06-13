@@ -63,7 +63,6 @@ class CourseStore {
       .filter((plan, index, arr) => arr.indexOf(plan) === index)
       .sort()
   );
-  selectedPlan = $derived(this.currentTemplate.plan);
   nodes = $derived.by(() => this.drag.activeNodes);
   edges = $derived.by(() => orderEdgeHandles(this.graph.edges, this.positionedNodes));
 
@@ -118,11 +117,6 @@ class CourseStore {
     this.showShortNamesOnly = !this.showShortNamesOnly;
     this.drag.clear();
     planPrefs.saveShortNames(this.showShortNamesOnly);
-  }
-
-  setStartSeason(season: Season) {
-    this.startSeason = season;
-    planPrefs.saveStartSeason(season);
   }
 
   // Switch to `templateId` and record the start term that derived it. When only
