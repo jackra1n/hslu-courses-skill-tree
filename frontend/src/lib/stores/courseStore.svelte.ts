@@ -16,6 +16,7 @@ import {
   type PlanNode
 } from '$lib/data/study-plan';
 import { toGraph } from '$lib/graph/build';
+import { orderEdgeHandles } from '$lib/graph/edge-order';
 import {
   MAX_SEMESTERS,
   layoutNodes,
@@ -40,9 +41,8 @@ class CourseStore {
   showShortNamesOnly = $state(false);
 
   private graph = $derived.by(() => toGraph(this.studyPlan, this.showShortNamesOnly));
-  private layoutedNodes = $derived.by(() =>
-    addAddNodeButtons(layoutNodes(this.graph.nodes, this.studyPlan.rows), this.studyPlan.rows)
-  );
+  private positionedNodes = $derived.by(() => layoutNodes(this.graph.nodes, this.studyPlan.rows));
+  private layoutedNodes = $derived.by(() => addAddNodeButtons(this.positionedNodes, this.studyPlan.rows));
   private drag = new DragController({
     layoutedNodes: () => this.layoutedNodes,
     plan: () => this.studyPlan,
@@ -62,7 +62,7 @@ class CourseStore {
   );
   selectedPlan = $derived(this.currentTemplate.plan);
   nodes = $derived.by(() => this.drag.activeNodes);
-  edges = $derived.by(() => this.graph.edges);
+  edges = $derived.by(() => orderEdgeHandles(this.graph.edges, this.positionedNodes));
 
   semesterDividerData: SemesterIndicator[] = $derived.by(() => {
     const rows = (this.drag.previewRows ?? this.studyPlan.rows).slice(0, MAX_SEMESTERS);
