@@ -139,14 +139,9 @@ export const courseStore = {
     const savedTemplateId = planPrefs.loadTemplateId();
     const savedPlanCode = planPrefs.loadPlanCode();
 
-    if (savedPlanCode) {
-      setCoursePlan(savedPlanCode);
-    }
-
     const savedTemplate = savedTemplateId ? getTemplateById(savedTemplateId) : undefined;
     if (savedTemplate) {
       _currentTemplate = savedTemplate;
-      setCoursePlan(savedTemplate.plan);
     } else if (savedPlanCode) {
       const matchingTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
         .find((t) => t.plan === savedPlanCode);
@@ -154,6 +149,8 @@ export const courseStore = {
         _currentTemplate = matchingTemplate;
       }
     }
+
+    setCoursePlan(_currentTemplate.plan);
 
     const legacySelections = loadLegacySelections();
     setStudyPlan(loadPlan(_currentTemplate, legacySelections));
