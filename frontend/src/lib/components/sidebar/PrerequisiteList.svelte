@@ -4,7 +4,7 @@
   import { slotStatusMap } from "$lib/stores/progressStore.svelte";
   import { evaluatePrerequisiteRule } from "$lib/utils/prerequisite";
   import { uiStore } from "$lib/stores/uiStore.svelte";
-  import { studyPlan } from "$lib/stores/courseStore.svelte";
+  import { courseStore } from "$lib/stores/courseStore.svelte";
 
   let {
     prerequisites,
@@ -26,7 +26,7 @@
     const ruleMet = evaluatePrerequisiteRule(
       rule,
       slotStatusMap(),
-      studyPlan()
+      courseStore.studyPlan
     );
 
     return {
@@ -36,7 +36,7 @@
   }
 
   function isModuleMet(moduleId: string, mustBePassed: boolean): boolean {
-    const nodes = Object.values(studyPlan().nodes).filter(
+    const nodes = Object.values(courseStore.studyPlan.nodes).filter(
       (node) => node.courseId === moduleId
     );
     return nodes.some((node) => {
@@ -50,8 +50,7 @@
   }
 
   function isPrerequisiteInPlan(moduleId: string): boolean {
-    const plan = studyPlan();
-    return Object.values(plan.nodes).some((node) => node.courseId === moduleId);
+    return Object.values(courseStore.studyPlan.nodes).some((node) => node.courseId === moduleId);
   }
 
   function openAssessmentInfo() {

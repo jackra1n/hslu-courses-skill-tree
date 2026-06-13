@@ -1,11 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import {
-    totalCredits,
-    calculatedTotalCredits,
-    attendedCredits,
-    completedCredits
-  } from '$lib/stores/courseStore.svelte';
+  import { courseStore } from '$lib/stores/courseStore.svelte';
   import { uiStore } from '$lib/stores/uiStore.svelte';
   import { theme, themeStore } from '$lib/stores/theme.svelte';
   import TemplateSelector from './TemplateSelector.svelte';
@@ -40,10 +35,10 @@
     settingsSidebarOpen = !settingsSidebarOpen;
   }
 
-  const plannedCredits = $derived(totalCredits());
-  const calculatedTotal = $derived(calculatedTotalCredits());
-  const attended = $derived(attendedCredits());
-  const completed = $derived(completedCredits());
+  const plannedCredits = $derived(courseStore.totalCredits);
+  const calculatedTotal = $derived(courseStore.calculatedTotalCredits);
+  const attended = $derived(courseStore.attendedCredits);
+  const completed = $derived(courseStore.completedCredits);
   const ectsTooltip = $derived(
     [
       `${calculatedTotal} ECTS total (calculated)`,

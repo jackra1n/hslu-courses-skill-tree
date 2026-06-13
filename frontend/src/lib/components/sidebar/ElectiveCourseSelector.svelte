@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { studyPlan, userSelections, courseStore } from '$lib/stores/courseStore.svelte';
-  import { progressStore } from '$lib/stores/progressStore.svelte';
-  import { uiStore } from '$lib/stores/uiStore.svelte';
+  import { courseStore } from '$lib/stores/courseStore.svelte';
   import { COURSES, getCourseById } from '$lib/data/courses';
   import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
   import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
@@ -12,18 +10,18 @@
 
   let { slotId }: { slotId: string } = $props();
 
-  const selectedCourseId = $derived(userSelections()[slotId]);
+  const selectedCourseId = $derived(courseStore.userSelections[slotId]);
   const selectedCourse = $derived.by(() => {
     if (!selectedCourseId) return null;
     return getCourseById(selectedCourseId) ?? null;
   });
 
-  const slotNode = $derived(studyPlan().nodes[slotId]);
+  const slotNode = $derived(courseStore.studyPlan.nodes[slotId]);
 
   const warningType = $derived.by(() => {
     if (!selectedCourse) return null;
-    
-    const plan = studyPlan();
+
+    const plan = courseStore.studyPlan;
 
     if (hasPlanPrereqConflict(plan, slotId, { considerSameSemester: false })) {
       return 'later-prerequisites';
@@ -44,24 +42,6 @@
     COURSES.filter(course => {
       if (!slotNode) return false;
       if (selectedCourseId === course.id) return true;
-      if (progressStore.hasCompletedInstance(course.id, studyPlan())) return false;
-
-      const fixedNodes = Object.values(studyPlan().nodes).filter(
-        node => node.kind === 'fixed' && node.courseId === course.id
-      );
-      const appearsFixed = fixedNodes.length > 0;
-
-      if (appearsFixed) {
-        if (!progressStore.hasAttendedInstance(course.id, studyPlan())) {
-          return false;
-        }
-        
-        const earliest = Math.min(...fixedNodes.map(node => node.semester));
-        if (slotNode.semester <= earliest) {
-          return false;
-        }
-      }
-
       return courseStore.canSelectCourseForSlot(slotId, course.id);
     })
   );

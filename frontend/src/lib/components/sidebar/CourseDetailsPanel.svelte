@@ -5,10 +5,7 @@
     isElectiveSlot,
     uiStore
   } from '$lib/stores/uiStore.svelte';
-  import {
-    studyPlan,
-    userSelections
-  } from '$lib/stores/courseStore.svelte';
+  import { courseStore } from '$lib/stores/courseStore.svelte';
   import { getCourseById } from '$lib/data/courses';
   import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
   import PrerequisiteList from './PrerequisiteList.svelte';
@@ -22,7 +19,7 @@
     if (!selection()) return null;
     
     if (isElectiveSlot()) {
-      const selectedCourseId = userSelections()[selection()!.id];
+      const selectedCourseId = courseStore.userSelections[selection()!.id];
       if (selectedCourseId) {
         const selectedCourse = getCourseById(selectedCourseId);
         if (selectedCourse) {
@@ -37,7 +34,7 @@
 
   const activePlanNode = $derived.by(() => {
     if (!selection()) return null;
-    const plan = studyPlan();
+    const plan = courseStore.studyPlan;
     const slotMatch = plan.nodes[selection()!.id];
     if (slotMatch) return slotMatch;
     return Object.values(plan.nodes).find((node) => node.courseId === selection()!.id) ?? null;
@@ -45,8 +42,8 @@
 
   const warningType = $derived.by(() => {
     if (!displayCourse || !activePlanNode) return null;
-    
-    const plan = studyPlan();
+
+    const plan = courseStore.studyPlan;
 
     if (hasPlanPrereqConflict(plan, activePlanNode.id, { considerSameSemester: false })) {
       return 'later-prerequisites';

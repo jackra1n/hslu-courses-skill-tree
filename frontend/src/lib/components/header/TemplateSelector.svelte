@@ -1,9 +1,5 @@
 <script lang="ts">
-  import {
-    currentTemplate,
-    selectedPlan,
-    courseStore,
-  } from "$lib/stores/courseStore.svelte";
+  import { courseStore } from "$lib/stores/courseStore.svelte";
   import {
     getTemplatesByProgram,
     getAvailablePlans,
@@ -26,14 +22,14 @@
   let pendingPlan = $state<string | null>(null);
 
   const hasPendingChanges = $derived.by(() => {
-    const targetProgram = pendingProgram ?? currentTemplate().studiengang;
-    const targetModel = pendingModel ?? currentTemplate().modell;
-    const targetPlan = pendingPlan ?? selectedPlan();
+    const targetProgram = pendingProgram ?? courseStore.currentTemplate.studiengang;
+    const targetModel = pendingModel ?? courseStore.currentTemplate.modell;
+    const targetPlan = pendingPlan ?? courseStore.selectedPlan;
 
     return (
-      targetProgram !== currentTemplate().studiengang ||
-      targetModel !== currentTemplate().modell ||
-      targetPlan !== selectedPlan()
+      targetProgram !== courseStore.currentTemplate.studiengang ||
+      targetModel !== courseStore.currentTemplate.modell ||
+      targetPlan !== courseStore.selectedPlan
     );
   });
 
@@ -58,7 +54,7 @@
   );
 
   const modelOptions = $derived.by(() => {
-    const program = pendingProgram ?? currentTemplate().studiengang;
+    const program = pendingProgram ?? courseStore.currentTemplate.studiengang;
     const availableModels = getAvailableModels(program);
     const candidates: string[] = [...MODEL_ORDER];
 
@@ -81,11 +77,11 @@
   });
 
   const planOptions = $derived.by(() => {
-    const program = pendingProgram ?? currentTemplate().studiengang;
-    const model = pendingModel ?? currentTemplate().modell;
+    const program = pendingProgram ?? courseStore.currentTemplate.studiengang;
+    const model = pendingModel ?? courseStore.currentTemplate.modell;
     const actualPlans = model ? getAvailablePlans(program, model) : [];
     const declaredPlans = PROGRAM_PLANS[program] ?? [];
-    const currentSelection = pendingPlan ?? selectedPlan();
+    const currentSelection = pendingPlan ?? courseStore.selectedPlan;
     const combined: string[] = [...actualPlans];
 
     declaredPlans.forEach((plan) => {
@@ -120,7 +116,7 @@
       return;
     }
 
-    const current = pendingPlan ?? selectedPlan();
+    const current = pendingPlan ?? courseStore.selectedPlan;
     pendingPlan = plans.includes(current) ? current : plans[0];
   }
 
@@ -139,13 +135,13 @@
       return;
     }
 
-    const currentModel = pendingModel ?? currentTemplate().modell;
+    const currentModel = pendingModel ?? courseStore.currentTemplate.modell;
     pendingModel = models.includes(currentModel) ? currentModel : models[0];
     syncPendingPlan(value, pendingModel);
   }
 
   function handleModelChange(value: string) {
-    const program = pendingProgram ?? currentTemplate().studiengang;
+    const program = pendingProgram ?? courseStore.currentTemplate.studiengang;
     pendingModel = value as StudyModel;
     syncPendingPlan(program, pendingModel);
   }
@@ -155,10 +151,10 @@
   }
 
   function resolveTargetTemplate() {
-    const program = pendingProgram ?? currentTemplate().studiengang;
-    const model = pendingModel ?? currentTemplate().modell;
+    const program = pendingProgram ?? courseStore.currentTemplate.studiengang;
+    const model = pendingModel ?? courseStore.currentTemplate.modell;
     const candidates = getAvailablePlans(program, model);
-    const desiredPlan = pendingPlan ?? selectedPlan();
+    const desiredPlan = pendingPlan ?? courseStore.selectedPlan;
     const plan = candidates.includes(desiredPlan) ? desiredPlan : candidates[0];
     if (!plan) return undefined;
 
@@ -204,7 +200,7 @@
     >
     <Dropdown
       options={programOptions}
-      selected={pendingProgram ?? currentTemplate().studiengang}
+      selected={pendingProgram ?? courseStore.currentTemplate.studiengang}
       onSelect={handleProgramChange}
       minWidth="100%"
     />
@@ -216,7 +212,7 @@
     >
     <Dropdown
       options={modelOptions}
-      selected={pendingModel ?? currentTemplate().modell}
+      selected={pendingModel ?? courseStore.currentTemplate.modell}
       onSelect={handleModelChange}
       minWidth="100%"
     />
@@ -228,7 +224,7 @@
     >
     <Dropdown
       options={planOptions}
-      selected={pendingPlan ?? selectedPlan()}
+      selected={pendingPlan ?? courseStore.selectedPlan}
       onSelect={handlePlanChange}
       minWidth="100%"
     />

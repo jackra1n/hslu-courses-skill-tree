@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Course, TemplateSlot } from "$lib/data/courses";
   import { Handle, Position } from "@xyflow/svelte";
-  import { studyPlan } from "$lib/stores/courseStore.svelte";
+  import { courseStore } from "$lib/stores/courseStore.svelte";
   import { hasMissingPrerequisites as checkMissingPrerequisites } from "$lib/utils/status";
 
   let {
@@ -49,8 +49,7 @@
     if (nodeData.hasMissingPrerequisites !== undefined) {
       return nodeData.hasMissingPrerequisites;
     }
-    const plan = studyPlan();
-    return checkMissingPrerequisites(plan, id);
+    return checkMissingPrerequisites(courseStore.studyPlan, id);
   });
 
   function getCourseTypeColor(type?: string): string {
