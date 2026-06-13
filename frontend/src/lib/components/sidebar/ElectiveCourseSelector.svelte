@@ -1,7 +1,5 @@
 <script lang="ts">
   import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { progressStore } from '$lib/stores/progressStore.svelte';
-  import { uiStore } from '$lib/stores/uiStore.svelte';
   import { COURSES, getCourseById } from '$lib/data/courses';
   import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
   import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
@@ -44,24 +42,6 @@
     COURSES.filter(course => {
       if (!slotNode) return false;
       if (selectedCourseId === course.id) return true;
-      if (progressStore.hasCompletedInstance(course.id, courseStore.studyPlan)) return false;
-
-      const fixedNodes = Object.values(courseStore.studyPlan.nodes).filter(
-        node => node.kind === 'fixed' && node.courseId === course.id
-      );
-      const appearsFixed = fixedNodes.length > 0;
-
-      if (appearsFixed) {
-        if (!progressStore.hasAttendedInstance(course.id, courseStore.studyPlan)) {
-          return false;
-        }
-        
-        const earliest = Math.min(...fixedNodes.map(node => node.semester));
-        if (slotNode.semester <= earliest) {
-          return false;
-        }
-      }
-
       return courseStore.canSelectCourseForSlot(slotId, course.id);
     })
   );
