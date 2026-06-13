@@ -25,6 +25,7 @@ import {
 import { progressStore, slotStatusMap } from './progressStore.svelte';
 import { loadPlan, savePlan, loadLegacySelections, planPrefs } from './planStorage';
 import { DragController } from './dragController.svelte';
+import { canSelectCourse, isPlanCustomized } from '$lib/data/plan-rules';
 
 type FlowNodePosition = { x: number; y: number };
 
@@ -92,47 +93,7 @@ export function semesterDividerData(): SemesterIndicator[] {
 export const courseStore = {
 
   canSelectCourseForSlot(slotId: string, courseId: string): boolean {
-    const node = _studyPlan.nodes[slotId];
-    if (!node || node.slotType === 'fixed') return false;
-
-    if (progressStore.hasCompletedInstance(courseId, _studyPlan)) return false;
-
-    // check if course appears as fixed in current plan
-    const appearsFixedInPlan = Object.values(_studyPlan.nodes).some(
-      (planNode) => planNode.kind === 'fixed' && planNode.courseId === courseId
-    );
-
-    if (appearsFixedInPlan) {
-      if (!progressStore.hasAttendedInstance(courseId, _studyPlan)) {
-        return false;
-      }
-
-      const fixedSemesters = Object.values(_studyPlan.nodes)
-        .filter((planNode) => planNode.kind === 'fixed' && planNode.courseId === courseId)
-        .map((planNode) => planNode.semester);
-
-      if (fixedSemesters.length > 0) {
-        const earliestFixed = Math.min(...fixedSemesters);
-        if (node.semester <= earliestFixed) {
-          return false;
-        }
-      }
-    }
-
-    const conflictingSlotId = Object.entries(_userSelections).find(
-      ([otherSlotId, otherCourseId]) => otherSlotId !== slotId && otherCourseId === courseId
-    )?.[0];
-
-    if (!conflictingSlotId) {
-      return true;
-    }
-
-    if (progressStore.hasAttendedInstance(courseId, _studyPlan)) {
-      const conflictingNode = _studyPlan.nodes[conflictingSlotId];
-      return conflictingNode ? conflictingNode.semester !== node.semester : true;
-    }
-
-    return false;
+    return canSelectCourse(_studyPlan, slotId, courseId);
   },
 
   switchTemplate(templateId: string, forceReset: boolean = false) {
@@ -270,63 +231,7 @@ export const courseStore = {
   },
 
   isStudyPlanCustomized(): boolean {
-    const template = getTemplateById(_studyPlan.templateId);
-    if (!template) return false;
-    const defaultPlan = createStudyPlan(template, {});
-
-    const templateSlotIds = new Set(template.slots.map((slot) => slot.id));
-    const planNodeIds = Object.keys(_studyPlan.nodes);
-
-    if (planNodeIds.length !== templateSlotIds.size) {
-      return true;
-    }
-
-    for (const nodeId of planNodeIds) {
-      if (!templateSlotIds.has(nodeId)) {
-        return true;
-      }
-    }
-
-    for (const slot of template.slots) {
-      const nodeId = slot.id;
-      const currentNode = _studyPlan.nodes[nodeId];
-      const defaultNode = defaultPlan.nodes[nodeId];
-
-      if (!currentNode || !defaultNode) {
-        return true;
-      }
-
-      if (currentNode.semester !== defaultNode.semester) {
-        return true;
-      }
-
-      const currentCourseId = currentNode.courseId ?? null;
-      const defaultCourseId = defaultNode.courseId ?? null;
-      if (currentCourseId !== defaultCourseId) {
-        return true;
-      }
-    }
-
-    if (_studyPlan.rows.length !== defaultPlan.rows.length) {
-      return true;
-    }
-
-    for (let index = 0; index < _studyPlan.rows.length; index += 1) {
-      const currentRow = _studyPlan.rows[index];
-      const defaultRow = defaultPlan.rows[index];
-
-      if (currentRow.nodeOrder.length !== defaultRow.nodeOrder.length) {
-        return true;
-      }
-
-      for (let orderIndex = 0; orderIndex < currentRow.nodeOrder.length; orderIndex += 1) {
-        if (currentRow.nodeOrder[orderIndex] !== defaultRow.nodeOrder[orderIndex]) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+    return isPlanCustomized(_studyPlan);
   }
 };
 
