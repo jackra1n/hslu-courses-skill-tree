@@ -1,11 +1,9 @@
-import { browser } from '$app/environment';
 import type { Node } from '@xyflow/svelte';
-import type { ExtendedNodeData, CurriculumTemplate } from '$lib/data/courses';
+import type { ExtendedNodeData } from '$lib/data/courses';
 import {
   AVAILABLE_TEMPLATES,
   getTemplateById,
   getTemplatesByProgram,
-  getCourseById,
   setCoursePlan
 } from '$lib/data/courses';
 import {
@@ -23,6 +21,7 @@ import {
 import { toGraph } from '$lib/utils/graph';
 import { getNodeWidth } from '$lib/utils/layout';
 import { progressStore, slotStatusMap } from './progressStore.svelte';
+import { loadPlan, savePlan, loadLegacySelections, planPrefs } from './planStorage';
 
 type FlowNodePosition = { x: number; y: number };
 export const GRID_SIZE = { x: 40, y: 200 };
@@ -152,17 +151,8 @@ export const courseStore = {
     _selectedPlan = template.plan;
     setCoursePlan(template.plan);
     
-    if (forceReset) {
-      setStudyPlan(createStudyPlan(template, {}));
-    } else {
-      setStudyPlan(loadStoredPlan(template));
-    }
-
-    if (browser) {
-      localStorage.setItem('currentTemplate', templateId);
-      localStorage.setItem('selectedPlan', template.plan);
-    }
-
+    setStudyPlan(forceReset ? createStudyPlan(template, {}) : loadPlan(template));
+    planPrefs.saveTemplate(templateId, template.plan);
   },
 
   switchPlan(plan: string) {
@@ -186,46 +176,38 @@ export const courseStore = {
   toggleShortNames() {
     _showShortNamesOnly = !_showShortNamesOnly;
     clearNodeOverride();
-    if (browser) {
-      localStorage.setItem('showShortNamesOnly', JSON.stringify(_showShortNamesOnly));
-    }
+    planPrefs.saveShortNames(_showShortNamesOnly);
   },
 
   init() {
-    if (browser) {
-      const savedShortNames = localStorage.getItem('showShortNamesOnly');
-      if (savedShortNames) {
-        _showShortNamesOnly = JSON.parse(savedShortNames);
-      }
-
-      const savedTemplateId = localStorage.getItem('currentTemplate');
-      const savedPlanCode = localStorage.getItem('selectedPlan');
-
-      if (savedPlanCode) {
-        _selectedPlan = savedPlanCode;
-        setCoursePlan(savedPlanCode);
-      }
-
-      if (savedTemplateId) {
-        const template = getTemplateById(savedTemplateId);
-        if (template) {
-          _currentTemplate = template;
-          _selectedPlan = template.plan;
-          setCoursePlan(template.plan);
-        }
-      } else if (savedPlanCode) {
-        const matchingTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
-          .find((t) => t.plan === savedPlanCode);
-        if (matchingTemplate) {
-          _currentTemplate = matchingTemplate;
-        }
-      }
-
-      const legacySelections = loadLegacySelections();
-      const storedPlan = loadStoredPlan(_currentTemplate, legacySelections);
-      setStudyPlan(storedPlan);
+    const savedShortNames = planPrefs.loadShortNames();
+    if (savedShortNames !== null) {
+      _showShortNamesOnly = savedShortNames;
     }
 
+    const savedTemplateId = planPrefs.loadTemplateId();
+    const savedPlanCode = planPrefs.loadPlanCode();
+
+    if (savedPlanCode) {
+      _selectedPlan = savedPlanCode;
+      setCoursePlan(savedPlanCode);
+    }
+
+    const savedTemplate = savedTemplateId ? getTemplateById(savedTemplateId) : undefined;
+    if (savedTemplate) {
+      _currentTemplate = savedTemplate;
+      _selectedPlan = savedTemplate.plan;
+      setCoursePlan(savedTemplate.plan);
+    } else if (savedPlanCode) {
+      const matchingTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
+        .find((t) => t.plan === savedPlanCode);
+      if (matchingTemplate) {
+        _currentTemplate = matchingTemplate;
+      }
+    }
+
+    const legacySelections = loadLegacySelections();
+    setStudyPlan(loadPlan(_currentTemplate, legacySelections));
   },
 
   handleNodeDragStart(nodeId: string) {
@@ -551,71 +533,7 @@ function normalizeRows(rows: PlanRow[]): PlanRow[] {
 function setStudyPlan(nextPlan: StudyPlan): void {
   _studyPlan = normalizePlan(nextPlan);
   clearNodeOverride();
-  saveStudyPlan(_studyPlan);
-}
-
-function getPlanStorageKey(templateId: string): string {
-  return `studyPlan:${templateId}`;
-}
-
-function saveStudyPlan(plan: StudyPlan): void {
-  if (!browser) return;
-  try {
-    localStorage.setItem(getPlanStorageKey(plan.templateId), JSON.stringify(plan));
-  } catch (error) {
-    console.error('Failed to persist study plan', error);
-  }
-}
-
-function loadStoredPlan(template: CurriculumTemplate, fallbackSelections: Record<string, string> = {}): StudyPlan {
-  if (!browser) {
-    return createStudyPlan(template, fallbackSelections);
-  }
-
-  const stored = localStorage.getItem(getPlanStorageKey(template.id));
-  if (stored) {
-    try {
-      const parsed = normalizePlan(JSON.parse(stored) as StudyPlan);
-      if (isPlanCompatible(parsed, template)) {
-        return parsed;
-      }
-    } catch (error) {
-      console.error('Failed to parse stored study plan', error);
-    }
-  }
-
-  return createStudyPlan(template, fallbackSelections);
-}
-
-function isPlanCompatible(plan: StudyPlan, template: CurriculumTemplate): boolean {
-  if (plan.templateId !== template.id) return false;
-
-  // Verify that all nodes in rows actually exist in the nodes object
-  const rowNodeCount = plan.rows.reduce((count, row) => count + row.nodeOrder.length, 0);
-  const planNodeIds = Object.keys(plan.nodes);
-  
-  if (rowNodeCount !== planNodeIds.length) return false;
-
-  // Verify all nodes referenced in rows exist in the nodes object
-  const allRowNodeIds = plan.rows.flatMap((row) => row.nodeOrder);
-  const allNodesExist = allRowNodeIds.every((nodeId) => plan.nodes[nodeId]);
-  
-  return allNodesExist;
-}
-
-function loadLegacySelections(): Record<string, string> {
-  if (!browser) return {};
-  const stored = localStorage.getItem('userSelections');
-  if (!stored) return {};
-
-  try {
-    const selections = JSON.parse(stored) as Record<string, string>;
-    localStorage.removeItem('userSelections');
-    return selections || {};
-  } catch (error) {
-    console.error('Failed to parse legacy user selections', error);
-    return {};
-  }
+  savePlan(_studyPlan);
 }
 
 function getActiveNodes(): Node[] {
