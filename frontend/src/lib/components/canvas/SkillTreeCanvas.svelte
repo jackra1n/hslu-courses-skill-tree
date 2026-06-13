@@ -156,9 +156,7 @@
     targetNode,
   }) => {
     if (!targetNode) return;
-    const position = (targetNode as any).positionAbsolute ||
-      targetNode.position || { x: 0, y: 0 };
-    courseStore.handleNodeDrag(targetNode.id, position);
+    courseStore.handleNodeDrag(targetNode.id, targetNode.position ?? { x: 0, y: 0 });
   };
 
   const handleNodeDragStop: NodeTargetEventWithPointer<
@@ -166,9 +164,7 @@
   > = ({ targetNode }) => {
     if (!targetNode) return;
     isDragging = false;
-    const position = (targetNode as any).positionAbsolute ||
-      targetNode.position || { x: 0, y: 0 };
-    courseStore.handleNodeDragStop(targetNode.id, position);
+    courseStore.handleNodeDragStop(targetNode.id, targetNode.position ?? { x: 0, y: 0 });
   };
 
   function handleNodeClick(evt: { node: any; event: MouseEvent | TouchEvent }) {

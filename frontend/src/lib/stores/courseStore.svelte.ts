@@ -400,14 +400,10 @@ function layoutNodes(
         return;
       }
 
-      const position = { x, y };
       updated[index] = {
         ...node,
-        position
+        position: { x, y }
       };
-      if ('positionAbsolute' in node) {
-        (updated[index] as any).positionAbsolute = position;
-      }
       placed.add(nodeId);
       x += width + GRID_SIZE.x;
     });
@@ -460,11 +456,7 @@ function applyDirectNodePosition(nodeId: string, position: FlowNodePosition): vo
   const updated = nodes.map((node) => {
     if (node.id !== nodeId) return node;
     changed = true;
-    const next: Node = { ...node, position };
-    if ('positionAbsolute' in node) {
-      (next as any).positionAbsolute = position;
-    }
-    return next;
+    return { ...node, position };
   });
   if (changed) {
     _nodeOverride = updated;
@@ -649,16 +641,10 @@ function ensureNodeOverride(): Node[] {
 }
 
 function cloneNodes(nodes: Node[]): Node[] {
-  return nodes.map((node) => {
-    const cloned: Node = {
-      ...node,
-      position: node.position ? { ...node.position } : node.position
-    };
-    if ('positionAbsolute' in node && (node as any).positionAbsolute) {
-      (cloned as any).positionAbsolute = { ...(node as any).positionAbsolute };
-    }
-    return cloned;
-  });
+  return nodes.map((node) => ({
+    ...node,
+    position: node.position ? { ...node.position } : node.position
+  }));
 }
 
 function clearNodeOverride(): void {
