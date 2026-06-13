@@ -7,17 +7,11 @@ import { GRID_SIZE, MAX_SEMESTERS, layoutNodes } from '$lib/utils/plan-layout';
 type Position = { x: number; y: number };
 
 type DragDeps = {
-  // Current laid-out nodes (without any drag override applied).
   layoutedNodes: () => Node[];
-  // Current committed study plan.
   plan: () => StudyPlan;
-  // Commit a new row arrangement to the plan.
   commitRows: (rows: PlanRow[]) => void;
 };
 
-// Owns the ephemeral state of an in-progress node drag: an override node list
-// (so dragging doesn't mutate the committed plan) and a preview of the row
-// arrangement the drop would produce.
 export class DragController {
   #override = $state.raw<Node[] | null>(null);
   #previewRows = $state<PlanRow[] | null>(null);
@@ -28,7 +22,6 @@ export class DragController {
     this.#deps = deps;
   }
 
-  // Nodes to render: the drag override while dragging, otherwise the live layout.
   get activeNodes(): Node[] {
     return this.#override ?? this.#deps.layoutedNodes();
   }
@@ -89,8 +82,7 @@ export class DragController {
     if (changed) this.#override = updated;
   }
 
-  // Build the row arrangement a drop at `dropPosition` would produce: the node
-  // moves to the target semester, inserted by horizontal center against siblings.
+  // Row arrangement a drop would produce, inserting by horizontal center.
   #computeRowPreview(nodeId: string, dropPosition: Position): PlanRow[] | null {
     const plan = this.#deps.plan();
     if (!plan.rows.length) return null;
@@ -137,7 +129,6 @@ function widthOf(node: Node | undefined): number {
   return data?.width ?? getNodeWidth(3);
 }
 
-// Trim trailing empty rows and renumber semesters 1..n.
 function normalizeRows(rows: PlanRow[]): PlanRow[] {
   const normalized = rows.map((row) => ({ ...row, nodeOrder: [...row.nodeOrder] }));
 

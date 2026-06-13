@@ -7,9 +7,6 @@ import {
 } from '$lib/data/study-plan';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 
-// Whether `courseId` may be assigned to the elective slot `slotId`.
-// Blocks duplicates of completed/fixed courses unless the student has actually
-// attended an extra instance in a later semester.
 export function canSelectCourse(plan: StudyPlan, slotId: string, courseId: string): boolean {
   const node = plan.nodes[slotId];
   if (!node || node.slotType === 'fixed') return false;
@@ -21,8 +18,7 @@ export function canSelectCourse(plan: StudyPlan, slotId: string, courseId: strin
   );
 
   if (fixedNodes.length > 0) {
-    // The course is part of the fixed curriculum; only allow a repeat if it was
-    // attended and this slot sits after the earliest fixed occurrence.
+    // fixed-curriculum course: only repeatable if attended, and after its earliest slot
     if (!progressStore.hasAttendedInstance(courseId, plan)) return false;
     const earliestFixed = Math.min(...fixedNodes.map((planNode) => planNode.semester));
     if (node.semester <= earliestFixed) return false;
@@ -35,8 +31,7 @@ export function canSelectCourse(plan: StudyPlan, slotId: string, courseId: strin
 
   if (!conflictingSlotId) return true;
 
-  // Same course already chosen elsewhere: only allowed as a repeat attempt in a
-  // different semester than the conflicting one.
+  // already chosen elsewhere: only allowed as a repeat in a different semester
   if (progressStore.hasAttendedInstance(courseId, plan)) {
     const conflictingNode = plan.nodes[conflictingSlotId];
     return conflictingNode ? conflictingNode.semester !== node.semester : true;
@@ -45,8 +40,6 @@ export function canSelectCourse(plan: StudyPlan, slotId: string, courseId: strin
   return false;
 }
 
-// Whether the plan diverges from the template's pristine default: nodes added or
-// removed, a slot moved or re-assigned, or rows reordered.
 export function isPlanCustomized(plan: StudyPlan): boolean {
   const template = getTemplateById(plan.templateId);
   if (!template) return false;

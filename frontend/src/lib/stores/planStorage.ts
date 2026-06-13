@@ -45,13 +45,11 @@ export function loadPlan(
 function isPlanCompatible(plan: StudyPlan, template: CurriculumTemplate): boolean {
   if (plan.templateId !== template.id) return false;
 
-  // Every node referenced by the rows must exist in the nodes map, with no orphans.
   const rowNodeIds = plan.rows.flatMap((row) => row.nodeOrder);
   if (rowNodeIds.length !== Object.keys(plan.nodes).length) return false;
   return rowNodeIds.every((nodeId) => plan.nodes[nodeId]);
 }
 
-// One-time migration of the pre-study-plan selection format.
 export function loadLegacySelections(): Record<string, string> {
   const stored = read(KEYS.legacySelections);
   if (!stored) return {};

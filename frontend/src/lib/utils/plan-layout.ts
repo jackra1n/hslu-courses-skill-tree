@@ -19,7 +19,6 @@ export function resolveNodeWidth(node: Node | undefined): number {
   return data?.width ?? DEFAULT_NODE_WIDTH;
 }
 
-// Walk a row left-to-right, invoking `visit` with each node's x offset.
 // Returns the x cursor just past the last node (where the next slot sits).
 function walkRow(
   nodeOrder: string[],
@@ -34,8 +33,7 @@ function walkRow(
   return x;
 }
 
-// Position every node according to its row order. Nodes not present in any
-// row keep their existing position; `skipNodeId` reserves space without moving.
+// `skipNodeId` reserves a node's space without moving it (used while dragging).
 export function layoutNodes(
   sourceNodes: Node[],
   rows: PlanRow[],
@@ -59,8 +57,6 @@ export function layoutNodes(
   return sourceNodes.map((node) => byId.get(node.id) ?? node);
 }
 
-// Append an "add module" button at the trailing edge of each semester row
-// (plus one empty row beyond the last, up to MAX_SEMESTERS).
 export function addAddNodeButtons(nodes: Node[], rows: PlanRow[]): Node[] {
   const byId = new Map(nodes.map((node) => [node.id, node] as const));
   const addNodes: Node[] = [];
@@ -89,8 +85,7 @@ export function addAddNodeButtons(nodes: Node[], rows: PlanRow[]): Node[] {
   return [...nodes, ...addNodes];
 }
 
-// Right edge of a row, honouring explicit node positions (set during a drag)
-// and falling back to a cumulative cursor for nodes that aren't placed yet.
+// Honours explicit node positions (set during a drag), else a cumulative cursor.
 function calculateRowRightEdge(row: PlanRow, nodeLookup: Map<string, Node>): number {
   let fallbackCursor = ROW_START_X;
   let rightEdge = fallbackCursor + DEFAULT_NODE_WIDTH;
@@ -114,8 +109,6 @@ function calculateRowRightEdge(row: PlanRow, nodeLookup: Map<string, Node>): num
   return rightEdge;
 }
 
-// Length of the semester divider lines: long enough to clear the widest row,
-// never shorter than MIN_DIVIDER_WIDTH.
 export function computeDividerLength(rows: PlanRow[], nodes: Node[]): number {
   if (!rows.length) return MIN_DIVIDER_WIDTH;
   const lookup = new Map(nodes.map((node) => [node.id, node] as const));
