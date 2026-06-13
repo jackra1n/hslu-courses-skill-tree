@@ -4,6 +4,7 @@
     SvelteFlow,
     Background,
     Controls,
+    type Node,
     type NodeTargetEventWithPointer,
     useViewport,
   } from "@xyflow/svelte";
@@ -47,76 +48,56 @@
   const viewport = $derived(viewportSignal.current);
   const semesterIndicators = $derived(courseStore.semesterDividerData);
 
+  const statuses = $derived.by(() => computeStatuses(courseStore.studyPlan, slotStatusMap()));
+
+  const ADD_NODE_STYLE = "width: 80px; height: 80px; min-width: 80px; max-width: 80px;";
+
+  // SvelteFlow wants nodes/edges backed by $state.raw to avoid deep-proxy
+  // overhead, so populate the raw arrays from an effect rather than deriving.
   let styledNodes = $state.raw<any[]>([]);
-  
   $effect(() => {
-    const statuses = computeStatuses(courseStore.studyPlan, slotStatusMap());
-
-    styledNodes = courseStore.nodes.map((n) => {
-      // Handle addNode type separately
-      if (n.type === 'addNode') {
-        return {
-          ...n,
-          style: 'width: 80px; height: 80px; min-width: 80px; max-width: 80px;'
-        };
-      }
-
-      const status = statuses[n.id];
-      const data = n.data as any;
-      const slot = data.slot;
-      const course = data.course;
-      const isElectiveSlot = data.isElectiveSlot;
-
-      const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
-      const isAttended = slotStatus === "attended";
-      const isCompleted = slotStatus === "completed";
-
-      const isSelected =
-        selection()?.id === n.id || (course && selection()?.id === course.id);
-
-      const nodeWidth =
-        data.width || getNodeWidth(course?.ects || slot?.credits || 6);
-
-      const hasSelectedCourse =
-        isElectiveSlot && slot ? !!courseStore.userSelections[slot.id] : false;
-
-      const hasLaterPrerequisites = data.hasLaterPrerequisites || false;
-      const hasMissingPrereqs = hasMissingPrerequisites(courseStore.studyPlan, n.id);
-      const hasAssessmentViolation = hasAssessmentStageViolation(courseStore.studyPlan, n.id);
-
-      const styleStr = getNodeStyle({
-        status,
-        isSelected,
-        isAttended,
-        isCompleted,
-        isElectiveSlot,
-        nodeWidth,
-        hasSelectedCourse,
-        hasLaterPrerequisites,
-        hasMissingPrerequisites: hasMissingPrereqs,
-        hasAssessmentStageViolation: hasAssessmentViolation,
-        isDragging,
-      });
-
-      return {
-        ...n,
-        style: styleStr,
-        data: {
-          ...data,
-          showCourseTypeBadges: showCourseTypeBadges(),
-          showRemoveButton: selectedNodeId === n.id,
-          onRemove: handleRemoveClick,
-          hasMissingPrerequisites: hasMissingPrereqs,
-        },
-      };
-    });
+    styledNodes = courseStore.nodes.map((n) =>
+      n.type === "addNode" ? { ...n, style: ADD_NODE_STYLE } : styleCourseNode(n)
+    );
   });
 
-  let styledEdges = $state.raw<any[]>([]);
-  
-  $effect(() => {
-    const statuses = computeStatuses(courseStore.studyPlan, slotStatusMap());
+  function styleCourseNode(n: Node) {
+    const data = n.data as any;
+    const { slot, course, isElectiveSlot } = data;
 
+    const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
+    const hasMissingPrereqs = hasMissingPrerequisites(courseStore.studyPlan, n.id);
+    const selected = selection();
+
+    const style = getNodeStyle({
+      status: statuses[n.id],
+      isSelected: selected?.id === n.id || (!!course && selected?.id === course.id),
+      isAttended: slotStatus === "attended",
+      isCompleted: slotStatus === "completed",
+      isElectiveSlot,
+      nodeWidth: data.width || getNodeWidth(course?.ects || slot?.credits || 6),
+      hasSelectedCourse: isElectiveSlot && slot ? !!courseStore.userSelections[slot.id] : false,
+      hasLaterPrerequisites: data.hasLaterPrerequisites || false,
+      hasMissingPrerequisites: hasMissingPrereqs,
+      hasAssessmentStageViolation: hasAssessmentStageViolation(courseStore.studyPlan, n.id),
+      isDragging,
+    });
+
+    return {
+      ...n,
+      style,
+      data: {
+        ...data,
+        showCourseTypeBadges: showCourseTypeBadges(),
+        showRemoveButton: selectedNodeId === n.id,
+        onRemove: handleRemoveClick,
+        hasMissingPrerequisites: hasMissingPrereqs,
+      },
+    };
+  }
+
+  let styledEdges = $state.raw<any[]>([]);
+  $effect(() => {
     styledEdges = courseStore.edges.map((e) => {
       const { style, markerEnd, animated } = getEdgeStyle(
         e,
@@ -126,13 +107,7 @@
         courseStore.studyPlan,
         isDragging
       );
-
-      return {
-        ...e,
-        style,
-        markerEnd,
-        animated,
-      };
+      return { ...e, style, markerEnd, animated };
     });
   });
 
