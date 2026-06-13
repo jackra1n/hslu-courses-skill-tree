@@ -26,6 +26,17 @@ function buildSelectionStyle(isSelected: boolean): string {
  * Builds state-specific styles for nodes based on their status and progress.
  * Handles special cases like later prerequisites (red dashed border), missing prerequisites, and assessment stage violations.
  */
+const NODE_SHADOW = "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
+
+function shadowUnlessSelected(isSelected: boolean): string {
+  return isSelected ? "" : NODE_SHADOW;
+}
+
+// Red dashed border shared by the later/missing/assessment-stage warning states.
+function prereqWarningStyle(opacity: number, isSelected: boolean): string {
+  return `background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: ${opacity};` + shadowUnlessSelected(isSelected);
+}
+
 function buildNodeStateStyle(
   status: Status,
   isAttended: boolean,
@@ -37,46 +48,19 @@ function buildNodeStateStyle(
   hasAssessmentStageViolation: boolean,
   isSelected: boolean
 ): string {
-  let style = "";
+  // Priority order: later prerequisites > missing prerequisites > assessment stage > regular status
+  if (hasLaterPrerequisites) return prereqWarningStyle(0.8, isSelected);
+  if (hasMissingPrerequisites) return prereqWarningStyle(0.7, isSelected);
+  if (hasAssessmentStageViolation) return prereqWarningStyle(0.7, isSelected);
 
-  // Priority order: later prerequisites > missing prerequisites > assessment stage violation > regular status
-  // Special case: nodes with later prerequisites get red dashed border (highest priority)
-  if (hasLaterPrerequisites) {
-    style += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.8;";
-    if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
-    return style;
-  }
-
-  // Special case: nodes with missing prerequisites get red dashed border (second priority)
-  if (hasMissingPrerequisites) {
-    style += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.7;";
-    if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
-    return style;
-  }
-
-  // Special case: nodes with assessment stage violations get red dashed border (third priority)
-  if (hasAssessmentStageViolation) {
-    style += "background: rgb(var(--node-locked-bg)); border-color: rgb(239 68 68); color: rgb(var(--node-locked-text)); border-style: dashed; border-width: 3px; opacity: 0.7;";
-    if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
-    return style;
-  }
-
-  // Elective slots have dashed borders and special handling when no course is selected
   if (isElectiveSlot) {
     if (!hasSelectedCourse) {
-      style += "background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); border-style: dashed; opacity: 0.6;";
-      return style;
+      return "background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); border-style: dashed; opacity: 0.6;";
     }
-    // When course is selected, apply status-based styling with dashed border
-    style += buildStatusBasedStyle(status, isAttended, isCompleted) + "border-style: dashed; ";
-    if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
-    return style;
+    return buildStatusBasedStyle(status, isAttended, isCompleted) + "border-style: dashed; " + shadowUnlessSelected(isSelected);
   }
 
-  // Regular nodes use status-based styling
-  style += buildStatusBasedStyle(status, isAttended, isCompleted);
-  if (!isSelected) style += "box-shadow: 0 1px 2px rgba(0,0,0,0.05);";
-  return style;
+  return buildStatusBasedStyle(status, isAttended, isCompleted) + shadowUnlessSelected(isSelected);
 }
 
 /**
