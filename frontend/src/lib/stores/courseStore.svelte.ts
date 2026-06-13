@@ -28,112 +28,109 @@ import { DragController } from './dragController.svelte';
 import { canSelectCourse, isPlanCustomized } from '$lib/data/plan-rules';
 
 type FlowNodePosition = { x: number; y: number };
+type SemesterIndicator = { semester: number; isPreview: boolean; length: number };
 
 function generateNodeId(): string {
   return `custom-${crypto.randomUUID()}`;
 }
 
-let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
-let _studyPlan = $state<StudyPlan>(createStudyPlan(_currentTemplate, {}));
+class CourseStore {
+  #currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
+  #studyPlan = $state<StudyPlan>(createStudyPlan(AVAILABLE_TEMPLATES[0], {}));
+  #showShortNamesOnly = $state(false);
 
-let _showShortNamesOnly = $state(false);
+  #userSelections = $derived(deriveSelections(this.#studyPlan));
+  #totalCredits = $derived(calculatePlanTotalCredits(this.#studyPlan));
+  #attendedCredits = $derived.by(() => calculateAttendedCredits(this.#studyPlan, slotStatusMap()));
+  #completedCredits = $derived.by(() => calculateCompletedCredits(this.#studyPlan, slotStatusMap()));
+  #calculatedTotalCredits = $derived(Math.max(0, this.#totalCredits - this.#attendedCredits));
+  #availablePlans = $derived(
+    getTemplatesByProgram(this.#currentTemplate.studiengang, this.#currentTemplate.modell)
+      .map((t) => t.plan)
+      .filter((plan, index, arr) => arr.indexOf(plan) === index)
+      .sort()
+  );
+  #graph = $derived.by(() => toGraph(this.#studyPlan, this.#showShortNamesOnly));
+  #layoutedNodes = $derived.by(() =>
+    addAddNodeButtons(layoutNodes(this.#graph.nodes, this.#studyPlan.rows), this.#studyPlan.rows)
+  );
 
-const _userSelections = $derived(deriveSelections(_studyPlan));
-const _totalCredits = $derived(calculatePlanTotalCredits(_studyPlan));
-const _attendedCredits = $derived.by(() => calculateAttendedCredits(_studyPlan, slotStatusMap()));
-const _completedCredits = $derived.by(() => calculateCompletedCredits(_studyPlan, slotStatusMap()));
-const _calculatedTotalCredits = $derived(Math.max(0, _totalCredits - _attendedCredits));
-const _availablePlans = $derived(
-  getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
-    .map((t) => t.plan)
-    .filter((plan, index, arr) => arr.indexOf(plan) === index)
-    .sort()
-);
-const _graph = $derived.by(() => toGraph(_studyPlan, _showShortNamesOnly));
-const _layoutedNodes = $derived.by(() => {
-  const layouted = layoutNodes(_graph.nodes, _studyPlan.rows);
-  return addAddNodeButtons(layouted, _studyPlan.rows);
-});
+  #drag = new DragController({
+    layoutedNodes: () => this.#layoutedNodes,
+    plan: () => this.#studyPlan,
+    commitRows: (rows) => this.#setStudyPlan({ ...this.#studyPlan, rows })
+  });
 
-const drag = new DragController({
-  layoutedNodes: () => _layoutedNodes,
-  plan: () => _studyPlan,
-  commitRows: (rows) => setStudyPlan({ ..._studyPlan, rows })
-});
+  get currentTemplate() { return this.#currentTemplate; }
+  get studyPlan() { return this.#studyPlan; }
+  get userSelections() { return this.#userSelections; }
+  get selectedPlan() { return this.#currentTemplate.plan; }
+  get nodes() { return this.#drag.activeNodes; }
+  get edges() { return this.#graph.edges; }
+  get showShortNamesOnly() { return this.#showShortNamesOnly; }
+  get totalCredits() { return this.#totalCredits; }
+  get attendedCredits() { return this.#attendedCredits; }
+  get completedCredits() { return this.#completedCredits; }
+  get calculatedTotalCredits() { return this.#calculatedTotalCredits; }
+  get availablePlans() { return this.#availablePlans; }
 
-export function currentTemplate() { return _currentTemplate; }
-export function studyPlan() { return _studyPlan; }
-export function userSelections() { return _userSelections; }
-export function selectedPlan() { return _currentTemplate.plan; }
-export function nodes() { return drag.activeNodes; }
-export function edges() { return _graph.edges; }
-export function showShortNamesOnly() { return _showShortNamesOnly; }
-export function totalCredits() { return _totalCredits; }
-export function attendedCredits() { return _attendedCredits; }
-export function completedCredits() { return _completedCredits; }
-export function calculatedTotalCredits() { return _calculatedTotalCredits; }
-export function availablePlans() { return _availablePlans; }
-type SemesterIndicator = { semester: number; isPreview: boolean; length: number };
+  get semesterDividerData(): SemesterIndicator[] {
+    const rows = (this.#drag.previewRows ?? this.#studyPlan.rows).slice(0, MAX_SEMESTERS);
+    if (!rows.length) return [];
 
-export function semesterDividerData(): SemesterIndicator[] {
-  const rows = (drag.previewRows ?? _studyPlan.rows).slice(0, MAX_SEMESTERS);
-  if (!rows.length) return [];
+    const dividerLength = computeDividerLength(rows, this.#drag.activeNodes);
+    const actualCount = Math.min(this.#studyPlan.rows.length, rows.length);
 
-  const dividerLength = computeDividerLength(rows, drag.activeNodes);
-  const actualCount = Math.min(_studyPlan.rows.length, rows.length);
-
-  return rows.map((_, index) => ({
-    semester: index + 1,
-    isPreview: drag.previewRows ? index >= actualCount : false,
-    length: dividerLength
-  }));
-}
-
-export const courseStore = {
+    return rows.map((_, index) => ({
+      semester: index + 1,
+      isPreview: this.#drag.previewRows ? index >= actualCount : false,
+      length: dividerLength
+    }));
+  }
 
   canSelectCourseForSlot(slotId: string, courseId: string): boolean {
-    return canSelectCourse(_studyPlan, slotId, courseId);
-  },
+    return canSelectCourse(this.#studyPlan, slotId, courseId);
+  }
 
   switchTemplate(templateId: string, forceReset: boolean = false) {
     const template = getTemplateById(templateId);
     if (!template) return;
 
-    _currentTemplate = template;
+    this.#currentTemplate = template;
     setCoursePlan(template.plan);
 
-    setStudyPlan(forceReset ? createStudyPlan(template, {}) : loadPlan(template));
+    this.#setStudyPlan(forceReset ? createStudyPlan(template, {}) : loadPlan(template));
     planPrefs.saveTemplate(templateId, template.plan);
-  },
+  }
 
   switchPlan(plan: string) {
     setCoursePlan(plan);
-    const nextTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
+    const nextTemplate = getTemplatesByProgram(this.#currentTemplate.studiengang, this.#currentTemplate.modell)
       .find((t) => t.plan === plan);
     if (nextTemplate) {
       this.switchTemplate(nextTemplate.id);
     }
-  },
+  }
 
   selectCourseForSlot(slotId: string, courseId: string) {
     if (!this.canSelectCourseForSlot(slotId, courseId)) return;
-    setStudyPlan(updateNodeCourse(_studyPlan, slotId, courseId));
-  },
+    this.#setStudyPlan(updateNodeCourse(this.#studyPlan, slotId, courseId));
+  }
 
   clearSlotSelection(slotId: string) {
-    setStudyPlan(updateNodeCourse(_studyPlan, slotId, null));
-  },
+    this.#setStudyPlan(updateNodeCourse(this.#studyPlan, slotId, null));
+  }
 
   toggleShortNames() {
-    _showShortNamesOnly = !_showShortNamesOnly;
-    drag.clear();
-    planPrefs.saveShortNames(_showShortNamesOnly);
-  },
+    this.#showShortNamesOnly = !this.#showShortNamesOnly;
+    this.#drag.clear();
+    planPrefs.saveShortNames(this.#showShortNamesOnly);
+  }
 
   init() {
     const savedShortNames = planPrefs.loadShortNames();
     if (savedShortNames !== null) {
-      _showShortNamesOnly = savedShortNames;
+      this.#showShortNamesOnly = savedShortNames;
     }
 
     const savedTemplateId = planPrefs.loadTemplateId();
@@ -141,32 +138,32 @@ export const courseStore = {
 
     const savedTemplate = savedTemplateId ? getTemplateById(savedTemplateId) : undefined;
     if (savedTemplate) {
-      _currentTemplate = savedTemplate;
+      this.#currentTemplate = savedTemplate;
     } else if (savedPlanCode) {
-      const matchingTemplate = getTemplatesByProgram(_currentTemplate.studiengang, _currentTemplate.modell)
+      const matchingTemplate = getTemplatesByProgram(this.#currentTemplate.studiengang, this.#currentTemplate.modell)
         .find((t) => t.plan === savedPlanCode);
       if (matchingTemplate) {
-        _currentTemplate = matchingTemplate;
+        this.#currentTemplate = matchingTemplate;
       }
     }
 
-    setCoursePlan(_currentTemplate.plan);
+    setCoursePlan(this.#currentTemplate.plan);
 
     const legacySelections = loadLegacySelections();
-    setStudyPlan(loadPlan(_currentTemplate, legacySelections));
-  },
+    this.#setStudyPlan(loadPlan(this.#currentTemplate, legacySelections));
+  }
 
   handleNodeDragStart(nodeId: string) {
-    drag.start(nodeId);
-  },
+    this.#drag.start(nodeId);
+  }
 
   handleNodeDrag(nodeId: string, position: FlowNodePosition) {
-    drag.drag(nodeId, position);
-  },
+    this.#drag.drag(nodeId, position);
+  }
 
   handleNodeDragStop(nodeId: string, position: FlowNodePosition) {
-    drag.stop(nodeId, position);
-  },
+    this.#drag.stop(nodeId, position);
+  }
 
   addCustomNode(semester: number) {
     const nodeId = generateNodeId();
@@ -180,56 +177,59 @@ export const courseStore = {
       label: 'Custom-Modul'
     };
 
-    const updatedNodes = {
-      ..._studyPlan.nodes,
-      [nodeId]: newNode
-    };
-
-    const updatedRows = _studyPlan.rows.map((row) => ({ ...row, nodeOrder: [...row.nodeOrder] }));
-
+    const updatedRows = this.#studyPlan.rows.map((row) => ({ ...row, nodeOrder: [...row.nodeOrder] }));
     while (updatedRows.length < semester) {
       updatedRows.push({ semester: updatedRows.length + 1, nodeOrder: [] });
     }
+    updatedRows[semester - 1]?.nodeOrder.push(nodeId);
 
-    const targetRow = updatedRows[semester - 1];
-    if (targetRow) {
-      targetRow.nodeOrder.push(nodeId);
-    }
-
-    setStudyPlan({
-      ..._studyPlan,
-      nodes: updatedNodes,
+    this.#setStudyPlan({
+      ...this.#studyPlan,
+      nodes: { ...this.#studyPlan.nodes, [nodeId]: newNode },
       rows: updatedRows
     });
-  },
+  }
 
   removeNode(nodeId: string) {
-    const { [nodeId]: removedNode, ...remainingNodes } = _studyPlan.nodes;
-
+    const { [nodeId]: removedNode, ...remainingNodes } = this.#studyPlan.nodes;
     if (!removedNode) return;
     progressStore.clearSlotStatus(nodeId);
 
-    const updatedRows = _studyPlan.rows
-      .map((row) => ({
-        ...row,
-        nodeOrder: row.nodeOrder.filter((id) => id !== nodeId)
-      }))
+    const updatedRows = this.#studyPlan.rows
+      .map((row) => ({ ...row, nodeOrder: row.nodeOrder.filter((id) => id !== nodeId) }))
       .filter((row) => row.nodeOrder.length > 0);
 
-    setStudyPlan({
-      ..._studyPlan,
+    this.#setStudyPlan({
+      ...this.#studyPlan,
       nodes: remainingNodes,
       rows: updatedRows
     });
-  },
+  }
 
   isStudyPlanCustomized(): boolean {
-    return isPlanCustomized(_studyPlan);
+    return isPlanCustomized(this.#studyPlan);
   }
-};
 
-function setStudyPlan(nextPlan: StudyPlan): void {
-  _studyPlan = normalizePlan(nextPlan);
-  drag.clear();
-  savePlan(_studyPlan);
+  #setStudyPlan(nextPlan: StudyPlan): void {
+    this.#studyPlan = normalizePlan(nextPlan);
+    this.#drag.clear();
+    savePlan(this.#studyPlan);
+  }
 }
+
+export const courseStore = new CourseStore();
+
+// Transitional getter wrappers kept while call sites migrate to courseStore.*
+export function currentTemplate() { return courseStore.currentTemplate; }
+export function studyPlan() { return courseStore.studyPlan; }
+export function userSelections() { return courseStore.userSelections; }
+export function selectedPlan() { return courseStore.selectedPlan; }
+export function nodes() { return courseStore.nodes; }
+export function edges() { return courseStore.edges; }
+export function showShortNamesOnly() { return courseStore.showShortNamesOnly; }
+export function totalCredits() { return courseStore.totalCredits; }
+export function attendedCredits() { return courseStore.attendedCredits; }
+export function completedCredits() { return courseStore.completedCredits; }
+export function calculatedTotalCredits() { return courseStore.calculatedTotalCredits; }
+export function availablePlans() { return courseStore.availablePlans; }
+export function semesterDividerData() { return courseStore.semesterDividerData; }
