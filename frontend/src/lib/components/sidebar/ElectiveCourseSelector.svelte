@@ -1,6 +1,7 @@
 <script lang="ts">
   import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { COURSES, getCourseById } from '$lib/data/courses';
+  import { COURSES, getCourseById, type Course } from '$lib/data/courses';
+  import { SEASON_LABELS, type Season } from '$lib/data/season';
   import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
   import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
   import Combobox from '$lib/components/ui/Combobox.svelte';
@@ -46,13 +47,32 @@
     })
   );
 
-  const comboboxOptions = $derived(
-    availableCourses.map(course => ({
-      value: course.id,
-      label: `${course.label} (${course.id}) — ${course.ects} ECTS`,
-      keywords: [course.label, course.id]
-    }))
-  );
+  const slotSeason = $derived(slotNode ? courseStore.seasonOf(slotNode.semester) : null);
+
+  function isOfferedIn(course: Course, season: Season): boolean {
+    return !course.seasons || course.seasons.length === 0 || course.seasons.includes(season);
+  }
+
+  const comboboxOptions = $derived.by(() => {
+    const options = availableCourses.map(course => {
+      const outOfSeason = slotSeason !== null && !isOfferedIn(course, slotSeason);
+      return {
+        value: course.id,
+        label: `${course.label} (${course.id}) — ${course.ects} ECTS`,
+        keywords: [course.label, course.id],
+        // keep an already-chosen course usable even if the start season later changed
+        disabled: outOfSeason && course.id !== selectedCourseId,
+        tooltip: outOfSeason ? `Only offered in ${formatSeasons(course.seasons)}` : undefined
+      };
+    });
+    // out-of-season (disabled) courses sink to the bottom; order is otherwise stable
+    return options.sort((a, b) => Number(a.disabled) - Number(b.disabled));
+  });
+
+  function formatSeasons(seasons: Season[] | undefined): string {
+    if (!seasons || seasons.length === 0) return 'other semesters';
+    return (['HS', 'FS'] as Season[]).filter(s => seasons.includes(s)).map(s => SEASON_LABELS[s]).join(' & ');
+  }
 
   function handleCourseSelect(courseId: string) {
     if (courseId) {
