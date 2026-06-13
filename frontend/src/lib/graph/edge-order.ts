@@ -1,17 +1,29 @@
 import type { Edge, Node } from '@xyflow/svelte';
 import { resolveNodeWidth } from './plan-layout';
 
-// Reassign edge handle indices so they read left-to-right: a node's leftmost
-// outgoing handle connects to its leftmost target, and the same for incoming.
+// Reassign edge handle indices so they read left-to-right by the direction each
+// edge travels. Ordering by the connected node's angle (horizontal offset over
+// vertical gap) rather than its raw x keeps edges to far-away nodes central and
+// pushes edges to nearby off-to-the-side nodes to the outer handles.
 export function orderEdgeHandles(edges: Edge[], positionedNodes: Node[]): Edge[] {
-  const centerX = new Map<string, number>();
+  const centers = new Map<string, { x: number; y: number }>();
   for (const node of positionedNodes) {
-    centerX.set(node.id, (node.position?.x ?? 0) + resolveNodeWidth(node) / 2);
+    centers.set(node.id, {
+      x: (node.position?.x ?? 0) + resolveNodeWidth(node) / 2,
+      y: node.position?.y ?? 0
+    });
   }
-  const at = (nodeId: string) => centerX.get(nodeId) ?? 0;
+  const centerOf = (nodeId: string) => centers.get(nodeId) ?? { x: 0, y: 0 };
 
-  const sourceHandle = assignHandles(edges, 'source', (edge) => at(edge.target));
-  const targetHandle = assignHandles(edges, 'target', (edge) => at(edge.source));
+  // Angle of the edge leaving `fromId` toward `toId`, measured from vertical.
+  const angle = (fromId: string, toId: string) => {
+    const from = centerOf(fromId);
+    const to = centerOf(toId);
+    return Math.atan2(to.x - from.x, Math.abs(to.y - from.y));
+  };
+
+  const sourceHandle = assignHandles(edges, 'source', (edge) => angle(edge.source, edge.target));
+  const targetHandle = assignHandles(edges, 'target', (edge) => angle(edge.target, edge.source));
 
   return edges.map((edge) => ({
     ...edge,
