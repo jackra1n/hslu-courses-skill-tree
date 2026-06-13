@@ -81,27 +81,35 @@ function buildStatusBasedStyle(status: Status, isAttended: boolean, isCompleted:
   return "background: rgb(var(--node-locked-bg)); border-color: rgb(var(--node-locked-border)); color: rgb(var(--node-locked-text)); opacity: 0.6;";
 }
 
-/**
- * Computes complete node style string based on all node properties.
- * This is the main entry point for node styling.
- */
-export function getNodeStyle(
-  status: Status,
-  isSelected: boolean,
-  isAttended: boolean,
-  isCompleted: boolean,
-  isElectiveSlot: boolean,
-  nodeWidth: number,
-  hasSelectedCourse: boolean,
-  hasLaterPrerequisites: boolean,
-  hasMissingPrerequisites: boolean,
-  hasAssessmentStageViolation: boolean,
-  isDragging: boolean
-): string {
+export type NodeStyleInput = {
+  status: Status;
+  isSelected: boolean;
+  isAttended: boolean;
+  isCompleted: boolean;
+  isElectiveSlot: boolean;
+  nodeWidth: number;
+  hasSelectedCourse: boolean;
+  hasLaterPrerequisites: boolean;
+  hasMissingPrerequisites: boolean;
+  hasAssessmentStageViolation: boolean;
+  isDragging: boolean;
+};
+
+export function getNodeStyle(input: NodeStyleInput): string {
   return (
-    buildBaseNodeStyle(nodeWidth, isDragging) +
-    buildSelectionStyle(isSelected) +
-    buildNodeStateStyle(status, isAttended, isCompleted, isElectiveSlot, hasSelectedCourse, hasLaterPrerequisites, hasMissingPrerequisites, hasAssessmentStageViolation, isSelected)
+    buildBaseNodeStyle(input.nodeWidth, input.isDragging) +
+    buildSelectionStyle(input.isSelected) +
+    buildNodeStateStyle(
+      input.status,
+      input.isAttended,
+      input.isCompleted,
+      input.isElectiveSlot,
+      input.hasSelectedCourse,
+      input.hasLaterPrerequisites,
+      input.hasMissingPrerequisites,
+      input.hasAssessmentStageViolation,
+      input.isSelected
+    )
   );
 }
 

@@ -84,7 +84,7 @@
       const hasMissingPrereqs = hasMissingPrerequisites(courseStore.studyPlan, n.id);
       const hasAssessmentViolation = hasAssessmentStageViolation(courseStore.studyPlan, n.id);
 
-      const styleStr = getNodeStyle(
+      const styleStr = getNodeStyle({
         status,
         isSelected,
         isAttended,
@@ -93,10 +93,10 @@
         nodeWidth,
         hasSelectedCourse,
         hasLaterPrerequisites,
-        hasMissingPrereqs,
-        hasAssessmentViolation,
-        isDragging
-      );
+        hasMissingPrerequisites: hasMissingPrereqs,
+        hasAssessmentStageViolation: hasAssessmentViolation,
+        isDragging,
+      });
 
       return {
         ...n,
