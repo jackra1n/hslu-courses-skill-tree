@@ -1,5 +1,3 @@
-import type { Node } from '@xyflow/svelte';
-import type { ExtendedNodeData } from '$lib/data/courses';
 import {
   AVAILABLE_TEMPLATES,
   getTemplateById,
@@ -15,13 +13,10 @@ import {
   calculateCompletedCredits,
   normalizePlan,
   type StudyPlan,
-  type PlanRow,
   type PlanNode
 } from '$lib/data/study-plan';
 import { toGraph } from '$lib/utils/graph';
-import { getNodeWidth } from '$lib/utils/layout';
 import {
-  GRID_SIZE,
   MAX_SEMESTERS,
   layoutNodes,
   addAddNodeButtons,
@@ -29,6 +24,7 @@ import {
 } from '$lib/utils/plan-layout';
 import { progressStore, slotStatusMap } from './progressStore.svelte';
 import { loadPlan, savePlan, loadLegacySelections, planPrefs } from './planStorage';
+import { DragController } from './dragController.svelte';
 
 type FlowNodePosition = { x: number; y: number };
 
@@ -40,10 +36,7 @@ let _currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
 let _selectedPlan = $state(AVAILABLE_TEMPLATES[0].plan);
 let _studyPlan = $state<StudyPlan>(createStudyPlan(_currentTemplate, {}));
 
-let _nodeOverride = $state.raw<Node[] | null>(null);
 let _showShortNamesOnly = $state(false);
-let _activeDragNodeId: string | null = null;
-let _previewRows = $state<PlanRow[] | null>(null);
 
 const _userSelections = $derived(deriveSelections(_studyPlan));
 const _totalCredits = $derived(calculatePlanTotalCredits(_studyPlan));
@@ -59,16 +52,20 @@ const _availablePlans = $derived(
 const _graph = $derived.by(() => toGraph(_studyPlan, _showShortNamesOnly));
 const _layoutedNodes = $derived.by(() => {
   const layouted = layoutNodes(_graph.nodes, _studyPlan.rows);
-  const withAddButtons = addAddNodeButtons(layouted, _studyPlan.rows);
-  // Return as raw to avoid deep reactivity on node objects
-  return withAddButtons;
+  return addAddNodeButtons(layouted, _studyPlan.rows);
+});
+
+const drag = new DragController({
+  layoutedNodes: () => _layoutedNodes,
+  plan: () => _studyPlan,
+  commitRows: (rows) => setStudyPlan({ ..._studyPlan, rows })
 });
 
 export function currentTemplate() { return _currentTemplate; }
 export function studyPlan() { return _studyPlan; }
 export function userSelections() { return _userSelections; }
 export function selectedPlan() { return _selectedPlan; }
-export function nodes() { return _nodeOverride ?? _layoutedNodes; }
+export function nodes() { return drag.activeNodes; }
 export function edges() { return _graph.edges; }
 export function showShortNamesOnly() { return _showShortNamesOnly; }
 export function totalCredits() { return _totalCredits; }
@@ -79,15 +76,15 @@ export function availablePlans() { return _availablePlans; }
 type SemesterIndicator = { semester: number; isPreview: boolean; length: number };
 
 export function semesterDividerData(): SemesterIndicator[] {
-  const rows = (_previewRows ?? _studyPlan.rows).slice(0, MAX_SEMESTERS);
+  const rows = (drag.previewRows ?? _studyPlan.rows).slice(0, MAX_SEMESTERS);
   if (!rows.length) return [];
 
-  const dividerLength = computeDividerLength(rows, getActiveNodes());
+  const dividerLength = computeDividerLength(rows, drag.activeNodes);
   const actualCount = Math.min(_studyPlan.rows.length, rows.length);
 
   return rows.map((_, index) => ({
     semester: index + 1,
-    isPreview: _previewRows ? index >= actualCount : false,
+    isPreview: drag.previewRows ? index >= actualCount : false,
     length: dividerLength
   }));
 }
@@ -170,7 +167,7 @@ export const courseStore = {
 
   toggleShortNames() {
     _showShortNamesOnly = !_showShortNamesOnly;
-    clearNodeOverride();
+    drag.clear();
     planPrefs.saveShortNames(_showShortNamesOnly);
   },
 
@@ -206,32 +203,15 @@ export const courseStore = {
   },
 
   handleNodeDragStart(nodeId: string) {
-    _activeDragNodeId = nodeId;
-    _previewRows = null;
-    ensureNodeOverride();
+    drag.start(nodeId);
   },
 
   handleNodeDrag(nodeId: string, position: FlowNodePosition) {
-    if (_activeDragNodeId !== nodeId) {
-      _activeDragNodeId = nodeId;
-    }
-    applyDirectNodePosition(nodeId, position);
-    const preview = computeRowPreview(nodeId, position, getActiveNodes());
-    if (preview) {
-      _previewRows = preview.rows;
-      _nodeOverride = layoutNodes(getActiveNodes(), preview.rows, { skipNodeId: nodeId });
-    } else {
-      _previewRows = null;
-    }
+    drag.drag(nodeId, position);
   },
 
   handleNodeDragStop(nodeId: string, position: FlowNodePosition) {
-    const result = computeRowPreview(nodeId, position, getActiveNodes());
-    if (result) {
-      setStudyPlan({ ..._studyPlan, rows: result.rows });
-    }
-    clearNodeOverride();
-    _activeDragNodeId = null;
+    drag.stop(nodeId, position);
   },
 
   addCustomNode(semester: number) {
@@ -350,107 +330,8 @@ export const courseStore = {
   }
 };
 
-function applyDirectNodePosition(nodeId: string, position: FlowNodePosition): void {
-  const nodes = ensureNodeOverride();
-  let changed = false;
-  const updated = nodes.map((node) => {
-    if (node.id !== nodeId) return node;
-    changed = true;
-    return { ...node, position };
-  });
-  if (changed) {
-    _nodeOverride = updated;
-  }
-}
-
-function computeRowPreview(
-  nodeId: string,
-  dropPosition: FlowNodePosition,
-  nodesSnapshot: Node[]
-): { rows: PlanRow[] } | null {
-  if (!_studyPlan.rows.length) return null;
-
-  const desiredSemester = Math.max(1, Math.round(dropPosition.y / GRID_SIZE.y));
-  const targetSemester = Math.min(MAX_SEMESTERS, desiredSemester);
-  const rows = _studyPlan.rows.map((row) => ({
-    semester: row.semester,
-    nodeOrder: row.nodeOrder.filter((id) => id !== nodeId)
-  }));
-
-  while (rows.length < targetSemester) {
-    rows.push({ semester: rows.length + 1, nodeOrder: [] });
-  }
-
-  const targetRow = rows[targetSemester - 1];
-  if (!targetRow) return null;
-
-  const node = nodesSnapshot.find((n) => n.id === nodeId);
-  if (!node) return null;
-  const data = node?.data as ExtendedNodeData | undefined;
-  const nodeWidth = data?.width ?? getNodeWidth(3);
-  const dropCenter = dropPosition.x + nodeWidth / 2;
-
-  const siblingCenters = targetRow.nodeOrder.map((id) => {
-    const siblingNode = nodesSnapshot.find((n) => n.id === id);
-    const siblingData = siblingNode?.data as ExtendedNodeData | undefined;
-    const siblingWidth = siblingData?.width ?? getNodeWidth(3);
-    const center = (siblingNode?.position?.x ?? 0) + siblingWidth / 2;
-    return { id, center };
-  });
-
-  let insertIndex = siblingCenters.findIndex((sibling) => dropCenter < sibling.center);
-  if (insertIndex === -1) insertIndex = siblingCenters.length;
-
-  targetRow.nodeOrder = [
-    ...targetRow.nodeOrder.slice(0, insertIndex),
-    nodeId,
-    ...targetRow.nodeOrder.slice(insertIndex)
-  ];
-
-  return { rows: normalizeRows(rows) };
-}
-
-function normalizeRows(rows: PlanRow[]): PlanRow[] {
-  const normalized = rows.map((row) => ({
-    semester: row.semester,
-    nodeOrder: [...row.nodeOrder]
-  }));
-
-  while (normalized.length > 1 && normalized[normalized.length - 1].nodeOrder.length === 0) {
-    normalized.pop();
-  }
-
-  return normalized.map((row, index) => ({
-    semester: index + 1,
-    nodeOrder: [...row.nodeOrder]
-  }));
-}
-
 function setStudyPlan(nextPlan: StudyPlan): void {
   _studyPlan = normalizePlan(nextPlan);
-  clearNodeOverride();
+  drag.clear();
   savePlan(_studyPlan);
-}
-
-function getActiveNodes(): Node[] {
-  return _nodeOverride ?? _layoutedNodes;
-}
-
-function ensureNodeOverride(): Node[] {
-  if (_nodeOverride) return _nodeOverride;
-  const cloned = cloneNodes(_layoutedNodes);
-  _nodeOverride = cloned;
-  return cloned;
-}
-
-function cloneNodes(nodes: Node[]): Node[] {
-  return nodes.map((node) => ({
-    ...node,
-    position: node.position ? { ...node.position } : node.position
-  }));
-}
-
-function clearNodeOverride(): void {
-  _nodeOverride = null;
-  _previewRows = null;
 }
