@@ -5,9 +5,11 @@
   import { theme, themeStore } from '$lib/stores/theme.svelte';
   import TemplateSelector from './TemplateSelector.svelte';
   import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
-  
+  import ProgressAnalytics from './ProgressAnalytics.svelte';
+
   let programDropdownOpen = $state(false);
   let settingsSidebarOpen = $state(false);
+  let analyticsOpen = $state(false);
   
   function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
     return event.composedPath().some(
@@ -91,12 +93,14 @@
     </div>
 
     <!-- ECTS progress badge -->
-    <div
-      class="flex h-9 items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-2"
+    <button
+      onclick={() => (analyticsOpen = true)}
+      class="flex h-9 items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-2 hover:bg-bg-secondary/70 transition-colors"
       title={ectsTooltip}
+      aria-label="Open progress analytics"
     >
       <span class="text-xs font-bold text-text-primary">{calculatedTotal} ECTS</span>
-    </div>
+    </button>
 
     <div class="h-6 w-px bg-border-primary"></div>
 
@@ -134,3 +138,4 @@
 
 <!-- settings sidebar -->
 <SettingsSidebar bind:isOpen={settingsSidebarOpen} />
+<ProgressAnalytics bind:isOpen={analyticsOpen} />
