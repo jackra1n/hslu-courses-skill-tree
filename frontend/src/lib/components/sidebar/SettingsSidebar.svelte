@@ -181,7 +181,7 @@
               onclick={handleImport}
               class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
             >
-              <div class="i-lucide-import h-4 w-4"></div>
+              <div class="i-lucide-upload h-4 w-4"></div>
               <span>Import Data</span>
             </button>
             {#if importError}
