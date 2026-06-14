@@ -142,6 +142,21 @@ class CourseStore {
     }
   }
 
+  // Restore state from imported data; study plans must already be in storage.
+  restore(currentTemplateId: string, year: number, season: Season, showShortNamesOnly: boolean) {
+    const template = getTemplateById(currentTemplateId) ?? this.currentTemplate;
+    this.currentTemplate = template;
+    this.startYear = year;
+    this.startSeason = season;
+    this.showShortNamesOnly = showShortNamesOnly;
+    planPrefs.saveTemplate(template.id, template.plan);
+    planPrefs.saveStartYear(year);
+    planPrefs.saveStartSeason(season);
+    planPrefs.saveShortNames(showShortNamesOnly);
+    setCoursePlan(template.plan);
+    this.setStudyPlan(loadPlan(template));
+  }
+
   // The calendar season (HS/FS) a given 1-indexed plan semester falls in.
   seasonOf(semester: number): Season {
     return seasonOfSemester(semester, this.startSeason);

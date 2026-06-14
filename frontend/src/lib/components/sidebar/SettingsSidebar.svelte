@@ -3,12 +3,32 @@
   import { courseStore } from '$lib/stores/courseStore.svelte';
   import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
+  import { collectAppData, importAppData } from '$lib/data/persistence';
+  import { downloadJson, pickTextFile } from '$lib/utils/file-transfer';
   import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte';
 
   let { isOpen = $bindable(false) }: { isOpen: boolean } = $props();
 
   let showResetProgressDialog = $state(false);
   let showResetAllDataDialog = $state(false);
+  let importError = $state<string | null>(null);
+
+  function handleExport() {
+    const date = new Date().toISOString().slice(0, 10);
+    downloadJson(`hslu-skill-tree-${date}.json`, collectAppData());
+  }
+
+  async function handleImport() {
+    importError = null;
+    const text = await pickTextFile();
+    if (text === null) return;
+    const result = importAppData(text);
+    if (!result.ok) {
+      importError = result.error;
+      return;
+    }
+    closeSidebar();
+  }
 
   function closeSidebar() {
     isOpen = false;
@@ -151,23 +171,22 @@
           <div class="text-base font-bold text-text-primary mb-4">Data Management</div>
           <div class="space-y-2">
             <button
-              disabled
-              title="Coming soon"
-              class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary rounded-lg transition-colors text-text-secondary cursor-not-allowed opacity-50"
+              onclick={handleExport}
+              class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
             >
               <div class="i-lucide-download h-4 w-4"></div>
               <span>Export Data</span>
-              <div class="i-lucide-lock h-4 w-4 ml-auto"></div>
             </button>
             <button
-              disabled
-              title="Coming soon"
-              class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary rounded-lg transition-colors text-text-secondary cursor-not-allowed opacity-50"
+              onclick={handleImport}
+              class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
             >
               <div class="i-lucide-import h-4 w-4"></div>
               <span>Import Data</span>
-              <div class="i-lucide-lock h-4 w-4 ml-auto"></div>
             </button>
+            {#if importError}
+              <p class="text-sm text-red-500">{importError}</p>
+            {/if}
             <div class="border-b border-border-primary my-3"></div>
             <button
               onclick={handleResetProgress}

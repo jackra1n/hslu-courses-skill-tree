@@ -29,6 +29,24 @@ export function savePlan(plan: StudyPlan): void {
   }
 }
 
+export function loadAllPlans(): Record<string, StudyPlan> {
+  if (!browser) return {};
+  const plans: Record<string, StudyPlan> = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (!key?.startsWith('studyPlan:')) continue;
+    const stored = localStorage.getItem(key);
+    if (!stored) continue;
+    try {
+      const plan = normalizePlan(JSON.parse(stored) as StudyPlan);
+      plans[plan.templateId] = plan;
+    } catch (error) {
+      console.error('Failed to parse stored study plan', error);
+    }
+  }
+  return plans;
+}
+
 export function loadPlan(
   template: CurriculumTemplate,
   fallbackSelections: Record<string, string> = {}

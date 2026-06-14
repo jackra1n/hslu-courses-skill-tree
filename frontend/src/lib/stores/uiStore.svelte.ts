@@ -48,7 +48,11 @@ export const uiStore = {
   },
 
   toggleCourseTypeBadges() {
-    _showCourseTypeBadges = !_showCourseTypeBadges;
+    this.setShowCourseTypeBadges(!_showCourseTypeBadges);
+  },
+
+  setShowCourseTypeBadges(value: boolean) {
+    _showCourseTypeBadges = value;
     if (browser) {
       localStorage.setItem("showCourseTypeBadges", JSON.stringify(_showCourseTypeBadges));
     }

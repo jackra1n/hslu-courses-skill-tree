@@ -56,6 +56,11 @@ export const progressStore = {
     return _slotStatus.get(slotId) ?? null;
   },
 
+  replaceAll(status: Record<string, 'attended' | 'completed'>) {
+    _slotStatus = new Map(Object.entries(status));
+    saveToLocalStorage();
+  },
+
   hasCompletedInstance(courseId: string, plan: StudyPlan): boolean {
     return getNodeIdsForCourse(plan, courseId).some((slotId) => _slotStatus.get(slotId) === 'completed');
   },
