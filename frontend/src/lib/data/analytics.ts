@@ -49,7 +49,7 @@ export function computeCategoryProgress(
     const majorMinor = tallyOf('Major-/Minormodul');
     return {
       category,
-      required: requiredOf('Erweiterungsmodul') + requiredOf('Major-/Minormodul'),
+      required: requiredOf('Erweiterungsmodul'),
       passed: extension.passed + majorMinor.passed,
       planned: extension.planned + majorMinor.planned,
       failed: extension.failed + majorMinor.failed,
