@@ -9,15 +9,13 @@ export type CategoryProgress = {
   passed: number;
   planned: number;
   failed: number;
+  subcategories?: CategoryProgress[];
 };
 
-const CATEGORY_ORDER: ModuleType[] = [
-  'Kernmodul',
-  'Projektmodul',
-  'Erweiterungsmodul',
-  'Major-/Minormodul',
-  'Zusatzmodul'
-];
+type Tally = { passed: number; planned: number; failed: number };
+
+// Major/Minor modules are a kind of Erweiterungsmodul, so they roll up into it.
+const TOP_LEVEL: ModuleType[] = ['Kernmodul', 'Projektmodul', 'Erweiterungsmodul', 'Zusatzmodul'];
 
 export function computeCategoryProgress(
   plan: StudyPlan,
@@ -25,7 +23,7 @@ export function computeCategoryProgress(
   program: string
 ): CategoryProgress[] {
   const requirements = getEctsRequirements(program);
-  const totals = new Map<ModuleType, { passed: number; planned: number; failed: number }>();
+  const totals = new Map<ModuleType, Tally>();
 
   for (const node of Object.values(plan.nodes)) {
     const course = resolveCourse(node.courseId);
@@ -38,9 +36,26 @@ export function computeCategoryProgress(
     totals.set(course.type, bucket);
   }
 
-  return CATEGORY_ORDER.map((category) => ({
-    category,
-    required: requirements?.perModule[category] ?? 0,
-    ...(totals.get(category) ?? { passed: 0, planned: 0, failed: 0 })
-  }));
+  const tallyOf = (category: ModuleType): Tally =>
+    totals.get(category) ?? { passed: 0, planned: 0, failed: 0 };
+  const requiredOf = (category: ModuleType) => requirements?.perModule[category] ?? 0;
+
+  return TOP_LEVEL.map((category) => {
+    if (category !== 'Erweiterungsmodul') {
+      return { category, required: requiredOf(category), ...tallyOf(category) };
+    }
+
+    const extension = tallyOf('Erweiterungsmodul');
+    const majorMinor = tallyOf('Major-/Minormodul');
+    return {
+      category,
+      required: requiredOf('Erweiterungsmodul') + requiredOf('Major-/Minormodul'),
+      passed: extension.passed + majorMinor.passed,
+      planned: extension.planned + majorMinor.planned,
+      failed: extension.failed + majorMinor.failed,
+      subcategories: [
+        { category: 'Major-/Minormodul', required: requiredOf('Major-/Minormodul'), ...majorMinor }
+      ]
+    };
+  });
 }

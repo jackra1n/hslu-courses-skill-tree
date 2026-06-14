@@ -102,6 +102,15 @@
               <span class="text-xs text-text-secondary">{category.passed} / {category.required} ECTS</span>
             </div>
             {@render bar(category.passed, category.planned, category.required)}
+            {#each category.subcategories ?? [] as sub (sub.category)}
+              <div class="mt-2 pl-4 border-l border-border-primary">
+                <div class="flex items-baseline justify-between mb-1.5">
+                  <span class="text-xs text-text-secondary">↳ {sub.category}</span>
+                  <span class="text-xs text-text-secondary">{sub.passed} / {sub.required} ECTS</span>
+                </div>
+                {@render bar(sub.passed, sub.planned, sub.required)}
+              </div>
+            {/each}
           </div>
         {/each}
       </div>
