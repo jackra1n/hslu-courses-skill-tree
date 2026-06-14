@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { slide } from 'svelte/transition';
   import { courseStore } from '$lib/stores/courseStore.svelte';
   import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
@@ -69,24 +68,21 @@
 </script>
 
 <!-- backdrop -->
-{#if isOpen}
-  <div
-    class="fixed inset-0 z-40 bg-black/40 transition-opacity duration-200"
-    onclick={closeSidebar}
-    onkeydown={(e) => e.key === 'Escape' && closeSidebar()}
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="settings-title"
-    tabindex="-1"
-  ></div>
-{/if}
+<div
+  class="fixed inset-0 z-40 bg-black/40 transition-opacity duration-200 {isOpen
+    ? 'opacity-100 pointer-events-auto'
+    : 'opacity-0 pointer-events-none'}"
+  onclick={closeSidebar}
+  aria-hidden={!isOpen}
+></div>
 
 <!-- sidebar -->
-{#if isOpen}
-  <aside
-    class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-bg-primary border-l border-border-primary shadow-2xl overflow-y-auto"
-    transition:slide={{ axis: 'x', duration: 200 }}
-  >
+<aside
+  class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-bg-primary border-l border-border-primary shadow-2xl overflow-y-auto transition-transform duration-200 ease-out {isOpen
+    ? 'translate-x-0'
+    : 'translate-x-full pointer-events-none'}"
+  aria-hidden={!isOpen}
+>
     <div class="flex flex-col h-full">
       <!-- header -->
       <div class="flex items-start justify-between p-6 ">
@@ -231,7 +227,6 @@
       </div>
     </div>
   </aside>
-{/if}
 
 <!-- Confirmation Dialogs -->
 {#if showResetProgressDialog}
