@@ -2,6 +2,7 @@ import {
   AVAILABLE_TEMPLATES,
   getTemplateById,
   getTemplatesByProgram,
+  getAvailablePlans,
   setCoursePlan
 } from '$lib/data/courses';
 import {
@@ -27,6 +28,17 @@ import { progressStore, slotStatusMap } from './progressStore.svelte';
 import { loadPlan, savePlan, loadLegacySelections, planPrefs } from './planStorage';
 import { DragController } from './dragController.svelte';
 import { canSelectCourse, isPlanCustomized } from '$lib/data/plan-rules';
+import {
+  seasonOfSemester,
+  termOfSemester,
+  formatTerm,
+  planIntroYear,
+  resolvePlan,
+  currentStartTerm,
+  type Season
+} from '$lib/data/season';
+
+const INITIAL_TERM = currentStartTerm();
 
 type FlowNodePosition = { x: number; y: number };
 type SemesterIndicator = { semester: number; isPreview: boolean; length: number };
@@ -39,6 +51,8 @@ class CourseStore {
   currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
   studyPlan = $state<StudyPlan>(createStudyPlan(AVAILABLE_TEMPLATES[0], {}));
   showShortNamesOnly = $state(false);
+  startSeason = $state<Season>(INITIAL_TERM.season);
+  startYear = $state<number>(INITIAL_TERM.year);
 
   private graph = $derived.by(() => toGraph(this.studyPlan, this.showShortNamesOnly));
   private positionedNodes = $derived.by(() => layoutNodes(this.graph.nodes, this.studyPlan.rows));
@@ -60,7 +74,6 @@ class CourseStore {
       .filter((plan, index, arr) => arr.indexOf(plan) === index)
       .sort()
   );
-  selectedPlan = $derived(this.currentTemplate.plan);
   nodes = $derived.by(() => this.drag.activeNodes);
   edges = $derived.by(() => orderEdgeHandles(this.graph.edges, this.positionedNodes));
 
@@ -117,6 +130,28 @@ class CourseStore {
     planPrefs.saveShortNames(this.showShortNamesOnly);
   }
 
+  // Switch to `templateId` and record the start term that derived it. When only
+  // the start term changes within the same plan, the curriculum is left intact.
+  applyStart(templateId: string, year: number, season: Season, forceReset = false) {
+    this.startYear = year;
+    this.startSeason = season;
+    planPrefs.saveStartYear(year);
+    planPrefs.saveStartSeason(season);
+    if (forceReset || templateId !== this.currentTemplate.id) {
+      this.switchTemplate(templateId, forceReset);
+    }
+  }
+
+  // The calendar season (HS/FS) a given 1-indexed plan semester falls in.
+  seasonOf(semester: number): Season {
+    return seasonOfSemester(semester, this.startSeason);
+  }
+
+  // The calendar term label (e.g. "FS 2026") for a 1-indexed plan semester.
+  semesterLabel(semester: number): string {
+    return formatTerm(termOfSemester(semester, { year: this.startYear, season: this.startSeason }));
+  }
+
   init() {
     const savedShortNames = planPrefs.loadShortNames();
     if (savedShortNames !== null) {
@@ -125,16 +160,32 @@ class CourseStore {
 
     const savedTemplateId = planPrefs.loadTemplateId();
     const savedPlanCode = planPrefs.loadPlanCode();
+    const savedTemplate = savedTemplateId
+      ? getTemplateById(savedTemplateId)
+      : savedPlanCode
+        ? getTemplatesByProgram(this.currentTemplate.studiengang, this.currentTemplate.modell)
+            .find((t) => t.plan === savedPlanCode)
+        : undefined;
 
-    const savedTemplate = savedTemplateId ? getTemplateById(savedTemplateId) : undefined;
     if (savedTemplate) {
+      // returning user: keep their curriculum and start term
       this.currentTemplate = savedTemplate;
-    } else if (savedPlanCode) {
-      const matchingTemplate = getTemplatesByProgram(this.currentTemplate.studiengang, this.currentTemplate.modell)
-        .find((t) => t.plan === savedPlanCode);
-      if (matchingTemplate) {
-        this.currentTemplate = matchingTemplate;
-      }
+      this.startSeason = planPrefs.loadStartSeason() ?? 'HS';
+      this.startYear = planPrefs.loadStartYear() ?? planIntroYear(savedTemplate.plan) ?? this.startYear;
+    } else {
+      // new user: default to the current calendar term and derive the curriculum
+      const term = currentStartTerm();
+      this.startSeason = term.season;
+      this.startYear = term.year;
+      const plan = resolvePlan(
+        getAvailablePlans(this.currentTemplate.studiengang, this.currentTemplate.modell),
+        term
+      );
+      const template = plan
+        ? getTemplatesByProgram(this.currentTemplate.studiengang, this.currentTemplate.modell)
+            .find((t) => t.plan === plan)
+        : undefined;
+      if (template) this.currentTemplate = template;
     }
 
     setCoursePlan(this.currentTemplate.plan);

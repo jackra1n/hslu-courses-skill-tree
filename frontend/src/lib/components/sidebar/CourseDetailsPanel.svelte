@@ -7,6 +7,7 @@
   } from '$lib/stores/uiStore.svelte';
   import { courseStore } from '$lib/stores/courseStore.svelte';
   import { getCourseById } from '$lib/data/courses';
+  import { SEASON_LABELS, type Season } from '$lib/data/season';
   import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
   import PrerequisiteList from './PrerequisiteList.svelte';
   import ActionButtons from './ActionButtons.svelte';
@@ -62,6 +63,16 @@
 
   const prerequisiteNote = $derived.by(() => displayCourse?.prerequisiteNote?.trim() ?? '');
   const isDrawerOpen = $derived(hasSelection());
+
+  const seasonInfo = $derived.by(() => {
+    const seasons = displayCourse?.seasons;
+    if (!seasons || seasons.length === 0) return null;
+    const ordered = (['HS', 'FS'] as Season[]).filter((season) => seasons.includes(season));
+    return {
+      short: ordered.join(' + '),
+      full: ordered.map((season) => SEASON_LABELS[season]).join(' & ')
+    };
+  });
 </script>
 
 <!-- mobile backdrop -->
@@ -101,6 +112,12 @@
             <div class="i-lucide-calendar text-text-secondary"></div>
             <span>Semester {activePlanNode?.semester ?? '?'}</span>
           </div>
+          {#if seasonInfo}
+            <div class="flex items-center gap-1.5" title="Offered in {seasonInfo.full}">
+              <div class="i-lucide-sun text-text-secondary"></div>
+              <span>{seasonInfo.short}</span>
+            </div>
+          {/if}
         </div>
         
         {#if displayCourse?.type}

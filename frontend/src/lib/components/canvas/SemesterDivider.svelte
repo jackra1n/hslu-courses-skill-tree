@@ -6,6 +6,7 @@
   } from "$lib/data/study-plan";
   import { useViewport } from "@xyflow/svelte";
   import { slotStatusMap } from "$lib/stores/progressStore.svelte";
+  import { courseStore } from "$lib/stores/courseStore.svelte";
 
   let {
     semester,
@@ -62,7 +63,7 @@
   font-weight="500"
   opacity={textOpacity}
 >
-  Semester {semester}
+  {courseStore.semesterLabel(semester)}
 </text>
 <text
   x="-100"

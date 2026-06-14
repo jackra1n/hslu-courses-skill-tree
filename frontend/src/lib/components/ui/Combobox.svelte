@@ -252,6 +252,7 @@
           <li
             role="option"
             aria-selected={option.value === selected}
+            title={option.tooltip}
             onclick={() => selectOption(option)}
             onkeydown={(e) => e.key === "Enter" && selectOption(option)}
             tabindex="-1"

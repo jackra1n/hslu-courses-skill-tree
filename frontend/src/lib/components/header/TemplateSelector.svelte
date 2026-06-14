@@ -7,6 +7,7 @@
     type StudyModel
   } from "$lib/data/courses";
   import { PROGRAMS, PROGRAM_PLANS } from "$lib/data/programs";
+  import { resolvePlan, planIntroYear, SEASON_LABELS, type Season } from "$lib/data/season";
   import Dropdown from "$lib/components/ui/Dropdown.svelte";
   import ConfirmationDialog from "$lib/components/ui/ConfirmationDialog.svelte";
 
@@ -15,177 +16,129 @@
     parttime: "Parttime",
   };
   const MODEL_ORDER: StudyModel[] = ["fulltime", "parttime"];
+  const SEASONS: Season[] = ["HS", "FS"];
 
   let showWarningDialog = $state(false);
   let pendingProgram = $state<string | null>(null);
   let pendingModel = $state<StudyModel | null>(null);
-  let pendingPlan = $state<string | null>(null);
+  let pendingYear = $state<number | null>(null);
+  let pendingSeason = $state<Season | null>(null);
 
-  const hasPendingChanges = $derived.by(() => {
-    const targetProgram = pendingProgram ?? courseStore.currentTemplate.studiengang;
-    const targetModel = pendingModel ?? courseStore.currentTemplate.modell;
-    const targetPlan = pendingPlan ?? courseStore.selectedPlan;
+  const program = $derived(pendingProgram ?? courseStore.currentTemplate.studiengang);
+  const model = $derived(pendingModel ?? courseStore.currentTemplate.modell);
+  const year = $derived(pendingYear ?? courseStore.startYear);
+  const season = $derived(pendingSeason ?? courseStore.startSeason);
 
-    return (
-      targetProgram !== courseStore.currentTemplate.studiengang ||
-      targetModel !== courseStore.currentTemplate.modell ||
-      targetPlan !== courseStore.selectedPlan
-    );
-  });
+  const hasPendingChanges = $derived(
+    program !== courseStore.currentTemplate.studiengang ||
+    model !== courseStore.currentTemplate.modell ||
+    year !== courseStore.startYear ||
+    season !== courseStore.startSeason
+  );
 
   const isPlanCustomized = $derived.by(() => courseStore.isStudyPlanCustomized());
-  const targetTemplate = $derived.by(() => resolveTargetTemplate());
 
-  const canLoadTemplate = $derived.by(() => {
-    if (!targetTemplate) return false;
-    return hasPendingChanges || isPlanCustomized;
+  const targetTemplate = $derived.by(() => {
+    const plan = resolvePlan(getAvailablePlans(program, model), { year, season });
+    if (!plan) return undefined;
+    return getTemplatesByProgram(program, model).find((template) => template.plan === plan);
   });
 
+  const templateChanges = $derived(
+    !!targetTemplate && targetTemplate.id !== courseStore.currentTemplate.id
+  );
+  const canLoad = $derived(!!targetTemplate && (hasPendingChanges || isPlanCustomized));
+
   const programOptions = $derived.by(() =>
-    PROGRAMS.map((program) => {
-      const availablePlanCount = (PROGRAM_PLANS[program.shortName] ?? []).length;
+    PROGRAMS.map((entry) => {
+      const planCount = (PROGRAM_PLANS[entry.shortName] ?? []).length;
       return {
-        value: program.shortName,
-        label: program.name,
-        disabled: availablePlanCount === 0,
-        tooltip: availablePlanCount === 0 ? "Coming soon" : undefined,
+        value: entry.shortName,
+        label: entry.name,
+        disabled: planCount === 0,
+        tooltip: planCount === 0 ? "Coming soon" : undefined,
       };
     })
   );
 
   const modelOptions = $derived.by(() => {
-    const program = pendingProgram ?? courseStore.currentTemplate.studiengang;
     const availableModels = getAvailableModels(program);
     const candidates: string[] = [...MODEL_ORDER];
-
-    availableModels.forEach((model) => {
-      if (!candidates.includes(model)) {
-        candidates.push(model);
-      }
+    availableModels.forEach((entry) => {
+      if (!candidates.includes(entry)) candidates.push(entry);
     });
-
     return candidates.map((value) => {
       const isAvailable = availableModels.includes(value as StudyModel);
-      const label = MODEL_LABELS[value as keyof typeof MODEL_LABELS] ?? value;
       return {
         value,
-        label,
+        label: MODEL_LABELS[value as keyof typeof MODEL_LABELS] ?? value,
         disabled: !isAvailable,
         tooltip: !isAvailable ? "Coming soon" : undefined,
       };
     });
   });
 
-  const planOptions = $derived.by(() => {
-    const program = pendingProgram ?? courseStore.currentTemplate.studiengang;
-    const model = pendingModel ?? courseStore.currentTemplate.modell;
-    const actualPlans = model ? getAvailablePlans(program, model) : [];
-    const declaredPlans = PROGRAM_PLANS[program] ?? [];
-    const currentSelection = pendingPlan ?? courseStore.selectedPlan;
-    const combined: string[] = [...actualPlans];
-
-    declaredPlans.forEach((plan) => {
-      if (!combined.includes(plan)) {
-        combined.push(plan);
-      }
-    });
-
-    if (currentSelection && !combined.includes(currentSelection)) {
-      combined.push(currentSelection);
-    }
-
-    return [...combined]
-      .sort()
-      .map((plan) => ({
-        value: plan,
-        label: plan,
-        disabled: !actualPlans.includes(plan),
-        tooltip: !actualPlans.includes(plan) ? "Coming soon" : undefined,
-      }));
+  const yearOptions = $derived.by(() => {
+    const introYears = getAvailablePlans(program, model)
+      .map(planIntroYear)
+      .filter((value): value is number => value !== null);
+    const currentYear = new Date().getFullYear();
+    const earliest = introYears.length ? Math.min(...introYears) : currentYear;
+    const latest = Math.max(currentYear + 1, ...introYears);
+    const years: number[] = [];
+    for (let value = latest; value >= earliest; value--) years.push(value);
+    return years.map((value) => ({ value: String(value), label: String(value) }));
   });
 
-  function syncPendingPlan(program: string, model: StudyModel | null) {
-    if (!model) {
-      pendingPlan = null;
-      return;
-    }
-
-    const plans = getAvailablePlans(program, model);
-    if (!plans.length) {
-      pendingPlan = null;
-      return;
-    }
-
-    const current = pendingPlan ?? courseStore.selectedPlan;
-    pendingPlan = plans.includes(current) ? current : plans[0];
-  }
-
-  function clearPendingSelections() {
-    pendingProgram = null;
-    pendingModel = null;
-    pendingPlan = null;
-  }
+  const seasonOptions = SEASONS.map((value) => ({ value, label: SEASON_LABELS[value] }));
 
   function handleProgramChange(value: string) {
     pendingProgram = value;
     const models = getAvailableModels(value);
-    if (!models.length) {
-      pendingModel = null;
-      pendingPlan = null;
-      return;
-    }
-
-    const currentModel = pendingModel ?? courseStore.currentTemplate.modell;
-    pendingModel = models.includes(currentModel) ? currentModel : models[0];
-    syncPendingPlan(value, pendingModel);
+    const current = pendingModel ?? courseStore.currentTemplate.modell;
+    pendingModel = models.length ? (models.includes(current) ? current : models[0]) : null;
   }
 
   function handleModelChange(value: string) {
-    const program = pendingProgram ?? courseStore.currentTemplate.studiengang;
     pendingModel = value as StudyModel;
-    syncPendingPlan(program, pendingModel);
   }
 
-  function handlePlanChange(value: string) {
-    pendingPlan = value;
+  function handleYearChange(value: string) {
+    pendingYear = Number(value);
   }
 
-  function resolveTargetTemplate() {
-    const program = pendingProgram ?? courseStore.currentTemplate.studiengang;
-    const model = pendingModel ?? courseStore.currentTemplate.modell;
-    const candidates = getAvailablePlans(program, model);
-    const desiredPlan = pendingPlan ?? courseStore.selectedPlan;
-    const plan = candidates.includes(desiredPlan) ? desiredPlan : candidates[0];
-    if (!plan) return undefined;
+  function handleSeasonChange(value: string) {
+    pendingSeason = value as Season;
+  }
 
-    return getTemplatesByProgram(program, model).find((template) => template.plan === plan);
+  function clearPending() {
+    pendingProgram = null;
+    pendingModel = null;
+    pendingYear = null;
+    pendingSeason = null;
   }
 
   function handleLoadClick() {
-    if (!targetTemplate) {
-      return;
-    }
-
-    if (!hasPendingChanges && !isPlanCustomized) {
-      return;
-    }
-
-    if (isPlanCustomized) {
+    if (!canLoad || !targetTemplate) return;
+    // Reset the study plan when loading a different curriculum, or when
+    // reloading the current one to discard customizations.
+    const reset = templateChanges || !hasPendingChanges;
+    if (isPlanCustomized && reset) {
       showWarningDialog = true;
       return;
     }
+    applyStart(reset);
+  }
 
-    courseStore.switchTemplate(targetTemplate.id, true);
-    clearPendingSelections();
+  function applyStart(reset: boolean) {
+    if (!targetTemplate) return;
+    courseStore.applyStart(targetTemplate.id, year, season, reset);
+    clearPending();
   }
 
   function confirmTemplateSwitch() {
-    const targetTemplate = resolveTargetTemplate();
-    if (!targetTemplate) return;
-
-    courseStore.switchTemplate(targetTemplate.id, true);
+    applyStart(true);
     showWarningDialog = false;
-    clearPendingSelections();
   }
 
   function cancelTemplateSwitch() {
@@ -200,7 +153,7 @@
     >
     <Dropdown
       options={programOptions}
-      selected={pendingProgram ?? courseStore.currentTemplate.studiengang}
+      selected={program}
       onSelect={handleProgramChange}
       minWidth="100%"
     />
@@ -212,28 +165,41 @@
     >
     <Dropdown
       options={modelOptions}
-      selected={pendingModel ?? courseStore.currentTemplate.modell}
+      selected={model}
       onSelect={handleModelChange}
       minWidth="100%"
     />
   </div>
 
-  <div class="space-y-1.5">
-    <label for="plan-select" class="text-xs font-medium text-text-secondary"
-      >Plan</label
-    >
-    <Dropdown
-      options={planOptions}
-      selected={pendingPlan ?? courseStore.selectedPlan}
-      onSelect={handlePlanChange}
-      minWidth="100%"
-    />
+  <div class="grid grid-cols-2 gap-2">
+    <div class="space-y-1.5">
+      <label for="start-year-select" class="text-xs font-medium text-text-secondary"
+        >Start Year</label
+      >
+      <Dropdown
+        options={yearOptions}
+        selected={String(year)}
+        onSelect={handleYearChange}
+        minWidth="100%"
+      />
+    </div>
+    <div class="space-y-1.5">
+      <label for="start-season-select" class="text-xs font-medium text-text-secondary"
+        >Start Season</label
+      >
+      <Dropdown
+        options={seasonOptions}
+        selected={season}
+        onSelect={handleSeasonChange}
+        minWidth="100%"
+      />
+    </div>
   </div>
 
   <button
     onclick={handleLoadClick}
-    disabled={!canLoadTemplate}
-    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors {canLoadTemplate
+    disabled={!canLoad}
+    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors {canLoad
       ? 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
       : 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'}"
   >

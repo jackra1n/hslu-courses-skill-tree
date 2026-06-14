@@ -1,4 +1,5 @@
 import type { Course, ModuleType, PrerequisiteLink, PrerequisiteRule } from './courses';
+import type { Season } from './season';
 
 type RawPrerequisiteLink = 'und' | 'oder' | 'UND' | 'ODER' | 'AND' | 'OR';
 
@@ -86,12 +87,33 @@ const orderedModuleEntries = Object.entries(moduleFileGlob)
   .sort((a, b) => compareSemester(a.semester, b.semester));
 
 const moduleIndex: Map<string, RawModule> = new Map();
+// Seasons must be unioned across every semester file: a module's latest entry
+// only carries that one file's offers, so both-season modules look single-season.
+const seasonsByShortName: Map<string, Set<Season>> = new Map();
 
 for (const entry of orderedModuleEntries) {
   entry.file.data.forEach((module) => {
     if (!module.ShortName) return;
     moduleIndex.set(module.ShortName, module);
+
+    const seasons = seasonsByShortName.get(module.ShortName) ?? new Set<Season>();
+    for (const season of offeredSeasons(module)) seasons.add(season);
+    seasonsByShortName.set(module.ShortName, seasons);
   });
+}
+
+// Seasons a module is offered in, preferring Informatik offers like selectModuleType.
+function offeredSeasons(module: RawModule): Season[] {
+  const offers = module.ModuleOffers ?? [];
+  const informatikOffers = offers.filter((offer) => offer.DegreeProgramme === 'Informatik');
+  const candidateOffers = informatikOffers.length > 0 ? informatikOffers : offers;
+
+  const seasons: Season[] = [];
+  for (const offer of candidateOffers) {
+    if (offer.CourseOffering === 'Frühling') seasons.push('FS');
+    else if (offer.CourseOffering === 'Herbst') seasons.push('HS');
+  }
+  return seasons;
 }
 
 function mapModuleType(rawType: string | undefined): ModuleType | undefined {
@@ -170,7 +192,8 @@ function toCourse(module: RawModule, plan: string): Course {
     prerequisites: mapPrerequisites(module.Prerequisites ?? []),
     prerequisiteNote: module.PrerequisiteNote || undefined,
     assessmentLevelPassed: module.AssessmentLevelPassed ?? undefined,
-    type: selectModuleType(module, plan)
+    type: selectModuleType(module, plan),
+    seasons: Array.from(seasonsByShortName.get(module.ShortName) ?? [])
   };
 }
 

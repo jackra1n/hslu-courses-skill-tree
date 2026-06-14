@@ -1,5 +1,6 @@
 import { loadCourseData } from './course-data-adapter';
 import studyProgrammes from './hslu_data/study_programmes.json';
+import type { Season } from './season';
 
 export type Status = "locked" | "available" | "completed";
 
@@ -23,6 +24,8 @@ export type Course = {
   prerequisiteNote?: string;
   assessmentLevelPassed?: boolean;
   type?: ModuleType;
+  // Seasons the module is offered in; empty/undefined means unknown (treated as any).
+  seasons?: Season[];
 };
 
 export type TemplateSlot = {
