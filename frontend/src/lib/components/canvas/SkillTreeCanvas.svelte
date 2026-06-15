@@ -68,10 +68,11 @@
     const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
     const hasMissingPrereqs = hasMissingPrerequisites(courseStore.studyPlan, flowNode.id);
     const selected = selection();
+    const isSelected = selected?.id === flowNode.id || (!!course && selected?.id === course.id);
 
     const style = getNodeStyle({
       status: statuses[flowNode.id],
-      isSelected: selected?.id === flowNode.id || (!!course && selected?.id === course.id),
+      isSelected,
       isAttended: slotStatus === "attended",
       isCompleted: slotStatus === "completed",
       isElectiveSlot,
@@ -86,6 +87,7 @@
     return {
       ...flowNode,
       style,
+      zIndex: isSelected ? 1000 : undefined,
       data: {
         ...nodeData,
         showCourseTypeBadges: showCourseTypeBadges(),
@@ -99,7 +101,7 @@
   let styledEdges = $state.raw<any[]>([]);
   $effect(() => {
     styledEdges = courseStore.edges.map((edge) => {
-      const { style, markerEnd, animated } = getEdgeStyle(
+      const { style, markerEnd, animated, zIndex } = getEdgeStyle(
         edge,
         selection(),
         statuses,
@@ -107,7 +109,7 @@
         courseStore.studyPlan,
         isDragging
       );
-      return { ...edge, style, markerEnd, animated };
+      return { ...edge, style, markerEnd, animated, zIndex };
     });
   });
 

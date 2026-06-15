@@ -132,47 +132,74 @@ function getEdgeRelationship(
   return { isSelected, isPrerequisite, isDependent };
 }
 
-function buildEdgeStateStyle(
-  isSelected: boolean,
-  isPrerequisite: boolean,
-  isDependent: boolean,
-  sourceCompleted: boolean,
-  targetCompleted: boolean,
-  markerType: EdgeMarker,
-  isDragging: boolean
-): { style: string; markerEnd: EdgeMarker; animated: boolean } {
-  const transition = !isDragging ? 'transition: all 0.2s;' : '';
-  let style = `stroke-width: 2px; ${transition} filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); `;
-  let markerEnd = markerType;
-  let animated = false;
+export type EdgeStyleResult = {
+  style: string;
+  markerEnd: EdgeMarker;
+  animated: boolean;
+  zIndex: number;
+};
 
-  if (isSelected) {
-    // Highlight prerequisites in amber with dashed line
-    if (isPrerequisite) {
-      style += "stroke: rgb(245 158 11); stroke-width: 3px; stroke-dasharray: 5,5; ";
-      markerEnd = { type: markerType.type, color: "rgb(245 158 11)" };
+// Highlighted edges sit above nodes so they aren't hidden behind boxes.
+const EDGE_Z_HIGHLIGHTED = 1000;
+const EDGE_Z_BASE = 0;
+
+type EdgeStateInput = {
+  isPrerequisite: boolean;
+  isDependent: boolean;
+  hasSelection: boolean;
+  sourceCompleted: boolean;
+  targetCompleted: boolean;
+  targetAvailable: boolean;
+  markerType: EdgeMarker;
+  isDragging: boolean;
+};
+
+function buildEdgeStateStyle(input: EdgeStateInput): EdgeStyleResult {
+  const transition = !input.isDragging ? 'transition: all 0.2s;' : '';
+  const base = `stroke-width: 2px; ${transition} filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); `;
+  const { markerType } = input;
+
+  // A node is selected: spotlight its edges and fade everything else.
+  if (input.hasSelection) {
+    if (input.isPrerequisite) {
+      return {
+        style: base + "stroke: rgb(245 158 11); stroke-width: 3px; stroke-dasharray: 5,5; ",
+        markerEnd: { type: markerType.type, color: "rgb(245 158 11)" },
+        animated: false,
+        zIndex: EDGE_Z_HIGHLIGHTED,
+      };
     }
-    // Highlight dependents in blue
-    else if (isDependent) {
-      style += "stroke: rgb(59 130 246); stroke-width: 3px; ";
-      markerEnd = { type: markerType.type, color: "rgb(59 130 246)" };
+    if (input.isDependent) {
+      return {
+        style: base + "stroke: rgb(59 130 246); stroke-width: 3px; ",
+        markerEnd: { type: markerType.type, color: "rgb(59 130 246)" },
+        animated: false,
+        zIndex: EDGE_Z_HIGHLIGHTED,
+      };
     }
-  } else {
-    // Show completion progress with green edges
-    if (sourceCompleted && targetCompleted) {
-      style += "stroke: rgb(34 197 94); stroke-width: 3px; ";
-      markerEnd = { type: markerType.type, color: "rgb(34 197 94)" };
-    } else if (sourceCompleted) {
-      style += "stroke: rgb(34 197 94); stroke-width: 3px; ";
-      markerEnd = { type: markerType.type, color: "rgb(34 197 94)" };
-      animated = true;
-    } else {
-      style += "stroke: rgb(var(--border-primary)); stroke-opacity: 0.6; ";
-      markerEnd = { type: markerType.type };
-    }
+    return {
+      style: base + "stroke: rgb(var(--border-primary)); stroke-opacity: 0.12; ",
+      markerEnd: { type: markerType.type },
+      animated: false,
+      zIndex: EDGE_Z_BASE,
+    };
   }
 
-  return { style, markerEnd, animated };
+  // No selection: colour by completion, animate only the unlocked frontier.
+  if (input.sourceCompleted) {
+    return {
+      style: base + "stroke: rgb(34 197 94); stroke-width: 3px; ",
+      markerEnd: { type: markerType.type, color: "rgb(34 197 94)" },
+      animated: !input.targetCompleted && input.targetAvailable,
+      zIndex: EDGE_Z_BASE,
+    };
+  }
+  return {
+    style: base + "stroke: rgb(var(--border-primary)); stroke-opacity: 0.6; ",
+    markerEnd: { type: markerType.type },
+    animated: input.targetAvailable,
+    zIndex: EDGE_Z_BASE,
+  };
 }
 
 export function getEdgeStyle(
@@ -182,27 +209,18 @@ export function getEdgeStyle(
   slotStatus: Map<string, 'attended' | 'completed'>,
   plan: StudyPlan,
   isDragging: boolean
-): { style: string; markerEnd: EdgeMarker; animated: boolean } {
+): EdgeStyleResult {
   const selectedSlotId = resolveSelectedSlotId(selection, plan);
-  const { isSelected, isPrerequisite, isDependent } = getEdgeRelationship(edge, selectedSlotId);
+  const { isPrerequisite, isDependent } = getEdgeRelationship(edge, selectedSlotId);
 
-  const sourceCompleted = slotStatus.get(edge.source) === 'completed';
-  const targetCompleted = slotStatus.get(edge.target) === 'completed';
-
-  const result = buildEdgeStateStyle(
-    isSelected,
+  return buildEdgeStateStyle({
     isPrerequisite,
     isDependent,
-    sourceCompleted,
-    targetCompleted,
-    toEdgeMarker(edge.markerEnd),
-    isDragging
-  );
-
-  // Add animation for available targets with incomplete prerequisites
-  if (!result.animated && statuses[edge.target as string] === "available" && !sourceCompleted) {
-    result.animated = true;
-  }
-
-  return result;
+    hasSelection: selectedSlotId !== undefined,
+    sourceCompleted: slotStatus.get(edge.source) === 'completed',
+    targetCompleted: slotStatus.get(edge.target) === 'completed',
+    targetAvailable: statuses[edge.target as string] === 'available',
+    markerType: toEdgeMarker(edge.markerEnd),
+    isDragging,
+  });
 }
