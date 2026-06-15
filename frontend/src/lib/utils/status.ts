@@ -4,13 +4,17 @@ import { resolveCourse } from '$lib/data/study-plan';
 import { evaluatePrerequisites } from './prerequisite';
 import { getTemplateById } from '$lib/data/courses';
 
+// Courses that require the assessment stage to be passed unlock once this many
+// modules are completed.
+const ASSESSMENT_STAGE_COMPLETED_THRESHOLD = 6;
+
 export function computeStatuses(
   plan: StudyPlan,
   slotStatus: Map<string, 'attended' | 'completed'>
 ): Record<string, Status> {
   const statuses: Record<string, Status> = {};
   const completedCount = Array.from(slotStatus.values()).filter((status) => status === 'completed').length;
-  const assessmentStageMet = completedCount >= 6;
+  const assessmentStageMet = completedCount >= ASSESSMENT_STAGE_COMPLETED_THRESHOLD;
 
   Object.values(plan.nodes).forEach((node) => {
     const currentStatus = slotStatus.get(node.id);
