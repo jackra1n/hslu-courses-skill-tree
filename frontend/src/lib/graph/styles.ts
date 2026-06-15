@@ -14,7 +14,8 @@ function buildBaseNodeStyle(nodeWidth: number, isDragging: boolean): string {
 
 function buildSelectionStyle(isSelected: boolean): string {
   if (isSelected) {
-    return "border-width: 3px; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 4px 6px rgba(0,0,0,0.1); transform: scale(1.05); ";
+    // Violet ring so selection reads regardless of node status colour.
+    return "border-width: 3px; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.55), 0 4px 10px rgba(0,0,0,0.15); transform: scale(1.05); ";
   }
   return "border-width: 2px; ";
 }
@@ -86,7 +87,7 @@ export type NodeStyleInput = {
 };
 
 export function getNodeStyle(input: NodeStyleInput): string {
-  return (
+  const style =
     buildBaseNodeStyle(input.nodeWidth, input.isDragging) +
     buildSelectionStyle(input.isSelected) +
     buildNodeStateStyle(
@@ -99,8 +100,13 @@ export function getNodeStyle(input: NodeStyleInput): string {
       input.hasMissingPrerequisites,
       input.hasAssessmentStageViolation,
       input.isSelected
-    )
-  );
+    );
+
+  // Selection must stay fully visible and legible even on dimmed locked nodes.
+  if (input.isSelected) {
+    return style + "opacity: 1; color: rgb(var(--text-primary)); ";
+  }
+  return style;
 }
 
 // The selection may be a slot id or a course id; resolve to the slot it sits in.
