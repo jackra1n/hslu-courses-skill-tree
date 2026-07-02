@@ -95,7 +95,7 @@
     <!-- ECTS progress badge -->
     <button
       onclick={() => (analyticsOpen = true)}
-      class="flex h-9 items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-2 hover:bg-bg-secondary/70 transition-colors"
+      class="flex h-9 items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-2 cursor-pointer hover:bg-bg-secondary/70 hover:shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all"
       title={ectsTooltip}
       aria-label="Open progress analytics"
     >
