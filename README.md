@@ -12,7 +12,8 @@ Have you ever wanted to register for courses but found it annoying how time cons
 
 An interactive skill tree visualization tool for university courses. Track your progress through course prerequisites and see which courses become available as you complete the requirements.
 
-> **Disclaimer**: HSLU Courses Skill Tree is not supported by HSLU. It's a private initiative run by students.
+> [!WARNING]
+> This project is not affiliated with, endorsed by, or supported by HSLU. It's a private initiative run by students.
 
 ## Features
 
