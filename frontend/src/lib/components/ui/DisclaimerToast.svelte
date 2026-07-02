@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { slide } from 'svelte/transition';
+  import { fly } from 'svelte/transition';
 
   let showToast = $state(false);
 
@@ -36,7 +36,7 @@
 </script>
 
 {#if showToast}
-  <div class="absolute top-4 right-4 z-50 max-w-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4" transition:slide={{ axis: 'x', duration: 300 }}>
+  <div class="absolute top-4 right-4 z-50 max-w-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4" transition:fly={{ x: 300, duration: 300 }}>
     <div class="flex items-start gap-3">
       <div class="flex-shrink-0">
         <div class="i-lucide-alert-triangle w-5 h-5 text-yellow-500"></div>
