@@ -1,7 +1,6 @@
 <script lang="ts">
   import Header from '$lib/components/header/Header.svelte';
   import AssessmentInfo from '$lib/components/ui/AssessmentInfo.svelte';
-  import HowToUseModal from '$lib/components/ui/HowToUseModal.svelte';
   import SkillTreeCanvas from '$lib/components/canvas/SkillTreeCanvas.svelte';
   import CourseDetailsPanel from '$lib/components/sidebar/CourseDetailsPanel.svelte';
   import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
@@ -29,7 +28,6 @@
   
   <!-- assessment info modal -->
   <AssessmentInfo />
-  <HowToUseModal />
 
   <div class="lg:hidden fixed bottom-4 right-4 z-30 w-72 max-w-[90vw]">
     <div class={`rounded-2xl border border-border-primary bg-bg-primary shadow-2xl backdrop-blur transition-all duration-300 overflow-hidden flex flex-col-reverse ${legendOpen ? 'max-h-96' : 'max-h-14'}`}>

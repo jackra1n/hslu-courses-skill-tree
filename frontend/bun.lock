@@ -5,20 +5,21 @@
     "": {
       "name": "hslu-courses-skill-tree",
       "dependencies": {
-        "@sveltejs/adapter-static": "latest",
-        "@xyflow/svelte": "latest",
+        "@sveltejs/adapter-static": "^3.0.10",
+        "@xyflow/svelte": "^1.6.0",
+        "driver.js": "^1.8.0",
       },
       "devDependencies": {
-        "@iconify-json/lucide": "latest",
-        "@sveltejs/adapter-auto": "latest",
-        "@sveltejs/kit": "latest",
-        "@sveltejs/vite-plugin-svelte": "latest",
-        "@unocss/preset-icons": "latest",
-        "svelte": "latest",
-        "svelte-check": "latest",
-        "typescript": "latest",
-        "unocss": "latest",
-        "vite": "latest",
+        "@iconify-json/lucide": "^1.2.112",
+        "@sveltejs/adapter-auto": "^7.0.1",
+        "@sveltejs/kit": "^2.65.0",
+        "@sveltejs/vite-plugin-svelte": "^7.1.2",
+        "@unocss/preset-icons": "^66.7.2",
+        "svelte": "^5.56.3",
+        "svelte-check": "^4.6.0",
+        "typescript": "^6.0.3",
+        "unocss": "^66.7.2",
+        "vite": "^8.0.16",
       },
     },
   },
@@ -258,6 +259,8 @@
     "detect-libc": ["detect-libc@2.1.2", "", {}, "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ=="],
 
     "devalue": ["devalue@5.8.1", "", {}, "sha512-4CXDYRBGqN+57wVJkuXBYmpAVUSg3L6JAQa/DFqm238G73E1wuyc/JhGQJzN7vUf/CMphYau2zXbfWzDR5aTEw=="],
+
+    "driver.js": ["driver.js@1.8.0", "", {}, "sha512-+8/IO7h1v14IzWh2GP60N7T3PFZweXwdn5e5POuxRSBoCYUojsBxzqawPeXh3YZIibRy7EehYNEyxe7slwwtdg=="],
 
     "duplexer": ["duplexer@0.1.2", "", {}, "sha512-jtD6YG370ZCIi/9GTaJKQxWTZD045+4R4hTk/x1UyoqadyJ9x9CgSi1RlVDQF8U2sxLLSnFkCaMihqljHIWgMg=="],
 

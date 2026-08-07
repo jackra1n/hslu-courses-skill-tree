@@ -194,7 +194,7 @@
   });
 </script>
 
-<div class="relative h-full min-h-0">
+<div class="relative h-full min-h-0" data-tour="skill-tree">
   <SvelteFlow
     nodes={styledNodes}
     edges={styledEdges}

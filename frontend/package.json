@@ -25,6 +25,7 @@
 	},
 	"dependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",
-		"@xyflow/svelte": "^1.6.0"
+		"@xyflow/svelte": "^1.6.0",
+		"driver.js": "^1.8.0"
 	}
 }

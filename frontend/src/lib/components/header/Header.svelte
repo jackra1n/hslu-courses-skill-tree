@@ -62,15 +62,16 @@
 
   <div class="flex flex-1 items-center justify-end gap-2">
     <button
-      class="flex h-9 w-9 items-center justify-center rounded-lg border border-border-primary text-text-primary hover:bg-bg-secondary transition-colors md:hidden"
-      aria-label="How to use"
-      onclick={() => uiStore.toggleHowToGuide()}
+      class="flex h-9 w-9 items-center justify-center rounded-lg border border-border-primary text-text-primary hover:bg-bg-secondary transition-colors"
+      aria-label="Start guided tutorial"
+      onclick={() => uiStore.requestTutorial()}
     >
       <div class="i-lucide-info w-4 h-4"></div>
     </button>
 
     <div class="relative program-dropdown">
       <button 
+        data-tour="program"
         onclick={() => programDropdownOpen = !programDropdownOpen}
         class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary transition-colors"
         >
@@ -94,6 +95,7 @@
 
     <!-- ECTS progress badge -->
     <button
+      data-tour="progress"
       onclick={() => (analyticsOpen = true)}
       class="flex h-9 items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-2 cursor-pointer hover:bg-bg-secondary/70 hover:shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all"
       title={ectsTooltip}
