@@ -6,6 +6,7 @@
   import TemplateSelector from './TemplateSelector.svelte';
   import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
   import ProgressAnalytics from './ProgressAnalytics.svelte';
+  import Tooltip from '../ui/Tooltip.svelte';
 
   let programDropdownOpen = $state(false);
   let settingsSidebarOpen = $state(false);
@@ -61,13 +62,15 @@
   </div>
 
   <div class="flex flex-1 items-center justify-end gap-2">
-    <button
-      class="flex h-9 w-9 items-center justify-center rounded-lg border border-border-primary text-text-primary hover:bg-bg-secondary transition-colors"
-      aria-label="Start guided tutorial"
-      onclick={() => uiStore.requestTutorial()}
-    >
-      <div class="i-lucide-info w-4 h-4"></div>
-    </button>
+    <Tooltip text="Start guided tutorial">
+      <button
+        class="flex h-9 w-9 items-center justify-center rounded-lg border border-border-primary text-text-primary hover:bg-bg-secondary transition-colors"
+        aria-label="Start guided tutorial"
+        onclick={() => uiStore.requestTutorial()}
+      >
+        <div class="i-lucide-info w-4 h-4"></div>
+      </button>
+    </Tooltip>
 
     <div class="relative program-dropdown">
       <button 
