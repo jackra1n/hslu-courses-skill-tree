@@ -177,10 +177,6 @@
   }
 
   onMount(() => {
-    courseStore.init();
-    progressStore.init();
-    uiStore.init();
-
     const mediaQuery = window.matchMedia("(max-width: 1024px)");
     const handleScreenChange = () => {
       hideAttribution = mediaQuery.matches;

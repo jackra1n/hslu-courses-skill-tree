@@ -7,6 +7,7 @@
   import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
   import ProgressAnalytics from './ProgressAnalytics.svelte';
   import Tooltip from '../ui/Tooltip.svelte';
+  import AccountMenu from './AccountMenu.svelte';
 
   let programDropdownOpen = $state(false);
   let settingsSidebarOpen = $state(false);
@@ -129,6 +130,9 @@
       <div class="i-lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-text-primary"></div>
       <div class="i-lucide-moon h-4 w-4 absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-text-primary"></div>
     </button>
+
+    <!-- cloud sync account -->
+    <AccountMenu />
 
     <!-- settings button -->
     <button
