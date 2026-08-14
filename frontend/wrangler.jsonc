@@ -21,6 +21,9 @@
 		"enabled": true,
 		"head_sampling_rate": 1
 	},
+	"dev": {
+		"host": "localhost:5173"
+	},
 	"vars": {
 		"ENVIRONMENT": "production"
 	}

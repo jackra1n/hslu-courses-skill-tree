@@ -38,7 +38,7 @@ describe('handleProgressRequest', () => {
 	it('creates revision 1 on first PUT with null revision and GET returns the snapshot', async () => {
 		const putRes = await put('user-1', SNAPSHOT, null);
 		expect(putRes.status).toBe(200);
-		const putBody = await putRes.json();
+		const putBody = (await putRes.json()) as { revision: number; updatedAt: number };
 		expect(putBody).toMatchObject({ data: SNAPSHOT, revision: 1 });
 		expect(typeof putBody.updatedAt).toBe('number');
 
@@ -46,7 +46,6 @@ describe('handleProgressRequest', () => {
 		expect(getRes.status).toBe(200);
 		expect(await getRes.json()).toEqual({ data: SNAPSHOT, revision: 1, updatedAt: putBody.updatedAt });
 	});
-
 	it('increments revision on matching update', async () => {
 		await put('user-1', SNAPSHOT, null);
 		const next = { ...SNAPSHOT, slotStatus: { 'slot-1': 'completed' } };
@@ -56,7 +55,8 @@ describe('handleProgressRequest', () => {
 		expect(body).toMatchObject({ data: next, revision: 2 });
 
 		const getRes = await handleProgressRequest(request('GET'), 'user-1', env.DB);
-		expect((await getRes.json()).revision).toBe(2);
+		const getBody = (await getRes.json()) as { revision: number };
+		expect(getBody.revision).toBe(2);
 	});
 
 	it('returns 409 with current data for stale and concurrent revisions', async () => {
@@ -75,7 +75,8 @@ describe('handleProgressRequest', () => {
 		expect(concurrent.status).toBe(200);
 		const loser = await put('user-2', { ...SNAPSHOT, slotStatus: { d: 'attended' } }, 1);
 		expect(loser.status).toBe(409);
-		expect((await loser.json()).data.slotStatus).toEqual({ c: 'attended' });
+		const loserBody = (await loser.json()) as { data: { slotStatus: Record<string, string> } };
+		expect(loserBody.data.slotStatus).toEqual({ c: 'attended' });
 	});
 
 	it('never reads or updates another users row', async () => {
@@ -89,7 +90,8 @@ describe('handleProgressRequest', () => {
 		expect(otherPut.status).toBe(200);
 
 		const first = await handleProgressRequest(request('GET'), 'user-1', env.DB);
-		expect((await first.json()).data.slotStatus).toEqual({ x: 'completed' });
+		const firstBody = (await first.json()) as { data: { slotStatus: Record<string, string> } };
+		expect(firstBody.data.slotStatus).toEqual({ x: 'completed' });
 	});
 
 	it('rejects malformed and version-mismatched payloads with 400', async () => {
@@ -148,7 +150,8 @@ describe('handleProgressRequest', () => {
 		expect(res.status).toBe(200);
 
 		const getRes = await handleProgressRequest(request('GET'), 'user-1', env.DB);
-		expect((await getRes.json()).data).toEqual(malicious);
+		const stored = (await getRes.json()) as { data: unknown };
+		expect(stored.data).toEqual(malicious);
 
 		// SQL-like user id is a bound parameter, never a statement fragment
 		const evilId = await handleProgressRequest(request('GET'), "'; DROP TABLE user_data; --", env.DB);

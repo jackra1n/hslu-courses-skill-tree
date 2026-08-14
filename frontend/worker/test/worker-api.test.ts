@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { createExecutionContext, env as testEnv } from 'cloudflare:test';
+import { env as testEnv } from 'cloudflare:test';
 import { env } from 'cloudflare:workers';
 import worker from '../index';
 import { applyMigrations } from './apply-migrations';
@@ -24,8 +24,7 @@ function request(method: string, url: string, init: RequestInit = {}): Request {
 }
 
 async function dispatch(request: Request): Promise<Response> {
-	const ctx = createExecutionContext();
-	const response = await worker.fetch(request, env, ctx);
+	const response = await worker.fetch(request, env);
 	return response;
 }
 
