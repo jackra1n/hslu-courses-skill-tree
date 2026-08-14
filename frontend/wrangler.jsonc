@@ -3,11 +3,14 @@
 	"name": "hslu-skill-tree-api",
 	"main": "worker/index.ts",
 	"compatibility_date": "2026-08-14",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
 	"d1_databases": [
 		{
 			"binding": "DB",
 			"database_name": "hslu-skill-tree",
+			"database_id": "9be415d6-0090-4ab9-875d-cb0a56b7ac7b",
 			"migrations_dir": "worker/migrations"
 		}
 	],
