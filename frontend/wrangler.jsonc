@@ -1,0 +1,27 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "hslu-skill-tree-api",
+	"main": "worker/index.ts",
+	"compatibility_date": "2026-08-14",
+	"compatibility_flags": ["nodejs_compat"],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "hslu-skill-tree",
+			"migrations_dir": "worker/migrations"
+		}
+	],
+	"routes": [
+		{
+			"pattern": "hsluskilltree.com/api/*",
+			"zone_name": "hsluskilltree.com"
+		}
+	],
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 1
+	},
+	"vars": {
+		"ENVIRONMENT": "production"
+	}
+}

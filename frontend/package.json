@@ -9,9 +9,15 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"worker:types": "wrangler types worker/env.d.ts",
+		"worker:dev": "wrangler dev --port 8787",
+		"worker:test": "vitest run --config worker/vitest.config.ts",
+		"worker:check": "tsc --noEmit -p worker/tsconfig.json",
+		"worker:deploy": "wrangler deploy"
 	},
 	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.21.3",
 		"@iconify-json/lucide": "^1.2.112",
 		"@sveltejs/adapter-auto": "^7.0.1",
 		"@sveltejs/kit": "^2.65.0",
@@ -21,11 +27,14 @@
 		"svelte-check": "^4.6.0",
 		"typescript": "^6.0.3",
 		"unocss": "^66.7.2",
-		"vite": "^8.0.16"
+		"vite": "^8.0.16",
+		"vitest": "^4.1.10",
+		"wrangler": "^4.123.0"
 	},
 	"dependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@xyflow/svelte": "^1.6.0",
+		"better-auth": "^1.6.29",
 		"driver.js": "^1.8.0"
 	}
 }
