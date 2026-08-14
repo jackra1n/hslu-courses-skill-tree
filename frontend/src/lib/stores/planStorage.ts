@@ -47,6 +47,18 @@ export function loadAllPlans(): Record<string, StudyPlan> {
   return plans;
 }
 
+// Removes every studyPlan:<templateId> key and nothing else. Used when a cloud
+// snapshot or import replaces the plan set, so deleted plans cannot resurface.
+export function clearAllPlans(): void {
+  if (!browser) return;
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.startsWith('studyPlan:')) keysToRemove.push(key);
+  }
+  for (const key of keysToRemove) localStorage.removeItem(key);
+}
+
 export function loadPlan(
   template: CurriculumTemplate,
   fallbackSelections: Record<string, string> = {}
