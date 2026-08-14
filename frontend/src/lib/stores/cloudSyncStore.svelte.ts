@@ -209,6 +209,9 @@ export const cloudSyncStore = {
 		const sessionUser = session.data?.user;
 		if (!sessionUser) {
 			setUser(null);
+			// Baseline the current local state so later signed-out edits mark
+			// the metadata dirty and sync on the next sign-in.
+			baseline = serialize(collectAppData());
 			status = 'local';
 			return;
 		}
