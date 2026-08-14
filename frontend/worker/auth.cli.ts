@@ -5,6 +5,10 @@ import { createAuthOptions } from './auth-options';
 // CLI-only entry for `auth generate` / future schema upgrades. Bun's in-memory
 // SQLite satisfies Better Auth's built-in adapter without any Cloudflare
 // binding. Never import this file from the Worker bundle.
+
+// CLI-only entry for `auth generate` / future schema upgrades. Bun's in-memory
+// SQLite satisfies Better Auth's built-in adapter without any Cloudflare
+// binding. Never import this file from the Worker bundle.
 const sqlite = new Database(':memory:');
 
 export const auth = betterAuth(
