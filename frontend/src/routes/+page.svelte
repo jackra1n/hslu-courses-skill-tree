@@ -51,7 +51,7 @@ $effect(() => {
     <p class="text-sm text-text-secondary">Loading your progress…</p>
   </div>
 {:else}
-  <div class="font-sans h-screen flex flex-col">
+  <div class="font-sans h-screen h-dvh overflow-hidden flex flex-col">
     <Header />
     
     <SvelteFlowProvider>
