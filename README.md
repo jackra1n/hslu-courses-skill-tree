@@ -26,6 +26,7 @@ An interactive skill tree visualization tool for university courses. Track your 
 - **Course Details**: Click any course to view details in the sidebar (ECTS credits, prerequisites)
 - **Animated Transitions**: Visual feedback when courses become available
 - **Local Storage**: Your progress is automatically saved in your browser
+- **Cloud Sync**: Sign in with GitHub to sync your progress across devices, with conflict resolution when edits overlap
 - **Dark/Light Theme**: Switch between themes to match your preference
 - **Curriculum Templates**: Pre-configured study plans for different programs
 
@@ -36,6 +37,7 @@ An interactive skill tree visualization tool for university courses. Track your 
 - [x] **Custom Study Plans**: Allow users to create and save their own personalized curriculum plans
 - [ ] **Course Links**: Direct links to HSLU course pages and registration systems
 - [x] **Progress Analytics**: Visualize your academic progress and credit accumulation
+- [x] **Cloud Sync**: Sign in with GitHub to back up and sync your progress across devices
 - [ ] **Internationalization (i18n)**: Add German translation support for better accessibility
 
 ## Tech Stack
