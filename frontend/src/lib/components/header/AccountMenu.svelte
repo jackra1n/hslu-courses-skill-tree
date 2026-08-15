@@ -143,7 +143,6 @@
     >
       <div class="i-lucide-user h-4 w-4 text-text-primary"></div>
       <span class="text-sm font-medium text-text-primary">Sign in</span>
-      <div class="i-lucide-chevron-down h-3.5 w-3.5 text-text-secondary transition-transform {accountMenuOpen ? 'rotate-180' : ''}"></div>
     </button>
 
     {#if accountMenuOpen}
