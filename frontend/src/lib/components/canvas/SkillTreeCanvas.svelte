@@ -222,6 +222,7 @@ onMount(() => {
     onnodedragstop={handleNodeDragStop}
     onpaneclick={handleCanvasClick}
     panOnScroll={true}
+    zoomOnDoubleClick={false}
     nodesDraggable={true}
     nodesConnectable={false}
     fitView

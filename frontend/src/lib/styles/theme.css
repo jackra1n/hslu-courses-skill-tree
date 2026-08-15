@@ -52,6 +52,10 @@ body {
 	background-color: rgb(var(--bg-primary));
 	color: rgb(var(--text-primary));
 	min-height: 100%;
+	/* Allow pan/pinch but suppress the iOS double-tap page zoom on accidental
+	   taps; the graph pane keeps touch-action: none from xyflow for its own
+	   pan/zoom gestures. */
+	touch-action: manipulation;
 }
 
 body {
