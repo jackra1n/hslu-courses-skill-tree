@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { courseStore } from '$lib/stores/courseStore.svelte';
   import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
+  import { theme, themeStore } from '$lib/stores/theme.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
   import { collectAppData, importAppData } from '$lib/data/persistence';
   import { downloadJson, pickTextFile } from '$lib/utils/file-transfer';
@@ -40,6 +41,11 @@
 
   function toggleCourseBadges() {
     uiStore.toggleCourseTypeBadges();
+  }
+
+  function toggleTheme() {
+    const newTheme = theme() === 'dark' ? 'light' : 'dark';
+    themeStore.set(newTheme);
   }
 
   function toggleAssessmentInfo() {
@@ -121,6 +127,35 @@
 
       <!-- content -->
       <div class="flex-1 overflow-y-auto p-6 space-y-6">
+        <!-- Quick Links -->
+        <div>
+          <div class="text-base font-bold text-text-primary mb-4">Quick Links</div>
+          <div class="space-y-2">
+            <button
+              onclick={() => {
+                closeSidebar();
+                uiStore.requestTutorial();
+              }}
+              class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
+            >
+              <div class="i-lucide-info h-4 w-4 text-text-primary"></div>
+              <span>Start guided tutorial</span>
+            </button>
+            <a
+              href="https://github.com/jackra1n/hslu-courses-skill-tree"
+              target="_blank"
+              rel="noopener noreferrer"
+              onclick={closeSidebar}
+              class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
+            >
+              <div class="i-lucide-github h-4 w-4 text-text-primary"></div>
+              <span>View on GitHub</span>
+              <div class="i-lucide-external-link h-4 w-4 text-text-secondary ml-auto"></div>
+            </a>
+          </div>
+        </div>
+
+        <div class="border-b border-border-primary"></div>
         <!-- View Options -->
         <div>
           <div class="text-base font-bold text-text-primary mb-4">View Options</div>
@@ -159,6 +194,18 @@
                     ? 'translate-x-5'
                     : 'translate-x-0.5'}"
                 ></div>
+              </button>
+            </div>
+            <div class="flex items-center justify-between">
+              <label for="theme-toggle" class="text-base text-text-primary">Theme</label>
+              <button
+                id="theme-toggle"
+                onclick={toggleTheme}
+                class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors relative text-text-primary"
+                aria-label="Toggle theme"
+              >
+                <div class="i-lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-text-primary"></div>
+                <div class="i-lucide-moon h-4 w-4 absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-text-primary"></div>
               </button>
             </div>
           </div>
@@ -218,17 +265,6 @@
             <div class="i-lucide-info h-4 w-4 text-text-primary"></div>
             <span>Assessment Information</span>
           </button>
-          <a
-            href="https://github.com/jackra1n/hslu-courses-skill-tree"
-            target="_blank"
-            rel="noopener noreferrer"
-            onclick={closeSidebar}
-            class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
-          >
-            <div class="i-lucide-github h-4 w-4 text-text-primary"></div>
-            <span>View on GitHub</span>
-            <div class="i-lucide-external-link h-4 w-4 text-text-secondary ml-auto"></div>
-          </a>
           </div>
         </div>
 

@@ -1,8 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { uiStore } from '$lib/stores/uiStore.svelte';
-  import { theme, themeStore } from '$lib/stores/theme.svelte';
+  import { getEctsRequirements } from '$lib/data/ects-requirements';
   import TemplateSelector from './TemplateSelector.svelte';
   import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
   import ProgressAnalytics from './ProgressAnalytics.svelte';
@@ -30,25 +29,22 @@
     return () => document.removeEventListener('click', handleClickOutside);
   });
   
-  function toggleTheme() {
-    const newTheme = theme() === 'dark' ? 'light' : 'dark';
-    themeStore.set(newTheme);
-  }
   
   function toggleSettings() {
     settingsSidebarOpen = !settingsSidebarOpen;
   }
 
   const plannedCredits = $derived(courseStore.totalCredits);
-  const calculatedTotal = $derived(courseStore.calculatedTotalCredits);
+  const passedEcts = $derived(courseStore.completedCredits);
+  const requiredEcts = $derived(
+    getEctsRequirements(courseStore.currentTemplate.studiengang)?.total ?? 0
+  );
   const attended = $derived(courseStore.attendedCredits);
-  const completed = $derived(courseStore.completedCredits);
   const ectsTooltip = $derived(
     [
-      `${calculatedTotal} ECTS total (calculated)`,
+      `${passedEcts} ECTS completed`,
       `${plannedCredits} ECTS in plan`,
-      `${attended} ECTS attended (failed)`,
-      `${completed} ECTS completed`
+      `${attended} ECTS attended (failed)`
     ].join('\n')
   );
 </script>
@@ -63,15 +59,6 @@
   </div>
 
   <div class="flex flex-1 items-center justify-end gap-2">
-    <Tooltip text="Start guided tutorial">
-      <button
-        class="flex h-9 w-9 items-center justify-center rounded-lg border border-border-primary text-text-primary hover:bg-bg-secondary transition-colors"
-        aria-label="Start guided tutorial"
-        onclick={() => uiStore.requestTutorial()}
-      >
-        <div class="i-lucide-info w-4 h-4"></div>
-      </button>
-    </Tooltip>
 
     <div class="relative program-dropdown">
       <button 
@@ -80,7 +67,7 @@
         class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary transition-colors"
         >
         <div class="i-lucide-graduation-cap h-4 w-4 text-text-primary"></div>
-        <span class="hidden md:inline text-sm font-medium text-text-primary">Program</span>
+        <span class="hidden sm:inline text-sm font-medium text-text-primary">Study plan</span>
       </button>
       
       {#if programDropdownOpen}
@@ -88,7 +75,7 @@
           class="fixed inset-x-4 top-[64px] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl overflow-visible
                  sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-80 sm:shadow-lg sm:max-h-[70vh] sm:overflow-visible"
         >
-          <div class="text-xs font-medium text-text-secondary mb-2">Program Selection</div>
+          <div class="text-xs font-medium text-text-secondary mb-2">Study plan</div>
           <div class="border-b border-border-primary mb-3"></div>
           <div class="space-y-4">
             <TemplateSelector />
@@ -105,43 +92,23 @@
       title={ectsTooltip}
       aria-label="Open progress analytics"
     >
-      <span class="text-xs font-bold text-text-primary">{calculatedTotal} ECTS</span>
+      <span class="text-xs font-bold text-text-primary">{requiredEcts > 0 ? `${passedEcts} / ${requiredEcts} ECTS` : `${passedEcts} ECTS`}</span>
     </button>
 
-    <div class="h-6 w-px bg-border-primary"></div>
-
-    <!-- github link -->
-    <a 
-      href="https://github.com/jackra1n/hslu-courses-skill-tree"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="hidden md:flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary"
-      aria-label="View on GitHub"
-    >
-      <div class="i-lucide-github h-4 w-4 text-text-primary"></div>
-    </a>
-
-    <!-- theme toggle -->
-    <button
-      onclick={toggleTheme}
-      class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors relative text-text-primary"
-      aria-label="Toggle theme"
-    >
-      <div class="i-lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-text-primary"></div>
-      <div class="i-lucide-moon h-4 w-4 absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-text-primary"></div>
-    </button>
 
     <!-- cloud sync account -->
     <AccountMenu />
 
     <!-- settings button -->
-    <button
-      onclick={toggleSettings}
-      class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary"
-      aria-label="Settings"
-    >
-      <div class="i-lucide-settings h-4 w-4 text-text-primary"></div>
-    </button>
+    <Tooltip text="Settings & help">
+      <button
+        onclick={toggleSettings}
+        class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary"
+        aria-label="Settings & help"
+      >
+        <div class="i-lucide-settings h-4 w-4 text-text-primary"></div>
+      </button>
+    </Tooltip>
   </div>
 </header>
 

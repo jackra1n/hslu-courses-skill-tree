@@ -71,6 +71,7 @@
       {:else}
         <div class="i-lucide-user h-4 w-4 text-text-primary"></div>
       {/if}
+      <span class="hidden sm:inline max-w-40 truncate text-sm font-medium text-text-primary">{user.name}</span>
     </button>
 
     {#if accountMenuOpen}
@@ -121,8 +122,8 @@
       class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary transition-colors"
       aria-label="Sign in with GitHub"
     >
-      <div class="i-lucide-github h-4 w-4 text-text-primary"></div>
-      <span class="hidden md:inline text-sm font-medium text-text-primary">Sign in</span>
+      <div class="i-lucide-user h-4 w-4 text-text-primary"></div>
+      <span class="text-sm font-medium text-text-primary">Sign in</span>
     </button>
   {/if}
 </div>
