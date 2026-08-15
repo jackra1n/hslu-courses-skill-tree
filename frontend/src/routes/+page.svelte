@@ -83,13 +83,11 @@ $effect(() => {
             <div class="i-lucide-chevron-up h-4 w-4 text-text-secondary"></div>
           {/if}
         </button>
-        {#if legendOpen}
-          <div class="px-4 pb-4 pt-3 border-b border-border-primary">
-            <div class="[&>div:first-child]:border-t-0 [&>div:first-child]:pt-0">
-              <StatusLegend />
-            </div>
+        <div class="px-4 pb-4 pt-3 border-b border-border-primary" inert={!legendOpen}>
+          <div class="[&>div:first-child]:border-t-0 [&>div:first-child]:pt-0">
+            <StatusLegend />
           </div>
-        {/if}
+        </div>
       </div>
     </div>
   </div>
