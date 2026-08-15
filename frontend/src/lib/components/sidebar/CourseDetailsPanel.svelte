@@ -84,7 +84,7 @@
 
 <aside
   class={`bg-bg-secondary overflow-y-auto border border-border-primary transition-transform duration-300 ease-out
-    fixed top-[60px] sm:top-[72px] bottom-0 right-0 z-40 w-full max-w-md shadow-2xl
+    fixed top-[var(--app-header-height)] bottom-0 right-0 z-40 w-full max-w-md shadow-2xl
     ${isDrawerOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'}
     lg:static lg:top-auto lg:bottom-auto lg:right-auto lg:max-w-none lg:w-full lg:border-y-0 lg:border-r-0 lg:border-l lg:translate-x-0 lg:shadow-none lg:pointer-events-auto`}
 >

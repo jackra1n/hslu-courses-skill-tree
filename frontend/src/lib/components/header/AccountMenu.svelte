@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { cloudSyncStore, type SyncStatus } from '$lib/stores/cloudSyncStore.svelte';
 
+  let { onInteract }: { onInteract?: () => void } = $props();
+
   let accountMenuOpen = $state(false);
 
   function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
@@ -45,7 +47,13 @@
 
   const syncStatusLabel = $derived(statusLabel(status));
 
+  function toggleAccountMenu() {
+    accountMenuOpen = !accountMenuOpen;
+    if (accountMenuOpen) onInteract?.();
+  }
+
   async function handleSignIn() {
+    onInteract?.();
     await cloudSyncStore.signInWithGitHub();
   }
 
@@ -58,7 +66,7 @@
 <div class="relative account-menu">
   {#if user}
     <button
-      onclick={() => (accountMenuOpen = !accountMenuOpen)}
+      onclick={toggleAccountMenu}
       class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-2 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
       aria-label="Account menu"
       aria-expanded={accountMenuOpen}
@@ -78,7 +86,7 @@
 
     {#if accountMenuOpen}
       <div
-        class="fixed inset-x-4 top-[64px] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl overflow-visible
+        class="fixed inset-x-4 top-[var(--app-header-height)] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl overflow-visible
                sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-64 sm:shadow-lg"
       >
         <div class="flex items-center gap-3 px-1 pb-3">

@@ -58,6 +58,14 @@ body {
   min-height: 100vh;
 }
 
+:where(button:not(:disabled), [role='button']:not([aria-disabled='true'])) {
+  cursor: pointer;
+}
+
+:where(button:disabled, [role='button'][aria-disabled='true']) {
+  cursor: not-allowed;
+}
+
 .dark {
   /* Dark theme colors */
   --bg-primary: 17 24 39; /* gray-900 */

@@ -11,6 +11,7 @@
   let programDropdownOpen = $state(false);
   let settingsSidebarOpen = $state(false);
   let analyticsOpen = $state(false);
+  let headerElement: HTMLElement;
   
   function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
     return event.composedPath().some(
@@ -24,14 +25,37 @@
         programDropdownOpen = false;
       }
     };
+    const updateHeaderHeight = () => {
+      document.documentElement.style.setProperty('--app-header-height', `${headerElement.offsetHeight}px`);
+    };
+    const resizeObserver = new ResizeObserver(updateHeaderHeight);
 
     document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    resizeObserver.observe(headerElement);
+    updateHeaderHeight();
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+      resizeObserver.disconnect();
+      document.documentElement.style.removeProperty('--app-header-height');
+    };
   });
   
   
+  function toggleProgramDropdown() {
+    programDropdownOpen = !programDropdownOpen;
+    if (programDropdownOpen) settingsSidebarOpen = false;
+  }
+
   function toggleSettings() {
     settingsSidebarOpen = !settingsSidebarOpen;
+    if (settingsSidebarOpen) programDropdownOpen = false;
+  }
+
+  function openAnalytics() {
+    settingsSidebarOpen = false;
+    programDropdownOpen = false;
+    analyticsOpen = true;
   }
 
   const plannedCredits = $derived(courseStore.totalCredits);
@@ -49,7 +73,7 @@
   );
 </script>
 
-<header class="relative z-50 flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">
+<header bind:this={headerElement} class="relative z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">
   <div class="flex min-w-0 items-center gap-3">
     <div class="leading-tight">
       <h1 class="text-lg font-semibold text-text-primary sm:hidden">HCST</h1>
@@ -63,8 +87,8 @@
     <div class="relative program-dropdown">
       <button 
         data-tour="program"
-        onclick={() => programDropdownOpen = !programDropdownOpen}
-        class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
+        onclick={toggleProgramDropdown}
+        class="flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
         >
         <div class="i-lucide-graduation-cap h-4 w-4 text-text-primary"></div>
         <span class="hidden sm:inline text-sm font-medium text-text-primary">Study plan</span>
@@ -72,7 +96,7 @@
       
       {#if programDropdownOpen}
         <div
-          class="fixed inset-x-4 top-[64px] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl overflow-visible
+          class="fixed inset-x-4 top-[var(--app-header-height)] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl overflow-visible
                  sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-80 sm:shadow-lg sm:max-h-[70vh] sm:overflow-visible"
         >
           <div class="text-xs font-medium text-text-secondary mb-2">Study plan</div>
@@ -87,7 +111,7 @@
     <!-- ECTS progress badge -->
     <button
       data-tour="progress"
-      onclick={() => (analyticsOpen = true)}
+      onclick={openAnalytics}
       class="flex h-9 items-center gap-1.5 rounded-lg border border-border-primary bg-bg-secondary px-3 py-2 cursor-pointer hover:bg-bg-secondary/80 hover:shadow-sm transition-all"
       title={ectsTooltip}
       aria-label="Open progress analytics"
@@ -97,7 +121,10 @@
 
 
     <!-- cloud sync account -->
-    <AccountMenu />
+    <AccountMenu onInteract={() => {
+      settingsSidebarOpen = false;
+      programDropdownOpen = false;
+    }} />
 
     <!-- settings button -->
     <Tooltip text="Settings & help" align="end">
@@ -106,7 +133,7 @@
           toggleSettings();
           event.currentTarget.blur();
         }}
-        class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary hover:shadow-sm transition-all text-text-primary"
+        class="flex cursor-pointer items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary hover:shadow-sm transition-all text-text-primary"
         aria-label="Settings & help"
       >
         <div class="i-lucide-settings h-4 w-4 text-text-primary"></div>

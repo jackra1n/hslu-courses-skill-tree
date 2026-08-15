@@ -88,7 +88,7 @@
 
 <!-- backdrop -->
 <div
-  class="fixed inset-x-0 top-[53px] bottom-0 z-40 bg-black/40 transition-opacity duration-200 sm:top-[69px] {isOpen
+  class="fixed inset-x-0 top-[var(--app-header-height)] bottom-0 z-40 bg-black/40 transition-opacity duration-200 {isOpen
     ? 'opacity-100 pointer-events-auto'
     : 'opacity-0 pointer-events-none'}"
   onclick={closeSidebar}
@@ -97,7 +97,7 @@
 
 <!-- sidebar -->
 <aside
-  class="fixed top-[53px] right-0 bottom-0 z-50 w-full max-w-md bg-bg-primary border-l border-border-primary shadow-2xl overflow-y-auto transition-transform duration-200 ease-out sm:top-[69px] {isOpen
+  class="fixed top-[var(--app-header-height)] right-0 bottom-0 z-50 w-full max-w-md bg-bg-primary border-l border-border-primary shadow-2xl overflow-y-auto transition-transform duration-200 ease-out {isOpen
     ? 'translate-x-0'
     : 'translate-x-full pointer-events-none'}"
   aria-hidden={!isOpen}
@@ -128,23 +128,27 @@
             <div class="i-lucide-book-open h-4 w-4 text-text-primary"></div>
             <span>Start guided tutorial</span>
           </button>
-          <div class="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary rounded-lg text-text-primary">
+          <div class="flex w-full items-center justify-between gap-3 px-1 py-2 text-base text-text-primary">
             <span>Theme</span>
-            <button
-              id="theme-toggle"
-              onclick={toggleTheme}
-              class="relative w-11 h-6 rounded-full transition-colors duration-200 {theme() === 'dark'
-                ? 'bg-blue-600 dark:bg-blue-500'
-                : 'bg-gray-300 dark:bg-gray-600'}"
-              aria-label="Toggle theme"
-              aria-pressed={theme() === 'dark'}
-            >
-              <div
-                class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {theme() === 'dark'
-                  ? 'translate-x-5'
-                  : 'translate-x-0.5'}"
-              ></div>
-            </button>
+            <div class="flex items-center gap-2 text-text-secondary">
+              <div class="i-lucide-sun h-4 w-4"></div>
+              <button
+                id="theme-toggle"
+                onclick={toggleTheme}
+                class="relative h-6 w-11 cursor-pointer rounded-full transition-colors duration-200 {theme() === 'dark'
+                  ? 'bg-blue-600 dark:bg-blue-500'
+                  : 'bg-gray-300 dark:bg-gray-600'}"
+                aria-label="Toggle theme"
+                aria-pressed={theme() === 'dark'}
+              >
+                <div
+                  class="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 dark:bg-gray-800 {theme() === 'dark'
+                    ? 'translate-x-5'
+                    : 'translate-x-0.5'}"
+                ></div>
+              </button>
+              <div class="i-lucide-moon h-4 w-4"></div>
+            </div>
           </div>
         </div>
 
