@@ -1,203 +1,200 @@
 <script lang="ts">
-  interface Option {
-    value: string;
-    label: string;
-    disabled?: boolean;
-    tooltip?: string;
-    keywords?: string[];
-    icon?: string;
-  }
+interface Option {
+	value: string;
+	label: string;
+	disabled?: boolean;
+	tooltip?: string;
+	keywords?: string[];
+	icon?: string;
+}
 
-  interface Props {
-    options: Option[];
-    selected: string;
-    onSelect: (value: string) => void;
-    placeholder?: string;
-    minWidth?: string;
-    searchPlaceholder?: string;
-    noResultsText?: string;
-    normalize?: (text: string) => string;
-    filter?: (query: string, option: Option) => boolean;
-  }
+interface Props {
+	options: Option[];
+	selected: string;
+	onSelect: (value: string) => void;
+	placeholder?: string;
+	minWidth?: string;
+	searchPlaceholder?: string;
+	noResultsText?: string;
+	normalize?: (text: string) => string;
+	filter?: (query: string, option: Option) => boolean;
+}
 
-  let {
-    options,
-    selected,
-    onSelect,
-    placeholder = "Select option",
-    minWidth = "auto",
-    searchPlaceholder = "Search...",
-    noResultsText = "No results found",
-    normalize = (text: string) =>
-      text
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, ""),
-    filter = (query: string, option: Option) => {
-      const normalizedQuery = normalize(query);
-      const searchTexts = [
-        normalize(option.label),
-        ...(option.keywords || []).map((k) => normalize(k)),
-      ];
-      return searchTexts.some((text) => text.includes(normalizedQuery));
-    },
-  }: Props = $props();
+let {
+	options,
+	selected,
+	onSelect,
+	placeholder = 'Select option',
+	minWidth = 'auto',
+	searchPlaceholder = 'Search...',
+	noResultsText = 'No results found',
+	normalize = (text: string) =>
+		text
+			.toLowerCase()
+			.normalize('NFD')
+			.replace(/[\u0300-\u036f]/g, ''),
+	filter = (query: string, option: Option) => {
+		const normalizedQuery = normalize(query);
+		const searchTexts = [
+			normalize(option.label),
+			...(option.keywords || []).map((k) => normalize(k)),
+		];
+		return searchTexts.some((text) => text.includes(normalizedQuery));
+	},
+}: Props = $props();
 
-  let isOpen = $state(false);
-  let searchQuery = $state('');
-  let highlightedIndex = $state(-1);
-  let comboboxElement: HTMLDivElement | undefined = $state();
-  let inputElement: HTMLInputElement | undefined = $state();
-  let listboxElement: HTMLUListElement | undefined = $state();
+let isOpen = $state(false);
+let searchQuery = $state('');
+let highlightedIndex = $state(-1);
+let comboboxElement: HTMLDivElement | undefined = $state();
+let inputElement: HTMLInputElement | undefined = $state();
+let listboxElement: HTMLUListElement | undefined = $state();
 
-  const filteredOptions = $derived.by(() => {
-    if (!searchQuery.trim()) return options;
-    return options.filter((option) => filter(searchQuery, option));
-  });
+const filteredOptions = $derived.by(() => {
+	if (!searchQuery.trim()) return options;
+	return options.filter((option) => filter(searchQuery, option));
+});
 
-  const selectedOption = $derived.by(() => {
-    return (
-      options.find((option) => option.value === selected) || {
-        value: "",
-        label: placeholder,
-      }
-    );
-  });
+const selectedOption = $derived.by(() => {
+	return (
+		options.find((option) => option.value === selected) || {
+			value: '',
+			label: placeholder,
+		}
+	);
+});
 
-  function toggleCombobox() {
-    if (isOpen) {
-      closeCombobox();
-    } else {
-      openCombobox();
-    }
-  }
+function toggleCombobox() {
+	if (isOpen) {
+		closeCombobox();
+	} else {
+		openCombobox();
+	}
+}
 
-  function openCombobox() {
-    isOpen = true;
-    searchQuery = '';
-    highlightedIndex = -1;
-    // focus input after DOM update
-    setTimeout(() => {
-      inputElement?.focus();
-    }, 0);
-  }
+function openCombobox() {
+	isOpen = true;
+	searchQuery = '';
+	highlightedIndex = -1;
+	// focus input after DOM update
+	setTimeout(() => {
+		inputElement?.focus();
+	}, 0);
+}
 
-  function closeCombobox() {
-    isOpen = false;
-    searchQuery = '';
-    highlightedIndex = -1;
-  }
+function closeCombobox() {
+	isOpen = false;
+	searchQuery = '';
+	highlightedIndex = -1;
+}
 
-  function selectOption(option: Option) {
-    if (option.disabled) return;
-    onSelect(option.value);
-    closeCombobox();
-  }
+function selectOption(option: Option) {
+	if (option.disabled) return;
+	onSelect(option.value);
+	closeCombobox();
+}
 
-  function getFirstSelectableOption() {
-    return filteredOptions.find((option) => !option.disabled);
-  }
+function getFirstSelectableOption() {
+	return filteredOptions.find((option) => !option.disabled);
+}
 
-  function handleKeydown(event: KeyboardEvent) {
-    if (!isOpen) {
-      if (
-        event.key === "Enter" ||
-        event.key === " " ||
-        event.key === "ArrowDown"
-      ) {
-        event.preventDefault();
-        openCombobox();
-      }
-      return;
-    }
+function handleKeydown(event: KeyboardEvent) {
+	if (!isOpen) {
+		if (
+			event.key === 'Enter' ||
+			event.key === ' ' ||
+			event.key === 'ArrowDown'
+		) {
+			event.preventDefault();
+			openCombobox();
+		}
+		return;
+	}
 
-    switch (event.key) {
-      case "Escape":
-        event.preventDefault();
-        closeCombobox();
-        break;
-      case "ArrowDown":
-        event.preventDefault();
-        highlightedIndex = Math.min(
-          highlightedIndex + 1,
-          filteredOptions.length - 1
-        );
-        scrollToHighlighted();
-        break;
-      case "ArrowUp":
-        event.preventDefault();
-        highlightedIndex = Math.max(highlightedIndex - 1, -1);
-        scrollToHighlighted();
-        break;
-      case "Enter":
-        event.preventDefault();
-        if (
-          highlightedIndex >= 0 &&
-          highlightedIndex < filteredOptions.length
-        ) {
-          selectOption(filteredOptions[highlightedIndex]);
-        } else {
-          const firstAvailableOption = getFirstSelectableOption();
-          if (firstAvailableOption) {
-            selectOption(firstAvailableOption);
-          }
-        }
-        break;
-      case "Tab":
-        closeCombobox();
-        break;
-    }
-  }
+	switch (event.key) {
+		case 'Escape':
+			event.preventDefault();
+			closeCombobox();
+			break;
+		case 'ArrowDown':
+			event.preventDefault();
+			highlightedIndex = Math.min(
+				highlightedIndex + 1,
+				filteredOptions.length - 1,
+			);
+			scrollToHighlighted();
+			break;
+		case 'ArrowUp':
+			event.preventDefault();
+			highlightedIndex = Math.max(highlightedIndex - 1, -1);
+			scrollToHighlighted();
+			break;
+		case 'Enter':
+			event.preventDefault();
+			if (highlightedIndex >= 0 && highlightedIndex < filteredOptions.length) {
+				selectOption(filteredOptions[highlightedIndex]);
+			} else {
+				const firstAvailableOption = getFirstSelectableOption();
+				if (firstAvailableOption) {
+					selectOption(firstAvailableOption);
+				}
+			}
+			break;
+		case 'Tab':
+			closeCombobox();
+			break;
+	}
+}
 
-  function scrollToHighlighted() {
-    if (highlightedIndex >= 0 && listboxElement) {
-      const highlightedElement = listboxElement.children[
-        highlightedIndex
-      ] as HTMLElement;
-      highlightedElement?.scrollIntoView({ block: "nearest" });
-    }
-  }
+function scrollToHighlighted() {
+	if (highlightedIndex >= 0 && listboxElement) {
+		const highlightedElement = listboxElement.children[
+			highlightedIndex
+		] as HTMLElement;
+		highlightedElement?.scrollIntoView({ block: 'nearest' });
+	}
+}
 
-  function handleInputChange(event: Event) {
-    const target = event.target as HTMLInputElement;
-    searchQuery = target.value;
-    highlightedIndex = -1;
-  }
+function handleInputChange(event: Event) {
+	const target = event.target as HTMLInputElement;
+	searchQuery = target.value;
+	highlightedIndex = -1;
+}
 
-  function handleClickOutside(event: MouseEvent) {
-    if (comboboxElement && !comboboxElement.contains(event.target as Node)) {
-      closeCombobox();
-    }
-  }
+function handleClickOutside(event: MouseEvent) {
+	if (comboboxElement && !comboboxElement.contains(event.target as Node)) {
+		closeCombobox();
+	}
+}
 
-  function highlightText(text: string, query: string): string {
-    if (!query.trim()) return text;
+function highlightText(text: string, query: string): string {
+	if (!query.trim()) return text;
 
-    const normalizedText = normalize(text);
-    const normalizedQuery = normalize(query);
-    const index = normalizedText.indexOf(normalizedQuery);
+	const normalizedText = normalize(text);
+	const normalizedQuery = normalize(query);
+	const index = normalizedText.indexOf(normalizedQuery);
 
-    if (index === -1) return text;
+	if (index === -1) return text;
 
-    const before = text.substring(0, index);
-    const match = text.substring(index, index + query.length);
-    const after = text.substring(index + query.length);
+	const before = text.substring(0, index);
+	const match = text.substring(index, index + query.length);
+	const after = text.substring(index + query.length);
 
-    return `${before}<mark class="bg-yellow-200 dark:bg-yellow-800 px-0.5 rounded">${match}</mark>${after}`;
-  }
+	return `${before}<mark class="bg-yellow-200 dark:bg-yellow-800 px-0.5 rounded">${match}</mark>${after}`;
+}
 
-  $effect(() => {
-    if (isOpen) {
-      document.addEventListener("click", handleClickOutside);
-      return () => document.removeEventListener("click", handleClickOutside);
-    }
-  });
+$effect(() => {
+	if (isOpen) {
+		document.addEventListener('click', handleClickOutside);
+		return () => document.removeEventListener('click', handleClickOutside);
+	}
+});
 
-  // reset highlighted index when filtered options change
-  $effect(() => {
-    const _ = filteredOptions;
-    highlightedIndex = Math.min(highlightedIndex, filteredOptions.length - 1);
-  });
+// reset highlighted index when filtered options change
+$effect(() => {
+	const _ = filteredOptions;
+	highlightedIndex = Math.min(highlightedIndex, filteredOptions.length - 1);
+});
 </script>
 
 <div class="relative" bind:this={comboboxElement}>

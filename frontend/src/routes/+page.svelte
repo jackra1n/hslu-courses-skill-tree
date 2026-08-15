@@ -1,47 +1,49 @@
 <script lang="ts">
-  import Header from '$lib/components/header/Header.svelte';
-  import AssessmentInfo from '$lib/components/ui/AssessmentInfo.svelte';
-  import SkillTreeCanvas from '$lib/components/canvas/SkillTreeCanvas.svelte';
-  import CourseDetailsPanel from '$lib/components/sidebar/CourseDetailsPanel.svelte';
-  import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
-  import SyncConflictDialog from '$lib/components/ui/SyncConflictDialog.svelte';
-  import { hasSelection } from '$lib/stores/uiStore.svelte';
-  import { SvelteFlowProvider } from '@xyflow/svelte';
-  import { onMount } from 'svelte';
-  import { hasMeaningfulStoredAppData, collectAppData } from '$lib/data/persistence';
-  import { themeStore } from '$lib/stores/theme.svelte';
-  import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { progressStore } from '$lib/stores/progressStore.svelte';
-  import { uiStore } from '$lib/stores/uiStore.svelte';
-  import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
+import { SvelteFlowProvider } from '@xyflow/svelte';
+import { onMount } from 'svelte';
+import SkillTreeCanvas from '$lib/components/canvas/SkillTreeCanvas.svelte';
+import Header from '$lib/components/header/Header.svelte';
+import CourseDetailsPanel from '$lib/components/sidebar/CourseDetailsPanel.svelte';
+import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
+import AssessmentInfo from '$lib/components/ui/AssessmentInfo.svelte';
+import SyncConflictDialog from '$lib/components/ui/SyncConflictDialog.svelte';
+import {
+	collectAppData,
+	hasMeaningfulStoredAppData,
+} from '$lib/data/persistence';
+import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
+import { courseStore } from '$lib/stores/courseStore.svelte';
+import { progressStore } from '$lib/stores/progressStore.svelte';
+import { themeStore } from '$lib/stores/theme.svelte';
+import { hasSelection, uiStore } from '$lib/stores/uiStore.svelte';
 
-  let legendOpen = $state(false);
-  let appReady = $state(false);
+let legendOpen = $state(false);
+let appReady = $state(false);
 
-  onMount(async () => {
-    // Detect meaningful local state before any store initializer mutates it.
-    const localDataIsMeaningful = hasMeaningfulStoredAppData();
-    themeStore.init();
-    courseStore.init();
-    progressStore.init();
-    uiStore.init();
-    await cloudSyncStore.init(localDataIsMeaningful);
-    appReady = true;
-  });
+onMount(async () => {
+	// Detect meaningful local state before any store initializer mutates it.
+	const localDataIsMeaningful = hasMeaningfulStoredAppData();
+	themeStore.init();
+	courseStore.init();
+	progressStore.init();
+	uiStore.init();
+	await cloudSyncStore.init(localDataIsMeaningful);
+	appReady = true;
+});
 
-  // One root snapshot effect: every reactive store change flows through the
-  // sync store's baseline comparison and debounced cloud write. Import and
-  // reset actions land here too, batched into a single PUT.
-  $effect(() => {
-    if (!appReady) return;
-    cloudSyncStore.recordLocalSnapshot(collectAppData());
-  });
+// One root snapshot effect: every reactive store change flows through the
+// sync store's baseline comparison and debounced cloud write. Import and
+// reset actions land here too, batched into a single PUT.
+$effect(() => {
+	if (!appReady) return;
+	cloudSyncStore.recordLocalSnapshot(collectAppData());
+});
 
-  $effect(() => {
-    if (hasSelection()) {
-      legendOpen = false;
-    }
-  });
+$effect(() => {
+	if (hasSelection()) {
+		legendOpen = false;
+	}
+});
 </script>
 
 {#if !appReady}

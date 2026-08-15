@@ -1,75 +1,72 @@
 <script lang="ts">
-  import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { uiStore } from '$lib/stores/uiStore.svelte';
-  import ThemeSwitcher from '$lib/components/ui/ThemeSwitcher.svelte';
-  import { progressStore } from '$lib/stores/progressStore.svelte';
-  import { collectAppData, importAppData } from '$lib/data/persistence';
-  import { downloadJson, pickTextFile } from '$lib/utils/file-transfer';
-  import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte';
-  import Sidebar from '$lib/components/ui/Sidebar.svelte';
+import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte';
+import Sidebar from '$lib/components/ui/Sidebar.svelte';
+import ThemeSwitcher from '$lib/components/ui/ThemeSwitcher.svelte';
+import { collectAppData, importAppData } from '$lib/data/persistence';
+import { courseStore } from '$lib/stores/courseStore.svelte';
+import { progressStore } from '$lib/stores/progressStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
+import { downloadJson, pickTextFile } from '$lib/utils/file-transfer';
 
-  let { isOpen, onClose }: { isOpen: boolean; onClose: () => void } = $props();
+let { isOpen, onClose }: { isOpen: boolean; onClose: () => void } = $props();
 
-  let showResetProgressDialog = $state(false);
-  let showResetAllDataDialog = $state(false);
-  let importError = $state<string | null>(null);
+let showResetProgressDialog = $state(false);
+let showResetAllDataDialog = $state(false);
+let importError = $state<string | null>(null);
 
-  function handleExport() {
-    const date = new Date().toISOString().slice(0, 10);
-    downloadJson(`hslu-skill-tree-${date}.json`, collectAppData());
-  }
+function handleExport() {
+	const date = new Date().toISOString().slice(0, 10);
+	downloadJson(`hslu-skill-tree-${date}.json`, collectAppData());
+}
 
-  async function handleImport() {
-    importError = null;
-    const text = await pickTextFile();
-    if (text === null) return;
-    const result = importAppData(text);
-    if (!result.ok) {
-      importError = result.error;
-      return;
-    }
-    closeSidebar();
-  }
+async function handleImport() {
+	importError = null;
+	const text = await pickTextFile();
+	if (text === null) return;
+	const result = importAppData(text);
+	if (!result.ok) {
+		importError = result.error;
+		return;
+	}
+	closeSidebar();
+}
 
-  function closeSidebar() {
-    onClose();
-  }
+function closeSidebar() {
+	onClose();
+}
 
+function toggleAssessmentInfo() {
+	uiStore.toggleAssessmentInfo();
+	closeSidebar();
+}
 
+function handleResetProgress() {
+	showResetProgressDialog = true;
+}
 
-  function toggleAssessmentInfo() {
-    uiStore.toggleAssessmentInfo();
-    closeSidebar();
-  }
+function confirmResetProgress() {
+	const plan = courseStore.studyPlan;
+	Object.keys(plan.nodes).forEach((slotId) => {
+		progressStore.clearSlotStatus(slotId);
+	});
+	showResetProgressDialog = false;
+	closeSidebar();
+}
 
-  function handleResetProgress() {
-    showResetProgressDialog = true;
-  }
+function handleResetAllData() {
+	showResetAllDataDialog = true;
+}
 
-  function confirmResetProgress() {
-    const plan = courseStore.studyPlan;
-    Object.keys(plan.nodes).forEach((slotId) => {
-      progressStore.clearSlotStatus(slotId);
-    });
-    showResetProgressDialog = false;
-    closeSidebar();
-  }
-
-  function handleResetAllData() {
-    showResetAllDataDialog = true;
-  }
-
-  function confirmResetAllData() {
-    const template = courseStore.currentTemplate;
-    courseStore.switchTemplate(template.id, true);
-    const plan = courseStore.studyPlan;
-    Object.keys(plan.nodes).forEach((slotId) => {
-      progressStore.clearSlotStatus(slotId);
-    });
-    showResetAllDataDialog = false;
-    closeSidebar();
-  }
-
+function confirmResetAllData() {
+	const template = courseStore.currentTemplate;
+	courseStore.switchTemplate(template.id, true);
+	const plan = courseStore.studyPlan;
+	Object.keys(plan.nodes).forEach((slotId) => {
+		progressStore.clearSlotStatus(slotId);
+	});
+	showResetAllDataDialog = false;
+	closeSidebar();
+}
 </script>
 
 <Sidebar {isOpen} {onClose} label="Settings">

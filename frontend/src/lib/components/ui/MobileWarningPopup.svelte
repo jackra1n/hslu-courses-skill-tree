@@ -1,39 +1,39 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+import { onMount } from 'svelte';
 
-  const STORAGE_KEY = 'mobile-warning-dismissed';
+const STORAGE_KEY = 'mobile-warning-dismissed';
 
-  let showPopup = $state(false);
-  let dismissed = $state(false);
+let showPopup = $state(false);
+let dismissed = $state(false);
 
-  onMount(() => {
-    if (localStorage.getItem(STORAGE_KEY) === 'true') {
-      dismissed = true;
-      return;
-    }
+onMount(() => {
+	if (localStorage.getItem(STORAGE_KEY) === 'true') {
+		dismissed = true;
+		return;
+	}
 
-    const checkMobile = () => {
-      if (window.innerWidth < 768 && !dismissed) {
-        showPopup = true;
-      } else {
-        showPopup = false;
-      }
-    };
+	const checkMobile = () => {
+		if (window.innerWidth < 768 && !dismissed) {
+			showPopup = true;
+		} else {
+			showPopup = false;
+		}
+	};
 
-    checkMobile();
+	checkMobile();
 
-    window.addEventListener('resize', checkMobile);
+	window.addEventListener('resize', checkMobile);
 
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
-  });
+	return () => {
+		window.removeEventListener('resize', checkMobile);
+	};
+});
 
-  function dismissPopup() {
-    showPopup = false;
-    dismissed = true;
-    localStorage.setItem(STORAGE_KEY, 'true');
-  }
+function dismissPopup() {
+	showPopup = false;
+	dismissed = true;
+	localStorage.setItem(STORAGE_KEY, 'true');
+}
 </script>
 
 {#if showPopup}

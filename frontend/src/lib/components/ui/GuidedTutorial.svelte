@@ -1,168 +1,172 @@
 <script lang="ts">
-  import { onMount, onDestroy, tick } from 'svelte';
-  import { driver, type Driver, type DriveStep } from 'driver.js';
-  import 'driver.js/dist/driver.css';
-  import { tutorialRequested, uiStore } from '$lib/stores/uiStore.svelte';
+import { type Driver, type DriveStep, driver } from 'driver.js';
+import { onDestroy, onMount, tick } from 'svelte';
+import 'driver.js/dist/driver.css';
+import { tutorialRequested, uiStore } from '$lib/stores/uiStore.svelte';
 
-  const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
+const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
 
-  const steps: DriveStep[] = [
-    {
-      popover: {
-        title: 'Welcome to HSLU Courses Skill Tree',
-        description:
-          'This short tour shows you how to explore your study plan, track courses, switch programs, and review your progress.'
-      }
-    },
-    {
-      element: '[data-tour="skill-tree"]',
-      popover: {
-        title: 'Explore your study plan',
-        description: 'Drag or scroll to move around the skill tree, and use the controls to zoom. Courses are arranged by semester and connected by prerequisites.'
-      }
-    },
-    {
-      element: '.svelte-flow__node',
-      popover: {
-        title: 'Open a course',
-        description: 'Select any course to view its details and prerequisites. In the details panel, mark it as attended or completed to track your status.'
-      }
-    },
-    {
-      element: '[data-tour="program"]',
-      popover: {
-        title: 'Change your program',
-        description: 'Choose your degree program, study model, start year, and semester, then load the matching curriculum.'
-      }
-    },
-    {
-      element: '[data-tour="progress"]',
-      popover: {
-        title: 'Review your progress',
-        description: 'Open the ECTS summary to see passed, completed, and failed credits overall and by module type.'
-      }
-    }
-  ];
+const steps: DriveStep[] = [
+	{
+		popover: {
+			title: 'Welcome to HSLU Courses Skill Tree',
+			description:
+				'This short tour shows you how to explore your study plan, track courses, switch programs, and review your progress.',
+		},
+	},
+	{
+		element: '[data-tour="skill-tree"]',
+		popover: {
+			title: 'Explore your study plan',
+			description:
+				'Drag or scroll to move around the skill tree, and use the controls to zoom. Courses are arranged by semester and connected by prerequisites.',
+		},
+	},
+	{
+		element: '.svelte-flow__node',
+		popover: {
+			title: 'Open a course',
+			description:
+				'Select any course to view its details and prerequisites. In the details panel, mark it as attended or completed to track your status.',
+		},
+	},
+	{
+		element: '[data-tour="program"]',
+		popover: {
+			title: 'Change your program',
+			description:
+				'Choose your degree program, study model, start year, and semester, then load the matching curriculum.',
+		},
+	},
+	{
+		element: '[data-tour="progress"]',
+		popover: {
+			title: 'Review your progress',
+			description:
+				'Open the ECTS summary to see passed, completed, and failed credits overall and by module type.',
+		},
+	},
+];
 
-  let driverInstance: Driver | null = null;
-  let starting = false;
-  let bodyObserver: MutationObserver | null = null;
-  let nodeObserver: MutationObserver | null = null;
+let driverInstance: Driver | null = null;
+let starting = false;
+let bodyObserver: MutationObserver | null = null;
+let nodeObserver: MutationObserver | null = null;
 
-  function waitForAbsent(selector: string, timeout = 0): Promise<void> {
-    return new Promise((resolve) => {
-      if (!document.querySelector(selector)) {
-        resolve();
-        return;
-      }
+function waitForAbsent(selector: string, timeout = 0): Promise<void> {
+	return new Promise((resolve) => {
+		if (!document.querySelector(selector)) {
+			resolve();
+			return;
+		}
 
-      const finish = () => {
-        observer.disconnect();
-        if (bodyObserver === observer) bodyObserver = null;
-        if (timeoutId !== undefined) clearTimeout(timeoutId);
-        resolve();
-      };
+		const finish = () => {
+			observer.disconnect();
+			if (bodyObserver === observer) bodyObserver = null;
+			if (timeoutId !== undefined) clearTimeout(timeoutId);
+			resolve();
+		};
 
-      const observer = new MutationObserver(() => {
-        if (!document.querySelector(selector)) finish();
-      });
-      bodyObserver = observer;
-      observer.observe(document.body, { childList: true, subtree: true });
+		const observer = new MutationObserver(() => {
+			if (!document.querySelector(selector)) finish();
+		});
+		bodyObserver = observer;
+		observer.observe(document.body, { childList: true, subtree: true });
 
-      const timeoutId = timeout > 0
-        ? setTimeout(finish, timeout)
-        : undefined;
-    });
-  }
+		const timeoutId = timeout > 0 ? setTimeout(finish, timeout) : undefined;
+	});
+}
 
-  function waitForNode(selector: string, timeout: number): Promise<void> {
-    return new Promise((resolve) => {
-      if (document.querySelector(selector)) {
-        resolve();
-        return;
-      }
+function waitForNode(selector: string, timeout: number): Promise<void> {
+	return new Promise((resolve) => {
+		if (document.querySelector(selector)) {
+			resolve();
+			return;
+		}
 
-      const finish = () => {
-        observer.disconnect();
-        if (nodeObserver === observer) nodeObserver = null;
-        clearTimeout(timer);
-        resolve();
-      };
+		const finish = () => {
+			observer.disconnect();
+			if (nodeObserver === observer) nodeObserver = null;
+			clearTimeout(timer);
+			resolve();
+		};
 
-      const observer = new MutationObserver(() => {
-        if (document.querySelector(selector)) finish();
-      });
-      nodeObserver = observer;
-      observer.observe(document.body, { childList: true, subtree: true });
+		const observer = new MutationObserver(() => {
+			if (document.querySelector(selector)) finish();
+		});
+		nodeObserver = observer;
+		observer.observe(document.body, { childList: true, subtree: true });
 
-      const timer = setTimeout(finish, timeout);
-    });
-  }
+		const timer = setTimeout(finish, timeout);
+	});
+}
 
-  async function runTutorial() {
-    if (starting || (driverInstance && driverInstance.isActive())) return;
-    starting = true;
+async function runTutorial() {
+	if (starting || (driverInstance && driverInstance.isActive())) return;
+	starting = true;
 
-    try {
-      await tick();
-      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+	try {
+		await tick();
+		await new Promise<void>((resolve) =>
+			requestAnimationFrame(() => resolve()),
+		);
 
-      // Wait for the first course node (bounded) and for the blocking mobile
-      // warning overlay to be gone so Driver.js never competes with it.
-      await Promise.all([
-        waitForNode('.svelte-flow__node', 2000),
-        waitForAbsent('[data-mobile-warning]')
-      ]);
+		// Wait for the first course node (bounded) and for the blocking mobile
+		// warning overlay to be gone so Driver.js never competes with it.
+		await Promise.all([
+			waitForNode('.svelte-flow__node', 2000),
+			waitForAbsent('[data-mobile-warning]'),
+		]);
 
-      if (driverInstance && driverInstance.isActive()) return;
+		if (driverInstance && driverInstance.isActive()) return;
 
-      driverInstance = driver({
-        showProgress: true,
-        progressText: 'Step {{current}} of {{total}}',
-        nextBtnText: 'Next',
-        prevBtnText: 'Back',
-        doneBtnText: 'Done',
-        smoothScroll: true,
-        allowClose: true,
-        allowKeyboardControl: true,
-        disableActiveInteraction: true,
-        stagePadding: 8,
-        stageRadius: 8,
-        popoverClass: 'hslu-tutorial-popover',
-        steps,
-        onDestroyed: () => {
-          localStorage.setItem(SEEN_KEY, 'true');
-          driverInstance = null;
-        }
-      });
+		driverInstance = driver({
+			showProgress: true,
+			progressText: 'Step {{current}} of {{total}}',
+			nextBtnText: 'Next',
+			prevBtnText: 'Back',
+			doneBtnText: 'Done',
+			smoothScroll: true,
+			allowClose: true,
+			allowKeyboardControl: true,
+			disableActiveInteraction: true,
+			stagePadding: 8,
+			stageRadius: 8,
+			popoverClass: 'hslu-tutorial-popover',
+			steps,
+			onDestroyed: () => {
+				localStorage.setItem(SEEN_KEY, 'true');
+				driverInstance = null;
+			},
+		});
 
-      driverInstance.drive();
-    } finally {
-      starting = false;
-    }
-  }
+		driverInstance.drive();
+	} finally {
+		starting = false;
+	}
+}
 
-  onMount(() => {
-    if (localStorage.getItem(SEEN_KEY) !== 'true') {
-      runTutorial();
-    }
-  });
+onMount(() => {
+	if (localStorage.getItem(SEEN_KEY) !== 'true') {
+		runTutorial();
+	}
+});
 
-  $effect(() => {
-    if (tutorialRequested()) {
-      uiStore.consumeTutorialRequest();
-      runTutorial();
-    }
-  });
+$effect(() => {
+	if (tutorialRequested()) {
+		uiStore.consumeTutorialRequest();
+		runTutorial();
+	}
+});
 
-  onDestroy(() => {
-    bodyObserver?.disconnect();
-    nodeObserver?.disconnect();
-    if (driverInstance) {
-      driverInstance.destroy();
-      driverInstance = null;
-    }
-  });
+onDestroy(() => {
+	bodyObserver?.disconnect();
+	nodeObserver?.disconnect();
+	if (driverInstance) {
+		driverInstance.destroy();
+		driverInstance = null;
+	}
+});
 </script>
 
 <style>

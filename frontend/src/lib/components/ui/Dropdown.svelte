@@ -1,51 +1,62 @@
 <script lang="ts">
-  interface Option {
-    value: string;
-    label: string;
-    disabled?: boolean;
-    tooltip?: string;
-    icon?: string;
-  }
+interface Option {
+	value: string;
+	label: string;
+	disabled?: boolean;
+	tooltip?: string;
+	icon?: string;
+}
 
-  interface Props {
-    options: Option[];
-    selected: string;
-    onSelect: (value: string) => void;
-    placeholder?: string;
-    minWidth?: string;
-  }
+interface Props {
+	options: Option[];
+	selected: string;
+	onSelect: (value: string) => void;
+	placeholder?: string;
+	minWidth?: string;
+}
 
-  let { options, selected, onSelect, placeholder = "Select option", minWidth = "auto" }: Props = $props();
+let {
+	options,
+	selected,
+	onSelect,
+	placeholder = 'Select option',
+	minWidth = 'auto',
+}: Props = $props();
 
-  let isOpen = $state(false);
-  let dropdownElement: HTMLDivElement | undefined = $state();
+let isOpen = $state(false);
+let dropdownElement: HTMLDivElement | undefined = $state();
 
-  function toggleDropdown() {
-    isOpen = !isOpen;
-  }
+function toggleDropdown() {
+	isOpen = !isOpen;
+}
 
-  function selectOption(option: Option) {
-    if (option.disabled) return;
-    onSelect(option.value);
-    isOpen = false;
-  }
+function selectOption(option: Option) {
+	if (option.disabled) return;
+	onSelect(option.value);
+	isOpen = false;
+}
 
-  function handleClickOutside(event: MouseEvent) {
-    if (dropdownElement && !dropdownElement.contains(event.target as Node)) {
-      isOpen = false;
-    }
-  }
+function handleClickOutside(event: MouseEvent) {
+	if (dropdownElement && !dropdownElement.contains(event.target as Node)) {
+		isOpen = false;
+	}
+}
 
-  $effect(() => {
-    if (isOpen) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
-  });
+$effect(() => {
+	if (isOpen) {
+		document.addEventListener('click', handleClickOutside);
+		return () => document.removeEventListener('click', handleClickOutside);
+	}
+});
 
-  const getCurrentOption = $derived.by(() => {
-    return options.find(option => option.value === selected) || { value: '', label: placeholder };
-  });
+const getCurrentOption = $derived.by(() => {
+	return (
+		options.find((option) => option.value === selected) || {
+			value: '',
+			label: placeholder,
+		}
+	);
+});
 </script>
 
 <div class="relative" bind:this={dropdownElement}>

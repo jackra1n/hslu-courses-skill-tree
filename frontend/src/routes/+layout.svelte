@@ -1,11 +1,11 @@
 <script lang="ts">
-	import 'virtual:uno.css';
-	import '$lib/styles/theme.css';
-	import favicon from '$lib/assets/icon.png';
-	import MobileWarningPopup from '$lib/components/ui/MobileWarningPopup.svelte';
-	import GuidedTutorial from '$lib/components/ui/GuidedTutorial.svelte';
+import 'virtual:uno.css';
+import '$lib/styles/theme.css';
+import favicon from '$lib/assets/icon.png';
+import GuidedTutorial from '$lib/components/ui/GuidedTutorial.svelte';
+import MobileWarningPopup from '$lib/components/ui/MobileWarningPopup.svelte';
 
-	let { children } = $props();
+let { children } = $props();
 </script>
 
 <svelte:head>

@@ -1,5 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import UnoCSS from 'unocss/vite'
+import UnoCSS from 'unocss/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -11,8 +11,8 @@ export default defineConfig({
 			// origin. changeOrigin: false keeps the localhost:5173 Host header.
 			'/api': {
 				target: 'http://127.0.0.1:8787',
-				changeOrigin: false
-			}
-		}
-	}
+				changeOrigin: false,
+			},
+		},
+	},
 });

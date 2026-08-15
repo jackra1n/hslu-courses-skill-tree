@@ -1,10 +1,21 @@
-import { authClient } from '$lib/auth-client';
-import { applyAppData, collectAppData, parseAppData, type AppData } from '$lib/data/persistence';
 import { browser } from '$app/environment';
+import { authClient } from '$lib/auth-client';
+import {
+	type AppData,
+	applyAppData,
+	collectAppData,
+	parseAppData,
+} from '$lib/data/persistence';
 
 // ---- public state -----------------------------------------------------------
 
-export type SyncStatus = 'loading' | 'local' | 'saving' | 'synced' | 'error' | 'conflict';
+export type SyncStatus =
+	| 'loading'
+	| 'local'
+	| 'saving'
+	| 'synced'
+	| 'error'
+	| 'conflict';
 
 export type SyncUser = {
 	id: string;
@@ -30,8 +41,10 @@ type SyncMetadata = {
 
 const METADATA_KEY = 'hslu-skill-tree-cloud-sync';
 const DEBOUNCE_MS = 1_000;
-const LOCAL_SAFETY_MESSAGE = 'Cloud sync unavailable. Changes remain saved on this device.';
-const SIGN_IN_FAILED_MESSAGE = 'GitHub sign-in failed. Your local data is unchanged.';
+const LOCAL_SAFETY_MESSAGE =
+	'Cloud sync unavailable. Changes remain saved on this device.';
+const SIGN_IN_FAILED_MESSAGE =
+	'GitHub sign-in failed. Your local data is unchanged.';
 
 // ---- private state ----------------------------------------------------------
 
@@ -47,7 +60,8 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 let inFlight = false;
 
 function loadMetadata(): SyncMetadata {
-	if (!browser) return { userId: null, revision: null, dirty: false, localUpdatedAt: null };
+	if (!browser)
+		return { userId: null, revision: null, dirty: false, localUpdatedAt: null };
 	try {
 		const parsed = JSON.parse(localStorage.getItem(METADATA_KEY) ?? 'null');
 		if (parsed && typeof parsed === 'object') {
@@ -55,7 +69,10 @@ function loadMetadata(): SyncMetadata {
 				userId: typeof parsed.userId === 'string' ? parsed.userId : null,
 				revision: typeof parsed.revision === 'number' ? parsed.revision : null,
 				dirty: parsed.dirty === true,
-				localUpdatedAt: typeof parsed.localUpdatedAt === 'number' ? parsed.localUpdatedAt : null
+				localUpdatedAt:
+					typeof parsed.localUpdatedAt === 'number'
+						? parsed.localUpdatedAt
+						: null,
 			};
 		}
 	} catch {
@@ -98,8 +115,8 @@ async function flushPending(): Promise<void> {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					data: snapshot,
-					expectedRevision: metadata.revision
-				})
+					expectedRevision: metadata.revision,
+				}),
 			});
 
 			if (response.status === 401) {
@@ -132,7 +149,7 @@ async function flushPending(): Promise<void> {
 					cloud,
 					cloudRevision: body.revision,
 					cloudUpdatedAt: body.updatedAt,
-					localUpdatedAt: metadata.localUpdatedAt
+					localUpdatedAt: metadata.localUpdatedAt,
 				};
 				status = 'conflict';
 				return;
@@ -197,7 +214,7 @@ export const cloudSyncStore = {
 			return;
 		}
 
-		let session;
+		let session: Awaited<ReturnType<typeof authClient.getSession>>;
 		try {
 			session = await authClient.getSession();
 		} catch {
@@ -215,7 +232,12 @@ export const cloudSyncStore = {
 			status = 'local';
 			return;
 		}
-		setUser({ id: sessionUser.id, name: sessionUser.name, email: sessionUser.email, image: sessionUser.image ?? null });
+		setUser({
+			id: sessionUser.id,
+			name: sessionUser.name,
+			email: sessionUser.email,
+			image: sessionUser.image ?? null,
+		});
 
 		const localSnapshot = collectAppData();
 		const localSerialized = serialize(localSnapshot);
@@ -292,7 +314,7 @@ export const cloudSyncStore = {
 			cloud,
 			cloudRevision: body.revision,
 			cloudUpdatedAt: body.updatedAt,
-			localUpdatedAt: metadata.localUpdatedAt
+			localUpdatedAt: metadata.localUpdatedAt,
 		};
 		baseline = localSerialized;
 		status = 'conflict';
@@ -321,7 +343,10 @@ export const cloudSyncStore = {
 
 	async signInWithGitHub(): Promise<void> {
 		try {
-			await authClient.signIn.social({ provider: 'github', callbackURL: window.location.origin });
+			await authClient.signIn.social({
+				provider: 'github',
+				callbackURL: window.location.origin,
+			});
 		} catch {
 			status = 'error';
 			errorMessage = SIGN_IN_FAILED_MESSAGE;
@@ -367,8 +392,8 @@ export const cloudSyncStore = {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					data: localSnapshot,
-					expectedRevision: current.cloudRevision
-				})
+					expectedRevision: current.cloudRevision,
+				}),
 			});
 		} catch {
 			// keep the dialog open so the choice can be retried
@@ -386,7 +411,7 @@ export const cloudSyncStore = {
 					cloud,
 					cloudRevision: body.revision,
 					cloudUpdatedAt: body.updatedAt,
-					localUpdatedAt: metadata.localUpdatedAt
+					localUpdatedAt: metadata.localUpdatedAt,
 				};
 			}
 			status = 'conflict';
@@ -431,7 +456,7 @@ export const cloudSyncStore = {
 				void flushPending();
 			}
 		});
-	}
+	},
 };
 
 if (browser) {

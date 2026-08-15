@@ -10,6 +10,8 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"format": "biome check --write .",
+		"lint": "biome check .",
 		"worker:types": "wrangler types worker/env.d.ts",
 		"worker:dev": "wrangler dev --port 8787",
 		"worker:test": "vitest run --config worker/vitest.config.ts",
@@ -17,6 +19,7 @@
 		"worker:deploy": "wrangler deploy"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "^2.5.8",
 		"@cloudflare/vitest-pool-workers": "^0.21.3",
 		"@iconify-json/lucide": "^1.2.112",
 		"@sveltejs/adapter-auto": "^7.0.1",

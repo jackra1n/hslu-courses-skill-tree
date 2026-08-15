@@ -1,74 +1,82 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { getEctsRequirements } from '$lib/data/ects-requirements';
-  import TemplateSelector from './TemplateSelector.svelte';
-  import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
-  import ProgressAnalytics from './ProgressAnalytics.svelte';
-  import Tooltip from '../ui/Tooltip.svelte';
-  import AccountMenu from './AccountMenu.svelte';
+import { onMount } from 'svelte';
+import { getEctsRequirements } from '$lib/data/ects-requirements';
+import { courseStore } from '$lib/stores/courseStore.svelte';
+import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
+import Tooltip from '../ui/Tooltip.svelte';
+import AccountMenu from './AccountMenu.svelte';
+import ProgressAnalytics from './ProgressAnalytics.svelte';
+import TemplateSelector from './TemplateSelector.svelte';
 
-  let programDropdownOpen = $state(false);
-  let activeSidebar = $state<'settings' | 'analytics' | null>(null);
-  let headerElement: HTMLElement;
-  
-  function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
-    return event.composedPath().some(
-      (node) => node instanceof HTMLElement && node.classList.contains(className)
-    );
-  }
+let programDropdownOpen = $state(false);
+let activeSidebar = $state<'settings' | 'analytics' | null>(null);
+let headerElement: HTMLElement;
 
-  onMount(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (programDropdownOpen && !eventPathIncludesClass(event, 'program-dropdown')) {
-        programDropdownOpen = false;
-      }
-    };
-    const updateHeaderHeight = () => {
-      document.documentElement.style.setProperty('--app-header-height', `${headerElement.offsetHeight}px`);
-    };
-    const resizeObserver = new ResizeObserver(updateHeaderHeight);
+function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
+	return event
+		.composedPath()
+		.some(
+			(node) =>
+				node instanceof HTMLElement && node.classList.contains(className),
+		);
+}
 
-    document.addEventListener('click', handleClickOutside);
-    resizeObserver.observe(headerElement);
-    updateHeaderHeight();
+onMount(() => {
+	const handleClickOutside = (event: MouseEvent) => {
+		if (
+			programDropdownOpen &&
+			!eventPathIncludesClass(event, 'program-dropdown')
+		) {
+			programDropdownOpen = false;
+		}
+	};
+	const updateHeaderHeight = () => {
+		document.documentElement.style.setProperty(
+			'--app-header-height',
+			`${headerElement.offsetHeight}px`,
+		);
+	};
+	const resizeObserver = new ResizeObserver(updateHeaderHeight);
 
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-      resizeObserver.disconnect();
-      document.documentElement.style.removeProperty('--app-header-height');
-    };
-  });
-  
-  
-  function toggleProgramDropdown() {
-    programDropdownOpen = !programDropdownOpen;
-    if (programDropdownOpen) activeSidebar = null;
-  }
+	document.addEventListener('click', handleClickOutside);
+	resizeObserver.observe(headerElement);
+	updateHeaderHeight();
 
-  function toggleSettings() {
-    activeSidebar = activeSidebar === 'settings' ? null : 'settings';
-    if (activeSidebar === 'settings') programDropdownOpen = false;
-  }
+	return () => {
+		document.removeEventListener('click', handleClickOutside);
+		resizeObserver.disconnect();
+		document.documentElement.style.removeProperty('--app-header-height');
+	};
+});
 
-  function toggleAnalytics() {
-    activeSidebar = activeSidebar === 'analytics' ? null : 'analytics';
-    if (activeSidebar === 'analytics') programDropdownOpen = false;
-  }
+function toggleProgramDropdown() {
+	programDropdownOpen = !programDropdownOpen;
+	if (programDropdownOpen) activeSidebar = null;
+}
 
-  const plannedCredits = $derived(courseStore.totalCredits);
-  const passedEcts = $derived(courseStore.completedCredits);
-  const requiredEcts = $derived(
-    getEctsRequirements(courseStore.currentTemplate.studiengang)?.total ?? 0
-  );
-  const attended = $derived(courseStore.attendedCredits);
-  const ectsTooltip = $derived(
-    [
-      `${passedEcts} ECTS completed`,
-      `${plannedCredits} ECTS in plan`,
-      `${attended} ECTS attended (failed)`
-    ].join('\n')
-  );
+function toggleSettings() {
+	activeSidebar = activeSidebar === 'settings' ? null : 'settings';
+	if (activeSidebar === 'settings') programDropdownOpen = false;
+}
+
+function toggleAnalytics() {
+	activeSidebar = activeSidebar === 'analytics' ? null : 'analytics';
+	if (activeSidebar === 'analytics') programDropdownOpen = false;
+}
+
+const plannedCredits = $derived(courseStore.totalCredits);
+const passedEcts = $derived(courseStore.completedCredits);
+const requiredEcts = $derived(
+	getEctsRequirements(courseStore.currentTemplate.studiengang)?.total ?? 0,
+);
+const attended = $derived(courseStore.attendedCredits);
+const ectsTooltip = $derived(
+	[
+		`${passedEcts} ECTS completed`,
+		`${plannedCredits} ECTS in plan`,
+		`${attended} ECTS attended (failed)`,
+	].join('\n'),
+);
 </script>
 
 <header bind:this={headerElement} class="relative z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">

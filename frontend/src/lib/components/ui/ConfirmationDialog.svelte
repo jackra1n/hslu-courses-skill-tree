@@ -1,37 +1,37 @@
 <script lang="ts">
-  import { fade, scale } from 'svelte/transition';
+import { fade, scale } from 'svelte/transition';
 
-  interface Props {
-    title: string;
-    message: string;
-    confirmText?: string;
-    cancelText?: string;
-    onConfirm: () => void;
-    onCancel: () => void;
-    variant?: 'danger' | 'warning';
-  }
+interface Props {
+	title: string;
+	message: string;
+	confirmText?: string;
+	cancelText?: string;
+	onConfirm: () => void;
+	onCancel: () => void;
+	variant?: 'danger' | 'warning';
+}
 
-  let {
-    title,
-    message,
-    confirmText = 'Confirm',
-    cancelText = 'Cancel',
-    onConfirm,
-    onCancel,
-    variant = 'danger'
-  }: Props = $props();
+let {
+	title,
+	message,
+	confirmText = 'Confirm',
+	cancelText = 'Cancel',
+	onConfirm,
+	onCancel,
+	variant = 'danger',
+}: Props = $props();
 
-  function handleEscape(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      onCancel();
-    }
-  }
+function handleEscape(event: KeyboardEvent) {
+	if (event.key === 'Escape') {
+		onCancel();
+	}
+}
 
-  function handleBackdropClick(event: MouseEvent) {
-    if (event.target === event.currentTarget) {
-      onCancel();
-    }
-  }
+function handleBackdropClick(event: MouseEvent) {
+	if (event.target === event.currentTarget) {
+		onCancel();
+	}
+}
 </script>
 
 <div

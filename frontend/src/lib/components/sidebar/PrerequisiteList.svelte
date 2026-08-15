@@ -1,61 +1,63 @@
 <script lang="ts">
-  import type { PrerequisiteRule } from "$lib/types";
-  import { getCourseById } from "$lib/data/courses";
-  import { slotStatusMap } from "$lib/stores/progressStore.svelte";
-  import { evaluatePrerequisiteRule } from "$lib/utils/prerequisite";
-  import { uiStore } from "$lib/stores/uiStore.svelte";
-  import { courseStore } from "$lib/stores/courseStore.svelte";
+import { getCourseById } from '$lib/data/courses';
+import { courseStore } from '$lib/stores/courseStore.svelte';
+import { slotStatusMap } from '$lib/stores/progressStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
+import type { PrerequisiteRule } from '$lib/types';
+import { evaluatePrerequisiteRule } from '$lib/utils/prerequisite';
 
-  let {
-    prerequisites,
-    assessmentLevelPassed,
-  }: {
-    prerequisites: PrerequisiteRule[];
-    assessmentLevelPassed?: boolean;
-  } = $props();
+let {
+	prerequisites,
+	assessmentLevelPassed,
+}: {
+	prerequisites: PrerequisiteRule[];
+	assessmentLevelPassed?: boolean;
+} = $props();
 
-  const completedCount = $derived(
-    Array.from(slotStatusMap().values()).filter(
-      (status) => status === "completed"
-    ).length
-  );
+const completedCount = $derived(
+	Array.from(slotStatusMap().values()).filter(
+		(status) => status === 'completed',
+	).length,
+);
 
-  const assessmentStageMet = $derived(completedCount >= 6);
+const assessmentStageMet = $derived(completedCount >= 6);
 
-  function renderPrerequisiteRule(rule: PrerequisiteRule) {
-    const ruleMet = evaluatePrerequisiteRule(
-      rule,
-      slotStatusMap(),
-      courseStore.studyPlan
-    );
+function renderPrerequisiteRule(rule: PrerequisiteRule) {
+	const ruleMet = evaluatePrerequisiteRule(
+		rule,
+		slotStatusMap(),
+		courseStore.studyPlan,
+	);
 
-    return {
-      rule,
-      met: ruleMet,
-    };
-  }
+	return {
+		rule,
+		met: ruleMet,
+	};
+}
 
-  function isModuleMet(moduleId: string, mustBePassed: boolean): boolean {
-    const nodes = Object.values(courseStore.studyPlan.nodes).filter(
-      (node) => node.courseId === moduleId
-    );
-    return nodes.some((node) => {
-      const status = slotStatusMap().get(node.id);
-      if (mustBePassed) {
-        return status === "completed";
-      } else {
-        return status === "attended" || status === "completed";
-      }
-    });
-  }
+function isModuleMet(moduleId: string, mustBePassed: boolean): boolean {
+	const nodes = Object.values(courseStore.studyPlan.nodes).filter(
+		(node) => node.courseId === moduleId,
+	);
+	return nodes.some((node) => {
+		const status = slotStatusMap().get(node.id);
+		if (mustBePassed) {
+			return status === 'completed';
+		} else {
+			return status === 'attended' || status === 'completed';
+		}
+	});
+}
 
-  function isPrerequisiteInPlan(moduleId: string): boolean {
-    return Object.values(courseStore.studyPlan.nodes).some((node) => node.courseId === moduleId);
-  }
+function isPrerequisiteInPlan(moduleId: string): boolean {
+	return Object.values(courseStore.studyPlan.nodes).some(
+		(node) => node.courseId === moduleId,
+	);
+}
 
-  function openAssessmentInfo() {
-    uiStore.toggleAssessmentInfo();
-  }
+function openAssessmentInfo() {
+	uiStore.toggleAssessmentInfo();
+}
 </script>
 
 {#if prerequisites && prerequisites.length > 0}

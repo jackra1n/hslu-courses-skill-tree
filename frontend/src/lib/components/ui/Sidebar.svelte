@@ -1,26 +1,26 @@
 <script lang="ts">
-  import { onMount, type Snippet } from 'svelte';
+import { onMount, type Snippet } from 'svelte';
 
-  let {
-    isOpen,
-    onClose,
-    label,
-    children
-  }: {
-    isOpen: boolean;
-    onClose: () => void;
-    label: string;
-    children: Snippet;
-  } = $props();
+let {
+	isOpen,
+	onClose,
+	label,
+	children,
+}: {
+	isOpen: boolean;
+	onClose: () => void;
+	label: string;
+	children: Snippet;
+} = $props();
 
-  onMount(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) onClose();
-    };
+onMount(() => {
+	const handleEscape = (event: KeyboardEvent) => {
+		if (event.key === 'Escape' && isOpen) onClose();
+	};
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  });
+	document.addEventListener('keydown', handleEscape);
+	return () => document.removeEventListener('keydown', handleEscape);
+});
 </script>
 
 <div

@@ -1,48 +1,48 @@
 <script lang="ts">
-  import type { StudyPlan } from "$lib/data/study-plan";
-  import {
-    calculatePlanSemesterCredits,
-    calculatePlanSemesterAttendedCredits
-  } from "$lib/data/study-plan";
-  import { useViewport } from "@xyflow/svelte";
-  import { slotStatusMap } from "$lib/stores/progressStore.svelte";
-  import { courseStore } from "$lib/stores/courseStore.svelte";
+import { useViewport } from '@xyflow/svelte';
+import type { StudyPlan } from '$lib/data/study-plan';
+import {
+	calculatePlanSemesterAttendedCredits,
+	calculatePlanSemesterCredits,
+} from '$lib/data/study-plan';
+import { courseStore } from '$lib/stores/courseStore.svelte';
+import { slotStatusMap } from '$lib/stores/progressStore.svelte';
 
-  let {
-    semester,
-    plan,
-    isPreview = false,
-    length = 1500
-  }: {
-    semester: number;
-    plan: StudyPlan;
-    isPreview?: boolean;
-    length?: number;
-  } = $props();
+let {
+	semester,
+	plan,
+	isPreview = false,
+	length = 1500,
+}: {
+	semester: number;
+	plan: StudyPlan;
+	isPreview?: boolean;
+	length?: number;
+} = $props();
 
-  const viewportSignal = useViewport();
-  const viewport = $derived(viewportSignal.current);
+const viewportSignal = useViewport();
+const viewport = $derived(viewportSignal.current);
 
-  const BASE_OFFSET = 150;
-  const SEMESTER_SPACING = 200;
+const BASE_OFFSET = 150;
+const SEMESTER_SPACING = 200;
 
-  const minStrokeWidth = $derived(2);
-  const strokeWidth = $derived(Math.max(minStrokeWidth, 1 / viewport.zoom));
-  const dashArray = $derived(`${8 / viewport.zoom},${4 / viewport.zoom}`);
-  const titleFontSize = $derived(Math.max(21, 12 / viewport.zoom));
-  const yPosition = $derived(BASE_OFFSET + SEMESTER_SPACING * semester);
-  const semesterCredits = $derived(calculatePlanSemesterCredits(plan, semester));
-  const slotStatuses = $derived(slotStatusMap());
-  const attendedSemesterCredits = $derived(
-    calculatePlanSemesterAttendedCredits(plan, semester, slotStatuses)
-  );
-  const calculatedSemesterCredits = $derived(
-    Math.max(0, semesterCredits - attendedSemesterCredits)
-  );
-  const lineOpacity = $derived(isPreview ? 0.35 : 1);
-  const textOpacity = $derived(isPreview ? 0.5 : 1);
-  const LINE_START = -150;
-  const lineEnd = $derived(LINE_START + length);
+const minStrokeWidth = $derived(2);
+const strokeWidth = $derived(Math.max(minStrokeWidth, 1 / viewport.zoom));
+const dashArray = $derived(`${8 / viewport.zoom},${4 / viewport.zoom}`);
+const titleFontSize = $derived(Math.max(21, 12 / viewport.zoom));
+const yPosition = $derived(BASE_OFFSET + SEMESTER_SPACING * semester);
+const semesterCredits = $derived(calculatePlanSemesterCredits(plan, semester));
+const slotStatuses = $derived(slotStatusMap());
+const attendedSemesterCredits = $derived(
+	calculatePlanSemesterAttendedCredits(plan, semester, slotStatuses),
+);
+const calculatedSemesterCredits = $derived(
+	Math.max(0, semesterCredits - attendedSemesterCredits),
+);
+const lineOpacity = $derived(isPreview ? 0.35 : 1);
+const textOpacity = $derived(isPreview ? 0.5 : 1);
+const LINE_START = -150;
+const lineEnd = $derived(LINE_START + length);
 </script>
 
 <line

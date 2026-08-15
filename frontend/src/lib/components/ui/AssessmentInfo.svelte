@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { showAssessmentInfo, uiStore } from '$lib/stores/uiStore.svelte';
-  import { fade, scale } from 'svelte/transition';
-  
-  function closeModal() {
-    uiStore.toggleAssessmentInfo();
-  }
+import { fade, scale } from 'svelte/transition';
+import { showAssessmentInfo, uiStore } from '$lib/stores/uiStore.svelte';
+
+function closeModal() {
+	uiStore.toggleAssessmentInfo();
+}
 </script>
 
 {#if showAssessmentInfo()}

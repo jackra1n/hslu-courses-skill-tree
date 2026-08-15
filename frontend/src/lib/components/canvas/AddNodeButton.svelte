@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { courseStore } from "$lib/stores/courseStore.svelte";
+import { courseStore } from '$lib/stores/courseStore.svelte';
 
-  let { data }: { data: { semester: number } } = $props();
+let { data }: { data: { semester: number } } = $props();
 
-  function handleClick(event: MouseEvent) {
-    event.stopPropagation();
-    courseStore.addCustomNode(data.semester);
-  }
+function handleClick(event: MouseEvent) {
+	event.stopPropagation();
+	courseStore.addCustomNode(data.semester);
+}
 </script>
 
 <button

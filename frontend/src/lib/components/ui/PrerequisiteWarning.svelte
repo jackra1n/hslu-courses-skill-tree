@@ -1,28 +1,31 @@
 <script lang="ts">
-  let { 
-    showBorder = false,
-    type = 'later-prerequisites'
-  }: { 
-    showBorder?: boolean;
-    type?: 'later-prerequisites' | 'missing-prerequisites' | 'assessment-stage';
-  } = $props();
+let {
+	showBorder = false,
+	type = 'later-prerequisites',
+}: {
+	showBorder?: boolean;
+	type?: 'later-prerequisites' | 'missing-prerequisites' | 'assessment-stage';
+} = $props();
 
-  const warningMessages = {
-    'later-prerequisites': {
-      title: 'Prerequisite Placement Warning',
-      message: 'This course has prerequisites that are scheduled in the same or later semesters. You may not be able to take this course in the current semester.'
-    },
-    'missing-prerequisites': {
-      title: 'Missing Prerequisites',
-      message: 'This course requires prerequisites that are not in your study plan. Add the required courses first.'
-    },
-    'assessment-stage': {
-      title: 'Assessment Stage Requirement',
-      message: 'This course requires the assessment stage to be passed but is placed in the assessment stage semesters (1-2 for full-time, 1-3 for part-time).'
-    }
-  };
+const warningMessages = {
+	'later-prerequisites': {
+		title: 'Prerequisite Placement Warning',
+		message:
+			'This course has prerequisites that are scheduled in the same or later semesters. You may not be able to take this course in the current semester.',
+	},
+	'missing-prerequisites': {
+		title: 'Missing Prerequisites',
+		message:
+			'This course requires prerequisites that are not in your study plan. Add the required courses first.',
+	},
+	'assessment-stage': {
+		title: 'Assessment Stage Requirement',
+		message:
+			'This course requires the assessment stage to be passed but is placed in the assessment stage semesters (1-2 for full-time, 1-3 for part-time).',
+	},
+};
 
-  const currentWarning = $derived(warningMessages[type]);
+const currentWarning = $derived(warningMessages[type]);
 </script>
 
 {#if showBorder}

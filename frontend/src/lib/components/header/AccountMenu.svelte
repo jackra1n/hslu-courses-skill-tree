@@ -1,74 +1,80 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { cloudSyncStore, type SyncStatus } from '$lib/stores/cloudSyncStore.svelte';
+import { onMount } from 'svelte';
+import {
+	cloudSyncStore,
+	type SyncStatus,
+} from '$lib/stores/cloudSyncStore.svelte';
 
-  let { onInteract }: { onInteract?: () => void } = $props();
+let { onInteract }: { onInteract?: () => void } = $props();
 
-  let accountMenuOpen = $state(false);
+let accountMenuOpen = $state(false);
 
-  function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
-    return event.composedPath().some(
-      (node) => node instanceof HTMLElement && node.classList.contains(className)
-    );
-  }
+function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
+	return event
+		.composedPath()
+		.some(
+			(node) =>
+				node instanceof HTMLElement && node.classList.contains(className),
+		);
+}
 
-  onMount(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (accountMenuOpen && !eventPathIncludesClass(event, 'account-menu')) {
-        accountMenuOpen = false;
-      }
-    };
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') accountMenuOpen = false;
-    };
+onMount(() => {
+	const handleClickOutside = (event: MouseEvent) => {
+		if (accountMenuOpen && !eventPathIncludesClass(event, 'account-menu')) {
+			accountMenuOpen = false;
+		}
+	};
+	const handleEscape = (event: KeyboardEvent) => {
+		if (event.key === 'Escape') accountMenuOpen = false;
+	};
 
-    document.addEventListener('click', handleClickOutside);
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  });
+	document.addEventListener('click', handleClickOutside);
+	document.addEventListener('keydown', handleEscape);
+	return () => {
+		document.removeEventListener('click', handleClickOutside);
+		document.removeEventListener('keydown', handleEscape);
+	};
+});
 
-  const user = $derived(cloudSyncStore.user);
-  const status = $derived(cloudSyncStore.status);
-  const errorMessage = $derived(cloudSyncStore.errorMessage);
+const user = $derived(cloudSyncStore.user);
+const status = $derived(cloudSyncStore.status);
+const errorMessage = $derived(cloudSyncStore.errorMessage);
 
-  function statusLabel(status: SyncStatus): string | null {
-    switch (status) {
-      case 'synced':
-        return 'Saved';
-      case 'saving':
-        return 'Saving…';
-      case 'local':
-        // signed in but not yet synced (dirty or offline): local copy is safe
-        return user ? 'Saved on this device' : null;
-      case 'error':
-        return errorMessage;
-      case 'conflict':
-        return 'Saved on this device';
-      default:
-        return null;
-    }
-  }
+function statusLabel(status: SyncStatus): string | null {
+	switch (status) {
+		case 'synced':
+			return 'Saved';
+		case 'saving':
+			return 'Saving…';
+		case 'local':
+			// signed in but not yet synced (dirty or offline): local copy is safe
+			return user ? 'Saved on this device' : null;
+		case 'error':
+			return errorMessage;
+		case 'conflict':
+			return 'Saved on this device';
+		default:
+			return null;
+	}
+}
 
-  const syncStatusLabel = $derived(statusLabel(status));
+const syncStatusLabel = $derived(statusLabel(status));
 
-  function toggleAccountMenu() {
-    accountMenuOpen = !accountMenuOpen;
-    if (accountMenuOpen) onInteract?.();
-  }
+function toggleAccountMenu() {
+	accountMenuOpen = !accountMenuOpen;
+	if (accountMenuOpen) onInteract?.();
+}
 
-  async function handleSignIn() {
-    accountMenuOpen = false;
-    onInteract?.();
-    await cloudSyncStore.signInWithGitHub();
-  }
+async function handleSignIn() {
+	accountMenuOpen = false;
+	onInteract?.();
+	await cloudSyncStore.signInWithGitHub();
+}
 
-  async function handleSignOut() {
-    accountMenuOpen = false;
-    await cloudSyncStore.signOut();
-  }
+async function handleSignOut() {
+	accountMenuOpen = false;
+	await cloudSyncStore.signOut();
+}
 </script>
 
 <div class="relative account-menu">

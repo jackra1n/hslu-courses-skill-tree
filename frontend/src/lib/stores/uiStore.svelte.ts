@@ -1,5 +1,5 @@
-import type { Course } from '../types';
 import { browser } from '$app/environment';
+import type { Course } from '../types';
 
 let _selection = $state<Course | null>(null);
 let _selectedSlotId = $state<string | null>(null);
@@ -11,71 +11,93 @@ let _tutorialRequested = $state(false);
 
 const _hasSelection = $derived(_selection !== null);
 const _isElectiveSlot = $derived(
-  _selection?.id.startsWith('elective') || 
-  _selection?.id.startsWith('major') || 
-  _selection?.id.startsWith('custom-') || 
-  false
+	_selection?.id.startsWith('elective') ||
+		_selection?.id.startsWith('major') ||
+		_selection?.id.startsWith('custom-') ||
+		false,
 );
 
-export function selection() { return _selection; }
-export function selectedSlotId() { return _selectedSlotId; }
-export function showAssessmentInfo() { return _showAssessmentInfo; }
-export function showMoreOptions() { return _showMoreOptions; }
-export function showCourseTypeBadges() { return _showCourseTypeBadges; }
-export function showProgramSelector() { return _showProgramSelector; }
-export function tutorialRequested() { return _tutorialRequested; }
-export function hasSelection() { return _hasSelection; }
-export function isElectiveSlot() { return _isElectiveSlot; }
+export function selection() {
+	return _selection;
+}
+export function selectedSlotId() {
+	return _selectedSlotId;
+}
+export function showAssessmentInfo() {
+	return _showAssessmentInfo;
+}
+export function showMoreOptions() {
+	return _showMoreOptions;
+}
+export function showCourseTypeBadges() {
+	return _showCourseTypeBadges;
+}
+export function showProgramSelector() {
+	return _showProgramSelector;
+}
+export function tutorialRequested() {
+	return _tutorialRequested;
+}
+export function hasSelection() {
+	return _hasSelection;
+}
+export function isElectiveSlot() {
+	return _isElectiveSlot;
+}
 
 export const uiStore = {
+	selectCourse(course: Course | null, slotId?: string | null) {
+		_selection = course;
+		_selectedSlotId = slotId || null;
+	},
 
-  selectCourse(course: Course | null, slotId?: string | null) {
-    _selection = course;
-    _selectedSlotId = slotId || null;
-  },
+	deselectCourse() {
+		_selection = null;
+		_selectedSlotId = null;
+	},
 
-  deselectCourse() {
-    _selection = null;
-    _selectedSlotId = null;
-  },
+	toggleAssessmentInfo() {
+		_showAssessmentInfo = !_showAssessmentInfo;
+	},
 
-  toggleAssessmentInfo() {
-    _showAssessmentInfo = !_showAssessmentInfo;
-  },
+	toggleMoreOptions() {
+		_showMoreOptions = !_showMoreOptions;
+	},
 
-  toggleMoreOptions() {
-    _showMoreOptions = !_showMoreOptions;
-  },
+	toggleCourseTypeBadges() {
+		this.setShowCourseTypeBadges(!_showCourseTypeBadges);
+	},
 
-  toggleCourseTypeBadges() {
-    this.setShowCourseTypeBadges(!_showCourseTypeBadges);
-  },
+	setShowCourseTypeBadges(value: boolean) {
+		_showCourseTypeBadges = value;
+		if (browser) {
+			localStorage.setItem(
+				'showCourseTypeBadges',
+				JSON.stringify(_showCourseTypeBadges),
+			);
+		}
+	},
 
-  setShowCourseTypeBadges(value: boolean) {
-    _showCourseTypeBadges = value;
-    if (browser) {
-      localStorage.setItem("showCourseTypeBadges", JSON.stringify(_showCourseTypeBadges));
-    }
-  },
+	toggleProgramSelector() {
+		_showProgramSelector = !_showProgramSelector;
+	},
 
-  toggleProgramSelector() {
-    _showProgramSelector = !_showProgramSelector;
-  },
+	requestTutorial() {
+		_tutorialRequested = true;
+	},
 
-  requestTutorial() {
-    _tutorialRequested = true;
-  },
+	consumeTutorialRequest() {
+		_tutorialRequested = false;
+	},
 
-  consumeTutorialRequest() {
-    _tutorialRequested = false;
-  },
+	init() {
+		if (!browser) return;
 
-  init() {
-    if (!browser) return;
-
-    const savedShowCourseTypeBadges = localStorage.getItem("showCourseTypeBadges");
-    if (savedShowCourseTypeBadges) {
-      _showCourseTypeBadges = JSON.parse(savedShowCourseTypeBadges);
-    }
-  }
+		const savedShowCourseTypeBadges = localStorage.getItem(
+			'showCourseTypeBadges',
+		);
+		if (savedShowCourseTypeBadges) {
+			_showCourseTypeBadges = JSON.parse(savedShowCourseTypeBadges);
+		}
+	},
 };

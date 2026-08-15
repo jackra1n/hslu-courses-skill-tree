@@ -1,38 +1,40 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
-  import { fly } from 'svelte/transition';
+import { fly } from 'svelte/transition';
+import { browser } from '$app/environment';
 
-  let showToast = $state(false);
+let showToast = $state(false);
 
-  $effect(() => {
-    if (browser) {
-      const hasSeenDisclaimer = localStorage.getItem('hslu-skill-tree-disclaimer-dismissed');
-      if (!hasSeenDisclaimer) {
-        const showTimer = setTimeout(() => {
-          showToast = true;
-        }, 1000);
-        
-        return () => clearTimeout(showTimer);
-      }
-    }
-  });
+$effect(() => {
+	if (browser) {
+		const hasSeenDisclaimer = localStorage.getItem(
+			'hslu-skill-tree-disclaimer-dismissed',
+		);
+		if (!hasSeenDisclaimer) {
+			const showTimer = setTimeout(() => {
+				showToast = true;
+			}, 1000);
 
-  $effect(() => {
-    if (showToast && browser) {
-      const autoHideTimer = setTimeout(() => {
-        dismissToast();
-      }, 30000);
-      
-      return () => clearTimeout(autoHideTimer);
-    }
-  });
+			return () => clearTimeout(showTimer);
+		}
+	}
+});
 
-  function dismissToast() {
-    showToast = false;
-    if (browser) {
-      localStorage.setItem('hslu-skill-tree-disclaimer-dismissed', 'true');
-    }
-  }
+$effect(() => {
+	if (showToast && browser) {
+		const autoHideTimer = setTimeout(() => {
+			dismissToast();
+		}, 30000);
+
+		return () => clearTimeout(autoHideTimer);
+	}
+});
+
+function dismissToast() {
+	showToast = false;
+	if (browser) {
+		localStorage.setItem('hslu-skill-tree-disclaimer-dismissed', 'true');
+	}
+}
 </script>
 
 {#if showToast}

@@ -1,36 +1,40 @@
 <script lang="ts">
-  import { fly } from 'svelte/transition';
+import { fly } from 'svelte/transition';
 
-  let { children, text, align = 'center' }: {
-    children?: import('svelte').Snippet;
-    text: string;
-    align?: 'center' | 'start' | 'end';
-  } = $props();
+let {
+	children,
+	text,
+	align = 'center',
+}: {
+	children?: import('svelte').Snippet;
+	text: string;
+	align?: 'center' | 'start' | 'end';
+} = $props();
 
-  let open = $state(false);
-  let timer: ReturnType<typeof setTimeout> | undefined;
+let open = $state(false);
+let timer: ReturnType<typeof setTimeout> | undefined;
 
-  const positions = {
-    center: 'left-1/2 -translate-x-1/2',
-    start: 'left-0',
-    end: 'right-0'
-  };
+const positions = {
+	center: 'left-1/2 -translate-x-1/2',
+	start: 'left-0',
+	end: 'right-0',
+};
 
-  const arrowPositions = {
-    center: 'left-1/2 -translate-x-1/2',
-    start: 'left-3',
-    end: 'right-3'
-  };
+const arrowPositions = {
+	center: 'left-1/2 -translate-x-1/2',
+	start: 'left-3',
+	end: 'right-3',
+};
 
-  function show() {
-    clearTimeout(timer);
-    timer = setTimeout(() => (open = true), 150);
-  }
+function show() {
+	clearTimeout(timer);
+	timer = setTimeout(() => (open = true), 150);
+}
 
-  function hide() {
-    clearTimeout(timer);
-    open = false;
-  }
+function hide() {
+	clearTimeout(timer);
+	open = false;
+}
 </script>
 
 <span

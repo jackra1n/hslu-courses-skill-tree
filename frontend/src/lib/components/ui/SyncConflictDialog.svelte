@@ -1,28 +1,31 @@
 <script lang="ts">
-  import { fade, scale } from 'svelte/transition';
-  import { cloudSyncStore, type SyncConflict } from '$lib/stores/cloudSyncStore.svelte';
+import { fade, scale } from 'svelte/transition';
+import {
+	cloudSyncStore,
+	type SyncConflict,
+} from '$lib/stores/cloudSyncStore.svelte';
 
-  const conflict = $derived(cloudSyncStore.conflict);
+const conflict = $derived(cloudSyncStore.conflict);
 
-  function formatTime(timestamp: number | null): string {
-    if (timestamp === null) return 'Unknown';
-    return new Date(timestamp).toLocaleString(undefined, {
-      dateStyle: 'medium',
-      timeStyle: 'short'
-    });
-  }
+function formatTime(timestamp: number | null): string {
+	if (timestamp === null) return 'Unknown';
+	return new Date(timestamp).toLocaleString(undefined, {
+		dateStyle: 'medium',
+		timeStyle: 'short',
+	});
+}
 
-  function counts(data: SyncConflict['local']) {
-    const statuses = Object.values(data.slotStatus);
-    return {
-      attended: statuses.filter((s) => s === 'attended').length,
-      completed: statuses.filter((s) => s === 'completed').length,
-      plans: Object.keys(data.studyPlans).length
-    };
-  }
+function counts(data: SyncConflict['local']) {
+	const statuses = Object.values(data.slotStatus);
+	return {
+		attended: statuses.filter((s) => s === 'attended').length,
+		completed: statuses.filter((s) => s === 'completed').length,
+		plans: Object.keys(data.studyPlans).length,
+	};
+}
 
-  // Deliberately no Escape/backdrop/close handling: the conflict must be
-  // resolved explicitly, never dismissed.
+// Deliberately no Escape/backdrop/close handling: the conflict must be
+// resolved explicitly, never dismissed.
 </script>
 
 {#if conflict}

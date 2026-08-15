@@ -1,78 +1,93 @@
 <script lang="ts">
-  import {
-    selection,
-    hasSelection,
-    isElectiveSlot,
-    uiStore
-  } from '$lib/stores/uiStore.svelte';
-  import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { getCourseById } from '$lib/data/courses';
-  import { SEASON_LABELS, type Season } from '$lib/data/season';
-  import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
-  import PrerequisiteList from './PrerequisiteList.svelte';
-  import ActionButtons from './ActionButtons.svelte';
-  import StatusLegend from './StatusLegend.svelte';
-  import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
-  import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
-  import { hasMissingPrerequisites, hasAssessmentStageViolation } from '$lib/utils/status';
+import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
+import { getCourseById } from '$lib/data/courses';
+import { SEASON_LABELS, type Season } from '$lib/data/season';
+import { courseStore } from '$lib/stores/courseStore.svelte';
+import {
+	hasSelection,
+	isElectiveSlot,
+	selection,
+	uiStore,
+} from '$lib/stores/uiStore.svelte';
+import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
+import {
+	hasAssessmentStageViolation,
+	hasMissingPrerequisites,
+} from '$lib/utils/status';
+import ActionButtons from './ActionButtons.svelte';
+import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
+import PrerequisiteList from './PrerequisiteList.svelte';
+import StatusLegend from './StatusLegend.svelte';
 
-  const displayCourse = $derived.by(() => {
-    if (!selection()) return null;
-    
-    if (isElectiveSlot()) {
-      const selectedCourseId = courseStore.userSelections[selection()!.id];
-      if (selectedCourseId) {
-        const selectedCourse = getCourseById(selectedCourseId);
-        if (selectedCourse) {
-          return selectedCourse;
-        }
-        return selection();
-      }
-    }
-    
-    return selection();
-  });
+const displayCourse = $derived.by(() => {
+	if (!selection()) return null;
 
-  const activePlanNode = $derived.by(() => {
-    if (!selection()) return null;
-    const plan = courseStore.studyPlan;
-    const slotMatch = plan.nodes[selection()!.id];
-    if (slotMatch) return slotMatch;
-    return Object.values(plan.nodes).find((node) => node.courseId === selection()!.id) ?? null;
-  });
+	if (isElectiveSlot()) {
+		const selectedCourseId = courseStore.userSelections[selection()!.id];
+		if (selectedCourseId) {
+			const selectedCourse = getCourseById(selectedCourseId);
+			if (selectedCourse) {
+				return selectedCourse;
+			}
+			return selection();
+		}
+	}
 
-  const warningType = $derived.by(() => {
-    if (!displayCourse || !activePlanNode) return null;
+	return selection();
+});
 
-    const plan = courseStore.studyPlan;
+const activePlanNode = $derived.by(() => {
+	if (!selection()) return null;
+	const plan = courseStore.studyPlan;
+	const slotMatch = plan.nodes[selection()!.id];
+	if (slotMatch) return slotMatch;
+	return (
+		Object.values(plan.nodes).find(
+			(node) => node.courseId === selection()!.id,
+		) ?? null
+	);
+});
 
-    if (hasPlanPrereqConflict(plan, activePlanNode.id, { considerSameSemester: false })) {
-      return 'later-prerequisites';
-    }
+const warningType = $derived.by(() => {
+	if (!displayCourse || !activePlanNode) return null;
 
-    if (hasMissingPrerequisites(plan, activePlanNode.id)) {
-      return 'missing-prerequisites';
-    }
+	const plan = courseStore.studyPlan;
 
-    if (hasAssessmentStageViolation(plan, activePlanNode.id)) {
-      return 'assessment-stage';
-    }
-    
-    return null;
-  });
+	if (
+		hasPlanPrereqConflict(plan, activePlanNode.id, {
+			considerSameSemester: false,
+		})
+	) {
+		return 'later-prerequisites';
+	}
 
-  const prerequisiteNote = $derived.by(() => displayCourse?.prerequisiteNote?.trim() ?? '');
-  const isDrawerOpen = $derived(hasSelection());
+	if (hasMissingPrerequisites(plan, activePlanNode.id)) {
+		return 'missing-prerequisites';
+	}
 
-  const seasonInfo = $derived.by(() => {
-    const seasons = displayCourse?.seasons;
-    if (!seasons || seasons.length === 0) return null;
-    const ordered = (['HS', 'FS'] as Season[]).filter((season) => seasons.includes(season));
-    return {
-      short: ordered.join(' + '),
-      full: ordered.map((season) => SEASON_LABELS[season]).join(' & ')
-    };
-  });
+	if (hasAssessmentStageViolation(plan, activePlanNode.id)) {
+		return 'assessment-stage';
+	}
+
+	return null;
+});
+
+const prerequisiteNote = $derived.by(
+	() => displayCourse?.prerequisiteNote?.trim() ?? '',
+);
+const isDrawerOpen = $derived(hasSelection());
+
+const seasonInfo = $derived.by(() => {
+	const seasons = displayCourse?.seasons;
+	if (!seasons || seasons.length === 0) return null;
+	const ordered = (['HS', 'FS'] as Season[]).filter((season) =>
+		seasons.includes(season),
+	);
+	return {
+		short: ordered.join(' + '),
+		full: ordered.map((season) => SEASON_LABELS[season]).join(' & '),
+	};
+});
 </script>
 
 <!-- mobile backdrop -->

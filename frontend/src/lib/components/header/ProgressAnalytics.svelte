@@ -1,32 +1,33 @@
 <script lang="ts">
-  import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { slotStatusMap } from '$lib/stores/progressStore.svelte';
-  import { computeCategoryProgress } from '$lib/data/analytics';
-  import { getEctsRequirements } from '$lib/data/ects-requirements';
-  import Sidebar from '$lib/components/ui/Sidebar.svelte';
+import Sidebar from '$lib/components/ui/Sidebar.svelte';
+import { computeCategoryProgress } from '$lib/data/analytics';
+import { getEctsRequirements } from '$lib/data/ects-requirements';
+import { courseStore } from '$lib/stores/courseStore.svelte';
+import { slotStatusMap } from '$lib/stores/progressStore.svelte';
 
-  let { isOpen, onClose }: { isOpen: boolean; onClose: () => void } = $props();
+let { isOpen, onClose }: { isOpen: boolean; onClose: () => void } = $props();
 
-  function close() {
-    onClose();
-  }
+function close() {
+	onClose();
+}
 
-  const program = $derived(courseStore.currentTemplate.studiengang);
-  const requiredTotal = $derived(getEctsRequirements(program)?.total ?? 0);
-  const passed = $derived(courseStore.completedCredits);
-  const failed = $derived(courseStore.attendedCredits);
-  const plannedRemaining = $derived(Math.max(0, courseStore.totalCredits - passed - failed));
-  const categories = $derived.by(() =>
-    computeCategoryProgress(courseStore.studyPlan, slotStatusMap(), program)
-  );
+const program = $derived(courseStore.currentTemplate.studiengang);
+const requiredTotal = $derived(getEctsRequirements(program)?.total ?? 0);
+const passed = $derived(courseStore.completedCredits);
+const failed = $derived(courseStore.attendedCredits);
+const plannedRemaining = $derived(
+	Math.max(0, courseStore.totalCredits - passed - failed),
+);
+const categories = $derived.by(() =>
+	computeCategoryProgress(courseStore.studyPlan, slotStatusMap(), program),
+);
 
-  function widths(done: number, projected: number, required: number) {
-    const denom = required || done + projected || 1;
-    const passedPct = Math.min(100, (done / denom) * 100);
-    const plannedPct = Math.min(100 - passedPct, (projected / denom) * 100);
-    return { passedPct, plannedPct };
-  }
-
+function widths(done: number, projected: number, required: number) {
+	const denom = required || done + projected || 1;
+	const passedPct = Math.min(100, (done / denom) * 100);
+	const plannedPct = Math.min(100 - passedPct, (projected / denom) * 100);
+	return { passedPct, plannedPct };
+}
 </script>
 
 {#snippet bar(done: number, projected: number, required: number)}

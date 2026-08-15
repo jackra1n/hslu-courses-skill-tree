@@ -1,97 +1,97 @@
 <script lang="ts">
-  import type { Course, TemplateSlot } from "$lib/data/courses";
-  import { Handle, Position } from "@xyflow/svelte";
-  import { courseStore } from "$lib/stores/courseStore.svelte";
-  import { hasMissingPrerequisites as checkMissingPrerequisites } from "$lib/utils/status";
+import { Handle, Position } from '@xyflow/svelte';
+import type { Course, TemplateSlot } from '$lib/data/courses';
+import { courseStore } from '$lib/stores/courseStore.svelte';
+import { hasMissingPrerequisites as checkMissingPrerequisites } from '$lib/utils/status';
 
-  let {
-    id,
-    data = {},
-    selected = false,
-    width = 180,
-    showRemoveButton = false,
-    onRemove,
-  }: {
-    id: string;
-    data: any;
-    selected: boolean;
-    width?: number;
-    showRemoveButton?: boolean;
-    onRemove?: (nodeId: string) => void;
-  } = $props();
+let {
+	id,
+	data = {},
+	selected = false,
+	width = 180,
+	showRemoveButton = false,
+	onRemove,
+}: {
+	id: string;
+	data: any;
+	selected: boolean;
+	width?: number;
+	showRemoveButton?: boolean;
+	onRemove?: (nodeId: string) => void;
+} = $props();
 
-  type ExtendedNodeData = {
-    label: string;
-    slot?: TemplateSlot;
-    course?: Course;
-    courseId?: string;
-    isElectiveSlot?: boolean;
-    showCourseTypeBadges?: boolean;
-    width?: number;
-    sourceHandles?: number;
-    targetHandles?: number;
-    showRemoveButton?: boolean;
-    onRemove?: (nodeId: string) => void;
-    hasMissingPrerequisites?: boolean;
-  };
+type ExtendedNodeData = {
+	label: string;
+	slot?: TemplateSlot;
+	course?: Course;
+	courseId?: string;
+	isElectiveSlot?: boolean;
+	showCourseTypeBadges?: boolean;
+	width?: number;
+	sourceHandles?: number;
+	targetHandles?: number;
+	showRemoveButton?: boolean;
+	onRemove?: (nodeId: string) => void;
+	hasMissingPrerequisites?: boolean;
+};
 
-  const nodeData = $derived(data as ExtendedNodeData);
-  const slot = $derived(nodeData.slot);
-  const course = $derived(nodeData.course);
-  const isElectiveSlot = $derived(nodeData.isElectiveSlot);
-  const nodeWidth = $derived(nodeData.width || width);
-  const sourceHandles = $derived(nodeData.sourceHandles ?? 0);
-  const targetHandles = $derived(nodeData.targetHandles ?? 0);
-  const showRemoveBtn = $derived(nodeData.showRemoveButton ?? showRemoveButton);
-  const removeHandler = $derived(nodeData.onRemove ?? onRemove);
+const nodeData = $derived(data as ExtendedNodeData);
+const slot = $derived(nodeData.slot);
+const course = $derived(nodeData.course);
+const isElectiveSlot = $derived(nodeData.isElectiveSlot);
+const nodeWidth = $derived(nodeData.width || width);
+const sourceHandles = $derived(nodeData.sourceHandles ?? 0);
+const targetHandles = $derived(nodeData.targetHandles ?? 0);
+const showRemoveBtn = $derived(nodeData.showRemoveButton ?? showRemoveButton);
+const removeHandler = $derived(nodeData.onRemove ?? onRemove);
 
-  const hasMissingPrerequisites = $derived.by(() => {
-    if (nodeData.hasMissingPrerequisites !== undefined) {
-      return nodeData.hasMissingPrerequisites;
-    }
-    return checkMissingPrerequisites(courseStore.studyPlan, id);
-  });
+const hasMissingPrerequisites = $derived.by(() => {
+	if (nodeData.hasMissingPrerequisites !== undefined) {
+		return nodeData.hasMissingPrerequisites;
+	}
+	return checkMissingPrerequisites(courseStore.studyPlan, id);
+});
 
-  function getCourseTypeColor(type?: string): string {
-    switch (type) {
-      case "Kernmodul":
-        return "bg-blue-500";
-      case "Projektmodul":
-        return "bg-orange-500";
-      case "Erweiterungsmodul":
-        return "bg-green-500";
-      case "Major-/Minormodul":
-        return "bg-purple-500";
-      case "Zusatzmodul":
-        return "bg-yellow-500";
-      default:
-        return "bg-gray-500";
-    }
-  }
+function getCourseTypeColor(type?: string): string {
+	switch (type) {
+		case 'Kernmodul':
+			return 'bg-blue-500';
+		case 'Projektmodul':
+			return 'bg-orange-500';
+		case 'Erweiterungsmodul':
+			return 'bg-green-500';
+		case 'Major-/Minormodul':
+			return 'bg-purple-500';
+		case 'Zusatzmodul':
+			return 'bg-yellow-500';
+		default:
+			return 'bg-gray-500';
+	}
+}
 
-  function getCourseTypeLabel(type?: string): string {
-    switch (type) {
-      case "Kernmodul":
-        return "Kern";
-      case "Projektmodul":
-        return "Projekt";
-      case "Erweiterungsmodul":
-        return "Wahl";
-      case "Major-/Minormodul":
-        return "Major/Minor";
-      case "Zusatzmodul":
-        return "Zusatz";
-      default:
-        return "Modul";
-    }
-  }
+function getCourseTypeLabel(type?: string): string {
+	switch (type) {
+		case 'Kernmodul':
+			return 'Kern';
+		case 'Projektmodul':
+			return 'Projekt';
+		case 'Erweiterungsmodul':
+			return 'Wahl';
+		case 'Major-/Minormodul':
+			return 'Major/Minor';
+		case 'Zusatzmodul':
+			return 'Zusatz';
+		default:
+			return 'Modul';
+	}
+}
 
-  function handleRemoveClick(event: MouseEvent) {
-    event.stopPropagation();
-    if (removeHandler) {
-      removeHandler(id);
-    }
-  }
+function handleRemoveClick(event: MouseEvent) {
+	event.stopPropagation();
+	if (removeHandler) {
+		removeHandler(id);
+	}
+}
 </script>
 
 <div
