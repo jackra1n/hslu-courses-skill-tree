@@ -267,8 +267,8 @@ class CourseStore {
 		this.setStudyPlan(loadPlan(this.currentTemplate, legacySelections));
 	}
 
-	handleNodeDragStart(nodeId: string) {
-		this.drag.start(nodeId);
+	handleNodeDragStart() {
+		this.drag.start();
 	}
 
 	handleNodeDrag(nodeId: string, position: FlowNodePosition) {

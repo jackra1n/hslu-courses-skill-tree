@@ -2,6 +2,7 @@
 import {
 	Background,
 	Controls,
+	type Edge,
 	type Node,
 	type NodeTargetEventWithPointer,
 	SvelteFlow,
@@ -21,7 +22,7 @@ import {
 	showCourseTypeBadges,
 	uiStore,
 } from '$lib/stores/uiStore.svelte';
-import type { Course } from '$lib/types';
+import type { Course, ExtendedNodeData } from '$lib/types';
 import {
 	computeStatuses,
 	hasAssessmentStageViolation,
@@ -53,7 +54,7 @@ const ADD_NODE_STYLE =
 
 // SvelteFlow wants nodes/edges backed by $state.raw to avoid deep-proxy
 // overhead, so populate the raw arrays from an effect rather than deriving.
-let styledNodes = $state.raw<any[]>([]);
+let styledNodes = $state.raw<Node[]>([]);
 $effect(() => {
 	styledNodes = courseStore.nodes.map((flowNode) =>
 		flowNode.type === 'addNode'
@@ -63,7 +64,7 @@ $effect(() => {
 });
 
 function styleCourseNode(flowNode: Node) {
-	const nodeData = flowNode.data as any;
+	const nodeData = flowNode.data as ExtendedNodeData;
 	const { slot, course, isElectiveSlot } = nodeData;
 
 	const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
@@ -80,9 +81,8 @@ function styleCourseNode(flowNode: Node) {
 		isSelected,
 		isAttended: slotStatus === 'attended',
 		isCompleted: slotStatus === 'completed',
-		isElectiveSlot,
-		nodeWidth:
-			nodeData.width || getNodeWidth(course?.ects || slot?.credits || 6),
+		isElectiveSlot: isElectiveSlot ?? false,
+		nodeWidth: nodeData.width || getNodeWidth(course?.ects || 6),
 		hasSelectedCourse:
 			isElectiveSlot && slot ? !!courseStore.userSelections[slot.id] : false,
 		hasLaterPrerequisites: nodeData.hasLaterPrerequisites || false,
@@ -108,7 +108,7 @@ function styleCourseNode(flowNode: Node) {
 	};
 }
 
-let styledEdges = $state.raw<any[]>([]);
+let styledEdges = $state.raw<Edge[]>([]);
 $effect(() => {
 	styledEdges = courseStore.edges.map((edge) => {
 		const { style, markerEnd, animated, zIndex } = getEdgeStyle(
@@ -128,7 +128,7 @@ const handleNodeDragStart: NodeTargetEventWithPointer<
 > = ({ targetNode }) => {
 	if (!targetNode) return;
 	isDragging = true;
-	courseStore.handleNodeDragStart(targetNode.id);
+	courseStore.handleNodeDragStart();
 };
 
 const handleNodeDrag: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({
@@ -155,7 +155,7 @@ const handleNodeDragStop: NodeTargetEventWithPointer<
 function handleNodeClick({
 	node: clickedNode,
 }: {
-	node: any;
+	node: Node;
 	event: MouseEvent | TouchEvent;
 }) {
 	if (!clickedNode) return;
@@ -163,7 +163,7 @@ function handleNodeClick({
 	// Set selected node for showing remove button
 	selectedNodeId = clickedNode.id;
 
-	const nodeData = clickedNode.data;
+	const nodeData = clickedNode.data as ExtendedNodeData;
 	const slot = nodeData.slot;
 	const course = nodeData.course;
 	const isElectiveSlot = nodeData.isElectiveSlot;

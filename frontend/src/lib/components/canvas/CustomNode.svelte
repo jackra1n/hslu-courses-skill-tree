@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Handle, Position } from '@xyflow/svelte';
-import type { Course, TemplateSlot } from '$lib/data/courses';
+import type { Course, ExtendedNodeData, TemplateSlot } from '$lib/data/courses';
 import { courseStore } from '$lib/stores/courseStore.svelte';
 import { hasMissingPrerequisites as checkMissingPrerequisites } from '$lib/utils/status';
 
@@ -13,29 +13,14 @@ let {
 	onRemove,
 }: {
 	id: string;
-	data: any;
+	data: Partial<ExtendedNodeData>;
 	selected: boolean;
 	width?: number;
 	showRemoveButton?: boolean;
 	onRemove?: (nodeId: string) => void;
 } = $props();
 
-type ExtendedNodeData = {
-	label: string;
-	slot?: TemplateSlot;
-	course?: Course;
-	courseId?: string;
-	isElectiveSlot?: boolean;
-	showCourseTypeBadges?: boolean;
-	width?: number;
-	sourceHandles?: number;
-	targetHandles?: number;
-	showRemoveButton?: boolean;
-	onRemove?: (nodeId: string) => void;
-	hasMissingPrerequisites?: boolean;
-};
-
-const nodeData = $derived(data as ExtendedNodeData);
+const nodeData = $derived(data);
 const slot = $derived(nodeData.slot);
 const course = $derived(nodeData.course);
 const isElectiveSlot = $derived(nodeData.isElectiveSlot);

@@ -120,7 +120,7 @@ export function getNodeStyle(input: NodeStyleInput): string {
 
 	// Selection must stay fully visible and legible even on dimmed locked nodes.
 	if (input.isSelected) {
-		return style + 'opacity: 1; color: rgb(var(--text-primary)); ';
+		return `${style}opacity: 1; color: rgb(var(--text-primary)); `;
 	}
 	return style;
 }
@@ -195,15 +195,14 @@ function buildEdgeStateStyle(input: EdgeStateInput): EdgeStyleResult {
 		}
 		if (input.isDependent) {
 			return {
-				style: base + 'stroke: rgb(59 130 246); stroke-width: 3px; ',
+				style: `${base}stroke: rgb(59 130 246); stroke-width: 3px; `,
 				markerEnd: { type: markerType.type, color: 'rgb(59 130 246)' },
 				animated: false,
 				zIndex: EDGE_Z_HIGHLIGHTED,
 			};
 		}
 		return {
-			style:
-				base + 'stroke: rgb(var(--border-primary)); stroke-opacity: 0.12; ',
+			style: `${base}stroke: rgb(var(--border-primary)); stroke-opacity: 0.12; `,
 			markerEnd: { type: markerType.type },
 			animated: false,
 			zIndex: EDGE_Z_BASE,
@@ -213,14 +212,14 @@ function buildEdgeStateStyle(input: EdgeStateInput): EdgeStyleResult {
 	// No selection: colour by completion, animate only the unlocked frontier.
 	if (input.sourceCompleted) {
 		return {
-			style: base + 'stroke: rgb(34 197 94); stroke-width: 3px; ',
+			style: `${base}stroke: rgb(34 197 94); stroke-width: 3px; `,
 			markerEnd: { type: markerType.type, color: 'rgb(34 197 94)' },
 			animated: !input.targetCompleted && input.targetAvailable,
 			zIndex: EDGE_Z_BASE,
 		};
 	}
 	return {
-		style: base + 'stroke: rgb(var(--border-primary)); stroke-opacity: 0.6; ',
+		style: `${base}stroke: rgb(var(--border-primary)); stroke-opacity: 0.6; `,
 		markerEnd: { type: markerType.type },
 		animated: input.targetAvailable,
 		zIndex: EDGE_Z_BASE,

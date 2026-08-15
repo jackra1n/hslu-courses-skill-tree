@@ -350,5 +350,8 @@ export type ExtendedNodeData = {
 	sourceHandles?: number;
 	targetHandles?: number;
 	showCourseTypeBadges?: boolean;
+	showRemoveButton?: boolean;
+	onRemove?: (nodeId: string) => void;
+	hasMissingPrerequisites?: boolean;
 	hasLaterPrerequisites?: boolean;
 };

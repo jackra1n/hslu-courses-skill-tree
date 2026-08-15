@@ -20,31 +20,31 @@ import PrerequisiteList from './PrerequisiteList.svelte';
 import StatusLegend from './StatusLegend.svelte';
 
 const displayCourse = $derived.by(() => {
-	if (!selection()) return null;
+	const sel = selection();
+	if (!sel) return null;
 
 	if (isElectiveSlot()) {
-		const selectedCourseId = courseStore.userSelections[selection()!.id];
+		const selectedCourseId = courseStore.userSelections[sel.id];
 		if (selectedCourseId) {
 			const selectedCourse = getCourseById(selectedCourseId);
 			if (selectedCourse) {
 				return selectedCourse;
 			}
-			return selection();
+			return sel;
 		}
 	}
 
-	return selection();
+	return sel;
 });
 
 const activePlanNode = $derived.by(() => {
-	if (!selection()) return null;
+	const sel = selection();
+	if (!sel) return null;
 	const plan = courseStore.studyPlan;
-	const slotMatch = plan.nodes[selection()!.id];
+	const slotMatch = plan.nodes[sel.id];
 	if (slotMatch) return slotMatch;
 	return (
-		Object.values(plan.nodes).find(
-			(node) => node.courseId === selection()!.id,
-		) ?? null
+		Object.values(plan.nodes).find((node) => node.courseId === sel.id) ?? null
 	);
 });
 

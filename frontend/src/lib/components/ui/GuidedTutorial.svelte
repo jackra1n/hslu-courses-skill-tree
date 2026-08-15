@@ -102,7 +102,7 @@ function waitForNode(selector: string, timeout: number): Promise<void> {
 }
 
 async function runTutorial() {
-	if (starting || (driverInstance && driverInstance.isActive())) return;
+	if (starting || driverInstance?.isActive()) return;
 	starting = true;
 
 	try {
@@ -118,7 +118,7 @@ async function runTutorial() {
 			waitForAbsent('[data-mobile-warning]'),
 		]);
 
-		if (driverInstance && driverInstance.isActive()) return;
+		if (driverInstance?.isActive()) return;
 
 		driverInstance = driver({
 			showProgress: true,

@@ -193,7 +193,7 @@ describe('handleProgressRequest', () => {
 		const body = JSON.stringify({
 			data: {
 				...SNAPSHOT,
-				slotStatus: { ['slot-' + 'p'.repeat(500_000)]: 'attended' },
+				slotStatus: { [`slot-${'p'.repeat(500_000)}`]: 'attended' },
 			},
 			expectedRevision: null,
 		});

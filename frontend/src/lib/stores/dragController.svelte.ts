@@ -16,7 +16,6 @@ export class DragController {
 	previewRows = $state<PlanRow[] | null>(null);
 
 	private overrideNodes = $state.raw<Node[] | null>(null);
-	private activeNodeId: string | null = null;
 	private readonly deps: DragDeps;
 
 	constructor(deps: DragDeps) {
@@ -27,14 +26,12 @@ export class DragController {
 		return this.overrideNodes ?? this.deps.layoutedNodes();
 	}
 
-	start(nodeId: string): void {
-		this.activeNodeId = nodeId;
+	start(): void {
 		this.previewRows = null;
 		this.ensureOverride();
 	}
 
 	drag(nodeId: string, position: Position): void {
-		this.activeNodeId = nodeId;
 		this.applyDirectPosition(nodeId, position);
 
 		const preview = this.computeRowPreview(nodeId, position);
@@ -52,7 +49,6 @@ export class DragController {
 		const preview = this.computeRowPreview(nodeId, position);
 		if (preview) this.deps.commitRows(preview);
 		this.clear();
-		this.activeNodeId = null;
 	}
 
 	clear(): void {

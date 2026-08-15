@@ -58,7 +58,7 @@ function mapRetakes(
 }
 
 function calculateTargetHandles(course: Course | null): number {
-	if (!course || !course.prerequisites || course.prerequisites.length === 0) {
+	if (!course?.prerequisites?.length) {
 		return 0;
 	}
 
