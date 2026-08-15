@@ -218,8 +218,9 @@ function toCourse(module: RawModule, plan: string): Course {
 }
 
 export function loadCourseData(plan: string = 'HS25'): Course[] {
-	if (courseCache.has(plan)) {
-		return courseCache.get(plan)!;
+	const cached = courseCache.get(plan);
+	if (cached) {
+		return cached;
 	}
 
 	const courses = Array.from(moduleIndex.values()).map((module) =>
