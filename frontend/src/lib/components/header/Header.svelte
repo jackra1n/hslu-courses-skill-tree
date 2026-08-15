@@ -9,8 +9,7 @@
   import AccountMenu from './AccountMenu.svelte';
 
   let programDropdownOpen = $state(false);
-  let settingsSidebarOpen = $state(false);
-  let analyticsOpen = $state(false);
+  let activeSidebar = $state<'settings' | 'analytics' | null>(null);
   let headerElement: HTMLElement;
   
   function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
@@ -44,18 +43,17 @@
   
   function toggleProgramDropdown() {
     programDropdownOpen = !programDropdownOpen;
-    if (programDropdownOpen) settingsSidebarOpen = false;
+    if (programDropdownOpen) activeSidebar = null;
   }
 
   function toggleSettings() {
-    settingsSidebarOpen = !settingsSidebarOpen;
-    if (settingsSidebarOpen) programDropdownOpen = false;
+    activeSidebar = activeSidebar === 'settings' ? null : 'settings';
+    if (activeSidebar === 'settings') programDropdownOpen = false;
   }
 
-  function openAnalytics() {
-    settingsSidebarOpen = false;
-    programDropdownOpen = false;
-    analyticsOpen = true;
+  function toggleAnalytics() {
+    activeSidebar = activeSidebar === 'analytics' ? null : 'analytics';
+    if (activeSidebar === 'analytics') programDropdownOpen = false;
   }
 
   const plannedCredits = $derived(courseStore.totalCredits);
@@ -111,7 +109,7 @@
     <!-- ECTS progress badge -->
     <button
       data-tour="progress"
-      onclick={openAnalytics}
+      onclick={toggleAnalytics}
       class="flex h-9 items-center gap-1.5 rounded-lg border border-border-primary bg-bg-secondary px-3 py-2 cursor-pointer hover:bg-bg-secondary/80 hover:shadow-sm transition-all"
       title={ectsTooltip}
       aria-label="Open progress analytics"
@@ -122,7 +120,7 @@
 
     <!-- cloud sync account -->
     <AccountMenu onInteract={() => {
-      settingsSidebarOpen = false;
+      activeSidebar = null;
       programDropdownOpen = false;
     }} />
 
@@ -142,6 +140,11 @@
   </div>
 </header>
 
-<!-- settings sidebar -->
-<SettingsSidebar bind:isOpen={settingsSidebarOpen} />
-<ProgressAnalytics bind:isOpen={analyticsOpen} />
+<SettingsSidebar
+  isOpen={activeSidebar === 'settings'}
+  onClose={() => (activeSidebar = null)}
+/>
+<ProgressAnalytics
+  isOpen={activeSidebar === 'analytics'}
+  onClose={() => (activeSidebar = null)}
+/>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { courseStore } from '$lib/stores/courseStore.svelte';
   import { uiStore } from '$lib/stores/uiStore.svelte';
   import { theme, themeStore } from '$lib/stores/theme.svelte';
@@ -7,8 +6,9 @@
   import { collectAppData, importAppData } from '$lib/data/persistence';
   import { downloadJson, pickTextFile } from '$lib/utils/file-transfer';
   import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte';
+  import Sidebar from '$lib/components/ui/Sidebar.svelte';
 
-  let { isOpen = $bindable(false) }: { isOpen: boolean } = $props();
+  let { isOpen, onClose }: { isOpen: boolean; onClose: () => void } = $props();
 
   let showResetProgressDialog = $state(false);
   let showResetAllDataDialog = $state(false);
@@ -32,7 +32,7 @@
   }
 
   function closeSidebar() {
-    isOpen = false;
+    onClose();
   }
 
 
@@ -74,35 +74,10 @@
     closeSidebar();
   }
 
-  onMount(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
-        closeSidebar();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  });
 </script>
 
-<!-- backdrop -->
-<div
-  class="fixed inset-x-0 top-[var(--app-header-height)] bottom-0 z-40 bg-black/40 transition-opacity duration-200 {isOpen
-    ? 'opacity-100 pointer-events-auto'
-    : 'opacity-0 pointer-events-none'}"
-  onclick={closeSidebar}
-  aria-hidden={!isOpen}
-></div>
-
-<!-- sidebar -->
-<aside
-  class="fixed top-[var(--app-header-height)] right-0 bottom-0 z-50 w-full max-w-md bg-bg-primary border-l border-border-primary shadow-2xl overflow-y-auto transition-transform duration-200 ease-out {isOpen
-    ? 'translate-x-0'
-    : 'translate-x-full pointer-events-none'}"
-  aria-hidden={!isOpen}
->
-    <div class="flex flex-col h-full">
+<Sidebar {isOpen} {onClose} label="Settings">
+  <div class="flex h-full flex-col">
 
       <!-- content -->
       <div class="flex-1 overflow-y-auto p-6 space-y-6">
@@ -209,20 +184,9 @@
           </div>
         </div>
 
-        <div class="border-b border-border-primary"></div>
-
-        <!-- About -->
-        <div>
-          <div class="text-base font-bold text-text-primary mb-4">About</div>
-          <div class="space-y-3 text-base text-text-secondary">
-            <p>
-              HSLU Courses Skill Tree helps you visualize and track your progress through university courses and their prerequisites.
-            </p>
-          </div>
-        </div>
       </div>
     </div>
-  </aside>
+</Sidebar>
 
 <!-- Confirmation Dialogs -->
 {#if showResetProgressDialog}
