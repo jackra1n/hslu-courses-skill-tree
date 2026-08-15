@@ -77,7 +77,7 @@ async function handleSignOut() {
 }
 </script>
 
-<div class="relative account-menu">
+<div class="relative account-menu" data-tour="account">
   {#if user}
     <button
       onclick={toggleAccountMenu}

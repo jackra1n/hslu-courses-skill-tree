@@ -6,6 +6,7 @@ import {
 	type Node,
 	type NodeTargetEventWithPointer,
 	SvelteFlow,
+	useSvelteFlow,
 	useViewport,
 } from '@xyflow/svelte';
 import { onMount } from 'svelte';
@@ -14,6 +15,7 @@ import '@xyflow/svelte/dist/style.css';
 import DisclaimerToast from '$lib/components/ui/DisclaimerToast.svelte';
 import { getNodeWidth } from '$lib/graph/layout';
 import { getEdgeStyle, getNodeStyle } from '$lib/graph/styles';
+import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
 import { courseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { theme } from '$lib/stores/theme.svelte';
@@ -43,6 +45,7 @@ let selectedNodeId = $state<string | null>(null);
 
 const viewportSignal = useViewport();
 const viewport = $derived(viewportSignal.current);
+const { setCenter } = useSvelteFlow();
 const semesterIndicators = $derived(courseStore.semesterDividerData);
 
 const statuses = $derived.by(() =>
@@ -196,6 +199,24 @@ function handleRemoveClick(nodeId: string) {
 	courseStore.removeNode(nodeId);
 	selectedNodeId = null;
 }
+
+// Canvas nodes are positioned by the viewport transform, not page scroll,
+// so the tutorial pans the canvas instead of scrolling the page. setCenter
+// with a duration animates the pan and resolves once the transition ends.
+async function centerOnElement(element: Element) {
+	const rect = element.getBoundingClientRect();
+	const vp = viewportSignal.current;
+	await setCenter(
+		(rect.left + rect.width / 2 - vp.x) / vp.zoom,
+		(rect.top + rect.height / 2 - vp.y) / vp.zoom,
+		{ zoom: vp.zoom, duration: 400 },
+	);
+}
+
+$effect(() => {
+	canvasCommands.set({ centerOnElement });
+	return () => canvasCommands.set(null);
+});
 
 onMount(() => {
 	const mediaQuery = window.matchMedia('(max-width: 1024px)');

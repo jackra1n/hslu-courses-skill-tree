@@ -2,6 +2,7 @@
 import { type Driver, type DriveStep, driver } from 'driver.js';
 import { onDestroy, onMount, tick } from 'svelte';
 import 'driver.js/dist/driver.css';
+import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
 import { tutorialRequested, uiStore } from '$lib/stores/uiStore.svelte';
 
 const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
@@ -23,11 +24,20 @@ const steps: DriveStep[] = [
 		},
 	},
 	{
-		element: '.svelte-flow__node',
+		element: '.svelte-flow__node-custom',
 		popover: {
 			title: 'Open a course',
 			description:
 				'Select any course to view its details and prerequisites. In the details panel, mark it as attended or completed to track your status.',
+		},
+		onHighlightStarted: async (element) => {
+			if (!(element instanceof Element)) return;
+			// Pan the canvas to the course node. The command resolves once
+			// the animated transition has finished, so the highlight box is
+			// computed against the settled viewport, not mid-animation.
+			await canvasCommands.current?.centerOnElement(element);
+			await tick();
+			driverInstance?.refresh();
 		},
 	},
 	{
@@ -44,6 +54,21 @@ const steps: DriveStep[] = [
 			title: 'Review your progress',
 			description:
 				'Open the ECTS summary to see passed, completed, and failed credits overall and by module type.',
+		},
+	},
+	{
+		element: '[data-tour="account"]',
+		popover: {
+			title: 'Sync across devices',
+			description:
+				'Sign in with GitHub to sync your progress and study plan between devices. Already signed in? Review the sync status and sign out from this menu.',
+		},
+	},
+	{
+		popover: {
+			title: 'Open source',
+			description:
+				'This project is open source. <a class="hslu-github-link" href="https://github.com/jackra1n/hslu-courses-skill-tree" target="_blank" rel="noreferrer"><span class="i-lucide-github h-4 w-4" aria-hidden="true"></span>jackra1n/hslu-courses-skill-tree</a> Curricula are maintained by hand, so double-check anything important against official HSLU sources, and please <a href="https://github.com/jackra1n/hslu-courses-skill-tree/issues" target="_blank" rel="noreferrer">open an issue</a> if something looks wrong.',
 		},
 	},
 ];
@@ -114,7 +139,7 @@ async function runTutorial() {
 		// Wait for the first course node (bounded) and for the blocking mobile
 		// warning overlay to be gone so Driver.js never competes with it.
 		await Promise.all([
-			waitForNode('.svelte-flow__node', 2000),
+			waitForNode('.svelte-flow__node-custom', 2000),
 			waitForAbsent('[data-mobile-warning]'),
 		]);
 
@@ -192,6 +217,40 @@ onDestroy(() => {
     color: rgb(var(--text-secondary));
     font-size: 0.875rem;
     line-height: 1.5;
+  }
+
+  :global(.hslu-tutorial-popover .driver-popover-description a) {
+    color: rgb(37 99 235);
+    text-decoration: underline;
+  }
+
+  :global(.hslu-tutorial-popover .driver-popover-description a:hover),
+  :global(.hslu-tutorial-popover .driver-popover-description a:focus) {
+    color: rgb(29 78 216);
+  }
+
+  :global(.hslu-tutorial-popover .driver-popover-description .hslu-github-link) {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    gap: 0.375rem;
+    margin: 0.25rem 0;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid rgb(var(--border-primary));
+    border-radius: 0.375rem;
+    background-color: rgb(var(--bg-secondary));
+    color: rgb(var(--text-primary));
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  :global(.hslu-tutorial-popover .driver-popover-description .hslu-github-link:hover),
+  :global(.hslu-tutorial-popover .driver-popover-description .hslu-github-link:focus) {
+    background-color: color-mix(in srgb, rgb(var(--bg-secondary)) 70%, rgb(var(--bg-primary)));
+    border-color: rgb(var(--border-secondary));
+    color: rgb(var(--text-primary));
   }
 
   :global(.hslu-tutorial-popover .driver-popover-close-btn) {
