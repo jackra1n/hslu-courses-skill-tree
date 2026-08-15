@@ -3,9 +3,9 @@
   import Dropdown from './Dropdown.svelte';
 
   const themeOptions = [
+    { value: 'system' as Theme, label: 'System', icon: 'i-lucide-monitor' },
     { value: 'light' as Theme, label: 'Light', icon: 'i-lucide-sun' },
-    { value: 'dark' as Theme, label: 'Dark', icon: 'i-lucide-moon' },
-    { value: 'system' as Theme, label: 'System', icon: 'i-lucide-monitor' }
+    { value: 'dark' as Theme, label: 'Dark', icon: 'i-lucide-moon' }
   ];
 
   function selectTheme(selectedTheme: string) {

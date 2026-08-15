@@ -8,8 +8,8 @@ const THEME_COLORS: Record<ResolvedTheme, string> = {
   dark: '#111827'
 };
 
-// private state
-let _theme = $state<Theme>('light');
+// Default to the operating-system preference until a saved choice is loaded.
+let _theme = $state<Theme>('system');
 
 // export getter function
 export function theme() { return _theme; }
@@ -25,8 +25,10 @@ export const themeStore = {
   init: () => {
     if (!browser) return;
 
-    const stored = localStorage.getItem('theme') as Theme;
-    const newTheme = stored || 'light';
+    const stored = localStorage.getItem('theme');
+    const newTheme: Theme = stored === 'light' || stored === 'dark' || stored === 'system'
+      ? stored
+      : 'system';
     _theme = newTheme;
     applyTheme(newTheme);
   }
@@ -54,9 +56,8 @@ function updateMetaThemeColor(themeValue: ResolvedTheme) {
 }
 
 if (browser) {
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (_e) => {
-    const currentTheme = localStorage.getItem('theme') as Theme;
-    if (currentTheme === 'system') {
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (_theme === 'system') {
       applyTheme('system');
     }
   });

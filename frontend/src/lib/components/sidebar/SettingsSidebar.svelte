@@ -1,7 +1,7 @@
 <script lang="ts">
   import { courseStore } from '$lib/stores/courseStore.svelte';
   import { uiStore } from '$lib/stores/uiStore.svelte';
-  import { theme, themeStore } from '$lib/stores/theme.svelte';
+  import ThemeSwitcher from '$lib/components/ui/ThemeSwitcher.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
   import { collectAppData, importAppData } from '$lib/data/persistence';
   import { downloadJson, pickTextFile } from '$lib/utils/file-transfer';
@@ -36,10 +36,6 @@
   }
 
 
-  function toggleTheme() {
-    const newTheme = theme() === 'dark' ? 'light' : 'dark';
-    themeStore.set(newTheme);
-  }
 
   function toggleAssessmentInfo() {
     uiStore.toggleAssessmentInfo();
@@ -105,25 +101,7 @@
           </button>
           <div class="flex w-full items-center justify-between gap-3 px-1 py-2 text-base text-text-primary">
             <span>Theme</span>
-            <div class="flex items-center gap-2 text-text-secondary">
-              <div class="i-lucide-sun h-4 w-4"></div>
-              <button
-                id="theme-toggle"
-                onclick={toggleTheme}
-                class="relative h-6 w-11 cursor-pointer rounded-full transition-colors duration-200 {theme() === 'dark'
-                  ? 'bg-blue-600 dark:bg-blue-500'
-                  : 'bg-gray-300 dark:bg-gray-600'}"
-                aria-label="Toggle theme"
-                aria-pressed={theme() === 'dark'}
-              >
-                <div
-                  class="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 dark:bg-gray-800 {theme() === 'dark'
-                    ? 'translate-x-5'
-                    : 'translate-x-0.5'}"
-                ></div>
-              </button>
-              <div class="i-lucide-moon h-4 w-4"></div>
-            </div>
+            <ThemeSwitcher />
           </div>
         </div>
 
