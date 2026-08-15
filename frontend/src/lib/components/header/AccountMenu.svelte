@@ -18,9 +18,16 @@
         accountMenuOpen = false;
       }
     };
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') accountMenuOpen = false;
+    };
 
     document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
   });
 
   const user = $derived(cloudSyncStore.user);
@@ -53,6 +60,7 @@
   }
 
   async function handleSignIn() {
+    accountMenuOpen = false;
     onInteract?.();
     await cloudSyncStore.signInWithGitHub();
   }
@@ -128,12 +136,30 @@
     {/if}
   {:else}
     <button
-      onclick={handleSignIn}
+      onclick={toggleAccountMenu}
       class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
-      aria-label="Sign in with GitHub"
+      aria-label="Sign in"
+      aria-expanded={accountMenuOpen}
     >
       <div class="i-lucide-user h-4 w-4 text-text-primary"></div>
       <span class="text-sm font-medium text-text-primary">Sign in</span>
+      <div class="i-lucide-chevron-down h-3.5 w-3.5 text-text-secondary transition-transform {accountMenuOpen ? 'rotate-180' : ''}"></div>
     </button>
+
+    {#if accountMenuOpen}
+      <div
+        class="fixed inset-x-4 top-[var(--app-header-height)] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl
+               sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-56 sm:shadow-lg"
+      >
+        <div class="px-1 pb-2 text-xs font-medium text-text-secondary">Sign in with</div>
+        <button
+          onclick={handleSignIn}
+          class="flex w-full items-center gap-3 rounded-lg bg-bg-secondary px-3 py-2.5 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary/80"
+        >
+          <div class="i-lucide-github h-4 w-4"></div>
+          <span>Continue with GitHub</span>
+        </button>
+      </div>
+    {/if}
   {/if}
 </div>
