@@ -43,6 +43,8 @@
     }
   }
 
+  const syncStatusLabel = $derived(statusLabel(status));
+
   async function handleSignIn() {
     await cloudSyncStore.signInWithGitHub();
   }
@@ -57,7 +59,7 @@
   {#if user}
     <button
       onclick={() => (accountMenuOpen = !accountMenuOpen)}
-      class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-2 py-2 text-text-primary hover:bg-bg-secondary transition-colors"
+      class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-2 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
       aria-label="Account menu"
       aria-expanded={accountMenuOpen}
     >
@@ -100,12 +102,12 @@
 
         <div class="border-b border-border-primary mb-2"></div>
 
-        <div class="px-1 pb-1 text-xs text-text-secondary">
-          {#if statusLabel(status)}
-            <span class="i-lucide-cloud mr-1.5 inline-block h-3.5 w-3.5 align-[-2px]"></span>
-            {statusLabel(status)}
-          {/if}
-        </div>
+        {#if syncStatusLabel}
+          <div class="mb-1.5 flex items-start gap-2 rounded-md bg-bg-secondary px-2.5 py-2 text-xs text-text-secondary">
+            <div class="i-lucide-cloud mt-0.5 h-4 w-4 flex-none text-text-secondary"></div>
+            <span class="min-w-0 leading-5">{syncStatusLabel}</span>
+          </div>
+        {/if}
 
         <button
           onclick={handleSignOut}
@@ -119,7 +121,7 @@
   {:else}
     <button
       onclick={handleSignIn}
-      class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary transition-colors"
+      class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
       aria-label="Sign in with GitHub"
     >
       <div class="i-lucide-user h-4 w-4 text-text-primary"></div>

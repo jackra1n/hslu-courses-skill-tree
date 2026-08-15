@@ -64,7 +64,7 @@
       <button 
         data-tour="program"
         onclick={() => programDropdownOpen = !programDropdownOpen}
-        class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary transition-colors"
+        class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
         >
         <div class="i-lucide-graduation-cap h-4 w-4 text-text-primary"></div>
         <span class="hidden sm:inline text-sm font-medium text-text-primary">Study plan</span>
@@ -88,7 +88,7 @@
     <button
       data-tour="progress"
       onclick={() => (analyticsOpen = true)}
-      class="flex h-9 items-center gap-1.5 rounded-md border border-border-primary bg-bg-secondary px-3 py-2 cursor-pointer hover:bg-bg-secondary/70 hover:shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all"
+      class="flex h-9 items-center gap-1.5 rounded-lg border border-border-primary bg-bg-secondary px-3 py-2 cursor-pointer hover:bg-bg-secondary/80 hover:shadow-sm transition-all"
       title={ectsTooltip}
       aria-label="Open progress analytics"
     >
@@ -100,10 +100,10 @@
     <AccountMenu />
 
     <!-- settings button -->
-    <Tooltip text="Settings & help">
+    <Tooltip text="Settings & help" align="end">
       <button
         onclick={toggleSettings}
-        class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary"
+        class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary hover:shadow-sm transition-all text-text-primary"
         aria-label="Settings & help"
       >
         <div class="i-lucide-settings h-4 w-4 text-text-primary"></div>
