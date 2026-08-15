@@ -49,7 +49,7 @@
   );
 </script>
 
-<header class="flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">
+<header class="relative z-50 flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">
   <div class="flex min-w-0 items-center gap-3">
     <div class="leading-tight">
       <h1 class="text-lg font-semibold text-text-primary sm:hidden">HCST</h1>
@@ -102,7 +102,10 @@
     <!-- settings button -->
     <Tooltip text="Settings & help" align="end">
       <button
-        onclick={toggleSettings}
+        onclick={(event) => {
+          toggleSettings();
+          event.currentTarget.blur();
+        }}
         class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary hover:shadow-sm transition-all text-text-primary"
         aria-label="Settings & help"
       >

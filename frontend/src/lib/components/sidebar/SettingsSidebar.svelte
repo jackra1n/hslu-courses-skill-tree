@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { courseStore } from '$lib/stores/courseStore.svelte';
-  import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
+  import { uiStore } from '$lib/stores/uiStore.svelte';
   import { theme, themeStore } from '$lib/stores/theme.svelte';
   import { progressStore } from '$lib/stores/progressStore.svelte';
   import { collectAppData, importAppData } from '$lib/data/persistence';
@@ -35,13 +35,6 @@
     isOpen = false;
   }
 
-  function toggleCourseNames() {
-    courseStore.toggleShortNames();
-  }
-
-  function toggleCourseBadges() {
-    uiStore.toggleCourseTypeBadges();
-  }
 
   function toggleTheme() {
     const newTheme = theme() === 'dark' ? 'light' : 'dark';
@@ -95,7 +88,7 @@
 
 <!-- backdrop -->
 <div
-  class="fixed inset-0 z-40 bg-black/40 transition-opacity duration-200 {isOpen
+  class="fixed inset-x-0 top-[53px] bottom-0 z-40 bg-black/40 transition-opacity duration-200 sm:top-[69px] {isOpen
     ? 'opacity-100 pointer-events-auto'
     : 'opacity-0 pointer-events-none'}"
   onclick={closeSidebar}
@@ -104,110 +97,54 @@
 
 <!-- sidebar -->
 <aside
-  class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-bg-primary border-l border-border-primary shadow-2xl overflow-y-auto transition-transform duration-200 ease-out {isOpen
+  class="fixed top-[53px] right-0 bottom-0 z-50 w-full max-w-md bg-bg-primary border-l border-border-primary shadow-2xl overflow-y-auto transition-transform duration-200 ease-out sm:top-[69px] {isOpen
     ? 'translate-x-0'
     : 'translate-x-full pointer-events-none'}"
   aria-hidden={!isOpen}
 >
     <div class="flex flex-col h-full">
-      <!-- header -->
-      <div class="flex items-start justify-between p-6 ">
-        <div class="flex-1">
-          <h2 id="settings-title" class="text-lg font-semibold text-text-primary mb-1">Settings</h2>
-          <p class="text-sm text-text-secondary">Customize your course skill tree experience</p>
-        </div>
-        <button
-          onclick={closeSidebar}
-          class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary flex-shrink-0"
-          aria-label="Close settings"
-        >
-          <div class="i-lucide-x h-4 w-4"></div>
-        </button>
-      </div>
 
       <!-- content -->
       <div class="flex-1 overflow-y-auto p-6 space-y-6">
-        <!-- Quick Links -->
-        <div>
-          <div class="text-base font-bold text-text-primary mb-4">Quick Links</div>
-          <div class="space-y-2">
+        <div class="space-y-2">
+          <a
+            href="https://github.com/jackra1n/hslu-courses-skill-tree"
+            target="_blank"
+            rel="noopener noreferrer"
+            onclick={closeSidebar}
+            class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
+          >
+            <div class="i-lucide-github h-4 w-4 text-text-primary"></div>
+            <span>View on GitHub</span>
+            <div class="i-lucide-external-link h-4 w-4 text-text-secondary ml-auto"></div>
+          </a>
+          <button
+            onclick={() => {
+              closeSidebar();
+              uiStore.requestTutorial();
+            }}
+            class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
+          >
+            <div class="i-lucide-book-open h-4 w-4 text-text-primary"></div>
+            <span>Start guided tutorial</span>
+          </button>
+          <div class="w-full flex items-center justify-between gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary rounded-lg text-text-primary">
+            <span>Theme</span>
             <button
-              onclick={() => {
-                closeSidebar();
-                uiStore.requestTutorial();
-              }}
-              class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
+              id="theme-toggle"
+              onclick={toggleTheme}
+              class="relative w-11 h-6 rounded-full transition-colors duration-200 {theme() === 'dark'
+                ? 'bg-blue-600 dark:bg-blue-500'
+                : 'bg-gray-300 dark:bg-gray-600'}"
+              aria-label="Toggle theme"
+              aria-pressed={theme() === 'dark'}
             >
-              <div class="i-lucide-info h-4 w-4 text-text-primary"></div>
-              <span>Start guided tutorial</span>
+              <div
+                class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {theme() === 'dark'
+                  ? 'translate-x-5'
+                  : 'translate-x-0.5'}"
+              ></div>
             </button>
-            <a
-              href="https://github.com/jackra1n/hslu-courses-skill-tree"
-              target="_blank"
-              rel="noopener noreferrer"
-              onclick={closeSidebar}
-              class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
-            >
-              <div class="i-lucide-github h-4 w-4 text-text-primary"></div>
-              <span>View on GitHub</span>
-              <div class="i-lucide-external-link h-4 w-4 text-text-secondary ml-auto"></div>
-            </a>
-          </div>
-        </div>
-
-        <div class="border-b border-border-primary"></div>
-        <!-- View Options -->
-        <div>
-          <div class="text-base font-bold text-text-primary mb-4">View Options</div>
-          <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <label for="show-full-course-names" class="text-base text-text-primary">Show Full Course Names</label>
-              <!-- Toggle Switch -->
-              <button
-                id="show-full-course-names"
-                onclick={toggleCourseNames}
-                class="relative w-11 h-6 rounded-full transition-colors duration-200 {!courseStore.showShortNamesOnly
-                  ? 'bg-blue-600 dark:bg-blue-500'
-                  : 'bg-gray-300 dark:bg-gray-600'}"
-                aria-label="Toggle full course names"
-              >
-                <div
-                  class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {!courseStore.showShortNamesOnly
-                    ? 'translate-x-5'
-                    : 'translate-x-0.5'}"
-                ></div>
-              </button>
-            </div>
-            <div class="flex items-center justify-between">
-              <label for="show-course-badges" class="text-base text-text-primary">Show Course Badges</label>
-              <!-- Toggle Switch -->
-              <button
-                id="show-course-badges"
-                onclick={toggleCourseBadges}
-                class="relative w-11 h-6 rounded-full transition-colors duration-200 {showCourseTypeBadges()
-                  ? 'bg-blue-600 dark:bg-blue-500'
-                  : 'bg-gray-300 dark:bg-gray-600'}"
-                aria-label="Toggle course badges"
-              >
-                <div
-                  class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {showCourseTypeBadges()
-                    ? 'translate-x-5'
-                    : 'translate-x-0.5'}"
-                ></div>
-              </button>
-            </div>
-            <div class="flex items-center justify-between">
-              <label for="theme-toggle" class="text-base text-text-primary">Theme</label>
-              <button
-                id="theme-toggle"
-                onclick={toggleTheme}
-                class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors relative text-text-primary"
-                aria-label="Toggle theme"
-              >
-                <div class="i-lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-text-primary"></div>
-                <div class="i-lucide-moon h-4 w-4 absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-text-primary"></div>
-              </button>
-            </div>
           </div>
         </div>
 

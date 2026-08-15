@@ -16,6 +16,12 @@
     end: 'right-0'
   };
 
+  const arrowPositions = {
+    center: 'left-1/2 -translate-x-1/2',
+    start: 'left-3',
+    end: 'right-3'
+  };
+
   function show() {
     clearTimeout(timer);
     timer = setTimeout(() => (open = true), 150);
@@ -43,7 +49,7 @@
       class="pointer-events-none absolute top-full z-50 mt-2 whitespace-nowrap rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-primary shadow-xl {positions[align]}"
       transition:fly={{ y: -4, duration: 120 }}
     >
-      <span class="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-l border-t border-border-primary bg-bg-primary"></span>
+      <span class="absolute -top-1 h-2 w-2 rotate-45 border-l border-t border-border-primary bg-bg-primary {arrowPositions[align]}"></span>
       {text}
     </span>
   {/if}

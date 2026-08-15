@@ -1,5 +1,6 @@
 <script lang="ts">
   import { courseStore } from "$lib/stores/courseStore.svelte";
+  import { showCourseTypeBadges, uiStore } from "$lib/stores/uiStore.svelte";
   import {
     getTemplatesByProgram,
     getAvailablePlans,
@@ -91,6 +92,14 @@
   });
 
   const seasonOptions = SEASONS.map((value) => ({ value, label: SEASON_LABELS[value] }));
+
+  function toggleCourseNames() {
+    courseStore.toggleShortNames();
+  }
+
+  function toggleCourseBadges() {
+    uiStore.toggleCourseTypeBadges();
+  }
 
   function handleProgramChange(value: string) {
     pendingProgram = value;
@@ -206,6 +215,48 @@
     <div class="i-lucide-download"></div>
     Load Template
   </button>
+
+  <div class="border-b border-border-primary"></div>
+
+  <div class="space-y-3">
+    <div class="text-xs font-medium text-text-secondary">View Options</div>
+    <div class="flex items-center justify-between">
+      <label for="show-full-course-names" class="text-sm text-text-primary">Show Full Course Names</label>
+      <button
+        id="show-full-course-names"
+        onclick={toggleCourseNames}
+        class="relative w-11 h-6 rounded-full transition-colors duration-200 {!courseStore.showShortNamesOnly
+          ? 'bg-blue-600 dark:bg-blue-500'
+          : 'bg-gray-300 dark:bg-gray-600'}"
+        aria-label="Toggle full course names"
+        aria-pressed={!courseStore.showShortNamesOnly}
+      >
+        <div
+          class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {!courseStore.showShortNamesOnly
+            ? 'translate-x-5'
+            : 'translate-x-0.5'}"
+        ></div>
+      </button>
+    </div>
+    <div class="flex items-center justify-between">
+      <label for="show-course-badges" class="text-sm text-text-primary">Show Course Badges</label>
+      <button
+        id="show-course-badges"
+        onclick={toggleCourseBadges}
+        class="relative w-11 h-6 rounded-full transition-colors duration-200 {showCourseTypeBadges()
+          ? 'bg-blue-600 dark:bg-blue-500'
+          : 'bg-gray-300 dark:bg-gray-600'}"
+        aria-label="Toggle course badges"
+        aria-pressed={showCourseTypeBadges()}
+      >
+        <div
+          class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {showCourseTypeBadges()
+            ? 'translate-x-5'
+            : 'translate-x-0.5'}"
+        ></div>
+      </button>
+    </div>
+  </div>
 </div>
 
 {#if showWarningDialog}
