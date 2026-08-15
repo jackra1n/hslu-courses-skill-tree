@@ -5,6 +5,7 @@ import { slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import type { PrerequisiteRule } from '$lib/types';
 import { evaluatePrerequisiteRule } from '$lib/utils/prerequisite';
+import { getAssessmentStageProgress } from '$lib/utils/status';
 
 let {
 	prerequisites,
@@ -14,13 +15,9 @@ let {
 	assessmentLevelPassed?: boolean;
 } = $props();
 
-const completedCount = $derived(
-	Array.from(slotStatusMap().values()).filter(
-		(status) => status === 'completed',
-	).length,
+const assessmentStageProgress = $derived(
+	getAssessmentStageProgress(courseStore.studyPlan, slotStatusMap()),
 );
-
-const assessmentStageMet = $derived(completedCount >= 6);
 
 function renderPrerequisiteRule(rule: PrerequisiteRule) {
 	const ruleMet = evaluatePrerequisiteRule(
@@ -72,13 +69,13 @@ function openAssessmentInfo() {
     {#if assessmentLevelPassed}
       <div class="mb-3 flex items-start gap-2 text-sm">
         <div
-          class="{assessmentStageMet
+          class="{assessmentStageProgress.passed
             ? 'i-lucide-check text-green-500'
             : 'i-lucide-circle text-gray-400'} mt-0.5"
         ></div>
         <div class="flex-1">
           <div
-            class={assessmentStageMet
+            class={assessmentStageProgress.passed
               ? "text-text-primary"
               : "text-text-secondary"}
           >
@@ -93,7 +90,7 @@ function openAssessmentInfo() {
               </button>
             </div>
             <div class="text-xs opacity-60 mt-0.5">
-              {completedCount}/6+ courses completed
+              {assessmentStageProgress.completedEcts} ECTS completed · {assessmentStageProgress.projectEcts} ECTS from project modules
             </div>
           </div>
         </div>
@@ -195,13 +192,13 @@ function openAssessmentInfo() {
     {#if assessmentLevelPassed}
       <div class="mb-3 flex items-start gap-2 text-sm">
         <div
-          class="{assessmentStageMet
+          class="{assessmentStageProgress.passed
             ? 'i-lucide-check text-green-500'
             : 'i-lucide-circle text-gray-400'} mt-0.5"
         ></div>
         <div class="flex-1">
           <div
-            class={assessmentStageMet
+            class={assessmentStageProgress.passed
               ? "text-text-primary"
               : "text-text-secondary"}
           >
@@ -216,7 +213,7 @@ function openAssessmentInfo() {
               </button>
             </div>
             <div class="text-xs opacity-60 mt-0.5">
-              {completedCount}/6+ courses completed
+              {assessmentStageProgress.completedEcts} ECTS completed · {assessmentStageProgress.projectEcts} ECTS from project modules
             </div>
           </div>
         </div>

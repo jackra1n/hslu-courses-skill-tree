@@ -44,9 +44,9 @@ function closeModal() {
           <div>
             <h3 class="font-semibold text-text-primary mb-3">Passing Requirements:</h3>
             <ul class="space-y-2 ml-4">
-              <li><strong>Definitiv bestanden:</strong> 54 credits achieved</li>
+              <li><strong>Definitiv bestanden:</strong> ≥54 credits achieved</li>
               <li><strong>Bedingt bestanden:</strong> ≥42 credits with ≥6 credits from project modules</li>
-              <li><strong>Nicht bestanden:</strong> &lt;42 credits or &lt;6 credits from project modules</li>
+              <li><strong>Nicht bestanden:</strong> &lt;42 credits achieved, or ≥42 but &lt;54 credits with &lt;6 credits from project modules</li>
             </ul>
           </div>
           <div>
@@ -56,11 +56,6 @@ function closeModal() {
               <li><strong>Nicht bestanden:</strong> Cannot continue to intermediate stage</li>
               <li>Students who don't pass definitively within 5 semesters are excluded from the bachelor program</li>
             </ul>
-          </div>
-          <div class="bg-bg-secondary p-4 rounded-lg border border-border-primary">
-            <p class="text-xs text-text-tertiary">
-              <strong>Note:</strong> In this skill tree, assessment stage requirements are considered met when you have completed 6+ courses. This is an approximation for demonstration purposes.
-            </p>
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { courseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { selectedSlotId } from '$lib/stores/uiStore.svelte';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
-import { computeStatuses } from '$lib/utils/status';
+import { computeStatuses, getAssessmentStageProgress } from '$lib/utils/status';
 
 let { courseId }: { courseId: string } = $props();
 
@@ -30,10 +30,10 @@ const prerequisitesMet = $derived.by(() => {
 		slotStatusMap(),
 		courseStore.studyPlan,
 	);
-	const completedSlotCount = Array.from(slotStatusMap().values()).filter(
-		(status) => status === 'completed',
-	).length;
-	const assessmentStageMet = completedSlotCount >= 6;
+	const assessmentStageMet = getAssessmentStageProgress(
+		courseStore.studyPlan,
+		slotStatusMap(),
+	).passed;
 	const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
 	return prereqsMet && assessmentMet;
 });

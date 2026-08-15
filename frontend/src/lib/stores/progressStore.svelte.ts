@@ -2,6 +2,7 @@ import { browser } from '$app/environment';
 import type { StudyPlan } from '$lib/data/study-plan';
 import { resolveCourse } from '$lib/data/study-plan';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
+import { getAssessmentStageProgress } from '$lib/utils/status';
 
 let _slotStatus = $state(new Map<string, 'attended' | 'completed'>());
 export function slotStatusMap() {
@@ -103,10 +104,10 @@ export const progressStore = {
 			_slotStatus,
 			plan,
 		);
-		const completedSlotCount = Array.from(_slotStatus.values()).filter(
-			(status) => status === 'completed',
-		).length;
-		const assessmentStageMet = completedSlotCount >= 6;
+		const assessmentStageMet = getAssessmentStageProgress(
+			plan,
+			_slotStatus,
+		).passed;
 		const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
 
 		return prereqsMet && assessmentMet;

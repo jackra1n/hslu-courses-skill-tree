@@ -1,23 +1,37 @@
 import { getTemplateById } from '$lib/data/courses';
 import type { StudyPlan } from '$lib/data/study-plan';
-import { resolveCourse } from '$lib/data/study-plan';
+import { calculateCompletedCredits, resolveCourse } from '$lib/data/study-plan';
 import type { Status } from '../types';
+import { assessmentStagePassed } from './assessment-stage';
 import { evaluatePrerequisites } from './prerequisite';
 
-// Courses that require the assessment stage to be passed unlock once this many
-// modules are completed.
-const ASSESSMENT_STAGE_COMPLETED_THRESHOLD = 6;
+export function getAssessmentStageProgress(
+	plan: StudyPlan,
+	slotStatus: Map<string, 'attended' | 'completed'>,
+): { completedEcts: number; projectEcts: number; passed: boolean } {
+	const completedEcts = calculateCompletedCredits(plan, slotStatus);
+	const projectEcts = Object.values(plan.nodes).reduce((sum, node) => {
+		if (slotStatus.get(node.id) !== 'completed') return sum;
+		return resolveCourse(node.courseId)?.type === 'Projektmodul'
+			? sum + (node.ects || 0)
+			: sum;
+	}, 0);
+	return {
+		completedEcts,
+		projectEcts,
+		passed: assessmentStagePassed(completedEcts, projectEcts),
+	};
+}
 
 export function computeStatuses(
 	plan: StudyPlan,
 	slotStatus: Map<string, 'attended' | 'completed'>,
 ): Record<string, Status> {
 	const statuses: Record<string, Status> = {};
-	const completedCount = Array.from(slotStatus.values()).filter(
-		(status) => status === 'completed',
-	).length;
-	const assessmentStageMet =
-		completedCount >= ASSESSMENT_STAGE_COMPLETED_THRESHOLD;
+	const assessmentStageMet = getAssessmentStageProgress(
+		plan,
+		slotStatus,
+	).passed;
 
 	Object.values(plan.nodes).forEach((node) => {
 		const currentStatus = slotStatus.get(node.id);
