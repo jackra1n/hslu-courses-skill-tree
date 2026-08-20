@@ -1,3 +1,4 @@
+import type { ProgramInfo } from './catalog-types';
 import { AVAILABLE_TEMPLATES } from './courses';
 import studyProgrammes from './hslu_data/study_programmes.json';
 
@@ -8,10 +9,7 @@ type StudyProgramme = {
 
 const PROGRAMME_DATA = (studyProgrammes.data ?? []) as StudyProgramme[];
 
-export type ProgramInfo = {
-	shortName: string;
-	name: string;
-};
+export type { ProgramInfo } from './catalog-types';
 
 export const PROGRAMS: ProgramInfo[] = PROGRAMME_DATA.map((program) => ({
 	shortName: program.ShortName.toUpperCase(),

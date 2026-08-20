@@ -1,13 +1,11 @@
+import type { EctsRequirements } from './catalog-types';
 import type { ModuleType } from './courses';
 
 type RawEctsFile = {
 	data: { TotalECTS: string; ectsPerModule: Record<string, string> };
 };
 
-export type EctsRequirements = {
-	total: number;
-	perModule: Partial<Record<ModuleType, number>>;
-};
+export type { EctsRequirements } from './catalog-types';
 
 const files = import.meta.glob('./hslu_data/ects/*_ects.json', {
 	eager: true,

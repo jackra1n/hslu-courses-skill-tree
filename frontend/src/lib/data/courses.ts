@@ -1,56 +1,24 @@
+import type {
+	Course,
+	CurriculumTemplate,
+	ModuleType,
+	StudyModel,
+	TemplateSlot,
+} from './catalog-types';
 import { loadCourseData } from './course-data-adapter';
 import studyProgrammes from './hslu_data/study_programmes.json';
-import type { Season } from './season';
+
+export type {
+	Course,
+	CurriculumTemplate,
+	ModuleType,
+	PrerequisiteLink,
+	PrerequisiteRule,
+	StudyModel,
+	TemplateSlot,
+} from './catalog-types';
 
 export type Status = 'locked' | 'available' | 'completed';
-
-export type ModuleType =
-	| 'Kernmodul'
-	| 'Projektmodul'
-	| 'Erweiterungsmodul'
-	| 'Major-/Minormodul'
-	| 'Zusatzmodul';
-
-export type PrerequisiteLink = 'und' | 'oder';
-
-export type PrerequisiteRule = {
-	modules: string[];
-	mustBePassed: boolean;
-	moduleLinkType: PrerequisiteLink;
-	prerequisiteLinkType?: PrerequisiteLink;
-};
-
-export type Course = {
-	id: string;
-	label: string;
-	ects: number;
-	prerequisites: PrerequisiteRule[];
-	prerequisiteNote?: string;
-	assessmentLevelPassed?: boolean;
-	type?: ModuleType;
-	// Seasons the module is offered in; empty/undefined means unknown (treated as any).
-	seasons?: Season[];
-};
-
-export type TemplateSlot = {
-	id: string;
-	type: 'fixed' | 'elective' | 'major';
-	courseId?: string; // for fixed courses
-	semester: number;
-};
-
-export type StudyModel = 'fulltime' | 'parttime';
-
-export type CurriculumTemplate = {
-	id: string;
-	name: string;
-	studiengang: string;
-	modell: StudyModel;
-	plan: string; // e.g., "HS16", "HS25"
-	slots: TemplateSlot[];
-	programShortName?: string;
-	programName?: string;
-};
 
 type StudyProgramme = {
 	ShortName: string;
