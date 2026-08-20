@@ -1,13 +1,11 @@
+import { loadBundledCatalog } from './catalog-loader';
 import type {
 	Course,
 	CurriculumTemplate,
 	ModuleType,
-	PrerequisiteLink,
-	PrerequisiteRule,
 	StudyModel,
 	TemplateSlot,
 } from './catalog-types';
-import { loadBundledCatalog } from './catalog-loader';
 import { loadCourseData } from './course-data-adapter';
 
 export type {

@@ -11,6 +11,9 @@ const wranglerConfig = fileURLToPath(
 );
 
 export default defineConfig({
+	test: {
+		include: ['worker/test/**/*.test.ts'],
+	},
 	plugins: [
 		cloudflareTest({
 			wrangler: { configPath: wranglerConfig },
