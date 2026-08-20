@@ -1,20 +1,10 @@
+import { loadBundledCatalog } from './catalog-loader';
 import type { ProgramInfo } from './catalog-types';
 import { AVAILABLE_TEMPLATES } from './courses';
-import studyProgrammes from './hslu_data/study_programmes.json';
-
-type StudyProgramme = {
-	ShortName: string;
-	Name: string;
-};
-
-const PROGRAMME_DATA = (studyProgrammes.data ?? []) as StudyProgramme[];
 
 export type { ProgramInfo } from './catalog-types';
 
-export const PROGRAMS: ProgramInfo[] = PROGRAMME_DATA.map((program) => ({
-	shortName: program.ShortName.toUpperCase(),
-	name: program.Name,
-})).sort((a, b) => a.name.localeCompare(b.name));
+export const PROGRAMS: ProgramInfo[] = loadBundledCatalog().programmes;
 
 const PROGRAM_MAP = new Map(
 	PROGRAMS.map((program) => [program.shortName, program.name]),
