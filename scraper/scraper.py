@@ -32,9 +32,7 @@ _load_env_files()
 
 API_URL = _get_required_env("API_URL")
 ACCESS_KEY = _get_required_env("ACCESS_KEY")
-BASE_DIR = (
-    REPO_ROOT / "frontend" / "static" / "hslu_data"
-)  # main directory for all output files
+BASE_DIR = REPO_ROOT / "frontend" / "data" / "hslu_data"
 HEADERS = {"X-Access-Key": ACCESS_KEY}
 REQUEST_TIMEOUT = float(os.getenv("REQUEST_TIMEOUT_SECONDS", "10"))
 SESSION = requests.Session()

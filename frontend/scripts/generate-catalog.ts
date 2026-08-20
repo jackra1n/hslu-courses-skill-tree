@@ -712,8 +712,14 @@ function projectRoot(): string {
 function main(): void {
 	const args = process.argv.slice(2);
 	const checkOnly = args.includes('--check');
-	const dataRoot = join(projectRoot(), 'src', 'lib', 'data');
-	const outputPath = join(dataRoot, 'catalog.generated.json');
+	const dataRoot = join(projectRoot(), 'data');
+	const outputPath = join(
+		projectRoot(),
+		'src',
+		'lib',
+		'data',
+		'catalog.generated.json',
+	);
 
 	const catalog = buildCatalog(dataRoot);
 	const serialized = serializeCatalog(catalog);

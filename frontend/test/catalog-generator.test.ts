@@ -345,7 +345,7 @@ describe('catalog validation', () => {
 });
 
 test('production catalog satisfies its data and size contract', () => {
-	const dataRoot = join(import.meta.dir, '..', 'src', 'lib', 'data');
+	const dataRoot = join(import.meta.dir, '..', 'data');
 	const catalog = buildCatalog(dataRoot);
 	const byId = new Map(catalog.courses.map((course) => [course.id, course]));
 

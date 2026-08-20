@@ -1,7 +1,14 @@
 import json
 from pathlib import Path
 
-DATA_FILE = Path(__file__).resolve().parent.parent / "frontend" / "src" / "lib" / "data" / "hslu_data" / "modules" / "F25_modules.json"
+DATA_FILE = (
+    Path(__file__).resolve().parent.parent
+    / "frontend"
+    / "data"
+    / "hslu_data"
+    / "modules"
+    / "F25_modules.json"
+)
 
 EXAM_MARKERS = ("Prüfung",)
 WORK_MARKERS = ("Arbeit",)
