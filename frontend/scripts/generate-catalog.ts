@@ -331,7 +331,9 @@ function loadCourses(dataRoot: string): CatalogCourse[] {
 			prerequisiteNote: module.PrerequisiteNote || undefined,
 			assessmentLevelPassed: module.AssessmentLevelPassed ?? undefined,
 			typeByPlanSeason,
-			seasons: Array.from(seasonsByShortName.get(module.ShortName) ?? []),
+			seasons: (['FS', 'HS'] as const).filter((season) =>
+				seasonsByShortName.get(module.ShortName)?.has(season),
+			),
 		});
 	}
 	return courses;
@@ -622,11 +624,10 @@ export function buildCatalog(dataRoot: string): CatalogData {
 	};
 }
 
-// Biome-compatible JSON formatting: tab indentation with line-width-80 group
-// fitting, matching `biome format` byte-for-byte so the committed catalog can
-// stay inside the lint scope. Tabs measure as indentWidth (2) characters.
-const JSON_LINE_WIDTH = 80;
-const JSON_TAB_WIDTH = 2;
+// Biome-compatible JSON formatting with the generated-file override. A wider
+// line keeps the normalized bundle below its enforced size ceiling.
+const JSON_LINE_WIDTH = 120;
+const JSON_TAB_WIDTH = 4;
 
 function jsonPrimitive(value: unknown): string {
 	if (value === null) return 'null';

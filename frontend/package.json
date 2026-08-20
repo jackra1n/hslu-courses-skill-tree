@@ -10,6 +10,7 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"catalog:generate": "bun scripts/generate-catalog.ts",
 		"catalog:check": "bun scripts/generate-catalog.ts --check",
+		"catalog:test": "bun test test/catalog-generator.test.ts",
 		"prebuild": "bun run catalog:check",
 		"check": "bun run catalog:check && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
