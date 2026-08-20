@@ -11,6 +11,8 @@ const wranglerConfig = fileURLToPath(
 );
 
 export default defineConfig({
+	// Anchored so `vitest run` resolves tests regardless of invocation cwd.
+	root: fileURLToPath(new URL('..', import.meta.url)),
 	test: {
 		include: ['worker/test/**/*.test.ts'],
 	},

@@ -268,7 +268,11 @@ function loadCourses(dataRoot: string): CatalogCourse[] {
 	const modulesDir = join(dataRoot, 'hslu_data', 'modules');
 	const snapshotPaths = listJsonFiles(modulesDir);
 
-	const ordered: Array<{ semester: SemesterCode; file: RawModule[] }> = [];
+	const ordered: Array<{
+		semester: SemesterCode;
+		path: string;
+		file: RawModule[];
+	}> = [];
 	for (const path of snapshotPaths) {
 		const basename = path.split('/').at(-1) ?? '';
 		const semester = parseSemesterFromPath(path);
@@ -281,6 +285,7 @@ function loadCourses(dataRoot: string): CatalogCourse[] {
 		}
 		ordered.push({
 			semester,
+			path,
 			file: data.map((entry: unknown) => readModuleEntry(entry, path)),
 		});
 	}
@@ -296,10 +301,7 @@ function loadCourses(dataRoot: string): CatalogCourse[] {
 		const seenInSnapshot = new Set<string>();
 		for (const module of entry.file) {
 			if (seenInSnapshot.has(module.ShortName)) {
-				fail(
-					`${modulesDir}/`,
-					`duplicate module id "${module.ShortName}" in snapshot`,
-				);
+				fail(entry.path, `duplicate module id "${module.ShortName}"`);
 			}
 			seenInSnapshot.add(module.ShortName);
 			moduleIndex.set(module.ShortName, module);

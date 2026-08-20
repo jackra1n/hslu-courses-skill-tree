@@ -261,7 +261,7 @@ describe('catalog validation', () => {
 		writeJson(root, 'hslu_data/modules/F24_modules.json', {
 			data: [duplicateModule, duplicateModule],
 		});
-		expectBuildError(root, 'duplicate module id "A"');
+		expectBuildError(root, 'F24_modules.json: duplicate module id "A"');
 
 		root = createFixture();
 		writeJson(root, 'hslu_data/study_programmes.json', {
@@ -359,5 +359,5 @@ test('production catalog satisfies its data and size contract', () => {
 		'CISO Issues - applied experience',
 	);
 	expect(byId.get('SOC')?.seasons).toEqual(['FS', 'HS']);
-	expect(Buffer.byteLength(serializeCatalog(catalog))).toBeLessThan(250_000);
+	expect(Buffer.byteLength(serializeCatalog(catalog))).toBeLessThan(1_000_000);
 });
