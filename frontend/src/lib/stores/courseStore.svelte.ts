@@ -1,9 +1,10 @@
 import {
-	AVAILABLE_TEMPLATES,
 	getAvailablePlans,
+	getAvailableTemplates,
 	getTemplateById,
 	getTemplatesByProgram,
 	setCoursePlan,
+	type CurriculumTemplate,
 } from '$lib/data/courses';
 import { canSelectCourse, isPlanCustomized } from '$lib/data/plan-rules';
 import {
@@ -56,9 +57,17 @@ function generateNodeId(): string {
 	return `custom-${crypto.randomUUID()}`;
 }
 
+function requireDefaultTemplate(): CurriculumTemplate {
+	const template = getAvailableTemplates()[0];
+	if (!template) {
+		throw new Error('Catalog does not contain any curriculum templates.');
+	}
+	return template;
+}
+
 class CourseStore {
-	currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
-	studyPlan = $state<StudyPlan>(createStudyPlan(AVAILABLE_TEMPLATES[0], {}));
+	currentTemplate = $state(requireDefaultTemplate());
+	studyPlan = $state<StudyPlan>(createStudyPlan(requireDefaultTemplate(), {}));
 	showShortNamesOnly = $state(false);
 	startSeason = $state<Season>(INITIAL_TERM.season);
 	startYear = $state<number>(INITIAL_TERM.year);

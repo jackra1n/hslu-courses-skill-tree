@@ -7,7 +7,7 @@ import {
 	getTemplatesByProgram,
 	type StudyModel,
 } from '$lib/data/courses';
-import { PROGRAM_PLANS, PROGRAMS } from '$lib/data/programs';
+import { getProgramPlans, getPrograms } from '$lib/data/programs';
 import {
 	planIntroYear,
 	resolvePlan,
@@ -62,8 +62,8 @@ const canLoad = $derived(
 );
 
 const programOptions = $derived.by(() =>
-	PROGRAMS.map((entry) => {
-		const planCount = (PROGRAM_PLANS[entry.shortName] ?? []).length;
+	getPrograms().map((entry) => {
+		const planCount = getProgramPlans(entry.shortName).length;
 		return {
 			value: entry.shortName,
 			label: entry.name,

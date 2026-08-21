@@ -1,4 +1,4 @@
-import { loadBundledCatalog } from './catalog-loader';
+import { getCatalog } from './catalog-loader';
 import type {
 	Course,
 	CurriculumTemplate,
@@ -20,24 +20,36 @@ export type {
 
 export type Status = 'locked' | 'available' | 'completed';
 
-export const AVAILABLE_TEMPLATES: CurriculumTemplate[] =
-	loadBundledCatalog().templates;
+let _templates: readonly CurriculumTemplate[] | null = null;
+let _templateById: Map<string, CurriculumTemplate> | null = null;
 
-const DEFAULT_TEMPLATE = AVAILABLE_TEMPLATES[0];
+export function getAvailableTemplates(): readonly CurriculumTemplate[] {
+	if (!_templates) {
+		_templates = getCatalog().templates;
+		_templateById = new Map(_templates.map((template) => [template.id, template]));
+	}
+	return _templates;
+}
 
-const TEMPLATE_BY_ID = new Map(
-	AVAILABLE_TEMPLATES.map((template) => [template.id, template]),
-);
+function getTemplateIndex(): Map<string, CurriculumTemplate> {
+	getAvailableTemplates();
+	return _templateById!;
+}
+
+function getDefaultTemplate(): CurriculumTemplate | undefined {
+	return getAvailableTemplates()[0];
+}
 
 export function getTemplateById(id: string): CurriculumTemplate | undefined {
-	return TEMPLATE_BY_ID.get(id);
+	return getTemplateIndex().get(id);
 }
+
 
 export function getTemplatesByProgram(
 	studiengang: string,
 	modell: StudyModel,
 ): CurriculumTemplate[] {
-	return AVAILABLE_TEMPLATES.filter(
+	return getAvailableTemplates().filter(
 		(template) =>
 			template.studiengang === studiengang && template.modell === modell,
 	);
@@ -51,9 +63,11 @@ export function getAvailablePlans(
 	return [...new Set(templates.map((template) => template.plan))].sort();
 }
 
+let _currentPlan: string = getDefaultTemplate()?.plan ?? 'HS25';
+
 export function getAvailableModels(studiengang: string): StudyModel[] {
 	const models = new Set<StudyModel>();
-	AVAILABLE_TEMPLATES.forEach((template) => {
+	getAvailableTemplates().forEach((template) => {
 		if (template.studiengang === studiengang) {
 			models.add(template.modell);
 		}
@@ -63,7 +77,6 @@ export function getAvailableModels(studiengang: string): StudyModel[] {
 
 let _sortedCourses: Course[] | null = null;
 let _coursesById: Record<string, Course> | null = null;
-let _currentPlan: string = DEFAULT_TEMPLATE?.plan ?? 'HS25';
 
 function buildCourseCollections(): {
 	sortedCourses: Course[];
