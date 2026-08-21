@@ -62,7 +62,12 @@ export function getAvailablePlans(
 	return [...new Set(templates.map((template) => template.plan))].sort();
 }
 
-let _currentPlan: string = getDefaultTemplate()?.plan ?? 'HS25';
+let _currentPlan: string | null = null;
+
+function currentPlan(): string {
+	_currentPlan ??= getDefaultTemplate()?.plan ?? 'HS25';
+	return _currentPlan;
+}
 
 export function getAvailableModels(studiengang: string): StudyModel[] {
 	const models = new Set<StudyModel>();
@@ -84,8 +89,7 @@ function buildCourseCollections(): {
 	if (_sortedCourses && _coursesById) {
 		return { sortedCourses: _sortedCourses, coursesMap: _coursesById };
 	}
-
-	const courses = loadCourseData(_currentPlan);
+	const courses = loadCourseData(currentPlan());
 	const map: Record<string, Course> = {};
 	courses.forEach((course) => {
 		map[course.id] = course;
