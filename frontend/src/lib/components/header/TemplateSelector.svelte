@@ -14,7 +14,7 @@ import {
 	SEASON_LABELS,
 	type Season,
 } from '$lib/data/season';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
 
 const MODEL_LABELS: Record<string, string> = {
@@ -29,6 +29,8 @@ let pendingProgram = $state<string | null>(null);
 let pendingModel = $state<StudyModel | null>(null);
 let pendingYear = $state<number | null>(null);
 let pendingSeason = $state<Season | null>(null);
+
+const courseStore = getCourseStore();
 
 const program = $derived(
 	pendingProgram ?? courseStore.currentTemplate.studiengang,

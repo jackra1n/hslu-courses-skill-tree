@@ -1,12 +1,14 @@
 <script lang="ts">
 import { getCourseById } from '$lib/data/courses';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { selectedSlotId } from '$lib/stores/uiStore.svelte';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
 import { computeStatuses, getAssessmentStageProgress } from '$lib/utils/status';
 
 let { courseId }: { courseId: string } = $props();
+
+const courseStore = getCourseStore();
 
 const _selectedSlotId = $derived(selectedSlotId());
 const slotStatus = $derived(

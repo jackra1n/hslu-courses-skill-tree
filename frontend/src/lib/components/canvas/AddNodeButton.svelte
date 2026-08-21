@@ -1,7 +1,9 @@
 <script lang="ts">
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 
 let { data }: { data: { semester: number } } = $props();
+
+const courseStore = getCourseStore();
 
 function handleClick(event: MouseEvent) {
 	event.stopPropagation();

@@ -1,12 +1,13 @@
 <script lang="ts">
 import { getCourseById } from '$lib/data/courses';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import type { PrerequisiteRule } from '$lib/types';
 import { evaluatePrerequisiteRule } from '$lib/utils/prerequisite';
 import { getAssessmentStageProgress } from '$lib/utils/status';
 
+const courseStore = getCourseStore();
 let {
 	prerequisites,
 	assessmentLevelPassed,

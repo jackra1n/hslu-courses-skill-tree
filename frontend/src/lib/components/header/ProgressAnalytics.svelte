@@ -2,7 +2,7 @@
 import Sidebar from '$lib/components/ui/Sidebar.svelte';
 import { computeCategoryProgress } from '$lib/data/analytics';
 import { getEctsRequirements } from '$lib/data/ects-requirements';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { slotStatusMap } from '$lib/stores/progressStore.svelte';
 
 let { isOpen, onClose }: { isOpen: boolean; onClose: () => void } = $props();
@@ -10,6 +10,8 @@ let { isOpen, onClose }: { isOpen: boolean; onClose: () => void } = $props();
 function close() {
 	onClose();
 }
+
+const courseStore = getCourseStore();
 
 const program = $derived(courseStore.currentTemplate.studiengang);
 const requiredTotal = $derived(getEctsRequirements(program)?.total ?? 0);

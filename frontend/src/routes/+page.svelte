@@ -12,7 +12,10 @@ import {
 	hasMeaningfulStoredAppData,
 } from '$lib/data/persistence';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import {
+	getCourseStore,
+	initializeCourseStore,
+} from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { themeStore } from '$lib/stores/theme.svelte';
 import { hasSelection, uiStore } from '$lib/stores/uiStore.svelte';
@@ -24,6 +27,7 @@ onMount(async () => {
 	// Detect meaningful local state before any store initializer mutates it.
 	const localDataIsMeaningful = hasMeaningfulStoredAppData();
 	themeStore.init();
+	const courseStore = initializeCourseStore();
 	courseStore.init();
 	progressStore.init();
 	uiStore.init();

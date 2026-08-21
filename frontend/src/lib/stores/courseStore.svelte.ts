@@ -346,4 +346,17 @@ class CourseStore {
 	}
 }
 
-export const courseStore = new CourseStore();
+let _courseStore: CourseStore | undefined;
+
+export function initializeCourseStore(): CourseStore {
+	_courseStore ??= new CourseStore();
+	return _courseStore;
+}
+
+export function getCourseStore(): CourseStore {
+	if (!_courseStore) {
+		throw new Error('Course store has not been initialized.');
+	}
+	return _courseStore;
+}
+

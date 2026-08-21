@@ -5,7 +5,7 @@ import Combobox from '$lib/components/ui/Combobox.svelte';
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { COURSES, type Course, getCourseById } from '$lib/data/courses';
 import { SEASON_LABELS, type Season } from '$lib/data/season';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
 import {
 	hasAssessmentStageViolation,
@@ -13,6 +13,8 @@ import {
 } from '$lib/utils/status';
 
 let { slotId }: { slotId: string } = $props();
+
+const courseStore = getCourseStore();
 
 const selectedCourseId = $derived(courseStore.userSelections[slotId]);
 const selectedCourse = $derived.by(() => {
