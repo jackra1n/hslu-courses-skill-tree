@@ -1,6 +1,6 @@
 import catalogAssetUrl from './catalog.generated.json?url';
-import type { CatalogData } from './catalog-types';
 import { createCatalogClient } from './catalog-client';
+import type { CatalogData } from './catalog-types';
 
 export { catalogAssetUrl };
 

@@ -7,10 +7,7 @@ import CourseDetailsPanel from '$lib/components/sidebar/CourseDetailsPanel.svelt
 import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
 import AssessmentInfo from '$lib/components/ui/AssessmentInfo.svelte';
 import SyncConflictDialog from '$lib/components/ui/SyncConflictDialog.svelte';
-import {
-	catalogAssetUrl,
-	loadCatalog,
-} from '$lib/data/catalog-loader';
+import { catalogAssetUrl, loadCatalog } from '$lib/data/catalog-loader';
 import {
 	collectAppData,
 	hasMeaningfulStoredAppData,
@@ -69,7 +66,6 @@ $effect(() => {
 		legendOpen = false;
 	}
 });
-
 </script>
 
 {#if phase === 'catalog' || phase === 'progress'}

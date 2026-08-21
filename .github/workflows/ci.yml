@@ -33,7 +33,7 @@ jobs:
       - name: Lint & format check
         run: bun run lint
 
-      - name: Catalog generator tests
+      - name: Catalog tests
         run: bun run catalog:test
 
       - name: Check SvelteKit & TypeScript

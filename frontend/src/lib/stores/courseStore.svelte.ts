@@ -1,10 +1,10 @@
 import {
+	type CurriculumTemplate,
 	getAvailablePlans,
 	getAvailableTemplates,
 	getTemplateById,
 	getTemplatesByProgram,
 	setCoursePlan,
-	type CurriculumTemplate,
 } from '$lib/data/courses';
 import { canSelectCourse, isPlanCustomized } from '$lib/data/plan-rules';
 import {
@@ -359,4 +359,3 @@ export function getCourseStore(): CourseStore {
 	}
 	return _courseStore;
 }
-

@@ -20,20 +20,20 @@ export type {
 
 export type Status = 'locked' | 'available' | 'completed';
 
-let _templates: readonly CurriculumTemplate[] | null = null;
-let _templateById: Map<string, CurriculumTemplate> | null = null;
+let _templateIndex: {
+	templates: readonly CurriculumTemplate[];
+	byId: Map<string, CurriculumTemplate>;
+} | null = null;
 
 export function getAvailableTemplates(): readonly CurriculumTemplate[] {
-	if (!_templates) {
-		_templates = getCatalog().templates;
-		_templateById = new Map(_templates.map((template) => [template.id, template]));
-	}
-	return _templates;
-}
-
-function getTemplateIndex(): Map<string, CurriculumTemplate> {
-	getAvailableTemplates();
-	return _templateById!;
+	_templateIndex ??= (() => {
+		const templates = getCatalog().templates;
+		return {
+			templates,
+			byId: new Map(templates.map((template) => [template.id, template])),
+		};
+	})();
+	return _templateIndex.templates;
 }
 
 function getDefaultTemplate(): CurriculumTemplate | undefined {
@@ -41,9 +41,8 @@ function getDefaultTemplate(): CurriculumTemplate | undefined {
 }
 
 export function getTemplateById(id: string): CurriculumTemplate | undefined {
-	return getTemplateIndex().get(id);
+	return _templateIndex?.byId.get(id);
 }
-
 
 export function getTemplatesByProgram(
 	studiengang: string,

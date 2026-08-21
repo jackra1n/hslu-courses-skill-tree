@@ -35,7 +35,9 @@ export function createCatalogClient(
 				headers: { Accept: 'application/json' },
 			});
 			if (!response.ok) {
-				throw new Error(`Catalog request failed with status ${response.status}.`);
+				throw new Error(
+					`Catalog request failed with status ${response.status}.`,
+				);
 			}
 			let parsed: unknown;
 			try {

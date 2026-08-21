@@ -14,7 +14,11 @@ function getProgramIndexes(): {
 	plansByProgram: Record<string, string[]>;
 } {
 	if (_programs && _programMap && _plansByProgram) {
-		return { programs: _programs, programMap: _programMap, plansByProgram: _plansByProgram };
+		return {
+			programs: _programs,
+			programMap: _programMap,
+			plansByProgram: _plansByProgram,
+		};
 	}
 
 	const programs = getCatalog().programmes;
