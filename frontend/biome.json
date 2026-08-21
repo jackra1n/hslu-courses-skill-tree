@@ -37,6 +37,12 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": ["src/lib/data/catalog.generated.json"],
+			"formatter": {
+				"lineWidth": 120
+			}
 		}
 	]
 }

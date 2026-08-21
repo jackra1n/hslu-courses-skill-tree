@@ -1,142 +1,27 @@
+import { loadBundledCatalog } from './catalog-loader';
+import type {
+	Course,
+	CurriculumTemplate,
+	ModuleType,
+	StudyModel,
+	TemplateSlot,
+} from './catalog-types';
 import { loadCourseData } from './course-data-adapter';
-import studyProgrammes from './hslu_data/study_programmes.json';
-import type { Season } from './season';
+
+export type {
+	Course,
+	CurriculumTemplate,
+	ModuleType,
+	PrerequisiteLink,
+	PrerequisiteRule,
+	StudyModel,
+	TemplateSlot,
+} from './catalog-types';
 
 export type Status = 'locked' | 'available' | 'completed';
 
-export type ModuleType =
-	| 'Kernmodul'
-	| 'Projektmodul'
-	| 'Erweiterungsmodul'
-	| 'Major-/Minormodul'
-	| 'Zusatzmodul';
-
-export type PrerequisiteLink = 'und' | 'oder';
-
-export type PrerequisiteRule = {
-	modules: string[];
-	mustBePassed: boolean;
-	moduleLinkType: PrerequisiteLink;
-	prerequisiteLinkType?: PrerequisiteLink;
-};
-
-export type Course = {
-	id: string;
-	label: string;
-	ects: number;
-	prerequisites: PrerequisiteRule[];
-	prerequisiteNote?: string;
-	assessmentLevelPassed?: boolean;
-	type?: ModuleType;
-	// Seasons the module is offered in; empty/undefined means unknown (treated as any).
-	seasons?: Season[];
-};
-
-export type TemplateSlot = {
-	id: string;
-	type: 'fixed' | 'elective' | 'major';
-	courseId?: string; // for fixed courses
-	semester: number;
-};
-
-export type StudyModel = 'fulltime' | 'parttime';
-
-export type CurriculumTemplate = {
-	id: string;
-	name: string;
-	studiengang: string;
-	modell: StudyModel;
-	plan: string; // e.g., "HS16", "HS25"
-	slots: TemplateSlot[];
-	programShortName?: string;
-	programName?: string;
-};
-
-type StudyProgramme = {
-	ShortName: string;
-	Name: string;
-};
-
-const STUDY_PROGRAMMES = (studyProgrammes.data ?? []) as StudyProgramme[];
-
-const PROGRAM_NAME_BY_SHORT = new Map<string, string>(
-	STUDY_PROGRAMMES.map((program) => [
-		program.ShortName.toUpperCase(),
-		program.Name,
-	]),
-);
-
-const TEMPLATE_PATH_REGEX = /\.\/templates\/([^/]+)\/([^/]+)\/([^/]+)\.json$/i;
-
-const templateModules = import.meta.glob('./templates/**/**/*.json', {
-	eager: true,
-	import: 'default',
-}) as Record<string, CurriculumTemplate>;
-
-function normaliseProgram(segment: string): string {
-	return segment.toUpperCase();
-}
-
-function normaliseModel(segment: string): StudyModel {
-	return segment.toLowerCase() as StudyModel;
-}
-
-function normalisePlan(segment: string): string {
-	return segment.toUpperCase();
-}
-
-function buildAvailableTemplates(): CurriculumTemplate[] {
-	const templates: CurriculumTemplate[] = [];
-
-	for (const [path, rawTemplate] of Object.entries(templateModules)) {
-		const match = TEMPLATE_PATH_REGEX.exec(path);
-		if (!match) {
-			console.warn(`Skipping template with unexpected path: ${path}`);
-			continue;
-		}
-
-		const [, programSegment, modelSegment, planSegment] = match;
-		const programShortName = normaliseProgram(programSegment);
-		const model = normaliseModel(modelSegment);
-		const plan = normalisePlan(planSegment);
-		const programName =
-			PROGRAM_NAME_BY_SHORT.get(programShortName) ??
-			rawTemplate.programName ??
-			rawTemplate.studiengang ??
-			programShortName;
-
-		const template: CurriculumTemplate = {
-			...rawTemplate,
-			id:
-				rawTemplate.id ??
-				`${programShortName.toLowerCase()}-${model}-${plan.toLowerCase()}`,
-			studiengang: programShortName,
-			modell: model,
-			plan,
-			programShortName,
-			programName,
-		};
-
-		templates.push(template);
-	}
-
-	if (!templates.length) {
-		console.warn('No curriculum templates found in templates directory.');
-	}
-
-	return templates.sort((a, b) => {
-		if ((a.programName ?? '') !== (b.programName ?? '')) {
-			return (a.programName ?? '').localeCompare(b.programName ?? '');
-		}
-		if (a.modell !== b.modell) {
-			return a.modell.localeCompare(b.modell);
-		}
-		return a.plan.localeCompare(b.plan);
-	});
-}
-
 export const AVAILABLE_TEMPLATES: CurriculumTemplate[] =
-	buildAvailableTemplates();
+	loadBundledCatalog().templates;
 
 const DEFAULT_TEMPLATE = AVAILABLE_TEMPLATES[0];
 
