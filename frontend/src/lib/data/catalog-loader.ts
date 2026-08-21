@@ -1,13 +1,15 @@
-import catalogJson from './catalog.generated.json';
+import catalogAssetUrl from './catalog.generated.json?url';
 import type { CatalogData } from './catalog-types';
+import { createCatalogClient } from './catalog-client';
 
-const bundledCatalog = catalogJson as CatalogData;
+export { catalogAssetUrl };
+
+const client = createCatalogClient(catalogAssetUrl, fetch);
+
+export function loadCatalog(): Promise<CatalogData> {
+	return client.load();
+}
 
 export function getCatalog(): CatalogData {
-	if (bundledCatalog.schemaVersion !== 1) {
-		throw new Error(
-			`Unsupported catalog schema version: ${bundledCatalog.schemaVersion}`,
-		);
-	}
-	return bundledCatalog;
+	return client.get();
 }
