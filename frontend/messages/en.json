@@ -109,6 +109,12 @@
 	"sync_use_cloud": "Use cloud data",
 	"sync_unknown_time": "Unknown",
 	"sync_unavailable": "Cloud sync unavailable. Changes remain saved on this device.",
+	"disclaimer_title": "Disclaimer",
+	"disclaimer_text": "HSLU Courses Skill Tree is not supported by HSLU. It's a private initiative run by students.",
+
+	"mobile_title": "Best Experienced on Desktop",
+	"mobile_text": "You can still navigate on mobile, but this app really shines on a laptop or desktop where you get the full overview.",
+	"mobile_dismiss": "Got it, don't show again",
 
 	"details_deselect": "Deselect course",
 	"details_semester": "Semester {number}",
@@ -141,6 +147,7 @@
 	"prereq_or": "OR",
 	"prereq_one_of": "one of:",
 	"prereq_all_of": "all of:",
+
 	"prereq_not_in_plan": "This prerequisite is not in your current study plan",
 	"prereq_none": "None",
 	"prereq_no_other": "No other prerequisites",

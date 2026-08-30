@@ -1,5 +1,6 @@
 <script lang="ts">
 import { onMount } from 'svelte';
+import * as messages from '$lib/paraglide/messages';
 
 const STORAGE_KEY = 'mobile-warning-dismissed';
 
@@ -46,19 +47,19 @@ function dismissPopup() {
           </svg>
         </div>
         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          Best Experienced on Desktop
+          {messages.mobile_title()}
         </h2>
         <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-          You can still navigate on mobile, but this app really shines on a laptop or desktop where you get the full overview.
+          {messages.mobile_text()}
         </p>
       </div>
-      
+
       <div class="space-y-3">
         <button
           onclick={dismissPopup}
           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
         >
-          Got it, don't show again
+          {messages.mobile_dismiss()}
         </button>
       </div>
     </div>

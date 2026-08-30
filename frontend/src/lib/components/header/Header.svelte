@@ -1,3 +1,4 @@
+<script lang="ts">
 import { onMount } from 'svelte';
 import * as messages from '$lib/paraglide/messages';
 import { getEctsRequirements } from '$lib/data/ects-requirements';

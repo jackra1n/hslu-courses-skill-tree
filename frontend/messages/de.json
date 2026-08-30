@@ -109,6 +109,13 @@
 	"sync_use_cloud": "Cloud-Daten verwenden",
 	"sync_unknown_time": "Unbekannt",
 	"sync_unavailable": "Cloud-Synchronisierung nicht verfügbar. Änderungen bleiben auf diesem Gerät gespeichert.",
+	"disclaimer_title": "Hinweis",
+	"disclaimer_text": "HSLU Courses Skill Tree wird von der HSLU nicht unterstützt. Es ist eine private Initiative von Studierenden.",
+
+	"mobile_title": "Am besten am Desktop erlebbar",
+	"mobile_text": "Auf dem Smartphone kannst du dich trotzdem bewegen, aber diese App entfaltet ihren vollen Nutzen auf einem Laptop oder Desktop.",
+	"mobile_dismiss": "Verstanden, nicht mehr anzeigen",
+
 
 	"details_deselect": "Modul abwählen",
 	"details_semester": "Semester {number}",

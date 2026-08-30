@@ -1,3 +1,4 @@
+import { sveltekit } from '@sveltejs/kit/vite';
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import UnoCSS from 'unocss/vite';
 import { defineConfig } from 'vite';

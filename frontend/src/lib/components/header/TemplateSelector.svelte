@@ -22,6 +22,8 @@ const MODEL_LABELS: Record<string, () => string> = {
 	fulltime: () => messages.model_fulltime(),
 	parttime: () => messages.model_parttime(),
 };
+const MODEL_ORDER: StudyModel[] = ['fulltime', 'parttime'];
+const SEASONS: Season[] = ['HS', 'FS'];
 
 let showWarningDialog = $state(false);
 let pendingProgram = $state<string | null>(null);

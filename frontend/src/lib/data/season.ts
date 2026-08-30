@@ -26,7 +26,7 @@ export function termOrdinal(year: number, season: Season): number {
 }
 
 export function formatTerm(term: Term): string {
-	return `${termessages.season} ${termessages.year}`;
+	return `${term.season} ${term.year}`;
 }
 
 // Default start term for a brand-new user: autumn (the standard intake) of the
@@ -35,7 +35,7 @@ export function currentStartTerm(now: Date = new Date()): Term {
 	return { year: now.getFullYear(), season: 'HS' };
 }
 
-// The calendar term a 1-indexed plan semester falls in, given the start termessages.
+// The calendar term a 1-indexed plan semester falls in, given the start term.
 export function termOfSemester(semester: number, start: Term): Term {
 	const ordinal = termOrdinal(start.year, start.season) + (semester - 1);
 	return {

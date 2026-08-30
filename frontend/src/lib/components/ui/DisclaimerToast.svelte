@@ -1,5 +1,6 @@
 <script lang="ts">
 import { fly } from 'svelte/transition';
+import * as messages from '$lib/paraglide/messages';
 import { browser } from '$app/environment';
 
 let showToast = $state(false);
@@ -45,22 +46,21 @@ function dismissToast() {
       </div>
       <div class="flex-1">
         <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
-          Disclaimer
+          {messages.disclaimer_title()}
         </h3>
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
-          HSLU Courses Skill Tree is not supported by HSLU. It's a private initiative run by students.
+          {messages.disclaimer_text()}
         </p>
         <button 
           onclick={dismissToast}
           class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
         >
-          Got it
+          {messages.common_got_it()}
         </button>
       </div>
       <button 
         onclick={dismissToast}
-        class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-        aria-label="Close"
+        aria-label={messages.common_close()}
       >
         <div class="i-lucide-x w-4 h-4"></div>
       </button>

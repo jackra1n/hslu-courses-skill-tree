@@ -1,5 +1,6 @@
 <script lang="ts">
 import { fade, scale } from 'svelte/transition';
+import * as messages from '$lib/paraglide/messages';
 
 interface Props {
 	title: string;
@@ -14,8 +15,8 @@ interface Props {
 let {
 	title,
 	message,
-	confirmText = 'Confirm',
-	cancelText = 'Cancel',
+	confirmText = messages.common_confirm(),
+	cancelText = messages.common_cancel(),
 	onConfirm,
 	onCancel,
 	variant = 'danger',
