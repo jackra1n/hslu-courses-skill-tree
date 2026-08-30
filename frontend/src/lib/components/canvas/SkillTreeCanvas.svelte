@@ -1,5 +1,4 @@
 <script lang="ts">
-import * as messages from '$lib/paraglide/messages';
 import {
 	Background,
 	Controls,
@@ -11,6 +10,7 @@ import {
 	useViewport,
 } from '@xyflow/svelte';
 import { onMount } from 'svelte';
+import * as messages from '$lib/paraglide/messages';
 import '@xyflow/svelte/dist/style.css';
 
 import DisclaimerToast from '$lib/components/ui/DisclaimerToast.svelte';

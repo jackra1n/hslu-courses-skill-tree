@@ -1,6 +1,6 @@
 <script lang="ts">
-import * as messages from '$lib/paraglide/messages';
 import { getCourseById } from '$lib/data/courses';
+import * as messages from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { selectedSlotId } from '$lib/stores/uiStore.svelte';

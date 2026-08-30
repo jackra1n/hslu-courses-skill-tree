@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount } from 'svelte';
-import * as messages from '$lib/paraglide/messages';
 import { getEctsRequirements } from '$lib/data/ects-requirements';
+import * as messages from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
 import Tooltip from '../ui/Tooltip.svelte';

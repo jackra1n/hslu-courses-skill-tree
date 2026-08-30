@@ -3,9 +3,9 @@ import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
 import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
 import Combobox from '$lib/components/ui/Combobox.svelte';
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
-import { COURSES, type Course, getCourseById } from '$lib/data/courses';
 import { courseLabel } from '$lib/data/course-label';
-import { seasonLabel, type Season } from '$lib/data/season';
+import { COURSES, type Course, getCourseById } from '$lib/data/courses';
+import { type Season, seasonLabel } from '$lib/data/season';
 import * as messages from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
@@ -81,7 +81,9 @@ const comboboxOptions = $derived.by(() => {
 			// keep an already-chosen course usable even if the start season later changed
 			disabled: outOfSeason && course.id !== selectedCourseId,
 			tooltip: outOfSeason
-				? messages.elective_only_offered({ seasons: formatSeasons(course.seasons) })
+				? messages.elective_only_offered({
+						seasons: formatSeasons(course.seasons),
+					})
 				: undefined,
 		};
 	});
@@ -90,7 +92,8 @@ const comboboxOptions = $derived.by(() => {
 });
 
 function formatSeasons(seasons: Season[] | undefined): string {
-	if (!seasons || seasons.length === 0) return messages.elective_other_semesters();
+	if (!seasons || seasons.length === 0)
+		return messages.elective_other_semesters();
 	return (['HS', 'FS'] as Season[])
 		.filter((s) => seasons.includes(s))
 		.map((s) => seasonLabel(s))

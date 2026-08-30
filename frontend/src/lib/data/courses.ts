@@ -6,8 +6,8 @@ import type {
 	StudyModel,
 	TemplateSlot,
 } from './catalog-types';
-import { courseLabel } from './course-label';
 import { loadCourseData } from './course-data-adapter';
+import { courseLabel } from './course-label';
 
 export type {
 	Course,

@@ -1,9 +1,9 @@
 <script lang="ts">
-import * as messages from '$lib/paraglide/messages';
 import Sidebar from '$lib/components/ui/Sidebar.svelte';
 import { computeCategoryProgress } from '$lib/data/analytics';
 import { getEctsRequirements } from '$lib/data/ects-requirements';
 import { moduleTypeLabel } from '$lib/data/module-type';
+import * as messages from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { slotStatusMap } from '$lib/stores/progressStore.svelte';
 

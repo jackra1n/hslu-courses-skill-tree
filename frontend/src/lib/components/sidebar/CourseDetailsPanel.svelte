@@ -1,17 +1,17 @@
 <script lang="ts">
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
-import { moduleTypeLabel } from '$lib/data/module-type';
-import { getCourseById } from '$lib/data/courses';
 import { courseLabel } from '$lib/data/course-label';
+import { getCourseById } from '$lib/data/courses';
+import { moduleTypeLabel } from '$lib/data/module-type';
+import { type Season, seasonLabel } from '$lib/data/season';
 import * as messages from '$lib/paraglide/messages';
-import { seasonLabel, type Season } from '$lib/data/season';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import {
 	hasSelection,
 	isElectiveSlot,
 	selection,
 	uiStore,
 } from '$lib/stores/uiStore.svelte';
-import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
 import {
 	hasAssessmentStageViolation,

@@ -1,13 +1,12 @@
 import type { Edge, Node } from '@xyflow/svelte';
 import { MarkerType } from '@xyflow/svelte';
-import { courseLabel } from '$lib/data/course-label';
-import * as messages from '$lib/paraglide/messages';
 import type { PlanNode, StudyPlan } from '$lib/data/study-plan';
 import {
 	buildPlanRowIndex,
 	mapPlanCourseProviders,
 	resolveCourse,
 } from '$lib/data/study-plan';
+import * as messages from '$lib/paraglide/messages';
 import type {
 	Course,
 	ExtendedNodeData,

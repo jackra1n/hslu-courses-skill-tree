@@ -1,7 +1,7 @@
 <script lang="ts">
 import { fly } from 'svelte/transition';
-import * as messages from '$lib/paraglide/messages';
 import { browser } from '$app/environment';
+import * as messages from '$lib/paraglide/messages';
 
 let showToast = $state(false);
 

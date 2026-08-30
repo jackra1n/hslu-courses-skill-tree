@@ -1,5 +1,6 @@
 <script lang="ts">
 import * as messages from '$lib/paraglide/messages';
+
 interface Option {
 	value: string;
 	label: string;

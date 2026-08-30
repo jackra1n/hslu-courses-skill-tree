@@ -1,9 +1,9 @@
 import {
-	locales,
 	type Locale,
-	setLocale,
+	locales,
 	overwriteGetLocale,
 	overwriteSetLocale,
+	setLocale,
 } from '$lib/paraglide/runtime';
 
 const LOCALE_KEY = 'locale';
@@ -15,12 +15,14 @@ let _locale = $state<Locale>('en');
 
 overwriteGetLocale(() => _locale);
 overwriteSetLocale((newLocale) => {
-	if (typeof localStorage !== "undefined") localStorage.setItem(LOCALE_KEY, newLocale);
+	if (typeof localStorage !== 'undefined')
+		localStorage.setItem(LOCALE_KEY, newLocale);
 	applyLocale(newLocale);
 });
 
 function applyLocale(newLocale: Locale) {
-	if (typeof document !== "undefined") document.documentElement.lang = newLocale;
+	if (typeof document !== 'undefined')
+		document.documentElement.lang = newLocale;
 	_locale = newLocale;
 }
 
@@ -42,7 +44,7 @@ function detectLocale(): Locale {
 export const localeStore = {
 	set: setLocale,
 	init: () => {
-		if (typeof localStorage === "undefined") return;
+		if (typeof localStorage === 'undefined') return;
 		applyLocale(detectLocale());
 	},
 };

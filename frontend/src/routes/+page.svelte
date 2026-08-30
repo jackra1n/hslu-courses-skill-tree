@@ -8,18 +8,14 @@ import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
 import AssessmentInfo from '$lib/components/ui/AssessmentInfo.svelte';
 import SyncConflictDialog from '$lib/components/ui/SyncConflictDialog.svelte';
 import { catalogAssetUrl, loadCatalog } from '$lib/data/catalog-loader';
-import * as messages from '$lib/paraglide/messages';
-import { localeStore } from '$lib/stores/locale.svelte';
 import {
 	collectAppData,
 	hasMeaningfulStoredAppData,
 } from '$lib/data/persistence';
-import {
-	cloudSyncStore,
-} from '$lib/stores/cloudSyncStore.svelte';
-import {
-	initializeCourseStore,
-} from '$lib/stores/courseStore.svelte';
+import * as messages from '$lib/paraglide/messages';
+import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
+import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
+import { localeStore } from '$lib/stores/locale.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { themeStore } from '$lib/stores/theme.svelte';
 import { hasSelection, uiStore } from '$lib/stores/uiStore.svelte';

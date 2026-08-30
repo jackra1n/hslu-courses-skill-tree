@@ -122,7 +122,7 @@
 	"details_semester": "Semester {number}",
 	"details_offered_in": "Offered in {seasons}",
 	"details_empty_hint": "Click on a course to view details and track your progress",
-	"details_empty_elective_hint": "Click on dashed \"Wahl-Modul\" nodes to select courses",
+	"details_empty_elective_hint": "Click on dashed \"Elective module\" nodes to select courses",
 
 	"course_attended": "Attended",
 	"course_completed": "Completed",
@@ -173,16 +173,13 @@
 	"assessment_title": "Assessment Stage Rules",
 	"assessment_close": "Close modal",
 	"assessment_passing": "Passing Requirements:",
-	"assessment_definitiv": "Definitively passed: ≥54 credits achieved",
-	"assessment_bedingt": "Conditionally passed: ≥42 credits with ≥6 credits from project modules",
-	"assessment_nicht": "Not passed: <42 credits achieved, or ≥42 but <54 credits with <6 credits from project modules",
 	"assessment_consequences": "Consequences:",
 	"assessment_consequences_bedingt": "Can continue studying, but must earn remaining credits within 5 semesters",
 	"assessment_consequences_nicht": "Cannot continue to intermediate stage",
 	"assessment_consequences_excluded": "Students who don't pass definitively within 5 semesters are excluded from the bachelor program",
 
-	"slot_wahl": "Wahl-Modul",
-	"slot_major": "Major-Modul",
+	"slot_wahl": "Elective module",
+	"slot_major": "Major module",
 	"slot_course": "Course",
 
 	"dropdown_placeholder": "Select option",

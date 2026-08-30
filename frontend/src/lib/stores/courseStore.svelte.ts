@@ -1,5 +1,3 @@
-import * as messages from '$lib/paraglide/messages';
-
 import {
 	type CurriculumTemplate,
 	getAvailablePlans,
@@ -37,6 +35,7 @@ import {
 	layoutNodes,
 	MAX_SEMESTERS,
 } from '$lib/graph/plan-layout';
+import * as messages from '$lib/paraglide/messages';
 import { DragController } from './dragController.svelte';
 import {
 	loadLegacySelections,

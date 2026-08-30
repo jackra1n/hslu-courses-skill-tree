@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import * as messages from '$lib/paraglide/messages';
-	import {
-		cloudSyncStore,
-		type SyncStatus,
-	} from '$lib/stores/cloudSyncStore.svelte';
+import { onMount } from 'svelte';
+import * as messages from '$lib/paraglide/messages';
+import {
+	cloudSyncStore,
+	type SyncStatus,
+} from '$lib/stores/cloudSyncStore.svelte';
 
 let { onInteract }: { onInteract?: () => void } = $props();
 

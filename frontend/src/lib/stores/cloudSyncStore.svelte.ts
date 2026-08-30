@@ -1,5 +1,4 @@
 import { browser } from '$app/environment';
-import * as messages from '$lib/paraglide/messages';
 import { authClient } from '$lib/auth-client';
 import {
 	type AppData,
@@ -7,6 +6,7 @@ import {
 	collectAppData,
 	parseAppData,
 } from '$lib/data/persistence';
+import * as messages from '$lib/paraglide/messages';
 
 // ---- public state -----------------------------------------------------------
 

@@ -1,10 +1,10 @@
+import { courseLabel } from '$lib/data/course-label';
 import type {
 	Course,
 	CurriculumTemplate,
 	TemplateSlot,
 } from '$lib/data/courses';
 import { getCourseById } from '$lib/data/courses';
-import { courseLabel } from '$lib/data/course-label';
 import * as messages from '$lib/paraglide/messages';
 
 export type PlanNodeKind = 'fixed' | 'elective' | 'custom';

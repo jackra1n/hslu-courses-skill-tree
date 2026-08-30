@@ -2,9 +2,9 @@
 import 'virtual:uno.css';
 import '$lib/styles/theme.css';
 import favicon from '$lib/assets/icon.png';
-import * as messages from '$lib/paraglide/messages';
 import GuidedTutorial from '$lib/components/ui/GuidedTutorial.svelte';
 import MobileWarningPopup from '$lib/components/ui/MobileWarningPopup.svelte';
+import * as messages from '$lib/paraglide/messages';
 
 let { children } = $props();
 </script>

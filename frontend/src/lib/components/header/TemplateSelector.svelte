@@ -8,13 +8,13 @@ import {
 	type StudyModel,
 } from '$lib/data/courses';
 import { getProgramPlans, getPrograms } from '$lib/data/programs';
-import * as messages from '$lib/paraglide/messages';
 import {
 	planIntroYear,
 	resolvePlan,
-	seasonLabel,
 	type Season,
+	seasonLabel,
 } from '$lib/data/season';
+import * as messages from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
 

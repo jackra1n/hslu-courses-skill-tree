@@ -1,9 +1,9 @@
 <script lang="ts">
 import { Handle, Position } from '@xyflow/svelte';
 import type { Course, ExtendedNodeData, TemplateSlot } from '$lib/data/courses';
+import { moduleTypeBadge } from '$lib/data/module-type';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasMissingPrerequisites as checkMissingPrerequisites } from '$lib/utils/status';
-import { moduleTypeBadge } from '$lib/data/module-type';
 
 let {
 	id,

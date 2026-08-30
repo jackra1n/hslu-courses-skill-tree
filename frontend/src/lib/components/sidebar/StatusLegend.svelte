@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as messages from '$lib/paraglide/messages';
+import * as messages from '$lib/paraglide/messages';
 </script>
 
 <div class="border-t border-border-primary pt-6">
