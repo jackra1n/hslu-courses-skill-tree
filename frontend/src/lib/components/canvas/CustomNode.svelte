@@ -121,7 +121,7 @@ function handleRemoveClick(event: MouseEvent) {
         <div
           class="inline-block px-1.5 py-0.5 rounded-full text-xs font-medium text-white bg-gray-500 shadow-sm"
         >
-          Wahl
+          {moduleTypeBadge('Erweiterungsmodul')}
         </div>
       </div>
     {/if}

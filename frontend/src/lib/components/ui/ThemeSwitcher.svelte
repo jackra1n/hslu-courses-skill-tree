@@ -3,7 +3,7 @@ import * as messages from '$lib/paraglide/messages';
 import { type Theme, theme, themeStore } from '$lib/stores/theme.svelte';
 import Dropdown from './Dropdown.svelte';
 
-const themeOptions = [
+const themeOptions = $derived([
 	{
 		value: 'system' as Theme,
 		label: messages.theme_system(),
@@ -19,7 +19,7 @@ const themeOptions = [
 		label: messages.theme_dark(),
 		icon: 'i-lucide-moon',
 	},
-];
+]);
 
 function selectTheme(selectedTheme: string) {
 	themeStore.set(selectedTheme as Theme);

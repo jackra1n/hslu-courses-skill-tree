@@ -105,10 +105,12 @@ const yearOptions = $derived.by(() => {
 	return years.map((value) => ({ value: String(value), label: String(value) }));
 });
 
-const seasonOptions = SEASONS.map((value) => ({
-	value,
-	label: seasonLabel(value),
-}));
+const seasonOptions = $derived(
+	SEASONS.map((value) => ({
+		value,
+		label: seasonLabel(value),
+	})),
+);
 
 function toggleCourseNames() {
 	courseStore.toggleShortNames();
