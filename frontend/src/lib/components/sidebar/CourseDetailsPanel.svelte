@@ -2,15 +2,16 @@
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { moduleTypeLabel } from '$lib/data/module-type';
 import { getCourseById } from '$lib/data/courses';
-import { seasonLabel, type Season } from '$lib/data/season';
+import { courseLabel } from '$lib/data/course-label';
 import * as messages from '$lib/paraglide/messages';
-import { getCourseStore } from '$lib/stores/courseStore.svelte';
+import { seasonLabel, type Season } from '$lib/data/season';
 import {
 	hasSelection,
 	isElectiveSlot,
 	selection,
 	uiStore,
 } from '$lib/stores/uiStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
 import {
 	hasAssessmentStageViolation,
@@ -111,9 +112,8 @@ const seasonInfo = $derived.by(() => {
     <div class="p-6 space-y-6">
       <div>
         <div class="flex items-center justify-between mb-3">
-          <h2 class="text-xl font-bold text-text-primary">{displayCourse?.label || ''}</h2>
+          <h2 class="text-xl font-bold text-text-primary">{displayCourse ? courseLabel(displayCourse) : ''}</h2>
           <button 
-            onclick={() => uiStore.deselectCourse()}
             class="flex items-center justify-center w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary transition-all"
             title={messages.details_deselect()}
             aria-label={messages.details_deselect()}

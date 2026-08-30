@@ -616,6 +616,7 @@
 		{
 			"id": "IG",
 			"label": "Informatik & Gesellschaft",
+			"labelEn": "Informatik & Gesellschaft",
 			"ects": 4,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -625,6 +626,7 @@
 		{
 			"id": "ISA",
 			"label": "Informatiksysteme und -anwendungen",
+			"labelEn": "Informatiksysteme und -anwendungen",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -633,7 +635,8 @@
 		},
 		{
 			"id": "CISO_ISSUES",
-			"label": "CISO Issues - applied experience",
+			"label": "CISO Issues - angewandte Praxis",
+			"labelEn": "CISO Issues - applied experience",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -643,6 +646,7 @@
 		{
 			"id": "WIDA",
 			"label": "Wirtschaft & Datenschutz",
+			"labelEn": "Wirtschaft & Datenschutz",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["REUF"], "mustBePassed": false, "moduleLinkType": "oder", "prerequisiteLinkType": "oder" },
@@ -660,6 +664,7 @@
 		{
 			"id": "HOA",
 			"label": "Human & Organizational Aspects of Information Security",
+			"labelEn": "Human & Organizational Aspects of Information Security",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -681,7 +686,8 @@
 		},
 		{
 			"id": "SQAS",
-			"label": "Software Quality and Security",
+			"label": "Software Qualität und Sicherheit",
+			"labelEn": "Software Quality and Security",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
@@ -701,6 +707,7 @@
 		{
 			"id": "BADIT",
 			"label": "Bachelor Diploma Thesis",
+			"labelEn": "Bachelor Diploma Thesis",
 			"ects": 12,
 			"prerequisites": [],
 			"prerequisiteNote": "At least 120 ECTS credits achieved",
@@ -738,6 +745,7 @@
 		{
 			"id": "NPE2",
 			"label": "National Project Experience 2",
+			"labelEn": "National Project Experience 2",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -746,7 +754,8 @@
 		},
 		{
 			"id": "KRINF",
-			"label": "Critical Infrastructures Security",
+			"label": "Kritische Infrastruktur Sicherheit",
+			"labelEn": "Critical Infrastructures Security",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ISF_MM"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -774,6 +783,7 @@
 		{
 			"id": "ECOM",
 			"label": "E-Commerce",
+			"labelEn": "E-Commerce",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -783,6 +793,7 @@
 		{
 			"id": "SOC",
 			"label": "Security Operation Center Issues",
+			"labelEn": "Security Operation Center Issues",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -792,6 +803,7 @@
 		{
 			"id": "FITE",
 			"label": "FinTech",
+			"labelEn": "FinTech",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -809,7 +821,8 @@
 		},
 		{
 			"id": "KRINFLAB",
-			"label": "Critical Infrastructures Security Lab",
+			"label": "Kritische Infrastruktur Labor",
+			"labelEn": "Critical Infrastructures Security Lab",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -827,6 +840,7 @@
 		{
 			"id": "GAME_MM",
 			"label": "Game Theory",
+			"labelEn": "Game Theory",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -849,6 +863,7 @@
 		{
 			"id": "IAVR_BW",
 			"label": "Interaction for Virtual Reality",
+			"labelEn": "Interaction for Virtual Reality",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Wichtig: Kenntnisse in objektorientierter Programmierung werden vorausgesetzt! Grundkenntnisse in Unity Entwicklung sind empfohlen, vgl. Module GAMEDEV, GAME (DI) oder äquivalent.",
@@ -858,7 +873,8 @@
 		},
 		{
 			"id": "SPA_A2",
-			"label": "SZ_Spanish beginner course A1",
+			"label": "Spanisch Grundkurs A2",
+			"labelEn": "SZ_Spanish beginner course A1",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -867,7 +883,8 @@
 		},
 		{
 			"id": "IBIS",
-			"label": "Integrated operational information systems",
+			"label": "Integrierte betriebliche Informationssysteme",
+			"labelEn": "Integrated operational information systems",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -877,6 +894,7 @@
 		{
 			"id": "BIDS",
 			"label": "Business Intelligence & Decision Support",
+			"labelEn": "Business Intelligence & Decision Support",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["DASB"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -888,7 +906,8 @@
 		},
 		{
 			"id": "IRFORENSIC",
-			"label": "Applied Incident Response and IT Forensics",
+			"label": "Angewandte Incident Response und IT Forensik",
+			"labelEn": "Applied Incident Response and IT Forensics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -916,6 +935,7 @@
 		{
 			"id": "ADML_MM",
 			"label": "Advanced Machine Learning",
+			"labelEn": "Advanced Machine Learning",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Students are expected to have already studied math and programming and to be strong at both subjects (details below). However, because this module is open to so many study programs, we do not name specific modules you have to take. Instead, subject competences are listed as module requirements, the acquisition of which students can achieve by attending modules or through self-study. Sufficient qualification is the responsibility of the students themselves. If you have any questions, we are happy to offer individual advice. These are the required competencies:\n \nLinear Algebra\n+ Vectors, position vectors, vector operations\n+ Matrices as linear mappings; matrix operations\n+ Vector norm, scalar product and its interpretation as projection\n+ Cosine formula for determining the angle between vectors\n+ Determination and interpretation of eigenvectors and eigenvalues\n \nAnalysis\n+ Functions in one and more variables\n+ Continuous and convex functions\n+ Partial derivatives and gradient\n+ Visualisation e.g. contour plots\n+ Local and global minima and maxima\n \nStatistics\n+ Mean, median, variance and standard deviation\n+ Population vs. sample, Bessel correction\n+ Covariance matrix\n+ Normal distribution",
@@ -926,6 +946,7 @@
 		{
 			"id": "MABU",
 			"label": "Mobile Applications in the Business World",
+			"labelEn": "Mobile Applications in the Business World",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -934,7 +955,8 @@
 		},
 		{
 			"id": "WSFM",
-			"label": "Academic Writing & Research Methods",
+			"label": "Wissenschaftliches Schreiben & Forschungsmethodik",
+			"labelEn": "Academic Writing & Research Methods",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -944,6 +966,7 @@
 		{
 			"id": "ANLIS",
 			"label": "Analysis",
+			"labelEn": "Analysis",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -953,6 +976,7 @@
 		{
 			"id": "IMLAB",
 			"label": "Immersive Labs",
+			"labelEn": "Immersive Labs",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Module ISLAB, SPRG, INTROL, CYBER besucht von Vorteil",
@@ -963,6 +987,7 @@
 		{
 			"id": "ENLAB_MM",
 			"label": "Enterprise Programming Lab",
+			"labelEn": "Enterprise Programming Lab",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -980,6 +1005,7 @@
 		{
 			"id": "IRSECPOL",
 			"label": "International Relations, Security and Policy",
+			"labelEn": "International Relations, Security and Policy",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -998,6 +1024,7 @@
 		{
 			"id": "ASTAT_MM",
 			"label": "Applied Statistics for Data Science",
+			"labelEn": "Applied Statistics for Data Science",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Achtung, Modul-Voraussetzungen gelten bei folgenden Studiengängen:\n- Informatik (Curriculum 16): Assessment-Stufe bestanden\n- Information & Cyber Security: Assessment-Stufe bestanden\n- Digital Ideation (Fokus Informatik): Assessment-Stufe bestanden",
@@ -1008,6 +1035,7 @@
 		{
 			"id": "PIPE",
 			"label": "Preparation for International Project Experience",
+			"labelEn": "Preparation for International Project Experience",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1017,6 +1045,7 @@
 		{
 			"id": "INFSC",
 			"label": "Information Security",
+			"labelEn": "Information Security",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1026,6 +1055,7 @@
 		{
 			"id": "INMAC",
 			"label": "International Management Accounting",
+			"labelEn": "International Management Accounting",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1035,6 +1065,7 @@
 		{
 			"id": "SWENG",
 			"label": "Software Engineering",
+			"labelEn": "Software Engineering",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1044,6 +1075,7 @@
 		{
 			"id": "PROTCO",
 			"label": "Professional and Technical Communication",
+			"labelEn": "Professional and Technical Communication",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1052,7 +1084,8 @@
 		},
 		{
 			"id": "KRYPTO_MM",
-			"label": "Encryption Technologies and Mechanism",
+			"label": "Kryptologie & Anwendungen",
+			"labelEn": "Encryption Technologies and Mechanism",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -1070,6 +1103,7 @@
 		{
 			"id": "APMAT",
 			"label": "Applied Mathematics",
+			"labelEn": "Applied Mathematics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1079,6 +1113,7 @@
 		{
 			"id": "ENGFTD",
 			"label": "English for Future Technology Development",
+			"labelEn": "English for Future Technology Development",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1087,7 +1122,8 @@
 		},
 		{
 			"id": "IPEUS",
-			"label": "International Project Experience - Silicon Valley",
+			"label": "International Project Experience - Aufenthalt Silicon Valley",
+			"labelEn": "International Project Experience - Silicon Valley",
 			"ects": 9,
 			"prerequisites": [
 				{
@@ -1106,6 +1142,7 @@
 		{
 			"id": "SUM_SCHOOL",
 			"label": "Summer School on Designing Serious Games",
+			"labelEn": "Summer School on Designing Serious Games",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["GAMEDES"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -1117,7 +1154,8 @@
 		},
 		{
 			"id": "JSJ_ISA",
-			"label": "Being healthy with Jin Shin Jyutsu and Co",
+			"label": "Gesund sein mit Jin Shin Jyutsu und Co",
+			"labelEn": "Being healthy with Jin Shin Jyutsu and Co",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1127,6 +1165,7 @@
 		{
 			"id": "ADRM",
 			"label": "Advanced Risk Management",
+			"labelEn": "Advanced Risk Management",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ISF_MM"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -1139,6 +1178,7 @@
 		{
 			"id": "SGC",
 			"label": "Security Governance and Compliance",
+			"labelEn": "Security Governance and Compliance",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1148,6 +1188,7 @@
 		{
 			"id": "AEDCTO",
 			"label": "Academic English TOEFL Preparation",
+			"labelEn": "Academic English TOEFL Preparation",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Students should have CEFR Level B2 as a minimum.",
@@ -1158,6 +1199,7 @@
 		{
 			"id": "VRT",
 			"label": "Virtual Reality Technologies",
+			"labelEn": "Virtual Reality Technologies",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1167,6 +1209,7 @@
 		{
 			"id": "DIMA",
 			"label": "Digital Marketing",
+			"labelEn": "Digital Marketing",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1185,6 +1228,7 @@
 		{
 			"id": "AEDCIT",
 			"label": "Academic English IELTS Preparation",
+			"labelEn": "Academic English IELTS Preparation",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Proven B2 Level English (passed FCE, at least IELTS Academic Band 6.0, or other equivalent)",
@@ -1195,6 +1239,7 @@
 		{
 			"id": "NETDA",
 			"label": "Network Defense & Architecture",
+			"labelEn": "Network Defense & Architecture",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -1218,6 +1263,7 @@
 		{
 			"id": "MICRO",
 			"label": "Microcontroller",
+			"labelEn": "Microcontroller",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -1234,6 +1280,7 @@
 		{
 			"id": "STMGT",
 			"label": "Strategic Management",
+			"labelEn": "Strategic Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1242,7 +1289,8 @@
 		},
 		{
 			"id": "GEEI",
-			"label": "Geistiges Eigentum – Chancen und Risiken",
+			"label": "Geistiges Eigentum - Chancen & Risiken",
+			"labelEn": "Geistiges Eigentum – Chancen und Risiken",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1252,6 +1300,7 @@
 		{
 			"id": "ERPAP",
 			"label": "ERP Systems - Concepts and Application",
+			"labelEn": "ERP Systems - Concepts and Application",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1261,6 +1310,7 @@
 		{
 			"id": "ANGCPH",
 			"label": "Introduction to Anglo-Saxon Culture Politics & History",
+			"labelEn": "Introduction to Anglo-Saxon Culture Politics & History",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "It is recommended that students have a minimum CEFR competence of B2.",
@@ -1270,7 +1320,8 @@
 		},
 		{
 			"id": "NATCYSEC",
-			"label": "Blockweek National Cyber Security",
+			"label": "National Cyber Security Blockwoche",
+			"labelEn": "Blockweek National Cyber Security",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Grundlagen gelesen vor Antritt der Woche, gemäss Auftrag der Dozierenden. Inhalte werden am ersten Tag summarisch geprüft.",
@@ -1281,6 +1332,7 @@
 		{
 			"id": "ENGSDC",
 			"label": "English for Strategic and Digital Communication",
+			"labelEn": "English for Strategic and Digital Communication",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1290,6 +1342,7 @@
 		{
 			"id": "GIS",
 			"label": "Geographic Information Systems",
+			"labelEn": "Geographic Information Systems",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -1306,6 +1359,7 @@
 		{
 			"id": "AEDC2",
 			"label": "Advanced English Diploma Course 2 (IELTS)",
+			"labelEn": "Advanced English Diploma Course 2 (IELTS)",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1314,7 +1368,8 @@
 		},
 		{
 			"id": "KUFA_MM",
-			"label": "The Art of Financial Investments",
+			"label": "Die Kunst der Finanzanlagen",
+			"labelEn": "The Art of Financial Investments",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1324,6 +1379,7 @@
 		{
 			"id": "NETW1_MM",
 			"label": "Networking 1",
+			"labelEn": "Networking 1",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1333,6 +1389,7 @@
 		{
 			"id": "CRS",
 			"label": "Crises Recovery Strategies",
+			"labelEn": "Crises Recovery Strategies",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ISF_MM"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -1344,7 +1401,8 @@
 		},
 		{
 			"id": "WEBT_MM",
-			"label": "Web Technologies",
+			"label": "Web-Technologien",
+			"labelEn": "Web Technologies",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Achtung: Dieses Modul setzt die Fähigkeit voraus, kleinere Programme in einer der gängigen Programmiersprachen (Java, JavaScript, C/C++, C#, Python, etc.) schreiben und verstehen zu können.",
@@ -1354,7 +1412,8 @@
 		},
 		{
 			"id": "FM_3",
-			"label": "Research Assistance",
+			"label": "Forschungsmitarbeit",
+			"labelEn": "Research Assistance",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Weitere Voraussetzungen:\n- Zum Auftrag passende Fachkompetenzen (vgl. bisheriger Leistungsnachweis, Berufserfahrungen, Abklärungsgespräch).\n- Genehmigter Antrag durch die Studiengangleitung des Moduls. (Dazu Email der Zielvereinbarung an die Studiengangleitung des Moduls mit CC an MV und Studiengangleitung des/r Studierenden senden.)",
@@ -1364,7 +1423,8 @@
 		},
 		{
 			"id": "ADS",
-			"label": "Algorithm & Data Structures ICS",
+			"label": "Algorithmen & Datenstrukturen ICS",
+			"labelEn": "Algorithm & Data Structures ICS",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -1387,7 +1447,8 @@
 		},
 		{
 			"id": "FM_6",
-			"label": "Research Assistance",
+			"label": "Forschungsmitarbeit",
+			"labelEn": "Research Assistance",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Weitere Voraussetzungen:\n- Zum Auftrag passende Fachkompetenzen (vgl. bisheriger Leistungsnachweis, Berufserfahrungen, Abklärungsgespräch).\n- Genehmigter Antrag durch die Studiengangleitung des Moduls. (Dazu Email der Zielvereinbarung an die Studiengangleitung des Moduls mit CC an MV und Studiengangleitung des/r Studierenden senden.)",
@@ -1397,7 +1458,8 @@
 		},
 		{
 			"id": "SPTA",
-			"label": "Secure Project and Teamwork",
+			"label": "Secure Project und Teamarbeit",
+			"labelEn": "Secure Project and Teamwork",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1406,7 +1468,8 @@
 		},
 		{
 			"id": "SPREN2",
-			"label": "Cyber Security in Product Engineering 2",
+			"label": "Sicherheit in der Produktentwicklung 2",
+			"labelEn": "Cyber Security in Product Engineering 2",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["SPREN1"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -1417,7 +1480,8 @@
 		},
 		{
 			"id": "NETT",
-			"label": "Networking Technologies",
+			"label": "Netzwerktechnologien",
+			"labelEn": "Networking Technologies",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Grundverständnis Betriebssysteme",
@@ -1428,6 +1492,7 @@
 		{
 			"id": "ISM_MM",
 			"label": "Information Security Management",
+			"labelEn": "Information Security Management",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ISF_MM"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -1440,6 +1505,7 @@
 		{
 			"id": "ML_MM",
 			"label": "Machine Learning",
+			"labelEn": "Machine Learning",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Students are expected to have already studied math and programming and to be strong at both subjects (details below). However, because this module is open to so many study programs, we do not name specific modules you have to take. Instead, subject competences are listed as module requirements, the acquisition of which students can achieve by attending modules or through self-study. Sufficient qualification is the responsibility of the students themselves. If you have any questions, we are happy to offer individual advice. These are the required competencies:\n \nLinear Algebra\n+ Vectors, position vectors, vector operations\n+ Matrices as linear mappings; matrix operations\n+ Vector norm, scalar product and its interpretation as projection\n+ Cosine formula for determining the angle between vectors\n+ Determination and interpretation of eigenvectors and eigenvalues\n \nAnalysis\n+ Functions in one and more variables\n+ Continuous and convex functions\n+ Partial derivatives and gradient\n+ Visualisation e.g. contour plots\n+ Local and global minima and maxima\n \nStatistics\n+ Mean, median, variance and standard deviation\n+ Population vs. sample, Bessel correction\n+ Covariance matrix\n+ Normal distribution",
@@ -1459,6 +1525,7 @@
 		{
 			"id": "ADP",
 			"label": "Algorithmen, Daten & Programmieren",
+			"labelEn": "Algorithmen, Daten & Programmieren",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1467,7 +1534,8 @@
 		},
 		{
 			"id": "PRIVACY_MM",
-			"label": "Privacy, Technology and Data Protection",
+			"label": "Privatheit, Technologie und Datenschutz",
+			"labelEn": "Privacy, Technology and Data Protection",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ISF_MM"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -1479,6 +1547,7 @@
 		{
 			"id": "SWDE",
 			"label": "Software Development",
+			"labelEn": "Software Development",
 			"ects": 6,
 			"prerequisites": [
 				{ "modules": ["OOP"], "mustBePassed": true, "moduleLinkType": "oder", "prerequisiteLinkType": "oder" },
@@ -1491,7 +1560,8 @@
 		},
 		{
 			"id": "CAB_MM",
-			"label": "Cloud-Services Offering & Operating",
+			"label": "Cloud-Services Angebot & Betrieb",
+			"labelEn": "Cloud-Services Offering & Operating",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -1521,6 +1591,7 @@
 		{
 			"id": "SWT",
 			"label": "Software Testing",
+			"labelEn": "Software Testing",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1538,7 +1609,8 @@
 		},
 		{
 			"id": "BAA",
-			"label": "Bachelor Thesis",
+			"label": "Bachelordiplomarbeit",
+			"labelEn": "Bachelor Thesis",
 			"ects": 12,
 			"prerequisites": [],
 			"prerequisiteNote": "Wirtschaftsinformatik, Informatik C16, Information & Cyber Security:\n- sämtliche vorgängigen Projektmodule des entsprechenden Studiengangs bestanden\n- mindestens 150 ECTS erworben, davon mindestens 27 ECTS aus den Projektmodulen\n\nArtificial Intelligence & Machine Learning:\n- zusätzlich das Modul ADML bestanden",
@@ -1548,7 +1620,8 @@
 		},
 		{
 			"id": "DB&S",
-			"label": "Database and Security",
+			"label": "Datenbanken und Security",
+			"labelEn": "Database and Security",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1557,7 +1630,8 @@
 		},
 		{
 			"id": "DICO",
-			"label": "Digitization in practice",
+			"label": "Digitalisierung in der Praxis",
+			"labelEn": "Digitization in practice",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Assessment Stufe bestanden",
@@ -1568,6 +1642,7 @@
 		{
 			"id": "GAMEDES",
 			"label": "Game Design",
+			"labelEn": "Game Design",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Es werden keine Erfahrungen mit Spieleprogrammierung oder -entwicklung benötigt.",
@@ -1597,6 +1672,7 @@
 		{
 			"id": "AIOT",
 			"label": "Advanced Internet of Things",
+			"labelEn": "Advanced Internet of Things",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -1622,7 +1698,8 @@
 		},
 		{
 			"id": "ETHIK_MM",
-			"label": "Ethics",
+			"label": "Ethik",
+			"labelEn": "Ethics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1631,7 +1708,8 @@
 		},
 		{
 			"id": "MWI2",
-			"label": "Management in Business IT 2",
+			"label": "Management für Wirtschaftsinformatik 2",
+			"labelEn": "Management in Business IT 2",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1653,6 +1731,7 @@
 		{
 			"id": "ITEC",
 			"label": "Internet Technologien",
+			"labelEn": "Internet Technologien",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1662,6 +1741,7 @@
 		{
 			"id": "BDLC",
 			"label": "Big Data Lab Cluster",
+			"labelEn": "Big Data Lab Cluster",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1671,6 +1751,7 @@
 		{
 			"id": "SWAT_MM",
 			"label": "Software Architecture & Techniques",
+			"labelEn": "Software Architecture & Techniques",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["VSK_MM"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -1698,7 +1779,8 @@
 		},
 		{
 			"id": "FOMED",
-			"label": "Forms of Media Design",
+			"label": "Formen der Mediengestaltung",
+			"labelEn": "Forms of Media Design",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "keine Voraussetzungen",
@@ -1719,6 +1801,7 @@
 		{
 			"id": "AISO_MM",
 			"label": "Artificial Intelligence - Search & Optimization",
+			"labelEn": "Artificial Intelligence - Search & Optimization",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Betreffend Studiengänge der HSLU T&A gilt: Alle Pflichtmodule der Stufe Basic bestanden.",
@@ -1728,7 +1811,8 @@
 		},
 		{
 			"id": "INTROL",
-			"label": "Introduction to Information & Cyber Security: Security Labs",
+			"label": "Einführendes Labor zu Informations- und Cyber-Sicherheit",
+			"labelEn": "Introduction to Information & Cyber Security: Security Labs",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1747,6 +1831,7 @@
 		{
 			"id": "VID",
 			"label": "Visual Interface Design",
+			"labelEn": "Visual Interface Design",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1756,6 +1841,7 @@
 		{
 			"id": "CONS",
 			"label": "Consulting",
+			"labelEn": "Consulting",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Da Major-Modul, ist bestandene Assessment-Stufe zwingend",
@@ -1775,6 +1861,7 @@
 		{
 			"id": "IOTHACK_MM",
 			"label": "Blockchain & IoT Hackathon",
+			"labelEn": "Blockchain & IoT Hackathon",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Modul-Voraussetzung für Studiengänge der HSLU T&A: Alle Pflichtmodule auf Stufe Basic bestanden.",
@@ -1785,6 +1872,7 @@
 		{
 			"id": "IPCV",
 			"label": "Image Processing & Computer Vision",
+			"labelEn": "Image Processing & Computer Vision",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "\"Lineare Algebra\" (LIAL) oder \"Informatik Mathematik\" (IMATH) wird empfohlen. \nDas Modul kann nicht zusammen mit \"Computer Vision & AI\" (CVAI) besucht werden.",
@@ -1795,6 +1883,7 @@
 		{
 			"id": "DAMGT",
 			"label": "Data Management",
+			"labelEn": "Data Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1820,6 +1909,7 @@
 		{
 			"id": "DAWA",
 			"label": "Data Warehousing",
+			"labelEn": "Data Warehousing",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1829,6 +1919,7 @@
 		{
 			"id": "HPP_1_3",
 			"label": "High Potential Project",
+			"labelEn": "High Potential Project",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Die Studierenden werden aufgrund ihrer Leistungen im Modul PTA ausgewählt und angefragt, ob sie ihre PTA-Produktidee weiterverfolgen möchten. Es soll ein erster technischer Prototyp erstellt werden.",
@@ -1838,7 +1929,8 @@
 		},
 		{
 			"id": "MWI1_MM",
-			"label": "Management in Business IT 1",
+			"label": "Management für Wirtschaftsinformatik 1",
+			"labelEn": "Management in Business IT 1",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1847,7 +1939,8 @@
 		},
 		{
 			"id": "WIPRO",
-			"label": "Industry Project",
+			"label": "Wirtschaftsprojekt",
+			"labelEn": "Industry Project",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "-\tBei den Kernmodulen mindestens 57 Credits vorliegend.\n-\tBei den Studiengängen Informatik & Wirtschaftsinformatik mindestens 24 Credits in Projektmodulen vorliegend\n-\tBeim Studiengang Information & Cyber Security mindestens 18 Credits in Projektmodulen vorliegend",
@@ -1857,7 +1950,8 @@
 		},
 		{
 			"id": "ISLAB_MM",
-			"label": "Information Security Lab",
+			"label": "Informationssicherheitslabor",
+			"labelEn": "Information Security Lab",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -1887,6 +1981,7 @@
 		{
 			"id": "ITA_A1",
 			"label": "Italienisch Grundkurs A1",
+			"labelEn": "Italienisch Grundkurs A1",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1896,6 +1991,7 @@
 		{
 			"id": "BDLS",
 			"label": "Big Data Lab Sandbox",
+			"labelEn": "Big Data Lab Sandbox",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Programmierkenntnisse in SQL und Python\nLinux Grundkenntnisse von Vorteil",
@@ -1941,7 +2037,8 @@
 		},
 		{
 			"id": "ITRE_MM",
-			"label": "IT-Law",
+			"label": "IT-Recht",
+			"labelEn": "IT-Law",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -1951,6 +2048,7 @@
 		{
 			"id": "MAGA",
 			"label": "Management-Game",
+			"labelEn": "Management-Game",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1959,7 +2057,8 @@
 		},
 		{
 			"id": "GPOR_MM",
-			"label": "Business Processes & Organisation",
+			"label": "Geschäftsprozesse & Organisation",
+			"labelEn": "Business Processes & Organisation",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -1968,7 +2067,8 @@
 		},
 		{
 			"id": "DAMA_MM",
-			"label": "Data Management",
+			"label": "Datenmanagement",
+			"labelEn": "Data Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2031,6 +2131,7 @@
 		{
 			"id": "DIBA",
 			"label": "Digital & IT Basics",
+			"labelEn": "Digital & IT Basics",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
@@ -2040,7 +2141,8 @@
 		},
 		{
 			"id": "MOD_MM",
-			"label": "Modeling Basics",
+			"label": "Modellierung Grundlagen",
+			"labelEn": "Modeling Basics",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Grundlagenkenntnisse bezüglich Software-Erstellung, Kenntnisse einer objektorientierten Programmiersprache (z.B. Java oder Python).",
@@ -2107,6 +2209,7 @@
 		{
 			"id": "HMAT",
 			"label": "TA.Höhere Mathematik",
+			"labelEn": "TA.Höhere Mathematik",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2116,6 +2219,7 @@
 		{
 			"id": "EBV",
 			"label": "TA.Echtzeit-Bildverarbeitung",
+			"labelEn": "TA.Echtzeit-Bildverarbeitung",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2124,7 +2228,8 @@
 		},
 		{
 			"id": "PMRE",
-			"label": "Project Management & Requirements Engineering",
+			"label": "Projektmanagement & Requirements Engineering",
+			"labelEn": "Project Management & Requirements Engineering",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2167,7 +2272,8 @@
 		},
 		{
 			"id": "PMB",
-			"label": "Project Management Basics",
+			"label": "Projektmanagement Basics",
+			"labelEn": "Project Management Basics",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -2185,6 +2291,7 @@
 		{
 			"id": "MOBPRO",
 			"label": "Mobile Programming",
+			"labelEn": "Mobile Programming",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -2207,7 +2314,8 @@
 		},
 		{
 			"id": "AD",
-			"label": "Algorithms & Data Structures",
+			"label": "Algorithmen & Datenstrukturen",
+			"labelEn": "Algorithms & Data Structures",
 			"ects": 6,
 			"prerequisites": [
 				{
@@ -2223,7 +2331,8 @@
 		},
 		{
 			"id": "PTA",
-			"label": "Project and Teamwork",
+			"label": "Projekt und Teamarbeit",
+			"labelEn": "Project and Teamwork",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2232,7 +2341,8 @@
 		},
 		{
 			"id": "PRG",
-			"label": "Programming",
+			"label": "Programmierung",
+			"labelEn": "Programming",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2241,7 +2351,8 @@
 		},
 		{
 			"id": "DMATH",
-			"label": "Discrete Mathematics",
+			"label": "Diskrete Mathematik",
+			"labelEn": "Discrete Mathematics",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2251,6 +2362,7 @@
 		{
 			"id": "PCP_MM",
 			"label": "Programming Concepts & Paradigms",
+			"labelEn": "Programming Concepts & Paradigms",
 			"ects": 6,
 			"prerequisites": [
 				{
@@ -2267,6 +2379,7 @@
 		{
 			"id": "MTOP",
 			"label": "Mainframe Topics",
+			"labelEn": "Mainframe Topics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2276,6 +2389,7 @@
 		{
 			"id": "CNA",
 			"label": "Computer & Network Architecture",
+			"labelEn": "Computer & Network Architecture",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2284,7 +2398,8 @@
 		},
 		{
 			"id": "BW",
-			"label": "Business Administration",
+			"label": "Betriebswirtschaft im digitalen Umfeld",
+			"labelEn": "Business Administration",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2303,6 +2418,7 @@
 		{
 			"id": "USAB",
 			"label": "Usability",
+			"labelEn": "Usability",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Studiengänge der HSLU T&A: Alle Pflichtmodule auf Stufe Basic bestanden.",
@@ -2313,6 +2429,7 @@
 		{
 			"id": "ITEO",
 			"label": "IT-System Engineering & Operation",
+			"labelEn": "IT-System Engineering & Operation",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2333,7 +2450,8 @@
 		},
 		{
 			"id": "VSK_MM",
-			"label": "Distributed Systems & Components",
+			"label": "Verteilte Systeme & Komponenten",
+			"labelEn": "Distributed Systems & Components",
 			"ects": 6,
 			"prerequisites": [
 				{
@@ -2362,6 +2480,7 @@
 		{
 			"id": "ACBA",
 			"label": "Accounting Basics",
+			"labelEn": "Accounting Basics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2371,6 +2490,7 @@
 		{
 			"id": "ISF_MM",
 			"label": "Information Security Fundamentals",
+			"labelEn": "Information Security Fundamentals",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2380,6 +2500,7 @@
 		{
 			"id": "AEMBS_MM",
 			"label": "TA.Advanced Embedded Systems",
+			"labelEn": "TA.Advanced Embedded Systems",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2398,6 +2519,7 @@
 		{
 			"id": "CI",
 			"label": "Cloud Infrastructure",
+			"labelEn": "Cloud Infrastructure",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -2427,6 +2549,7 @@
 		{
 			"id": "CYBER",
 			"label": "Cyber Defence",
+			"labelEn": "Cyber Defence",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -2455,6 +2578,7 @@
 		{
 			"id": "AROB_MM",
 			"label": "TA.Angewandte industrielle Robotik",
+			"labelEn": "TA.Angewandte industrielle Robotik",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2463,7 +2587,8 @@
 		},
 		{
 			"id": "PREN2",
-			"label": "Product Development 2",
+			"label": "Produktentwicklung 2",
+			"labelEn": "Product Development 2",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2472,7 +2597,8 @@
 		},
 		{
 			"id": "DBS",
-			"label": "Database Systems",
+			"label": "Datenbanksysteme",
+			"labelEn": "Database Systems",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2482,6 +2608,7 @@
 		{
 			"id": "MED_SKE_MM",
 			"label": "TA.Medizinische Sprache, Kultur und Ethik",
+			"labelEn": "TA.Medizinische Sprache, Kultur und Ethik",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2491,6 +2618,7 @@
 		{
 			"id": "DIGCRE",
 			"label": "AI Generated Art & Digital Creativity",
+			"labelEn": "AI Generated Art & Digital Creativity",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2500,6 +2628,7 @@
 		{
 			"id": "CLOUDSEC_MM",
 			"label": "Cloud Security",
+			"labelEn": "Cloud Security",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2508,7 +2637,8 @@
 		},
 		{
 			"id": "SPA_A1",
-			"label": "Spanish Beginner Course A1",
+			"label": "Spanisch Grundkurs A1",
+			"labelEn": "Spanish Beginner Course A1",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2518,6 +2648,7 @@
 		{
 			"id": "RL_MM",
 			"label": "Reinforcement Learning",
+			"labelEn": "Reinforcement Learning",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Studiengang Artificial Intelligence and Machine Learning:\n• Assessement Stufe bestanden\n\nAlle anderen Studiengänge mit Assessment Stufe:\n• Assessment Stufe bestanden\n• 2 Mathematik Vorlesungen bestanden in den Themen Mathematik Grundlagen, sowie Diskrete Mathematik/Lineare Algebra\n\nAndere Studiengänge:\n• Nach Vereinbarung\n\nKenntnisse in Python Programmierung\n\nSlides and Videos in English: Please make sure you have B2 level or greater in English Language",
@@ -2527,7 +2658,8 @@
 		},
 		{
 			"id": "3DMOD4RT",
-			"label": "3D Modelling for Real-Time Applications",
+			"label": "3D Modellieren für Echtzeitanwendungen",
+			"labelEn": "3D Modelling for Real-Time Applications",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "-",
@@ -2537,7 +2669,8 @@
 		},
 		{
 			"id": "IIP1",
-			"label": "Integral Computer Science Practical Project 1",
+			"label": "Integrales Informatik Praxisprojekt 1",
+			"labelEn": "Integral Computer Science Practical Project 1",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Module in Programmierung und Projektmanagement besucht. \nEmpfehlungen: PRG, PROG, OOP, PLAB, ADS, PMB, FKOM",
@@ -2548,6 +2681,7 @@
 		{
 			"id": "MOBILSEC",
 			"label": "Mobile Security",
+			"labelEn": "Mobile Security",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -2564,6 +2698,7 @@
 		{
 			"id": "ROBO",
 			"label": "Robotics",
+			"labelEn": "Robotics",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Für T&A-Maschinentechnik Studierende die Moduleingangsbedingung ist, dass Lineare Regelungssysteme (LRS) bestanden sein muss, vor das Modul ROBO besucht werden kann.\nFür T&A-Digital Engineering Studierende die Moduleingangsbedingung ist, dass Lineare Regelungssysteme (LRS) bestanden sein muss, und beide PYTHON & LINALG bestanden sein müssen, vor das Modul ROBO besucht werden kann.\n\nAIML-Bachelor-Studierende können anstelle dieses ROBO-Moduls das Modul AROB Angewandte Robotik an der T&A in Horw belegen. Sie müssen mindestens das eine oder das andere belegen. Sie können aber auch beide besuchen (in verschiedenen Semestern)",
@@ -2583,6 +2718,7 @@
 		{
 			"id": "HTCLAW",
 			"label": "High Tech Cybercrime & Law",
+			"labelEn": "High Tech Cybercrime & Law",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2592,6 +2728,7 @@
 		{
 			"id": "DVIZ",
 			"label": "Data Visualisation for AI and Machine Learning",
+			"labelEn": "Data Visualisation for AI and Machine Learning",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["PROG_MM"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -2603,6 +2740,7 @@
 		{
 			"id": "INLP",
 			"label": "Introduction to NLP",
+			"labelEn": "Introduction to NLP",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2631,6 +2769,7 @@
 		{
 			"id": "CT_MM",
 			"label": "Cloud Technology",
+			"labelEn": "Cloud Technology",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -2658,7 +2797,8 @@
 		},
 		{
 			"id": "KRKO",
-			"label": "Crisis Management and Communication",
+			"label": "Krisenmanagement & -kommunikation",
+			"labelEn": "Crisis Management and Communication",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2668,6 +2808,7 @@
 		{
 			"id": "NETW3",
 			"label": "Networking 3",
+			"labelEn": "Networking 3",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -2684,6 +2825,7 @@
 		{
 			"id": "KRYPTOB",
 			"label": "Krypto for Business",
+			"labelEn": "Krypto for Business",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ISF_MM"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -2696,6 +2838,7 @@
 		{
 			"id": "ABIZ_MM",
 			"label": "AI & Business",
+			"labelEn": "AI & Business",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2705,6 +2848,7 @@
 		{
 			"id": "AEDC1",
 			"label": "Advanced English Diploma Course 1",
+			"labelEn": "Advanced English Diploma Course 1",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Keine",
@@ -2715,6 +2859,7 @@
 		{
 			"id": "CPLAB",
 			"label": "Cloud Programming Lab",
+			"labelEn": "Cloud Programming Lab",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["VSK_MM"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -2727,6 +2872,7 @@
 		{
 			"id": "BUETC",
 			"label": "Business Ethics",
+			"labelEn": "Business Ethics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2745,6 +2891,7 @@
 		{
 			"id": "REUF",
 			"label": "Recht in der Unternehmensführung",
+			"labelEn": "Recht in der Unternehmensführung",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2754,6 +2901,7 @@
 		{
 			"id": "BLOCC",
 			"label": "Blockchain",
+			"labelEn": "Blockchain",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2763,6 +2911,7 @@
 		{
 			"id": "BUINT",
 			"label": "Business Intelligence",
+			"labelEn": "Business Intelligence",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2772,6 +2921,7 @@
 		{
 			"id": "INTOT",
 			"label": "Internet of Things",
+			"labelEn": "Internet of Things",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2781,6 +2931,7 @@
 		{
 			"id": "SYSSEC",
 			"label": "System & Security",
+			"labelEn": "System & Security",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Basiskenntnisse in Computerarchitektur und C Programmierung sind empfohlen oder koennen waehrend des Moduls erworben werden.",
@@ -2800,6 +2951,7 @@
 		{
 			"id": "PHKI",
 			"label": "Philosophy, Art and AI",
+			"labelEn": "Philosophy, Art and AI",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2809,6 +2961,7 @@
 		{
 			"id": "ASACPH",
 			"label": "Introduction to Asia Culture Politics & History",
+			"labelEn": "Introduction to Asia Culture Politics & History",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2818,6 +2971,7 @@
 		{
 			"id": "DSTPS",
 			"label": "Digital Strategies, Products & Services",
+			"labelEn": "Digital Strategies, Products & Services",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2827,6 +2981,7 @@
 		{
 			"id": "BUPIC",
 			"label": "Intercultural Business Project",
+			"labelEn": "Intercultural Business Project",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2836,6 +2991,7 @@
 		{
 			"id": "ENGDBU",
 			"label": "English for Digital Business",
+			"labelEn": "English for Digital Business",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2845,6 +3001,7 @@
 		{
 			"id": "ADPENTEST",
 			"label": "Advanced Penetration Testing",
+			"labelEn": "Advanced Penetration Testing",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["CYBER"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -2856,6 +3013,7 @@
 		{
 			"id": "ARINT",
 			"label": "Introduction to Artificial Intelligence",
+			"labelEn": "Introduction to Artificial Intelligence",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Students are recommended to have taken previous classes on Linear Algebra, Applied Statistics, and Python Programming. While not compulsory, students who take these modules prior to ARINT will find the material more accessible.",
@@ -2866,6 +3024,7 @@
 		{
 			"id": "ENGPRA",
 			"label": "English for Preparation Abroad",
+			"labelEn": "English for Preparation Abroad",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "It is recommended that students have a minimum CEFR competence of B2.",
@@ -2876,6 +3035,7 @@
 		{
 			"id": "NPE1",
 			"label": "National Project Experience 1",
+			"labelEn": "National Project Experience 1",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2885,6 +3045,7 @@
 		{
 			"id": "ENGTCS",
 			"label": "English for Technical & Computer Science",
+			"labelEn": "English for Technical & Computer Science",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2894,6 +3055,7 @@
 		{
 			"id": "OSSEC",
 			"label": "Operating System Security",
+			"labelEn": "Operating System Security",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -2910,6 +3072,7 @@
 		{
 			"id": "FININ",
 			"label": "Finance & Investments",
+			"labelEn": "Finance & Investments",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2918,7 +3081,8 @@
 		},
 		{
 			"id": "COBAU",
-			"label": "Compiler Construction",
+			"label": "Compilerbau",
+			"labelEn": "Compiler Construction",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -2942,6 +3106,7 @@
 		{
 			"id": "BUPEC",
 			"label": "Business Project 2 Economics",
+			"labelEn": "Business Project 2 Economics",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2951,6 +3116,7 @@
 		{
 			"id": "LIAL_MM",
 			"label": "Lineare Algebra",
+			"labelEn": "Lineare Algebra",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -2960,6 +3126,7 @@
 		{
 			"id": "ACMET",
 			"label": "Academic Methods",
+			"labelEn": "Academic Methods",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2968,7 +3135,8 @@
 		},
 		{
 			"id": "DSO",
-			"label": "Privacy in Organization",
+			"label": "Datenschutz in Organisationen",
+			"labelEn": "Privacy in Organization",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ISF_MM"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -2980,6 +3148,7 @@
 		{
 			"id": "DCEX",
 			"label": "Digital Customer Experience",
+			"labelEn": "Digital Customer Experience",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2988,7 +3157,8 @@
 		},
 		{
 			"id": "GPDA",
-			"label": "Digitize and automate business processes",
+			"label": "Geschäftsprozesse digitalisieren und automatisieren",
+			"labelEn": "Digitize and automate business processes",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -2998,6 +3168,7 @@
 		{
 			"id": "SIOT",
 			"label": "Secure IoT",
+			"labelEn": "Secure IoT",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Networking fundamentals, basics on systems programming, familiarity with C programming, debugging, Linux command line, shell scripts, basic crypto protocols.",
@@ -3008,6 +3179,7 @@
 		{
 			"id": "REVE2",
 			"label": "Reverse Engineering 2",
+			"labelEn": "Reverse Engineering 2",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -3038,7 +3210,8 @@
 		},
 		{
 			"id": "SPREN1",
-			"label": "Cyber Security in Product Engineering 1",
+			"label": "Sicherheit in der Produktentwicklung 1",
+			"labelEn": "Cyber Security in Product Engineering 1",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3048,6 +3221,7 @@
 		{
 			"id": "ITAU",
 			"label": "IT Audit",
+			"labelEn": "IT Audit",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3057,6 +3231,7 @@
 		{
 			"id": "REVE1",
 			"label": "Reverse Engineering 1",
+			"labelEn": "Reverse Engineering 1",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Die Grundlagen der Computerarchitektur und des Programmierens in C werden vorausgesetzt oder können während der Blockwoche erworben werden.",
@@ -3066,7 +3241,8 @@
 		},
 		{
 			"id": "DITI",
-			"label": "Digital Transformation in the Industry",
+			"label": "Digitale Transformation in der Industrie",
+			"labelEn": "Digital Transformation in the Industry",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3085,6 +3261,7 @@
 		{
 			"id": "IAVR",
 			"label": "Interaction for Virtual Reality",
+			"labelEn": "Interaction for Virtual Reality",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Wichtig: Kenntnisse in objektorientierter Programmierung werden vorausgesetzt! Grundkenntnisse in Unity Entwicklung sind empfohlen, vgl. Module GAMEDEV, GAME (DI) oder äquivalent.",
@@ -3095,6 +3272,7 @@
 		{
 			"id": "WEBLAB",
 			"label": "Web Programming Lab",
+			"labelEn": "Web Programming Lab",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "WICHTIG:\n- Es werden Kompetenzen entsprechend dem Modul \"Web-Technologien\" (WEBT) vorausgesetzt.\n- Weiter wird der vorgängige Besuch des Moduls \"Software Development & Architecture \" (SWDA) sehr empfohlen, vormals APPE oder SWDE.",
@@ -3132,6 +3310,7 @@
 		{
 			"id": "PROFU",
 			"label": "Programming Fundamentals",
+			"labelEn": "Programming Fundamentals",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3140,7 +3319,8 @@
 		},
 		{
 			"id": "CONWB",
-			"label": "Computer & Network Basics",
+			"label": "Computer Networks Basics",
+			"labelEn": "Computer & Network Basics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3150,6 +3330,7 @@
 		{
 			"id": "PMPCT",
 			"label": "Project Management, Professional Communication & Teamwork",
+			"labelEn": "Project Management, Professional Communication & Teamwork",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3168,6 +3349,7 @@
 		{
 			"id": "DL4G",
 			"label": "Deep Learning for Games",
+			"labelEn": "Deep Learning for Games",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -3203,6 +3385,7 @@
 		{
 			"id": "GAMEDEV",
 			"label": "Game Development",
+			"labelEn": "Game Development",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Studiengang Digital Ideation (Fokus Informatik): 1. und 2. Semester erfolgreich bestanden.",
@@ -3213,6 +3396,7 @@
 		{
 			"id": "INTLA_MM",
 			"label": "International Law",
+			"labelEn": "International Law",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3240,6 +3424,7 @@
 		{
 			"id": "MOBLAB",
 			"label": "Mobile Programming Lab",
+			"labelEn": "Mobile Programming Lab",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["MOBPRO"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -3278,6 +3463,7 @@
 		{
 			"id": "ROBLAB",
 			"label": "Cognitive Robotics Lab",
+			"labelEn": "Cognitive Robotics Lab",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -3314,6 +3500,7 @@
 		{
 			"id": "BSCMA",
 			"label": "Business & Supply Chain Management",
+			"labelEn": "Business & Supply Chain Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3350,6 +3537,7 @@
 		{
 			"id": "HFD",
 			"label": "Human Factors & Design",
+			"labelEn": "Human Factors & Design",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3359,6 +3547,7 @@
 		{
 			"id": "BCHAIN",
 			"label": "Blockchain",
+			"labelEn": "Blockchain",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3377,6 +3566,7 @@
 		{
 			"id": "BDM",
 			"label": "Big Data Management",
+			"labelEn": "Big Data Management",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Studiengänge HSLU T&A: Alle Pflichtmodule auf Stufe Basic bestanden.",
@@ -3386,7 +3576,8 @@
 		},
 		{
 			"id": "DAVI",
-			"label": "Data Visualisation",
+			"label": "Datenvisualisierung",
+			"labelEn": "Data Visualisation",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Grundkenntnisse in HTML5, CSS, JS erforderlich",
@@ -3415,6 +3606,7 @@
 		{
 			"id": "CG_MM",
 			"label": "Computer Graphics",
+			"labelEn": "Computer Graphics",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3424,6 +3616,7 @@
 		{
 			"id": "IOT",
 			"label": "Internet of Things",
+			"labelEn": "Internet of Things",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Familiarity with C programming, Linux command line, shell scripts, networking fundamentals.",
@@ -3443,7 +3636,8 @@
 		},
 		{
 			"id": "UGDM",
-			"label": "Start-ups in Digital Markets",
+			"label": "Unternehmungsgründungen in digitalen Märkten",
+			"labelEn": "Start-ups in Digital Markets",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3453,6 +3647,7 @@
 		{
 			"id": "MEDTECH",
 			"label": "TA.Medizintechnik Einführung",
+			"labelEn": "TA.Medizintechnik Einführung",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3461,7 +3656,8 @@
 		},
 		{
 			"id": "PREN1",
-			"label": "Product Development 1",
+			"label": "Produktentwicklung 1",
+			"labelEn": "Product Development 1",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3480,6 +3676,7 @@
 		{
 			"id": "CHMA",
 			"label": "Change Management",
+			"labelEn": "Change Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3489,6 +3686,7 @@
 		{
 			"id": "MED_BILDVER_MM",
 			"label": "TA.Medizinische bildgebende Verfahren",
+			"labelEn": "TA.Medizinische bildgebende Verfahren",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3506,7 +3704,8 @@
 		},
 		{
 			"id": "IOS",
-			"label": "Programming for iOS",
+			"label": "Programmieren fürs iOS",
+			"labelEn": "Programming for iOS",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -3523,7 +3722,8 @@
 		},
 		{
 			"id": "IMATH",
-			"label": "Nonlinear optimisation and differential equations in computer science",
+			"label": "Nichtlineare Optimierung und Differentialgleichungen in der Informatik",
+			"labelEn": "Nonlinear optimisation and differential equations in computer science",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -3571,6 +3771,7 @@
 		{
 			"id": "XML",
 			"label": "XML & JSON Technologies",
+			"labelEn": "XML & JSON Technologies",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -3587,6 +3788,7 @@
 		{
 			"id": "CSA",
 			"label": "C# in Action",
+			"labelEn": "C# in Action",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -3604,7 +3806,8 @@
 		},
 		{
 			"id": "PLAB",
-			"label": "Programming Lab",
+			"label": "Programmier-Labor",
+			"labelEn": "Programming Lab",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Zur Zulassung zu diesem Modul muss ein Assessment erfolgreich absolviert werden. Informationen zu diesem Assessment werden interessierten Studierenden vor der ersten Semesterwoche bekanntgegeben.",
@@ -3633,6 +3836,7 @@
 		{
 			"id": "KRR_MM",
 			"label": "Knowledge Representation & Reasoning",
+			"labelEn": "Knowledge Representation & Reasoning",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Basic knowledge of math and statistics; good command of written and spoken English; students will practice to use the terminology in German and English and flexibly switch between both\n\nRequirements for Computer Science:\n- Core module \"Analysis\" (ANLIS) or core module \"Mathematics Basics\" (MATH) passed.\n- Core module \"Applied Statistics for Data Science\" (ASTAT) passed.",
@@ -3643,6 +3847,7 @@
 		{
 			"id": "NLP",
 			"label": "Natural Language Processing",
+			"labelEn": "Natural Language Processing",
 			"ects": 9,
 			"prerequisites": [
 				{ "modules": ["ADML_MM"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -3664,6 +3869,7 @@
 		{
 			"id": "DASB",
 			"label": "Data Science Basics",
+			"labelEn": "Data Science Basics",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "WI: Passed assessment level & Modul Datenmanagement (I.BA_DAMA.17)\nI: Passed assessment level & Modul Datenbanksysteme (I.BA_DBS.17)",
@@ -3674,6 +3880,7 @@
 		{
 			"id": "ISFCS",
 			"label": "International School for Computer Science Students",
+			"labelEn": "International School for Computer Science Students",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Voraussetzungen: In Anlehnung an die Ausschreibung des ausländischen Veranstalters bzw. der ausländischen Hochschule.",
@@ -3684,6 +3891,7 @@
 		{
 			"id": "OSA",
 			"label": "Operating Systems & Computer Architecture",
+			"labelEn": "Operating Systems & Computer Architecture",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3693,6 +3901,7 @@
 		{
 			"id": "ETHAI",
 			"label": "Ethics, Regulation and AI",
+			"labelEn": "Ethics, Regulation and AI",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3702,6 +3911,7 @@
 		{
 			"id": "INTAC",
 			"label": "International Financial Accounting",
+			"labelEn": "International Financial Accounting",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3711,6 +3921,7 @@
 		{
 			"id": "AICH",
 			"label": "AI Challenge",
+			"labelEn": "AI Challenge",
 			"ects": 6,
 			"prerequisites": [
 				{ "modules": ["APPLAI"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -3722,6 +3933,7 @@
 		{
 			"id": "MAAC",
 			"label": "Management Accounting",
+			"labelEn": "Management Accounting",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3731,6 +3943,7 @@
 		{
 			"id": "DIST",
 			"label": "Digital Strategy",
+			"labelEn": "Digital Strategy",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3739,7 +3952,8 @@
 		},
 		{
 			"id": "FKOM",
-			"label": "Specialist Communication",
+			"label": "Fachkommunikation",
+			"labelEn": "Specialist Communication",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3748,7 +3962,8 @@
 		},
 		{
 			"id": "IIP2",
-			"label": "Integral Computer Science Practical Project 2",
+			"label": "Integrales Informatik Praxisprojekt 2",
+			"labelEn": "Integral Computer Science Practical Project 2",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Module in Programmierung und Projektmanagement besucht. \nEmpfehlungen: PRG, PROG, OOP, PLAB, ADS, PMB, FKOM",
@@ -3759,6 +3974,7 @@
 		{
 			"id": "CONSBW",
 			"label": "Consulting",
+			"labelEn": "Consulting",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3768,6 +3984,7 @@
 		{
 			"id": "CAEPRO",
 			"label": "Cambridge Proficiency",
+			"labelEn": "Cambridge Proficiency",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Students joining this module should have proven level C1 in English.",
@@ -3777,7 +3994,8 @@
 		},
 		{
 			"id": "VWL",
-			"label": "Economics",
+			"label": "Volkswirtschaft",
+			"labelEn": "Economics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3787,6 +4005,7 @@
 		{
 			"id": "BUSOD",
 			"label": "Business Software Development",
+			"labelEn": "Business Software Development",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3796,6 +4015,7 @@
 		{
 			"id": "ISMA",
 			"label": "IT Service Management",
+			"labelEn": "IT Service Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3805,6 +4025,7 @@
 		{
 			"id": "ASTA2",
 			"label": "Applied Statistics 2",
+			"labelEn": "Applied Statistics 2",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "decent knowledge of descriptive statistics (ASTA1)",
@@ -3814,7 +4035,8 @@
 		},
 		{
 			"id": "PEFU",
-			"label": "Staff & Leadership",
+			"label": "Personal & Führung",
+			"labelEn": "Staff & Leadership",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3824,6 +4046,7 @@
 		{
 			"id": "CYBER2",
 			"label": "Cyber 2 Advanced Pentesting and Bug Bounties",
+			"labelEn": "Cyber 2 Advanced Pentesting and Bug Bounties",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["CYBER"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -3835,7 +4058,8 @@
 		},
 		{
 			"id": "MAT1",
-			"label": "Applied Mathematics",
+			"label": "Angewandte Mathematik",
+			"labelEn": "Applied Mathematics",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Der Stoff der kaufmännischen Berufsmaturität wird vorausgesetzt.\nParallel zu MAT1 erhalten Sie Zugang zum digitalen Begleitkurs Mathematik. Damit können Sie im eigenen Tempo die Voraussetzungen (Stoff der Berufsmaturität) repetieren.\nEin erster Einblick in den digitalen Begleitkurs:\nhttps://education.doandbe.ch/mathe-digital/info\n\nWeitere Möglichkeiten:\nSelbstevaluation ganz unten auf der verlinkten Seite:\nhttps://www.hslu.ch/de-ch/wirtschaft/studium/bachelor/business-administration/zulassung/#vorbereitungskurse\nSelbstständige Repetition: https://emath.hslu.ch/ → Vorkenntnisse Berufsmatura:\nhttps://emath.hslu.ch/functions/index.php?target=crs_de_90_Vorkenntnisse%20Berufsmatura",
@@ -3846,6 +4070,7 @@
 		{
 			"id": "SPRG",
 			"label": "Secure Requirement Engineering & Programming",
+			"labelEn": "Secure Requirement Engineering & Programming",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Vorkenntnisse in JAVA und Verständnis von Scripting sind von Vorteil",
@@ -3856,6 +4081,7 @@
 		{
 			"id": "CYSECO",
 			"label": "Cyber Security Communication",
+			"labelEn": "Cyber Security Communication",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["SPTA"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -3876,6 +4102,7 @@
 		{
 			"id": "183_GENCG",
 			"label": "Generative Computer Graphics",
+			"labelEn": "Generative Computer Graphics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3884,7 +4111,8 @@
 		},
 		{
 			"id": "MAT2",
-			"label": "Advanced Applied Mathematics",
+			"label": "Angewandte Mathematik für Fortgeschrittene",
+			"labelEn": "Advanced Applied Mathematics",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Meistens wird MAT2 ein oder zwei Semester nach dem Grundlagenmodul Mathematik (Kernmodul) des jeweiligen Studiengangs besucht.\nDer Besuch von MAT2 parallel zu zum entsprechenden Kernmodul ist insbesondere für Studierende mit Vorkenntnissen in Differentialrechnung möglich.",
@@ -3895,6 +4123,7 @@
 		{
 			"id": "MALWLAB",
 			"label": "Malware Lab",
+			"labelEn": "Malware Lab",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -3928,6 +4157,7 @@
 		{
 			"id": "CVAI_MM",
 			"label": "Computer Vision & AI",
+			"labelEn": "Computer Vision & AI",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Der erste Wochen-Block entspricht dem Modul IPCV und wird zusammen mit IPCV durchgeführt. Studierende ausserhalb des Studiengangs AI&ML können nur entweder CVAI (6 ECTS) oder IPCV (3 ECTS) belegen. Studierende die bereits IPCV besucht haben, können CVAI nicht besuchen. Lineare Algebra oder Informatik Mathematik wird empfohlen.",
@@ -3937,7 +4167,8 @@
 		},
 		{
 			"id": "PRAXIS_VT",
-			"label": "Practise during full time / part time study",
+			"label": "Praxis im Vollzeit-/Teilzeitstudium",
+			"labelEn": "Practise during full time / part time study",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -3947,6 +4178,7 @@
 		{
 			"id": "AMLMED",
 			"label": "Applications of Machine Learning in Medicine",
+			"labelEn": "Applications of Machine Learning in Medicine",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -3964,6 +4196,7 @@
 		{
 			"id": "SOCIAL",
 			"label": "Social Project",
+			"labelEn": "Social Project",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -3973,6 +4206,7 @@
 		{
 			"id": "EALA",
 			"label": "Enterprise & Application Landscape Architecture",
+			"labelEn": "Enterprise & Application Landscape Architecture",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
@@ -3982,7 +4216,8 @@
 		},
 		{
 			"id": "FADU",
-			"label": "Finance & Accounting in Digital Contexts",
+			"label": "Finance & Accounting im digitalen Umfeld",
+			"labelEn": "Finance & Accounting in Digital Contexts",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "FRW Vorkenntnisse auf Stufe Abschluss kaufmännische BM oder Modul I.BA_ACBA.16",
@@ -3993,6 +4228,7 @@
 		{
 			"id": "NETW2_MM",
 			"label": "Networking & CCNA 2",
+			"labelEn": "Networking & CCNA 2",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["CNA"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "oder" },
@@ -4011,6 +4247,7 @@
 		{
 			"id": "SUMBLOCK_MM",
 			"label": "International Summer School on Blockchain",
+			"labelEn": "International Summer School on Blockchain",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Personal application including CV required. Deadline March 31st 2025. There is a cap of 20 students. Allocation is on a first come, first served basis.",
@@ -4021,6 +4258,7 @@
 		{
 			"id": "ANCPH",
 			"label": "Anglo-Saxon Culture, Politics & History",
+			"labelEn": "Anglo-Saxon Culture, Politics & History",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4030,6 +4268,7 @@
 		{
 			"id": "ITIA",
 			"label": "IT Infrastructure Automation",
+			"labelEn": "IT Infrastructure Automation",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["OSA"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "oder" },
@@ -4049,6 +4288,7 @@
 		{
 			"id": "DILA",
 			"label": "Digital Law",
+			"labelEn": "Digital Law",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4058,6 +4298,7 @@
 		{
 			"id": "276_DK",
 			"label": "pauschale Anrechung DK",
+			"labelEn": "pauschale Anrechung DK",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4066,7 +4307,8 @@
 		},
 		{
 			"id": "KOMA",
-			"label": "Conflict Management",
+			"label": "Konfliktmanagement",
+			"labelEn": "Conflict Management",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Teilnahme ab 3. Semester.",
@@ -4086,6 +4328,7 @@
 		{
 			"id": "INTAF",
 			"label": "International Affairs Economics",
+			"labelEn": "International Affairs Economics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4095,6 +4338,7 @@
 		{
 			"id": "ANLS",
 			"label": "Analysis ICS",
+			"labelEn": "Analysis ICS",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Beherrschen des Mathematikstoffes einer tech. BM. ggf. ist der Besuch des Mathematik-Vorkurses der HSLU T&A empfohlen (zu geringe Punktzahl im Assessment) oder obligatorisch (z.B. kaufmännische BM).",
@@ -4105,6 +4349,7 @@
 		{
 			"id": "LIOS",
 			"label": "Linux OS",
+			"labelEn": "Linux OS",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4114,6 +4359,7 @@
 		{
 			"id": "AIHLTH",
 			"label": "AI for Healthcare - Guest Lectures",
+			"labelEn": "AI for Healthcare - Guest Lectures",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -4130,7 +4376,8 @@
 		},
 		{
 			"id": "PYTHON",
-			"label": "Python for Beginners",
+			"label": "Python Grundlagen",
+			"labelEn": "Python for Beginners",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["OOP"], "mustBePassed": true, "moduleLinkType": "oder", "prerequisiteLinkType": "und" },
@@ -4144,6 +4391,7 @@
 		{
 			"id": "WECOT",
 			"label": "Web & Communications Technologies",
+			"labelEn": "Web & Communications Technologies",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4153,6 +4401,7 @@
 		{
 			"id": "AR",
 			"label": "Augmented Reality",
+			"labelEn": "Augmented Reality",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4162,6 +4411,7 @@
 		{
 			"id": "AGAMEDEV",
 			"label": "Advanced Game Development",
+			"labelEn": "Advanced Game Development",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -4179,6 +4429,7 @@
 		{
 			"id": "PROG_MM",
 			"label": "Programming for Data Science",
+			"labelEn": "Programming for Data Science",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4188,6 +4439,7 @@
 		{
 			"id": "IBCL",
 			"label": "International Blockchain Lab",
+			"labelEn": "International Blockchain Lab",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4197,6 +4449,7 @@
 		{
 			"id": "131_MATGC",
 			"label": "Mathematics for Games & Computergraphics",
+			"labelEn": "Mathematics for Games & Computergraphics",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Das Modul setzt Mathematik auf Stufe der technischen Berufsmaturität voraus",
@@ -4207,6 +4460,7 @@
 		{
 			"id": "MATHESIS",
 			"label": "Masterthesis",
+			"labelEn": "Masterthesis",
 			"ects": 30,
 			"prerequisites": [],
 			"prerequisiteNote": "Passed all compulsory modules at the home university and at least 24 ECTS credits at the partner university.",
@@ -4217,6 +4471,7 @@
 		{
 			"id": "NALAPRO",
 			"label": "Natural Language Processing",
+			"labelEn": "Natural Language Processing",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4225,7 +4480,8 @@
 		},
 		{
 			"id": "INMA",
-			"label": "Innovation Management",
+			"label": "Innovationsmanagement",
+			"labelEn": "Innovation Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4235,6 +4491,7 @@
 		{
 			"id": "121_IGAME",
 			"label": "Game Design & Engineering",
+			"labelEn": "Game Design & Engineering",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Englischkenntnisse auf Niveau des Moduls „English-Booster“ sind sehr empfehlenswert.",
@@ -4245,6 +4502,7 @@
 		{
 			"id": "ASTA1",
 			"label": "Applied Statistics 1",
+			"labelEn": "Applied Statistics 1",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4254,6 +4512,7 @@
 		{
 			"id": "222_STUG1",
 			"label": "Studio Game 1",
+			"labelEn": "Studio Game 1",
 			"ects": 12,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4263,6 +4522,7 @@
 		{
 			"id": "321_BCON",
 			"label": "Bachelor Concept",
+			"labelEn": "Bachelor Concept",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4271,7 +4531,8 @@
 		},
 		{
 			"id": "DIBM",
-			"label": "Digital Business Models",
+			"label": "Digitale Geschäftsmodelle",
+			"labelEn": "Digital Business Models",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4281,6 +4542,7 @@
 		{
 			"id": "301_PROJ",
 			"label": "Projectmanagement",
+			"labelEn": "Projectmanagement",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4290,6 +4552,7 @@
 		{
 			"id": "INTCOMP",
 			"label": "Intercultural Competences",
+			"labelEn": "Intercultural Competences",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "None",
@@ -4300,6 +4563,7 @@
 		{
 			"id": "205_STORY",
 			"label": "Storytelling",
+			"labelEn": "Storytelling",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4309,6 +4573,7 @@
 		{
 			"id": "132_4DAUT",
 			"label": "4D Authoring",
+			"labelEn": "4D Authoring",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4317,7 +4582,8 @@
 		},
 		{
 			"id": "ASTATF",
-			"label": "Advanced Applied Statistics",
+			"label": "Angewandte Statistik für Fortgeschrittene",
+			"labelEn": "Advanced Applied Statistics",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -4335,6 +4601,7 @@
 		{
 			"id": "IL_PROJ",
 			"label": "Israel Project",
+			"labelEn": "Israel Project",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4344,6 +4611,7 @@
 		{
 			"id": "CSARCH",
 			"label": "Cyber Security Architecture",
+			"labelEn": "Cyber Security Architecture",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4352,7 +4620,8 @@
 		},
 		{
 			"id": "223_COMGX",
-			"label": "Computer Graphics extended",
+			"label": "COMGRAPX Computer Graphics Extended",
+			"labelEn": "Computer Graphics extended",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Vorgängiger Besuch von I.BA_132_4DAUT.22 (4D Authoring) (für Fokus Informatik) oder DK.BA_DI_152_COMGD.22 (Computer Graphics Design) für Fokus Design empfohlen",
@@ -4363,6 +4632,7 @@
 		{
 			"id": "106_KIVIS",
 			"label": "Kickstart Visual Design",
+			"labelEn": "Kickstart Visual Design",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4372,6 +4642,7 @@
 		{
 			"id": "233_SOCPR",
 			"label": "Social Project Digital Ideation",
+			"labelEn": "Social Project Digital Ideation",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Studierende engagieren sich im Rahmen des Studienganges in Form eines Projektes mit sozialen Aspekten (z. B. Betreuung ausländischer Studierender, Studierendenakquisition, Durchführung einer Exkursion oder eines Events, Aufbau einer Website oder von Social Media):\n-\tDie Projektidee muss vorgängig bei der Studiengangleitung eingegeben und von dieser bewilligt werden.\n-\tAlle Pflichtmodule auf Stufe Basic besucht.",
@@ -4381,7 +4652,8 @@
 		},
 		{
 			"id": "OOP",
-			"label": "Object-Oriented Programming",
+			"label": "Objektorientierte Programmierung",
+			"labelEn": "Object-Oriented Programming",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4391,6 +4663,7 @@
 		{
 			"id": "DIGITAL",
 			"label": "Digitalization",
+			"labelEn": "Digitalization",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Work through the foundations of the syllabus for this module in self-study with the following core reading (chapters 1 to 5):   “Doing Agile Right - Transformation Without Chaos”; Darrell Rigby, Sarah Elk, Steve Berez, 2020   EAN: 9781633698703; ISBN: 978-1-63369-870-3",
@@ -4401,6 +4674,7 @@
 		{
 			"id": "ARTIFIN",
 			"label": "Artificial Intelligence",
+			"labelEn": "Artificial Intelligence",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Students are recommended to have taken previous classes on Linear Algebra, Applied Statistics, and Python Programming. While not compulsory, students who had taken these modules prior to ARTIFIN will find the material more accessible.",
@@ -4411,6 +4685,7 @@
 		{
 			"id": "105_AUDIO",
 			"label": "Audio Design",
+			"labelEn": "Audio Design",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
@@ -4421,6 +4696,7 @@
 		{
 			"id": "320_DIPRO",
 			"label": "Digital Project",
+			"labelEn": "Digital Project",
 			"ects": 12,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4429,7 +4705,8 @@
 		},
 		{
 			"id": "102_DIGIT",
-			"label": "Digital Technologies Fundamentals",
+			"label": "Digital Technology Fundamentals",
+			"labelEn": "Digital Technologies Fundamentals",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "keine voraussgesetzten Module empfohlen",
@@ -4440,6 +4717,7 @@
 		{
 			"id": "220_STUW1",
 			"label": "Studio Web & Mobile 1",
+			"labelEn": "Studio Web & Mobile 1",
 			"ects": 12,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4449,6 +4727,7 @@
 		{
 			"id": "I2C",
 			"label": "Introduction to C Programing Language",
+			"labelEn": "Introduction to C Programing Language",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["OOP"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "oder" },
@@ -4462,6 +4741,7 @@
 		{
 			"id": "100_IDCL1",
 			"label": "Ideation Culture Lab 1",
+			"labelEn": "Ideation Culture Lab 1",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4471,6 +4751,7 @@
 		{
 			"id": "MOBINFSEC",
 			"label": "5G Mobile Networks, Technologies & Security",
+			"labelEn": "5G Mobile Networks, Technologies & Security",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Optional NETW1 und NETW2, Optional MOBILSEC",
@@ -4481,6 +4762,7 @@
 		{
 			"id": "IL_LECT",
 			"label": "Lecture at Tel Aviv University",
+			"labelEn": "Lecture at Tel Aviv University",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4490,6 +4772,7 @@
 		{
 			"id": "221_STUU1",
 			"label": "Studio User Experience 1",
+			"labelEn": "Studio User Experience 1",
 			"ects": 12,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4499,6 +4782,7 @@
 		{
 			"id": "IOPT_MM",
 			"label": "Industrial Optimization",
+			"labelEn": "Industrial Optimization",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "AI/ML-Studierende müssen das Assessment Level (bedingt) bestanden haben\nAndere Studierende müssen mindestens 6 Credits in Mathematik auf Assessment-Level bestanden haben",
@@ -4508,7 +4792,8 @@
 		},
 		{
 			"id": "130_KIPRO",
-			"label": "Kick-Start Algorithmic Thinking & Programming",
+			"label": "Kickstart Algorithmic Thinking & Programming",
+			"labelEn": "Kick-Start Algorithmic Thinking & Programming",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4518,6 +4803,7 @@
 		{
 			"id": "120_IUX",
 			"label": "User Experience Design & Engineering",
+			"labelEn": "User Experience Design & Engineering",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4527,6 +4813,7 @@
 		{
 			"id": "ONBU",
 			"label": "Online Business Workshop",
+			"labelEn": "Online Business Workshop",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4536,6 +4823,7 @@
 		{
 			"id": "MAITPRO",
 			"label": "Managing IT-Projects",
+			"labelEn": "Managing IT-Projects",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Work through the foundations of the syllabus for this module in self-study with the following core reading:  “Project Management: A Systems Approach to Planning, Scheduling, and Controlling”; Harold Krezner, 2022; Chapters 1 - 3 EAN 1119805376; ISBN: 978-1119805373",
@@ -4546,6 +4834,7 @@
 		{
 			"id": "300_IDCL5",
 			"label": "Ideation Culture Lab 5",
+			"labelEn": "Ideation Culture Lab 5",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4555,6 +4844,7 @@
 		{
 			"id": "UEDE",
 			"label": "User Experience Design & Engineering",
+			"labelEn": "User Experience Design & Engineering",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4563,7 +4853,8 @@
 		},
 		{
 			"id": "302_INNO",
-			"label": "Creative Entrepreneur & Corporate Innovation",
+			"label": "Creative Entrepreneur&Coorporate Innovation",
+			"labelEn": "Creative Entrepreneur & Corporate Innovation",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4573,6 +4864,7 @@
 		{
 			"id": "IAI",
 			"label": "Introduction to AI",
+			"labelEn": "Introduction to AI",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4581,7 +4873,8 @@
 		},
 		{
 			"id": "231_MATDM",
-			"label": "Discrete Mathematics Pro",
+			"label": "Diskrete Mathematik Pro",
+			"labelEn": "Discrete Mathematics Pro",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4590,7 +4883,8 @@
 		},
 		{
 			"id": "WEB_ISA",
-			"label": "Web develpment for all (Internet presence self-made)",
+			"label": "Web-Entwicklung für alle (Internet-Auftritt selbst gemacht)",
+			"labelEn": "Web develpment for all (Internet presence self-made)",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "keine Vorkenntnisse nötig",
@@ -4601,6 +4895,7 @@
 		{
 			"id": "234_RMDI",
 			"label": "Research Module Digital Ideation",
+			"labelEn": "Research Module Digital Ideation",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4610,6 +4905,7 @@
 		{
 			"id": "204_MEN3",
 			"label": "Mentoring 3. Semester",
+			"labelEn": "Mentoring 3. Semester",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4619,6 +4915,7 @@
 		{
 			"id": "REBUPRO",
 			"label": "Research & Business Project",
+			"labelEn": "Research & Business Project",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4637,6 +4934,7 @@
 		{
 			"id": "200_IDCL3",
 			"label": "Ideation Culture Lab 3",
+			"labelEn": "Ideation Culture Lab 3",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4646,6 +4944,7 @@
 		{
 			"id": "DLP",
 			"label": "Data Leakage Prevention",
+			"labelEn": "Data Leakage Prevention",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4655,6 +4954,7 @@
 		{
 			"id": "272_STUG2",
 			"label": "Studio Game Design & Engineering 2",
+			"labelEn": "Studio Game Design & Engineering 2",
 			"ects": 9,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4664,6 +4964,7 @@
 		{
 			"id": "AISUS",
 			"label": "Artificial Intelligence and Sustainability",
+			"labelEn": "Artificial Intelligence and Sustainability",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Artificial Intelligence and Machine Learning Bachelor Students must have passed the assessment level\nAll other students must have taken the 3 credit module Machine Learning (ML_MM) before taking AISUS\n\nThere is a requirement to do pre-reading before attending the first day of the block week. This will be circulated 3 weeks in advance.",
@@ -4674,6 +4975,7 @@
 		{
 			"id": "251_SOCIM",
 			"label": "Social Implications of Digital Media (Term Paper)",
+			"labelEn": "Social Implications of Digital Media (Term Paper)",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4683,6 +4985,7 @@
 		{
 			"id": "DIGIBUMO",
 			"label": "Digital Business Models",
+			"labelEn": "Digital Business Models",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Reading for the foundations in self-study (chapters 1 to 5): \"Mastering Digital Business\", Nicholas D. Evans, 2017, EAN: 97817801734; ISBN 1780173458",
@@ -4693,6 +4996,7 @@
 		{
 			"id": "SEBI",
 			"label": "Software Engineering for Business IT",
+			"labelEn": "Software Engineering for Business IT",
 			"ects": 6,
 			"prerequisites": [
 				{ "modules": ["PRG"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -4704,6 +5008,7 @@
 		{
 			"id": "271_STUU2",
 			"label": "Studio User Experience 2",
+			"labelEn": "Studio User Experience 2",
 			"ects": 9,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4713,6 +5018,7 @@
 		{
 			"id": "CRIT_ISA",
 			"label": "Critical Thinking",
+			"labelEn": "Critical Thinking",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4722,6 +5028,7 @@
 		{
 			"id": "MAIDICO",
 			"label": "Managing international digitalized companies",
+			"labelEn": "Managing international digitalized companies",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4731,6 +5038,7 @@
 		{
 			"id": "ACMETSS",
 			"label": "Academic Methods Spring Semester",
+			"labelEn": "Academic Methods Spring Semester",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4740,6 +5048,7 @@
 		{
 			"id": "SWDA_MM",
 			"label": "Software Development & Architecture",
+			"labelEn": "Software Development & Architecture",
 			"ects": 6,
 			"prerequisites": [
 				{ "modules": ["DBS"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" },
@@ -4752,7 +5061,8 @@
 		},
 		{
 			"id": "DFF",
-			"label": "Digital Forensic Foundations",
+			"label": "Grundlagen der Digitalen Forensik",
+			"labelEn": "Digital Forensic Foundations",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -4761,7 +5071,8 @@
 		},
 		{
 			"id": "351_BPROD",
-			"label": "Bachelor-Project Art and Design",
+			"label": "Bachelor-Arbeit künstlerisch-gestalterisch",
+			"labelEn": "Bachelor-Project Art and Design",
 			"ects": 18,
 			"prerequisites": [],
 			"prerequisiteNote": "Alle Pflichtmodule des 1.– 5. Semesters sind bestanden.\nMindestens 150 ECTS liegen vor.",
@@ -4772,6 +5083,7 @@
 		{
 			"id": "ININCOP",
 			"label": "Intercultural & International Cooperation",
+			"labelEn": "Intercultural & International Cooperation",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4781,6 +5093,7 @@
 		{
 			"id": "270_STUW2",
 			"label": "Studio UX & Web 2",
+			"labelEn": "Studio UX & Web 2",
 			"ects": 9,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4790,6 +5103,7 @@
 		{
 			"id": "MALDASC",
 			"label": "Machine Learning and Data Science",
+			"labelEn": "Machine Learning and Data Science",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4798,7 +5112,8 @@
 		},
 		{
 			"id": "380_BPROI",
-			"label": "Bachelor Project Digital Ideation, Focus Computer Science",
+			"label": "Bachelor Project Digital Ideation, Fokus Informatik",
+			"labelEn": "Bachelor Project Digital Ideation, Focus Computer Science",
 			"ects": 18,
 			"prerequisites": [],
 			"prerequisiteNote": "Alle Pflichtmodule des 1.– 5. Semesters sind bestanden.\nMindestens 150 ECTS liegen vor.",
@@ -4809,6 +5124,7 @@
 		{
 			"id": "ISSS",
 			"label": "International Sustainability Summer School",
+			"labelEn": "International Sustainability Summer School",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "English knowledge level intermediate or above is mandatory (at least B1 level)\n\nFor Students of the T&A: At time of signing up - one of the following Project Modules has to be completed and passed: PDP1, PDP2, PREN1 or PREN2",
@@ -4819,6 +5135,7 @@
 		{
 			"id": "BLOCCAI",
 			"label": "Blockchain",
+			"labelEn": "Blockchain",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4828,6 +5145,7 @@
 		{
 			"id": "274_BHLP1",
 			"label": "Bachelor Project Help 1",
+			"labelEn": "Bachelor Project Help 1",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4837,6 +5155,7 @@
 		{
 			"id": "180_MATBF",
 			"label": "Beautiful Mathematics",
+			"labelEn": "Beautiful Mathematics",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -4852,7 +5171,8 @@
 		},
 		{
 			"id": "273_COMPP",
-			"label": "Computational Perception extended",
+			"label": "Computational Perception Extended",
+			"labelEn": "Computational Perception extended",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4862,6 +5182,7 @@
 		{
 			"id": "181_DEWEB",
 			"label": "Development for Web & Mobile",
+			"labelEn": "Development for Web & Mobile",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -4879,6 +5200,7 @@
 		{
 			"id": "182_COMGI",
 			"label": "Computer Graphics (Informatik)",
+			"labelEn": "Computer Graphics (Informatik)",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4888,6 +5210,7 @@
 		{
 			"id": "172_STUEM",
 			"label": "Studio Emerging Technologies",
+			"labelEn": "Studio Emerging Technologies",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "empfohlen:\n- The History of Creative Sparks (SPARK)\n- Digital Technologies Fundamental (DIGITECH)\n- User Experience Design & Engineering (UX)",
@@ -4898,6 +5221,7 @@
 		{
 			"id": "171_STUIN",
 			"label": "Studio Information Aesthetics & Engineering",
+			"labelEn": "Studio Information Aesthetics & Engineering",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
@@ -4908,6 +5232,7 @@
 		{
 			"id": "170_STUPR",
 			"label": "Studio Physical Prototyping",
+			"labelEn": "Studio Physical Prototyping",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Studierende des Fokus Design müssen vor Beginn des Moduls die Einführung in die Holzwerkstatt absolviert haben.",
@@ -4918,6 +5243,7 @@
 		{
 			"id": "150_IDCL2",
 			"label": "Ideation Culture Lab 2",
+			"labelEn": "Ideation Culture Lab 2",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4927,6 +5253,7 @@
 		{
 			"id": "250_IDCL4",
 			"label": "Ideation Culture Lab 4",
+			"labelEn": "Ideation Culture Lab 4",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4936,6 +5263,7 @@
 		{
 			"id": "275_BHLP2",
 			"label": "Bachelor Project Help 2",
+			"labelEn": "Bachelor Project Help 2",
 			"ects": 2,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -4955,6 +5283,7 @@
 		{
 			"id": "173_STUPX",
 			"label": "Studio Physical Prototyping extended",
+			"labelEn": "Studio Physical Prototyping extended",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Besuch von I.BA_161_STUPROT.16 (StudioPhysicalPrototyping) empfohlen",
@@ -5027,7 +5356,8 @@
 		},
 		{
 			"id": "DSPRO2",
-			"label": "Data Science Project II",
+			"label": "Data Science Projekt II",
+			"labelEn": "Data Science Project II",
 			"ects": 6,
 			"prerequisites": [
 				{ "modules": ["PMB"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -5048,6 +5378,7 @@
 		{
 			"id": "CF",
 			"label": "Computer Forensic",
+			"labelEn": "Computer Forensic",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5056,7 +5387,8 @@
 		},
 		{
 			"id": "ISA_MU",
-			"label": "Informatics Systems & Applications for MuDC",
+			"label": "Informatiksysteme & -anwendungen für MuDC",
+			"labelEn": "Informatics Systems & Applications for MuDC",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5066,6 +5398,7 @@
 		{
 			"id": "AIRWEEK",
 			"label": "AI Robotics Week",
+			"labelEn": "AI Robotics Week",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5075,6 +5408,7 @@
 		{
 			"id": "SECPROJ_MM",
 			"label": "Security Project",
+			"labelEn": "Security Project",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5084,6 +5418,7 @@
 		{
 			"id": "ISF",
 			"label": "Information Security Fundamentals",
+			"labelEn": "Information Security Fundamentals",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5093,6 +5428,7 @@
 		{
 			"id": "SSIDFG",
 			"label": "Self-Sovereign Identity and Data for Good Technology",
+			"labelEn": "Self-Sovereign Identity and Data for Good Technology",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["BCHAIN"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -5103,7 +5439,8 @@
 		},
 		{
 			"id": "NAIT",
-			"label": "Sustainability & Computer Science",
+			"label": "Nachhaltigkeit & IT",
+			"labelEn": "Sustainability & Computer Science",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5112,7 +5449,8 @@
 		},
 		{
 			"id": "RAYTRACING",
-			"label": "Raytracing from scratch",
+			"label": "Raytracing von Grund auf",
+			"labelEn": "Raytracing from scratch",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Programmierkenntnisse in einer objektorientierten Sprache sind empfohlen.\nBesuchtes Modul Lineare Algebra (LIAL_MM) ist empfohlen, aber keine Voraussetzung.",
@@ -5123,6 +5461,7 @@
 		{
 			"id": "MLOPS",
 			"label": "Machine Learning Operations",
+			"labelEn": "Machine Learning Operations",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -5140,6 +5479,7 @@
 		{
 			"id": "SOMS",
 			"label": "Social Media & Storytelling",
+			"labelEn": "Social Media & Storytelling",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5149,6 +5489,7 @@
 		{
 			"id": "SPDS",
 			"label": "Sports Data Science",
+			"labelEn": "Sports Data Science",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -5165,6 +5506,7 @@
 		{
 			"id": "EDAF",
 			"label": "Energy data analytics and forecasting",
+			"labelEn": "Energy data analytics and forecasting",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -5181,6 +5523,7 @@
 		{
 			"id": "ABDSC31",
 			"label": "Open Data Lab",
+			"labelEn": "Open Data Lab",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5198,7 +5541,8 @@
 		},
 		{
 			"id": "BPRAXIS_XXX",
-			"label": "Practical Module 6 ECTS",
+			"label": "Berufspraxis",
+			"labelEn": "Practical Module 6 ECTS",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Bedingt eine einschlägige berufliche Anstellung im Umfang von mindestens 40 Stellenprozenten in einem einschlägigen Berufsumfeld.",
@@ -5208,7 +5552,8 @@
 		},
 		{
 			"id": "P_MUS1",
-			"label": "Project Music 1",
+			"label": "Projekt Musik 1",
+			"labelEn": "Project Music 1",
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5217,7 +5562,8 @@
 		},
 		{
 			"id": "DSPRO1",
-			"label": "Data Science Project I",
+			"label": "Data Science Projekt I",
+			"labelEn": "Data Science Project I",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5227,6 +5573,7 @@
 		{
 			"id": "DEVOPS",
 			"label": "DevOps",
+			"labelEn": "DevOps",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["VSK_MM"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" },
@@ -5243,7 +5590,8 @@
 		},
 		{
 			"id": "SGPOR",
-			"label": "Secure Business Processes & Organisation",
+			"label": "Secure Geschäftsprozesse und Organisation",
+			"labelEn": "Secure Business Processes & Organisation",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5253,6 +5601,7 @@
 		{
 			"id": "ISPTM",
 			"label": "International Standards for programmers and technical managers",
+			"labelEn": "International Standards for programmers and technical managers",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5262,6 +5611,7 @@
 		{
 			"id": "IBCL2",
 			"label": "International Block Chain Lab 2",
+			"labelEn": "International Block Chain Lab 2",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5279,7 +5629,8 @@
 		},
 		{
 			"id": "STWI_ISA",
-			"label": "From study to business",
+			"label": "Vom Studium in die Wirtschaft",
+			"labelEn": "From study to business",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5342,7 +5693,8 @@
 		},
 		{
 			"id": "WEBT_A",
-			"label": "Advanced Web Technologies",
+			"label": "Web-Technologien Advanced",
+			"labelEn": "Advanced Web Technologies",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5361,6 +5713,7 @@
 		{
 			"id": "DDSEMAB",
 			"label": "Double Degree Semester abroad",
+			"labelEn": "Double Degree Semester abroad",
 			"ects": 45,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5370,6 +5723,7 @@
 		{
 			"id": "DEFI",
 			"label": "Decentralized Finance",
+			"labelEn": "Decentralized Finance",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5379,6 +5733,7 @@
 		{
 			"id": "MACO",
 			"label": "Managing Conflicts",
+			"labelEn": "Managing Conflicts",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5388,6 +5743,7 @@
 		{
 			"id": "INTEC",
 			"label": "Information Technology",
+			"labelEn": "Information Technology",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5397,6 +5753,7 @@
 		{
 			"id": "BYOB",
 			"label": "Build your own Business",
+			"labelEn": "Build your own Business",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Interesse an Startups und Gründung eines eigenen Unternehmens",
@@ -5407,6 +5764,7 @@
 		{
 			"id": "MATHSDD",
 			"label": "Masterthesis Double Degree Master ITDS",
+			"labelEn": "Masterthesis Double Degree Master ITDS",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5416,6 +5774,7 @@
 		{
 			"id": "AIRCH",
 			"label": "AI Robotics Challenge",
+			"labelEn": "AI Robotics Challenge",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5424,7 +5783,8 @@
 		},
 		{
 			"id": "P_MUS2",
-			"label": "Project Music 2",
+			"label": "Projekt Musik 2",
+			"labelEn": "Project Music 2",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5434,6 +5794,7 @@
 		{
 			"id": "APPLAI",
 			"label": "Applied Artificial Intelligence",
+			"labelEn": "Applied Artificial Intelligence",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5443,6 +5804,7 @@
 		{
 			"id": "HCDE",
 			"label": "Human Centered Design Extended",
+			"labelEn": "Human Centered Design Extended",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5452,6 +5814,7 @@
 		{
 			"id": "SDDW",
 			"label": "Sustainable Development in the digital World",
+			"labelEn": "Sustainable Development in the digital World",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5461,6 +5824,7 @@
 		{
 			"id": "IAM_MM",
 			"label": "Identity Access Management",
+			"labelEn": "Identity Access Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5470,6 +5834,7 @@
 		{
 			"id": "PHYSIK1A_MM",
 			"label": "TA.BA_PHYSIK1A",
+			"labelEn": "TA.BA_PHYSIK1A",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ANLIS"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -5480,7 +5845,8 @@
 		},
 		{
 			"id": "IKDZ",
-			"label": "Information literacy in the digital era",
+			"label": "Informationskompetenz im digitalen Zeitalter",
+			"labelEn": "Information literacy in the digital era",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5490,6 +5856,7 @@
 		{
 			"id": "AI_ISA",
 			"label": "An interdisciplinary view of AI - the fundamentals of Artificial Intelligence (for non-computer scientists) and its social interrelationships (above all for computer scientists)",
+			"labelEn": "An interdisciplinary view of AI - the fundamentals of Artificial Intelligence (for non-computer scientists) and its social interrelationships (above all for computer scientists)",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5499,6 +5866,7 @@
 		{
 			"id": "XAI",
 			"label": "Explainable AI",
+			"labelEn": "Explainable AI",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -5516,6 +5884,7 @@
 		{
 			"id": "AICOMP",
 			"label": "AI/ML Competition",
+			"labelEn": "AI/ML Competition",
 			"ects": 6,
 			"prerequisites": [
 				{
@@ -5532,6 +5901,7 @@
 		{
 			"id": "LSPHR",
 			"label": "Leadership and HR",
+			"labelEn": "Leadership and HR",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5541,6 +5911,7 @@
 		{
 			"id": "INTRO_QC",
 			"label": "Introduction to Quantum Computing",
+			"labelEn": "Introduction to Quantum Computing",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5550,6 +5921,7 @@
 		{
 			"id": "AICASE",
 			"label": "AI Careers and Case Studies",
+			"labelEn": "AI Careers and Case Studies",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5559,6 +5931,7 @@
 		{
 			"id": "MCIF",
 			"label": "Mobile, Cloud & IoT Forensics",
+			"labelEn": "Mobile, Cloud & IoT Forensics",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Der Vorgängige Besuch von DFF (MSF) oder mindestens eines Cloud-Modules (MSC) ist empfohlen, jedoch nicht zwingend.",
@@ -5569,6 +5942,7 @@
 		{
 			"id": "CYC",
 			"label": "Cybercrime",
+			"labelEn": "Cybercrime",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5578,6 +5952,7 @@
 		{
 			"id": "DRONES",
 			"label": "Intelligent Drones",
+			"labelEn": "Intelligent Drones",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -5595,6 +5970,7 @@
 		{
 			"id": "NAND2TETRIS",
 			"label": "From NAND to Tetris",
+			"labelEn": "From NAND to Tetris",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["OOP"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -5606,6 +5982,7 @@
 		{
 			"id": "ADRM_MM",
 			"label": "Advanced Risk Management",
+			"labelEn": "Advanced Risk Management",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ISF"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -5618,6 +5995,7 @@
 		{
 			"id": "RSEC",
 			"label": "First Steps in Programming a Humanoid AI Robot",
+			"labelEn": "First Steps in Programming a Humanoid AI Robot",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5627,6 +6005,7 @@
 		{
 			"id": "SEMABRO",
 			"label": "Semester abroad Master ITDS",
+			"labelEn": "Semester abroad Master ITDS",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5636,6 +6015,7 @@
 		{
 			"id": "SEMABDD",
 			"label": "Semester abroad Master ITDS Double Degree",
+			"labelEn": "Semester abroad Master ITDS Double Degree",
 			"ects": 30,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5644,7 +6024,8 @@
 		},
 		{
 			"id": "ALGKOMP",
-			"label": "Algorithmic Composition and Sound Synthesis",
+			"label": "Algorithmische Komposition und Klangsynthese",
+			"labelEn": "Algorithmic Composition and Sound Synthesis",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -5660,7 +6041,8 @@
 		},
 		{
 			"id": "DALGMU",
-			"label": "Development of Algorithmic Music",
+			"label": "Entwicklung der algorithmischen Musik",
+			"labelEn": "Development of Algorithmic Music",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5670,6 +6052,7 @@
 		{
 			"id": "ANLIS-2",
 			"label": "Analysis 2",
+			"labelEn": "Analysis 2",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ANA-G"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
@@ -5680,7 +6063,8 @@
 		},
 		{
 			"id": "P_MUS3",
-			"label": "Project Music 3",
+			"label": "Projekt Musik 3",
+			"labelEn": "Project Music 3",
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5689,7 +6073,8 @@
 		},
 		{
 			"id": "ITA_B1",
-			"label": "Italian Intermediate Course B1",
+			"label": "Italienisch Fortsetzungskurs B1",
+			"labelEn": "Italian Intermediate Course B1",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5699,6 +6084,7 @@
 		{
 			"id": "DVIZ_MM",
 			"label": "Data Visualisation for AI and Machine Learning",
+			"labelEn": "Data Visualisation for AI and Machine Learning",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Students must have taken (or be taking) PROG or another Python module.",
@@ -5708,7 +6094,8 @@
 		},
 		{
 			"id": "COACH",
-			"label": "SmartStart: Mathematics and Programming for Success in Studies",
+			"label": "SmartStart: Mathematik und Programmierung für Erfolg im Studium",
+			"labelEn": "SmartStart: Mathematics and Programming for Success in Studies",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Nur Studierende des 1. und 2. Semesters sind zum Modul zugelassen.\nOnly students in the 1st and 2nd semesters are allowed to enroll in the module.",
@@ -5719,6 +6106,7 @@
 		{
 			"id": "URT",
 			"label": "User Research & Testing",
+			"labelEn": "User Research & Testing",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5728,6 +6116,7 @@
 		{
 			"id": "SAATE",
 			"label": "Semester abroad Asia Region Major Technology",
+			"labelEn": "Semester abroad Asia Region Major Technology",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5736,7 +6125,8 @@
 		},
 		{
 			"id": "DMATH-ALGO",
-			"label": "Discrete mathematics for data structures and algorithms",
+			"label": "Diskrete Mathematik für Datenstrukturen und Algorithmen",
+			"labelEn": "Discrete mathematics for data structures and algorithms",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5746,6 +6136,7 @@
 		{
 			"id": "AMLMED_MM",
 			"label": "Applications of Machine Learning in Medicine",
+			"labelEn": "Applications of Machine Learning in Medicine",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -5763,6 +6154,7 @@
 		{
 			"id": "STDW",
 			"label": "Digital Transformation for Sustainability",
+			"labelEn": "Digital Transformation for Sustainability",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5772,6 +6164,7 @@
 		{
 			"id": "HFD_MM",
 			"label": "Human Factors & Design",
+			"labelEn": "Human Factors & Design",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5781,6 +6174,7 @@
 		{
 			"id": "CW",
 			"label": "CyberWars",
+			"labelEn": "CyberWars",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5789,7 +6183,8 @@
 		},
 		{
 			"id": "RANDANDALG",
-			"label": "Design and analysis of randomised procedures",
+			"label": "Entwurf und Analyse randomisierter Verfahren",
+			"labelEn": "Design and analysis of randomised procedures",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -5806,6 +6201,7 @@
 		{
 			"id": "FIT",
 			"label": "Fundamentals in Information Theory",
+			"labelEn": "Fundamentals in Information Theory",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5814,7 +6210,8 @@
 		},
 		{
 			"id": "3DMOD4RT_MM",
-			"label": "3D Modelling for real-time applications",
+			"label": "3D Modellieren für Echtzeitanwendungen",
+			"labelEn": "3D Modelling for real-time applications",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "-",
@@ -5825,6 +6222,7 @@
 		{
 			"id": "SAWFC",
 			"label": "Semester abroad Western World Free Choice",
+			"labelEn": "Semester abroad Western World Free Choice",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5833,7 +6231,8 @@
 		},
 		{
 			"id": "ANA-G",
-			"label": "Basics of Calculus",
+			"label": "Grundlagen der Analysis",
+			"labelEn": "Basics of Calculus",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5843,6 +6242,7 @@
 		{
 			"id": "SAWTE",
 			"label": "Semester abroad Western World Major Technology",
+			"labelEn": "Semester abroad Western World Major Technology",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5852,6 +6252,7 @@
 		{
 			"id": "GAMEDES_MM",
 			"label": "Game Design",
+			"labelEn": "Game Design",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Es werden keine Erfahrungen mit Spieleprogrammierung oder -entwicklung benötigt.",
@@ -5862,6 +6263,7 @@
 		{
 			"id": "MATHSIMTEC",
 			"label": "Mathemathics for immersive tech",
+			"labelEn": "Mathemathics for immersive tech",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5871,6 +6273,7 @@
 		{
 			"id": "TECHPM",
 			"label": "Tech-driven project management",
+			"labelEn": "Tech-driven project management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5880,6 +6283,7 @@
 		{
 			"id": "TIME",
 			"label": "Time Series Analysis",
+			"labelEn": "Time Series Analysis",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "- Basic statistics and probability theory\n- Python programming\n\nRecommended preparatory module:\n- ASTAT_MM Applied Statistics for Data Science",
@@ -5890,6 +6294,7 @@
 		{
 			"id": "HCD",
 			"label": "Human Centered Design",
+			"labelEn": "Human Centered Design",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "ACHTUNG! Studierende mit Major HCID müssen das Modul HCDE (6ECTS) besuchen und nicht dieses Modul (HCD)!",
@@ -5900,6 +6305,7 @@
 		{
 			"id": "ROBO_MM",
 			"label": "Robotics",
+			"labelEn": "Robotics",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Für T&A-Maschinentechnik Studierende die Moduleingangsbedingung ist, dass Lineare Regelungssysteme (LRS) bestanden sein muss, vor das Modul ROBO besucht werden kann.\nFür T&A-Digital Engineering Studierende die Moduleingangsbedingung ist, dass Lineare Regelungssysteme (LRS) bestanden sein muss, und beide PYTHON & LINALG bestanden sein müssen, vor das Modul ROBO besucht werden kann.\n\nAIML-Bachelor-Studierende können anstelle dieses ROBO-Moduls das Modul AROB Angewandte Robotik an der T&A in Horw belegen. Sie müssen mindestens das eine oder das andere belegen. Sie können aber auch beide besuchen (in verschiedenen Semestern)",
@@ -5910,6 +6316,7 @@
 		{
 			"id": "ICPRO",
 			"label": "Intercultural Project",
+			"labelEn": "Intercultural Project",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5919,6 +6326,7 @@
 		{
 			"id": "OOPCREA",
 			"label": "Object-oriented programming for creative tech",
+			"labelEn": "Object-oriented programming for creative tech",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5928,6 +6336,7 @@
 		{
 			"id": "HRI",
 			"label": "Human-Robot Interaction",
+			"labelEn": "Human-Robot Interaction",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -5937,6 +6346,7 @@
 		{
 			"id": "SAWDB",
 			"label": "Semester abroad Western World Major Digital Business Engineer",
+			"labelEn": "Semester abroad Western World Major Digital Business Engineer",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5946,6 +6356,7 @@
 		{
 			"id": "INTROIMMTECH",
 			"label": "Introduction to Immersive Technologies",
+			"labelEn": "Introduction to Immersive Technologies",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5955,6 +6366,7 @@
 		{
 			"id": "ICCO",
 			"label": "Intercultural Competences",
+			"labelEn": "Intercultural Competences",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Recommended to have B2 in English",
@@ -5965,6 +6377,7 @@
 		{
 			"id": "GAMEPROD",
 			"label": "Introduction to Game Production",
+			"labelEn": "Introduction to Game Production",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -5974,6 +6387,7 @@
 		{
 			"id": "ADCREA",
 			"label": "Algorithms and data structures for creative tech",
+			"labelEn": "Algorithms and data structures for creative tech",
 			"ects": 6,
 			"prerequisites": [
 				{
@@ -5991,6 +6405,7 @@
 		{
 			"id": "MATCS",
 			"label": "Mathematics for Computer Science",
+			"labelEn": "Mathematics for Computer Science",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6000,6 +6415,7 @@
 		{
 			"id": "SAAELC",
 			"label": "Semester Abroad Asia Electives",
+			"labelEn": "Semester Abroad Asia Electives",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6009,6 +6425,7 @@
 		{
 			"id": "LAB_DDG",
 			"label": "CreaLab Design & development of digital games",
+			"labelEn": "CreaLab Design & development of digital games",
 			"ects": 6,
 			"prerequisites": [
 				{
@@ -6032,6 +6449,7 @@
 		{
 			"id": "COMS",
 			"label": "Conflict Management Strategies",
+			"labelEn": "Conflict Management Strategies",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6040,7 +6458,8 @@
 		},
 		{
 			"id": "AKIC",
-			"label": "Impact of Artificial Intelligence on Cyber- and Information Security",
+			"label": "Auswirkungen von KI im Cyber-Umfeld",
+			"labelEn": "Impact of Artificial Intelligence on Cyber- and Information Security",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6050,6 +6469,7 @@
 		{
 			"id": "SEDM",
 			"label": "Security Economics & Decision Making",
+			"labelEn": "Security Economics & Decision Making",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6058,7 +6478,8 @@
 		},
 		{
 			"id": "ANA-F_MM",
-			"label": "Advanced Calculus",
+			"label": "Fortgeschrittene Analysis",
+			"labelEn": "Advanced Calculus",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ANA-G"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" },
@@ -6070,7 +6491,8 @@
 		},
 		{
 			"id": "SPOAT_ISA",
-			"label": "Storytelling for Post-Anthropocene Tech Perspectives",
+			"label": "Storytelling für Post-Anthropocene Tech-Perspective",
+			"labelEn": "Storytelling for Post-Anthropocene Tech Perspectives",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Interesse am Entwurf und der Diskussion von Zukunftsgeschichten und an spekulativen Formen der Koexistenz von Mensch und Maschine wird vorausgesetzt.",
@@ -6080,7 +6502,8 @@
 		},
 		{
 			"id": "IKV",
-			"label": "Implementing Crypto Akgorithm",
+			"label": "Implementierung Kryptografischer Verfahren",
+			"labelEn": "Implementing Crypto Akgorithm",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6090,6 +6513,7 @@
 		{
 			"id": "LAB_AR",
 			"label": "CreaLab Augmented Reality",
+			"labelEn": "CreaLab Augmented Reality",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6099,6 +6523,7 @@
 		{
 			"id": "LAB_PD",
 			"label": "Lab Personal Development",
+			"labelEn": "Lab Personal Development",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6108,6 +6533,7 @@
 		{
 			"id": "MEDIMG_MM",
 			"label": "Medical Image Analysis",
+			"labelEn": "Medical Image Analysis",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -6125,6 +6551,7 @@
 		{
 			"id": "DITEC",
 			"label": "Digital Technology",
+			"labelEn": "Digital Technology",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6134,6 +6561,7 @@
 		{
 			"id": "ETHDW",
 			"label": "Ethics in the Digital World",
+			"labelEn": "Ethics in the Digital World",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6143,6 +6571,7 @@
 		{
 			"id": "IXD",
 			"label": "Interaction Design",
+			"labelEn": "Interaction Design",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6152,6 +6581,7 @@
 		{
 			"id": "IAIEX",
 			"label": "International AI Experience",
+			"labelEn": "International AI Experience",
 			"ects": 9,
 			"prerequisites": [
 				{
@@ -6168,6 +6598,7 @@
 		{
 			"id": "SAADBE",
 			"label": "Semester Abroad Asia Major Digital Business Engineer",
+			"labelEn": "Semester Abroad Asia Major Digital Business Engineer",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6177,6 +6608,7 @@
 		{
 			"id": "MTIV",
 			"label": "Make the Invisible Visible",
+			"labelEn": "Make the Invisible Visible",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Assessment level completed, B2 level in English",
@@ -6186,7 +6618,8 @@
 		},
 		{
 			"id": "DMATH-CODE",
-			"label": "Discrete mathematics for data encryption and data coding",
+			"label": "Diskrete Mathematik für Datenverschlüsselung und Datenkodierung",
+			"labelEn": "Discrete mathematics for data encryption and data coding",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -6203,6 +6636,7 @@
 		{
 			"id": "STCSA",
 			"label": "Statistics for Computer Science Advanced",
+			"labelEn": "Statistics for Computer Science Advanced",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "decent knowledge of descriptive statistics STCSB",
@@ -6213,6 +6647,7 @@
 		{
 			"id": "COMPMATHS",
 			"label": "Computational Mathematics",
+			"labelEn": "Computational Mathematics",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -6230,6 +6665,7 @@
 		{
 			"id": "LAB_HCD",
 			"label": "CreaLab Human-centered design",
+			"labelEn": "CreaLab Human-centered design",
 			"ects": 6,
 			"prerequisites": [
 				{
@@ -6247,6 +6683,7 @@
 		{
 			"id": "LAB_INIS",
 			"label": "CreaLab Immersive narratives & interactive storytelling",
+			"labelEn": "CreaLab Immersive narratives & interactive storytelling",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6256,6 +6693,7 @@
 		{
 			"id": "ECIOT",
 			"label": "IoT Edge and Cloud Computing Technologies",
+			"labelEn": "IoT Edge and Cloud Computing Technologies",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Elementary programming skills in C or Python, Linux command line environment and shell scripts, networking fundamentals.",
@@ -6266,6 +6704,7 @@
 		{
 			"id": "SEER",
 			"label": "Selbstführung und Erfolg",
+			"labelEn": "Selbstführung und Erfolg",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6275,6 +6714,7 @@
 		{
 			"id": "ITPRB",
 			"label": "IT Projects Basics",
+			"labelEn": "IT Projects Basics",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6284,6 +6724,7 @@
 		{
 			"id": "SAWTEC",
 			"label": "Semester Abroad Western World Major Technology",
+			"labelEn": "Semester Abroad Western World Major Technology",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6293,6 +6734,7 @@
 		{
 			"id": "NO_LECT",
 			"label": "Norway Lecture",
+			"labelEn": "Norway Lecture",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6302,6 +6744,7 @@
 		{
 			"id": "NO_PROJ",
 			"label": "Norway Project",
+			"labelEn": "Norway Project",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6311,6 +6754,7 @@
 		{
 			"id": "SAWDBE",
 			"label": "Semester abroad Western World Major Digital Business Engineer",
+			"labelEn": "Semester abroad Western World Major Digital Business Engineer",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6320,6 +6764,7 @@
 		{
 			"id": "ML",
 			"label": "Machine Learning",
+			"labelEn": "Machine Learning",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Students are expected to have already studied math and programming and to be strong at both subjects (details below). However, because this module is open to so many study programs, we do not name specific modules you have to take. Instead, subject competences are listed as module requirements, the acquisition of which students can achieve by attending modules or through self-study. Sufficient qualification is the responsibility of the students themselves. If you have any questions, we are happy to offer individual advice. These are the required competencies:\n \nLinear Algebra\n+ Vectors, position vectors, vector operations\n+ Matrices as linear mappings; matrix operations\n+ Vector norm, scalar product and its interpretation as projection\n+ Cosine formula for determining the angle between vectors\n+ Determination and interpretation of eigenvectors and eigenvalues\n \nAnalysis\n+ Functions in one and more variables\n+ Continuous and convex functions\n+ Partial derivatives and gradient\n+ Visualisation e.g. contour plots\n+ Local and global minima and maxima\n \nStatistics\n+ Mean, median, variance and standard deviation\n+ Population vs. sample, Bessel correction\n+ Covariance matrix\n+ Normal distribution",
@@ -6330,6 +6775,7 @@
 		{
 			"id": "SAATEC",
 			"label": "Semester Abroad Asia Major Technology",
+			"labelEn": "Semester Abroad Asia Major Technology",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6339,6 +6785,7 @@
 		{
 			"id": "STCSB",
 			"label": "Statistics for Computer Science Basics",
+			"labelEn": "Statistics for Computer Science Basics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6348,6 +6795,7 @@
 		{
 			"id": "SAWELC",
 			"label": "Semester Abroad Western World Electives",
+			"labelEn": "Semester Abroad Western World Electives",
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6356,7 +6804,8 @@
 		},
 		{
 			"id": "ALGKOMP_MU",
-			"label": "Algorithmic Composition and Sound Synthesis",
+			"label": "Algorithmische Komposition und Klangsynthese",
+			"labelEn": "Algorithmic Composition and Sound Synthesis",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -6372,7 +6821,8 @@
 		},
 		{
 			"id": "DAGLMU_MU",
-			"label": "Development of Algorithmic Music",
+			"label": "Entwicklung der algorithmischen Musik",
+			"labelEn": "Development of Algorithmic Music",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6381,7 +6831,8 @@
 		},
 		{
 			"id": "P_MUS1_MU",
-			"label": "Project Music 1",
+			"label": "Projekt Musik 1",
+			"labelEn": "Project Music 1",
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6391,6 +6842,7 @@
 		{
 			"id": "SMF",
 			"label": "Security Management Fundamentals",
+			"labelEn": "Security Management Fundamentals",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6400,6 +6852,7 @@
 		{
 			"id": "BUPRMA_MM",
 			"label": "Business Process Management",
+			"labelEn": "Business Process Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6409,6 +6862,7 @@
 		{
 			"id": "INTLA",
 			"label": "International Law",
+			"labelEn": "International Law",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "None",
@@ -6419,6 +6873,7 @@
 		{
 			"id": "FAUE",
 			"label": "Forensic Analysis in Unknown Environments",
+			"labelEn": "Forensic Analysis in Unknown Environments",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6428,6 +6883,7 @@
 		{
 			"id": "ITPRBA",
 			"label": "IT Project Basics",
+			"labelEn": "IT Project Basics",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6437,6 +6893,7 @@
 		{
 			"id": "PROMPT",
 			"label": "Prompt Engineering",
+			"labelEn": "Prompt Engineering",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6446,6 +6903,7 @@
 		{
 			"id": "SOUNDCREA",
 			"label": "Introduction to sound",
+			"labelEn": "Introduction to sound",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6455,6 +6913,7 @@
 		{
 			"id": "ERPBRM",
 			"label": "ERP Basics & Resource Management",
+			"labelEn": "ERP Basics & Resource Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6464,6 +6923,7 @@
 		{
 			"id": "SBITBA",
 			"label": "Statistics for Business IT with Python",
+			"labelEn": "Statistics for Business IT with Python",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6473,6 +6933,7 @@
 		{
 			"id": "CG",
 			"label": "Computer Graphics",
+			"labelEn": "Computer Graphics",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6482,6 +6943,7 @@
 		{
 			"id": "APCSA",
 			"label": "Advanced Patterns for Cyber Security Architecture",
+			"labelEn": "Advanced Patterns for Cyber Security Architecture",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6491,6 +6953,7 @@
 		{
 			"id": "BPRAXIS_2",
 			"label": "Berufspraxis 2",
+			"labelEn": "Berufspraxis 2",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Bedingt eine einschlägige berufliche Anstellung im Umfang von mindestens 40 Stellenprozenten in einem Berufsumfeld entsprechend den zentralen Lernzielen der Bachelorausbildung des jeweiligen Studiengangs (vgl. Kompetenzen-Nachweis: offizielle Arbeitsbestätigung).\nDie Module BPRAXIS_1 bis _3 sind aufbauend organisiert. Der Einstieg ist aber auch bei _2 oder _3 direkt möglich. Wer plant mehrere BPRAXIS-Module zu absolvieren sollte bei _1 starten. Wer nur eines (bzw. das letzte Mal ein BPRAXIS-Modul absolviert) kann auch direkt das _3 absolvieren.",
@@ -6501,6 +6964,7 @@
 		{
 			"id": "LAB_VR",
 			"label": "CreaLab Virtual Reality",
+			"labelEn": "CreaLab Virtual Reality",
 			"ects": 6,
 			"prerequisites": [
 				{
@@ -6524,6 +6988,7 @@
 		{
 			"id": "CONEBA",
 			"label": "Computer and Network Basics",
+			"labelEn": "Computer and Network Basics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6533,6 +6998,7 @@
 		{
 			"id": "BPRAXIS_1",
 			"label": "Berufspraxis 1",
+			"labelEn": "Berufspraxis 1",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Bedingt eine einschlägige berufliche Anstellung im Umfang von mindestens 40 Stellenprozenten in einem Berufsumfeld entsprechend den zentralen Lernzielen der Bachelorausbildung des jeweiligen Studiengangs (vgl. Kompetenzen-Nachweis: offizielle Arbeitsbestätigung).\nDie Module BPRAXIS_1 bis _3 sind aufbauend organisiert. Der Einstieg ist aber auch bei _2 oder _3 direkt möglich. Wer plant mehrere BPRAXIS-Module zu absolvieren sollte bei _1 starten. Wer nur eines (bzw. das letzte Mal ein BPRAXIS-Modul absolviert) kann auch direkt das _3 absolvieren.",
@@ -6542,7 +7008,8 @@
 		},
 		{
 			"id": "ANAF_MM",
-			"label": "Advanced Calculus",
+			"label": "Fortgeschrittene Analysis",
+			"labelEn": "Advanced Calculus",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ANA-G"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" },
@@ -6555,6 +7022,7 @@
 		{
 			"id": "RED",
 			"label": "Performing a Red Team Operation",
+			"labelEn": "Performing a Red Team Operation",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6564,6 +7032,7 @@
 		{
 			"id": "WEBXR",
 			"label": "Intro to immersive browser experiences",
+			"labelEn": "Intro to immersive browser experiences",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6573,6 +7042,7 @@
 		{
 			"id": "LWD",
 			"label": "Level and World Design",
+			"labelEn": "Level and World Design",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6582,6 +7052,7 @@
 		{
 			"id": "DAPRBA",
 			"label": "Data, Algorithms, and Programming Basics",
+			"labelEn": "Data, Algorithms, and Programming Basics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6591,6 +7062,7 @@
 		{
 			"id": "ISTO",
 			"label": "Information Security Technology & Operations",
+			"labelEn": "Information Security Technology & Operations",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6600,6 +7072,7 @@
 		{
 			"id": "ADSS",
 			"label": "Advanced System Security",
+			"labelEn": "Advanced System Security",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6609,6 +7082,7 @@
 		{
 			"id": "SWAW",
 			"label": "Scientific work and writing",
+			"labelEn": "Scientific work and writing",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6618,6 +7092,7 @@
 		{
 			"id": "DAMABA",
 			"label": "Data Management Basics",
+			"labelEn": "Data Management Basics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6626,7 +7101,8 @@
 		},
 		{
 			"id": "QMUDC_MP_1",
-			"label": "Master-Projekt",
+			"label": "Master-Projekt 1",
+			"labelEn": "Master-Projekt",
 			"ects": 8,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6636,6 +7112,7 @@
 		{
 			"id": "EINFITB",
 			"label": "Einführungswoche WI/BITDT IT Basics",
+			"labelEn": "Einführungswoche WI/BITDT IT Basics",
 			"ects": 2,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6645,6 +7122,7 @@
 		{
 			"id": "ITMGMT",
 			"label": "IT Management",
+			"labelEn": "IT Management",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6654,6 +7132,7 @@
 		{
 			"id": "NAFU",
 			"label": "Navigating the future",
+			"labelEn": "Navigating the future",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6662,7 +7141,8 @@
 		},
 		{
 			"id": "KRYPTOG_MM",
-			"label": "Cryptology Fundamentals",
+			"label": "Kryptologie Grundlagen",
+			"labelEn": "Cryptology Fundamentals",
 			"ects": 3,
 			"prerequisites": [
 				{ "modules": ["ISF_MM"], "mustBePassed": true, "moduleLinkType": "oder", "prerequisiteLinkType": "und" },
@@ -6687,6 +7167,7 @@
 		{
 			"id": "183_GENCG_MM",
 			"label": "Generative Computer Graphics",
+			"labelEn": "Generative Computer Graphics",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6696,6 +7177,7 @@
 		{
 			"id": "SPCS",
 			"label": "Advanced Software Protection on Critical Systems",
+			"labelEn": "Advanced Software Protection on Critical Systems",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Grundkenntnisse im Bereich Reverse Engineering und Malware-Analyse sind empfohlen, beispielsweise durch Erfahrung mit x86-Assembler und Tools wie IDA, Ghidra oder Binary Ninja. Erfahrung in systemnaher Programmierung (Assembler, C) ist ebenfalls hilfreich",
@@ -6706,6 +7188,7 @@
 		{
 			"id": "DENG",
 			"label": "Data Engineering",
+			"labelEn": "Data Engineering",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "Runs as E-modul for AI/ML in HS25.\nRuns as K-modul for AI/ML after that.",
@@ -6716,6 +7199,7 @@
 		{
 			"id": "SUDIT",
 			"label": "Sustainable Digital Transformation",
+			"labelEn": "Sustainable Digital Transformation",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6725,6 +7209,7 @@
 		{
 			"id": "DIRPCO",
 			"label": "Digitized Resource Planing & Controlling",
+			"labelEn": "Digitized Resource Planing & Controlling",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
@@ -6733,7 +7218,8 @@
 		},
 		{
 			"id": "KRYPTOE",
-			"label": "Cryptology Engineering",
+			"label": "Kryptologie Engineering",
+			"labelEn": "Cryptology Engineering",
 			"ects": 3,
 			"prerequisites": [
 				{
@@ -6751,6 +7237,7 @@
 		{
 			"id": "CNAIS",
 			"label": "Computer network architecture & information security",
+			"labelEn": "Computer network architecture & information security",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6760,6 +7247,7 @@
 		{
 			"id": "WECOTE",
 			"label": "Web- & Communication Technologies",
+			"labelEn": "Web- & Communication Technologies",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6769,6 +7257,7 @@
 		{
 			"id": "IPROBA",
 			"label": "IT Project Basics",
+			"labelEn": "IT Project Basics",
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6778,6 +7267,7 @@
 		{
 			"id": "BPRAXIS_3",
 			"label": "Berufspraxis 3",
+			"labelEn": "Berufspraxis 3",
 			"ects": 6,
 			"prerequisites": [],
 			"prerequisiteNote": "Bedingt eine einschlägige berufliche Anstellung im Umfang von mindestens 40 Stellenprozenten in einem Berufsumfeld entsprechend den zentralen Lernzielen der Bachelorausbildung des jeweiligen Studiengangs (vgl. Kompetenzen-Nachweis: offizielle Arbeitsbestätigung).\nDie Module BPRAXIS_1 bis _3 sind aufbauend organisiert. Der Einstieg ist aber auch bei _2 oder _3 direkt möglich. Wer plant mehrere BPRAXIS-Module zu absolvieren sollte bei _1 starten. Wer nur eines (bzw. das letzte Mal ein BPRAXIS-Modul absolviert) kann auch direkt das _3 absolvieren.",
@@ -6788,6 +7278,7 @@
 		{
 			"id": "BUDDY",
 			"label": "The Buddy Program",
+			"labelEn": "The Buddy Program",
 			"ects": 3,
 			"prerequisites": [],
 			"prerequisiteNote": "This module is intended for students who have completed at least two semesters at HSLU-I. Students will need to communicate in English throughout the module so must be comfortable speaking English and communicating informally in English. (A level of B2 and upwards is recommended.)",
@@ -6798,6 +7289,7 @@
 		{
 			"id": "DAS_MM",
 			"label": "Data Storytelling",
+			"labelEn": "Data Storytelling",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6806,7 +7298,8 @@
 		},
 		{
 			"id": "CTIU",
-			"label": "Critical thinking in the IT environment",
+			"label": "Critical Thinking im IT-Umfeld",
+			"labelEn": "Critical thinking in the IT environment",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6815,7 +7308,8 @@
 		},
 		{
 			"id": "DIGMGT",
-			"label": "Digital Managment",
+			"label": "Digital Management",
+			"labelEn": "Digital Managment",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6825,6 +7319,7 @@
 		{
 			"id": "EINFBUB",
 			"label": "Einführungswoche Business Basics",
+			"labelEn": "Einführungswoche Business Basics",
 			"ects": 2,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
@@ -6834,6 +7329,7 @@
 		{
 			"id": "RIPRO",
 			"label": "Research IT Projects (inkl. BADIT Proposal)",
+			"labelEn": "Research IT Projects (inkl. BADIT Proposal)",
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,

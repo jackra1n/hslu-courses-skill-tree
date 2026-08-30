@@ -327,7 +327,8 @@ function loadCourses(dataRoot: string): CatalogCourse[] {
 
 		courses.push({
 			id: module.ShortName,
-			label: module.NameEnglish?.trim() || module.Name.trim(),
+			label: module.Name.trim(),
+			labelEn: module.NameEnglish?.trim() || undefined,
 			ects: module.Ects,
 			prerequisites: mapPrerequisites(module.Prerequisites ?? []),
 			prerequisiteNote: module.PrerequisiteNote || undefined,

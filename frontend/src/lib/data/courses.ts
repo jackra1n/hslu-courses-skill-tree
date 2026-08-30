@@ -6,6 +6,7 @@ import type {
 	StudyModel,
 	TemplateSlot,
 } from './catalog-types';
+import { courseLabel } from './course-label';
 import { loadCourseData } from './course-data-adapter';
 
 export type {
@@ -100,7 +101,9 @@ function buildCourseCollections(): {
 	});
 
 	_coursesById = map;
-	_sortedCourses = [...courses].sort((a, b) => a.label.localeCompare(b.label));
+	_sortedCourses = [...courses].sort((a, b) =>
+		courseLabel(a).localeCompare(courseLabel(b)),
+	);
 
 	return { sortedCourses: _sortedCourses, coursesMap: _coursesById };
 }

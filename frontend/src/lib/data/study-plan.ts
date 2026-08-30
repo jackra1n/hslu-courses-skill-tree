@@ -4,6 +4,8 @@ import type {
 	TemplateSlot,
 } from '$lib/data/courses';
 import { getCourseById } from '$lib/data/courses';
+import { courseLabel } from '$lib/data/course-label';
+import * as messages from '$lib/paraglide/messages';
 
 export type PlanNodeKind = 'fixed' | 'elective' | 'custom';
 
@@ -31,10 +33,10 @@ export type StudyPlan = {
 };
 
 function getDefaultLabel(slotType: TemplateSlot['type'] | 'custom'): string {
-	if (slotType === 'elective') return 'Wahl-Modul';
-	if (slotType === 'major') return 'Major-Modul';
-	if (slotType === 'custom') return 'Custom-Modul';
-	return 'Course';
+	if (slotType === 'elective') return messages.slot_wahl();
+	if (slotType === 'major') return messages.slot_major();
+	if (slotType === 'custom') return messages.slot_custom();
+	return messages.slot_course();
 }
 
 export function resolveCourse(id?: string | null): Course | undefined {
@@ -59,7 +61,7 @@ function toPlanNode(
 		baseCourseId: slot.courseId,
 		courseId: assignedCourseId,
 		ects: course?.ects ?? 0,
-		label: course?.label ?? getDefaultLabel(slot.type),
+		label: course ? courseLabel(course) : getDefaultLabel(slot.type),
 	};
 }
 
@@ -117,7 +119,7 @@ export function updateNodeCourse(
 		...node,
 		courseId: courseId,
 		ects: course?.ects ?? 0,
-		label: course?.label ?? getDefaultLabel(node.slotType),
+		label: course ? courseLabel(course) : getDefaultLabel(node.slotType),
 	};
 
 	return {

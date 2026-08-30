@@ -1,6 +1,7 @@
 <script lang="ts">
 import * as messages from '$lib/paraglide/messages';
 import { getCourseById } from '$lib/data/courses';
+import { courseLabel } from '$lib/data/course-label';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
@@ -174,7 +175,7 @@ function openAssessmentInfo() {
                         ? 'text-text-primary'
                         : 'text-text-secondary'} {shouldApplyOpacity ? 'opacity-60' : ''}"
                     >
-                      {course?.label || moduleId}
+                      {course ? courseLabel(course) : moduleId}
                     </span>
                   </div>
                 {/each}

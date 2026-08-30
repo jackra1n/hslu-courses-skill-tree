@@ -4,6 +4,7 @@ import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
 import Combobox from '$lib/components/ui/Combobox.svelte';
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { COURSES, type Course, getCourseById } from '$lib/data/courses';
+import { courseLabel } from '$lib/data/course-label';
 import { seasonLabel, type Season } from '$lib/data/season';
 import * as messages from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
@@ -71,11 +72,12 @@ const comboboxOptions = $derived.by(() => {
 		return {
 			value: course.id,
 			label: messages.elective_option_label({
-				name: course.label,
+				name: courseLabel(course),
 				id: course.id,
 				ects: course.ects,
 			}),
-			keywords: [course.label, course.id],
+			// search matches either language, regardless of the active locale
+			keywords: [course.label, course.labelEn ?? '', course.id],
 			// keep an already-chosen course usable even if the start season later changed
 			disabled: outOfSeason && course.id !== selectedCourseId,
 			tooltip: outOfSeason

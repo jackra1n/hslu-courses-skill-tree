@@ -1,3 +1,5 @@
+import * as messages from '$lib/paraglide/messages';
+
 import {
 	type CurriculumTemplate,
 	getAvailablePlans,
@@ -297,7 +299,7 @@ class CourseStore {
 			semester,
 			courseId: null,
 			ects: 0,
-			label: 'Custom-Modul',
+			label: messages.slot_custom(),
 		};
 
 		const updatedRows = this.studyPlan.rows.map((row) => ({

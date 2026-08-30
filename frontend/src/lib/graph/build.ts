@@ -1,5 +1,7 @@
 import type { Edge, Node } from '@xyflow/svelte';
 import { MarkerType } from '@xyflow/svelte';
+import { courseLabel } from '$lib/data/course-label';
+import * as messages from '$lib/paraglide/messages';
 import type { PlanNode, StudyPlan } from '$lib/data/study-plan';
 import {
 	buildPlanRowIndex,
@@ -123,9 +125,9 @@ function toSlotSnapshot(planNode: PlanNode): TemplateSlot {
 }
 
 function getFallbackLabel(slotType: TemplateSlot['type']): string {
-	if (slotType === 'elective') return 'Wahl-Modul';
-	if (slotType === 'major') return 'Major-Modul';
-	return 'Course';
+	if (slotType === 'elective') return messages.slot_wahl();
+	if (slotType === 'major') return messages.slot_major();
+	return messages.slot_course();
 }
 
 // The provider node sitting in the earliest semester row, or undefined if none.
