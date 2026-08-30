@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { isPlanCustomized } from '$lib/data/plan-rules';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { clearAllPlans, loadAllPlans, savePlan } from '$lib/stores/planStorage';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
@@ -65,11 +65,11 @@ export function importAppData(
 	try {
 		parsed = JSON.parse(json);
 	} catch {
-		return { ok: false, error: messages.persistence_invalid_json() };
+		return { ok: false, error: m.persistence_invalid_json() };
 	}
 
 	const data = parseAppData(parsed);
-	if (!data) return { ok: false, error: messages.persistence_invalid_backup() };
+	if (!data) return { ok: false, error: m.persistence_invalid_backup() };
 
 	applyAppData(data);
 	return { ok: true };

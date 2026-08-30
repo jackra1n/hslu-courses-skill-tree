@@ -5,7 +5,7 @@ import type {
 	TemplateSlot,
 } from '$lib/data/courses';
 import { getCourseById } from '$lib/data/courses';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 
 export type PlanNodeKind = 'fixed' | 'elective' | 'custom';
 
@@ -33,10 +33,10 @@ export type StudyPlan = {
 };
 
 function getDefaultLabel(slotType: TemplateSlot['type'] | 'custom'): string {
-	if (slotType === 'elective') return messages.slot_wahl();
-	if (slotType === 'major') return messages.slot_major();
-	if (slotType === 'custom') return messages.slot_custom();
-	return messages.slot_course();
+	if (slotType === 'elective') return m.slot_wahl();
+	if (slotType === 'major') return m.slot_major();
+	if (slotType === 'custom') return m.slot_custom();
+	return m.slot_course();
 }
 
 export function resolveCourse(id?: string | null): Course | undefined {

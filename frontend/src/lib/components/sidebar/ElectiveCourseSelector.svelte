@@ -6,7 +6,7 @@ import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { courseLabel } from '$lib/data/course-label';
 import { COURSES, type Course, getCourseById } from '$lib/data/courses';
 import { type Season, seasonLabel } from '$lib/data/season';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
 import {
@@ -71,7 +71,7 @@ const comboboxOptions = $derived.by(() => {
 		const outOfSeason = slotSeason !== null && !isOfferedIn(course, slotSeason);
 		return {
 			value: course.id,
-			label: messages.elective_option_label({
+			label: m.elective_option_label({
 				name: courseLabel(course),
 				id: course.id,
 				ects: course.ects,
@@ -81,7 +81,7 @@ const comboboxOptions = $derived.by(() => {
 			// keep an already-chosen course usable even if the start season later changed
 			disabled: outOfSeason && course.id !== selectedCourseId,
 			tooltip: outOfSeason
-				? messages.elective_only_offered({
+				? m.elective_only_offered({
 						seasons: formatSeasons(course.seasons),
 					})
 				: undefined,
@@ -92,8 +92,7 @@ const comboboxOptions = $derived.by(() => {
 });
 
 function formatSeasons(seasons: Season[] | undefined): string {
-	if (!seasons || seasons.length === 0)
-		return messages.elective_other_semesters();
+	if (!seasons || seasons.length === 0) return m.elective_other_semesters();
 	return (['HS', 'FS'] as Season[])
 		.filter((s) => seasons.includes(s))
 		.map((s) => seasonLabel(s))
@@ -116,20 +115,20 @@ function clearSelection() {
 <div class="border-t border-border-primary pt-4">
   <h3 class="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
     <div class="i-lucide-book-plus text-text-secondary"></div>
-    {messages.elective_select_title()}
+    {m.elective_select_title()}
   </h3>
   <div class="space-y-3">
     <div class="space-y-2">
       <div class="flex items-center justify-between">
         <label for="elective-course-select" class="text-sm font-medium text-text-primary">
-          {messages.elective_choose()}
+          {m.elective_choose()}
         </label>
         {#if selectedCourseId}
           <button 
             onclick={clearSelection}
             class="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
           >
-            {messages.common_clear()}
+            {m.common_clear()}
           </button>
         {/if}
       </div>
@@ -137,9 +136,9 @@ function clearSelection() {
         options={comboboxOptions}
         selected={selectedCourseId || ''}
         onSelect={handleCourseSelect}
-        placeholder={messages.elective_placeholder()}
-        searchPlaceholder={messages.elective_search()}
-        noResultsText={messages.elective_no_results()}
+        placeholder={m.elective_placeholder()}
+        searchPlaceholder={m.elective_search()}
+        noResultsText={m.elective_no_results()}
         minWidth="100%"
       />
     </div>

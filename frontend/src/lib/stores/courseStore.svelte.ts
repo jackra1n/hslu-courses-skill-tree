@@ -35,7 +35,7 @@ import {
 	layoutNodes,
 	MAX_SEMESTERS,
 } from '$lib/graph/plan-layout';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 import { DragController } from './dragController.svelte';
 import {
 	loadLegacySelections,
@@ -298,7 +298,7 @@ class CourseStore {
 			semester,
 			courseId: null,
 			ects: 0,
-			label: messages.slot_custom(),
+			label: m.slot_custom(),
 		};
 
 		const updatedRows = this.studyPlan.rows.map((row) => ({

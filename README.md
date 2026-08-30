@@ -65,4 +65,4 @@ bun run dev --open
 
 ### Translations
 
-UI strings live in `frontend/messages/{en,de}.json` ([Paraglide JS](https://paraglidejs.com) message format) and are compiled into `frontend/src/lib/paraglide/` by the Vite plugin during `bun run dev` / `bun run build`. Course names come from the generated catalog, which stores both the German and English module names.
+UI strings live in `frontend/messages/{en,de}.json` ([Paraglide JS](https://paraglidejs.com) message format). The compiled output in `frontend/src/lib/paraglide/` is gitignored and generated when needed: automatically by `bun run dev` / `bun run build`, and explicitly via `bun run i18n:compile` before `bun run check` / `bun run catalog:test`. Course names come from the generated catalog, which stores both the German and English module names.

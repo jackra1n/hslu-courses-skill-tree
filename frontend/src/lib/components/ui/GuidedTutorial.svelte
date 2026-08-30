@@ -2,7 +2,7 @@
 import { type Driver, type DriveStep, driver } from 'driver.js';
 import { onDestroy, onMount, tick } from 'svelte';
 import 'driver.js/dist/driver.css';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
 import { tutorialRequested, uiStore } from '$lib/stores/uiStore.svelte';
 
@@ -13,22 +13,22 @@ function buildSteps(): DriveStep[] {
 	return [
 		{
 			popover: {
-				title: messages.tutorial_welcome_title(),
-				description: messages.tutorial_welcome_description(),
+				title: m.tutorial_welcome_title(),
+				description: m.tutorial_welcome_description(),
 			},
 		},
 		{
 			element: '[data-tour="skill-tree"]',
 			popover: {
-				title: messages.tutorial_explore_title(),
-				description: messages.tutorial_explore_description(),
+				title: m.tutorial_explore_title(),
+				description: m.tutorial_explore_description(),
 			},
 		},
 		{
 			element: '.svelte-flow__node-custom',
 			popover: {
-				title: messages.tutorial_course_title(),
-				description: messages.tutorial_course_description(),
+				title: m.tutorial_course_title(),
+				description: m.tutorial_course_description(),
 			},
 			onHighlightStarted: async (element) => {
 				if (!(element instanceof Element)) return;
@@ -43,28 +43,28 @@ function buildSteps(): DriveStep[] {
 		{
 			element: '[data-tour="program"]',
 			popover: {
-				title: messages.tutorial_program_title(),
-				description: messages.tutorial_program_description(),
+				title: m.tutorial_program_title(),
+				description: m.tutorial_program_description(),
 			},
 		},
 		{
 			element: '[data-tour="progress"]',
 			popover: {
-				title: messages.tutorial_progress_title(),
-				description: messages.tutorial_progress_description(),
+				title: m.tutorial_progress_title(),
+				description: m.tutorial_progress_description(),
 			},
 		},
 		{
 			element: '[data-tour="account"]',
 			popover: {
-				title: messages.tutorial_sync_title(),
-				description: messages.tutorial_sync_description(),
+				title: m.tutorial_sync_title(),
+				description: m.tutorial_sync_description(),
 			},
 		},
 		{
 			popover: {
-				title: messages.tutorial_open_source_title(),
-				description: messages.tutorial_open_source_description(),
+				title: m.tutorial_open_source_title(),
+				description: m.tutorial_open_source_description(),
 			},
 		},
 	];
@@ -144,7 +144,7 @@ async function runTutorial() {
 
 		// driver.js interpolates {{current}}/{{total}} itself; feed the tokens
 		// through the message as literal params.
-		const progressText = messages.tutorial_progress({
+		const progressText = m.tutorial_progress({
 			current: '{{current}}',
 			total: '{{total}}',
 		});
@@ -152,9 +152,9 @@ async function runTutorial() {
 		driverInstance = driver({
 			showProgress: true,
 			progressText,
-			nextBtnText: messages.tutorial_next(),
-			prevBtnText: messages.tutorial_back(),
-			doneBtnText: messages.tutorial_done(),
+			nextBtnText: m.tutorial_next(),
+			prevBtnText: m.tutorial_back(),
+			doneBtnText: m.tutorial_done(),
 			smoothScroll: true,
 			allowClose: true,
 			allowKeyboardControl: true,

@@ -1,4 +1,4 @@
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 
 // Module types are German identifiers coming from the HSLU data; map them to
 // locale-aware display labels. Unknown types fall back to the raw identifier.
@@ -6,17 +6,17 @@ import * as messages from '$lib/paraglide/messages';
 export function moduleTypeLabel(type: string | undefined): string {
 	switch (type) {
 		case 'Kernmodul':
-			return messages.modul_kernmodul();
+			return m.modul_kernmodul();
 		case 'Projektmodul':
-			return messages.modul_projektmodul();
+			return m.modul_projektmodul();
 		case 'Erweiterungsmodul':
-			return messages.modul_erweiterungsmodul();
+			return m.modul_erweiterungsmodul();
 		case 'Major-/Minormodul':
-			return messages.modul_major_minor();
+			return m.modul_major_minor();
 		case 'Zusatzmodul':
-			return messages.modul_zusatzmodul();
+			return m.modul_zusatzmodul();
 		default:
-			return type ?? messages.modul_course();
+			return type ?? m.modul_course();
 	}
 }
 
@@ -24,16 +24,16 @@ export function moduleTypeLabel(type: string | undefined): string {
 export function moduleTypeBadge(type: string | undefined): string {
 	switch (type) {
 		case 'Kernmodul':
-			return messages.badge_kernmodul();
+			return m.badge_kernmodul();
 		case 'Projektmodul':
-			return messages.badge_projektmodul();
+			return m.badge_projektmodul();
 		case 'Erweiterungsmodul':
-			return messages.badge_erweiterungsmodul();
+			return m.badge_erweiterungsmodul();
 		case 'Major-/Minormodul':
-			return messages.badge_major_minor();
+			return m.badge_major_minor();
 		case 'Zusatzmodul':
-			return messages.badge_zusatzmodul();
+			return m.badge_zusatzmodul();
 		default:
-			return messages.badge_default();
+			return m.badge_default();
 	}
 }

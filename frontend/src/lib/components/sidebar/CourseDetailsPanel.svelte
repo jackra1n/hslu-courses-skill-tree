@@ -4,7 +4,7 @@ import { courseLabel } from '$lib/data/course-label';
 import { getCourseById } from '$lib/data/courses';
 import { moduleTypeLabel } from '$lib/data/module-type';
 import { type Season, seasonLabel } from '$lib/data/season';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import {
 	hasSelection,
@@ -116,8 +116,8 @@ const seasonInfo = $derived.by(() => {
           <button 
             onclick={() => uiStore.deselectCourse()}
             class="flex items-center justify-center w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary transition-all"
-            title={messages.details_deselect()}
-            aria-label={messages.details_deselect()}
+            title={m.details_deselect()}
+            aria-label={m.details_deselect()}
           >
             <div class="i-lucide-x w-4 h-4"></div>
           </button>
@@ -130,10 +130,10 @@ const seasonInfo = $derived.by(() => {
           </div>
           <div class="flex items-center gap-1.5">
             <div class="i-lucide-calendar text-text-secondary"></div>
-            <span>{messages.details_semester({ number: activePlanNode?.semester ?? '?' })}</span>
+            <span>{m.details_semester({ number: activePlanNode?.semester ?? '?' })}</span>
           </div>
           {#if seasonInfo}
-            <div class="flex items-center gap-1.5" title={messages.details_offered_in({ seasons: seasonInfo.full })}>
+            <div class="flex items-center gap-1.5" title={m.details_offered_in({ seasons: seasonInfo.full })}>
               <div class="i-lucide-sun text-text-secondary"></div>
               <span>{seasonInfo.short}</span>
             </div>
@@ -177,10 +177,10 @@ const seasonInfo = $derived.by(() => {
       <div class="text-center py-8">
         <div class="i-lucide-mouse-pointer-click w-12 h-12 mx-auto text-text-secondary mb-3"></div>
         <p class="text-sm text-text-secondary">
-          {messages.details_empty_hint()}
+          {m.details_empty_hint()}
         </p>
         <p class="text-xs text-text-tertiary mt-2">
-          {messages.details_empty_elective_hint()}
+          {m.details_empty_elective_hint()}
         </p>
       </div>
       

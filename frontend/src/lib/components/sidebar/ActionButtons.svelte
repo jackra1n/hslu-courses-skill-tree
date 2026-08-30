@@ -1,6 +1,6 @@
 <script lang="ts">
 import { getCourseById } from '$lib/data/courses';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { selectedSlotId } from '$lib/stores/uiStore.svelte';
@@ -55,10 +55,10 @@ const prerequisitesMet = $derived.by(() => {
   >
     {#if isAttended}
       <div class="i-lucide-check"></div>
-      {messages.course_attended()}
+      {m.course_attended()}
     {:else}
       <div class="i-lucide-eye"></div>
-      {messages.course_mark_attended()}
+      {m.course_mark_attended()}
     {/if}
   </button>
 
@@ -74,10 +74,10 @@ const prerequisitesMet = $derived.by(() => {
   >
     {#if isCompleted}
       <div class="i-lucide-check-circle"></div>
-      {messages.course_completed()}
+      {m.course_completed()}
     {:else}
       <div class="i-lucide-circle-check"></div>
-      {messages.course_mark_completed()}
+      {m.course_mark_completed()}
     {/if}
   </button>
 </div>

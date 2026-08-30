@@ -10,7 +10,7 @@ import {
 	useViewport,
 } from '@xyflow/svelte';
 import { onMount } from 'svelte';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 import '@xyflow/svelte/dist/style.css';
 
 import DisclaimerToast from '$lib/components/ui/DisclaimerToast.svelte';
@@ -179,10 +179,10 @@ function handleNodeClick({
 			id: slot.id,
 			label:
 				slot.type === 'elective'
-					? messages.slot_wahl()
+					? m.slot_wahl()
 					: slot.type === 'major'
-						? messages.slot_major()
-						: messages.slot_course(),
+						? m.slot_major()
+						: m.slot_course(),
 			ects: 0,
 			prerequisites: [],
 			type: slot.type === 'major' ? 'Major-/Minormodul' : 'Erweiterungsmodul',

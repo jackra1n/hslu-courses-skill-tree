@@ -3,7 +3,7 @@ import Sidebar from '$lib/components/ui/Sidebar.svelte';
 import { computeCategoryProgress } from '$lib/data/analytics';
 import { getEctsRequirements } from '$lib/data/ects-requirements';
 import { moduleTypeLabel } from '$lib/data/module-type';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { slotStatusMap } from '$lib/stores/progressStore.svelte';
 
@@ -42,17 +42,17 @@ function widths(done: number, projected: number, required: number) {
   </div>
 {/snippet}
 
-<Sidebar {isOpen} {onClose} label={messages.analytics_title()}>
+<Sidebar {isOpen} {onClose} label={m.analytics_title()}>
   <div class="flex h-full flex-col">
     <div class="flex items-start justify-between p-6">
       <div>
-        <h2 class="text-lg font-semibold text-text-primary mb-1">{messages.analytics_title()}</h2>
-        <p class="text-sm text-text-secondary">{messages.analytics_subtitle()}</p>
+        <h2 class="text-lg font-semibold text-text-primary mb-1">{m.analytics_title()}</h2>
+        <p class="text-sm text-text-secondary">{m.analytics_subtitle()}</p>
       </div>
       <button
         onclick={close}
         class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary flex-shrink-0"
-        aria-label={messages.analytics_close()}
+        aria-label={m.analytics_close()}
       >
         <div class="i-lucide-x h-4 w-4"></div>
       </button>
@@ -61,15 +61,15 @@ function widths(done: number, projected: number, required: number) {
     <div class="flex-1 overflow-y-auto p-6 space-y-6">
       <div>
         <div class="flex items-baseline justify-between mb-2">
-          <span class="text-base font-bold text-text-primary">{messages.analytics_overall()}</span>
+          <span class="text-base font-bold text-text-primary">{m.analytics_overall()}</span>
           <span class="text-sm text-text-secondary">{passed} / {requiredTotal} ECTS</span>
         </div>
         {@render bar(passed, plannedRemaining, requiredTotal)}
         <div class="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm text-text-secondary">
-          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>{messages.analytics_passed({ count: passed })}</div>
-          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500/60"></span>{messages.analytics_planned({ count: plannedRemaining })}</div>
+          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>{m.analytics_passed({ count: passed })}</div>
+          <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500/60"></span>{m.analytics_planned({ count: plannedRemaining })}</div>
           {#if failed > 0}
-            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>{messages.analytics_failed({ count: failed })}</div>
+            <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>{m.analytics_failed({ count: failed })}</div>
           {/if}
         </div>
       </div>
@@ -77,7 +77,7 @@ function widths(done: number, projected: number, required: number) {
       <div class="border-b border-border-primary"></div>
 
       <div class="space-y-4">
-        <span class="text-base font-bold text-text-primary">{messages.analytics_by_module_type()}</span>
+        <span class="text-base font-bold text-text-primary">{m.analytics_by_module_type()}</span>
         {#each categories as category (category.category)}
           <div>
             <div class="flex items-baseline justify-between mb-1.5">

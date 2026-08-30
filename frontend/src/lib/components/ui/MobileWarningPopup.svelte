@@ -1,6 +1,6 @@
 <script lang="ts">
 import { onMount } from 'svelte';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 
 const STORAGE_KEY = 'mobile-warning-dismissed';
 
@@ -47,10 +47,10 @@ function dismissPopup() {
           </svg>
         </div>
         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          {messages.mobile_title()}
+          {m.mobile_title()}
         </h2>
         <p class="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-          {messages.mobile_text()}
+          {m.mobile_text()}
         </p>
       </div>
 
@@ -59,7 +59,7 @@ function dismissPopup() {
           onclick={dismissPopup}
           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
         >
-          {messages.mobile_dismiss()}
+          {m.mobile_dismiss()}
         </button>
       </div>
     </div>

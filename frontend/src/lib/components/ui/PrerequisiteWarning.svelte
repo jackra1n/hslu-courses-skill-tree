@@ -1,5 +1,5 @@
 <script lang="ts">
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 
 let {
 	showBorder = false,
@@ -11,16 +11,16 @@ let {
 
 const warningMessages = {
 	'later-prerequisites': {
-		title: () => messages.warning_later_title(),
-		message: () => messages.warning_later_message(),
+		title: () => m.warning_later_title(),
+		message: () => m.warning_later_message(),
 	},
 	'missing-prerequisites': {
-		title: () => messages.warning_missing_title(),
-		message: () => messages.warning_missing_message(),
+		title: () => m.warning_missing_title(),
+		message: () => m.warning_missing_message(),
 	},
 	'assessment-stage': {
-		title: () => messages.warning_assessment_title(),
-		message: () => messages.warning_assessment_message(),
+		title: () => m.warning_assessment_title(),
+		message: () => m.warning_assessment_message(),
 	},
 };
 

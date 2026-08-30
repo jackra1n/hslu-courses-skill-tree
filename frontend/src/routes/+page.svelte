@@ -12,7 +12,7 @@ import {
 	collectAppData,
 	hasMeaningfulStoredAppData,
 } from '$lib/data/persistence';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
 import { localeStore } from '$lib/stores/locale.svelte';
@@ -73,20 +73,20 @@ $effect(() => {
 {#if phase === 'catalog' || phase === 'progress'}
   <div class="flex h-screen items-center justify-center font-sans">
     <p class="text-sm text-text-secondary" role="status" aria-live="polite">
-      {phase === 'catalog' ? messages.page_loading_catalog() : messages.page_loading_progress()}
+      {phase === 'catalog' ? m.page_loading_catalog() : m.page_loading_progress()}
     </p>
   </div>
 {:else if phase === 'catalog-error'}
   <div class="flex h-screen items-center justify-center font-sans">
     <div class="flex flex-col items-center gap-4 text-center px-6">
-      <h1 class="text-lg font-semibold text-text-primary">{messages.page_catalog_unavailable_title()}</h1>
-      <p class="text-sm text-text-secondary">{messages.page_catalog_unavailable_text()}</p>
+      <h1 class="text-lg font-semibold text-text-primary">{m.page_catalog_unavailable_title()}</h1>
+      <p class="text-sm text-text-secondary">{m.page_catalog_unavailable_text()}</p>
       <button
         type="button"
         class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
         onclick={retryCatalog}
       >
-        {messages.common_retry()}
+        {m.common_retry()}
       </button>
     </div>
   </div>
@@ -109,13 +109,13 @@ $effect(() => {
         <button
           type="button"
           class="flex w-full items-center justify-between gap-2 px-4 py-3 text-text-primary"
-          aria-label={messages.legend_toggle()}
+          aria-label={m.legend_toggle()}
           aria-pressed={legendOpen}
           onclick={() => legendOpen = !legendOpen}
         >
           <div class="flex items-center gap-2">
             <div class="i-lucide-info w-4 h-4"></div>
-            <span class="text-sm font-medium">{messages.legend_button()}</span>
+            <span class="text-sm font-medium">{m.legend_button()}</span>
           </div>
           {#if legendOpen}
             <div class="i-lucide-chevron-down h-4 w-4 text-text-secondary"></div>

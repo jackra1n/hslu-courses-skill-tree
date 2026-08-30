@@ -6,7 +6,7 @@ import {
 	collectAppData,
 	parseAppData,
 } from '$lib/data/persistence';
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 
 // ---- public state -----------------------------------------------------------
 
@@ -43,8 +43,8 @@ type SyncMetadata = {
 const METADATA_KEY = 'hslu-skill-tree-cloud-sync';
 const DEBOUNCE_MS = 1_000;
 // Locale-aware at call time, not import time.
-const LOCAL_SAFETY_MESSAGE = () => messages.sync_unavailable();
-const SIGN_IN_FAILED_MESSAGE = () => messages.account_sign_in_failed();
+const LOCAL_SAFETY_MESSAGE = () => m.sync_unavailable();
+const SIGN_IN_FAILED_MESSAGE = () => m.account_sign_in_failed();
 // ---- private state ----------------------------------------------------------
 
 let user = $state<SyncUser | null>(null);

@@ -1,9 +1,9 @@
-import * as messages from '$lib/paraglide/messages';
+import * as m from '$lib/paraglide/messages';
 
 export type Season = 'HS' | 'FS';
 
 export function seasonLabel(season: Season): string {
-	return season === 'HS' ? messages.season_hs() : messages.season_fs();
+	return season === 'HS' ? m.season_hs() : m.season_fs();
 }
 
 export function otherSeason(season: Season): Season {
