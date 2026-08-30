@@ -1,3 +1,4 @@
+import { getLocale } from '$lib/paraglide/runtime';
 import { getCatalog } from './catalog-loader';
 import type {
 	Course,
@@ -85,25 +86,30 @@ export function getAvailableModels(studiengang: string): StudyModel[] {
 }
 
 let _sortedCourses: Course[] | null = null;
+let _sortedCoursesLocale: string | null = null;
 let _coursesById: Record<string, Course> | null = null;
 
 function buildCourseCollections(): {
 	sortedCourses: Course[];
 	coursesMap: Record<string, Course>;
 } {
-	if (_sortedCourses && _coursesById) {
+	const activeLocale = getLocale();
+	if (_sortedCourses && _sortedCoursesLocale === activeLocale && _coursesById) {
 		return { sortedCourses: _sortedCourses, coursesMap: _coursesById };
 	}
-	const courses = loadCourseData(currentPlan());
-	const map: Record<string, Course> = {};
-	courses.forEach((course) => {
-		map[course.id] = course;
-	});
 
-	_coursesById = map;
+	const courses = _coursesById
+		? Object.values(_coursesById)
+		: loadCourseData(currentPlan());
+	if (!_coursesById) {
+		_coursesById = Object.fromEntries(
+			courses.map((course) => [course.id, course]),
+		);
+	}
 	_sortedCourses = [...courses].sort((a, b) =>
 		courseLabel(a).localeCompare(courseLabel(b)),
 	);
+	_sortedCoursesLocale = activeLocale;
 
 	return { sortedCourses: _sortedCourses, coursesMap: _coursesById };
 }
@@ -112,6 +118,7 @@ export function setCoursePlan(plan: string): void {
 	if (_currentPlan !== plan) {
 		_currentPlan = plan;
 		_sortedCourses = null;
+		_sortedCoursesLocale = null;
 		_coursesById = null;
 	}
 }

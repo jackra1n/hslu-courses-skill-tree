@@ -26,6 +26,8 @@ let legendOpen = $state(false);
 let phase = $state<StartupPhase>('catalog');
 
 async function startFromCatalog(): Promise<void> {
+	localeStore.init();
+
 	try {
 		await loadCatalog();
 		phase = 'progress';
@@ -38,7 +40,7 @@ async function startFromCatalog(): Promise<void> {
 	// Detect meaningful local state before any store initializer mutates it.
 	const localDataIsMeaningful = hasMeaningfulStoredAppData();
 	const courseStore = initializeCourseStore();
-	localeStore.init();
+	courseStore.init();
 	themeStore.init();
 	progressStore.init();
 	uiStore.init();
