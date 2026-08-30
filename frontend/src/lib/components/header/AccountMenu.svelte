@@ -1,9 +1,10 @@
 <script lang="ts">
-import { onMount } from 'svelte';
-import {
-	cloudSyncStore,
-	type SyncStatus,
-} from '$lib/stores/cloudSyncStore.svelte';
+	import { onMount } from 'svelte';
+	import * as messages from '$lib/paraglide/messages';
+	import {
+		cloudSyncStore,
+		type SyncStatus,
+	} from '$lib/stores/cloudSyncStore.svelte';
 
 let { onInteract }: { onInteract?: () => void } = $props();
 
@@ -43,16 +44,16 @@ const errorMessage = $derived(cloudSyncStore.errorMessage);
 function statusLabel(status: SyncStatus): string | null {
 	switch (status) {
 		case 'synced':
-			return 'Saved';
+			return messages.account_status_saved();
 		case 'saving':
-			return 'Saving…';
+			return messages.account_status_saving();
 		case 'local':
 			// signed in but not yet synced (dirty or offline): local copy is safe
-			return user ? 'Saved on this device' : null;
+			return user ? messages.account_status_saved_local() : null;
 		case 'error':
 			return errorMessage;
 		case 'conflict':
-			return 'Saved on this device';
+			return messages.account_status_saved_local();
 		default:
 			return null;
 	}
@@ -82,7 +83,7 @@ async function handleSignOut() {
     <button
       onclick={toggleAccountMenu}
       class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-2 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
-      aria-label="Account menu"
+      aria-label={messages.account_menu()}
       aria-expanded={accountMenuOpen}
     >
       {#if user.image}
@@ -136,7 +137,7 @@ async function handleSignOut() {
           class="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-text-primary hover:bg-bg-secondary transition-colors"
         >
           <div class="i-lucide-log-out h-4 w-4"></div>
-          <span>Sign out</span>
+          <span>{messages.account_sign_out()}</span>
         </button>
       </div>
     {/if}
@@ -144,11 +145,11 @@ async function handleSignOut() {
     <button
       onclick={toggleAccountMenu}
       class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
-      aria-label="Sign in"
+      aria-label={messages.account_sign_in()}
       aria-expanded={accountMenuOpen}
     >
       <div class="i-lucide-user h-4 w-4 text-text-primary"></div>
-      <span class="text-sm font-medium text-text-primary">Sign in</span>
+      <span class="text-sm font-medium text-text-primary">{messages.account_sign_in()}</span>
     </button>
 
     {#if accountMenuOpen}
@@ -156,13 +157,13 @@ async function handleSignOut() {
         class="fixed inset-x-4 top-[var(--app-header-height)] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl
                sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-56 sm:shadow-lg"
       >
-        <div class="px-1 pb-2 text-xs font-medium text-text-secondary">Sign in with</div>
+        <div class="px-1 pb-2 text-xs font-medium text-text-secondary">{messages.account_sign_in_with()}</div>
         <button
           onclick={handleSignIn}
           class="flex w-full items-center gap-3 rounded-lg bg-bg-secondary px-3 py-2.5 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary/80"
         >
           <div class="i-lucide-github h-4 w-4"></div>
-          <span>Continue with GitHub</span>
+          <span>{messages.account_continue_github()}</span>
         </button>
       </div>
     {/if}

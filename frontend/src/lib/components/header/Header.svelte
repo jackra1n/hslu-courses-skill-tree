@@ -1,5 +1,5 @@
-<script lang="ts">
 import { onMount } from 'svelte';
+import * as messages from '$lib/paraglide/messages';
 import { getEctsRequirements } from '$lib/data/ects-requirements';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
@@ -73,20 +73,20 @@ const requiredEcts = $derived(
 );
 const attended = $derived(courseStore.attendedCredits);
 const ectsTooltip = $derived(
-	[
-		`${passedEcts} ECTS completed`,
-		`${plannedCredits} ECTS in plan`,
-		`${attended} ECTS attended (failed)`,
-	].join('\n'),
+	messages.header_ects_tooltip({
+		passed: passedEcts,
+		planned: plannedCredits,
+		attended,
+	}),
 );
 </script>
 
 <header bind:this={headerElement} class="relative z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">
   <div class="flex min-w-0 items-center gap-3">
     <div class="leading-tight">
-      <h1 class="text-lg font-semibold text-text-primary sm:hidden">HCST</h1>
-      <h1 class="hidden text-lg font-semibold text-text-primary sm:block">HSLU Courses Skill Tree</h1>
-      <p class="hidden text-xs text-text-secondary sm:block">Track your progress through courses</p>
+      <h1 class="text-lg font-semibold text-text-primary sm:hidden">{messages.header_title_short()}</h1>
+      <h1 class="hidden text-lg font-semibold text-text-primary sm:block">{messages.header_title()}</h1>
+      <p class="hidden text-xs text-text-secondary sm:block">{messages.header_subtitle()}</p>
     </div>
   </div>
 
@@ -99,7 +99,7 @@ const ectsTooltip = $derived(
         class="flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
         >
         <div class="i-lucide-graduation-cap h-4 w-4 text-text-primary"></div>
-        <span class="hidden sm:inline text-sm font-medium text-text-primary">Study plan</span>
+        <span class="hidden sm:inline text-sm font-medium text-text-primary">{messages.header_study_plan()}</span>
       </button>
       
       {#if programDropdownOpen}
@@ -107,7 +107,7 @@ const ectsTooltip = $derived(
           class="fixed inset-x-4 top-[var(--app-header-height)] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl overflow-visible
                  sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-80 sm:shadow-lg sm:max-h-[70vh] sm:overflow-visible"
         >
-          <div class="text-xs font-medium text-text-secondary mb-2">Study plan</div>
+          <div class="text-xs font-medium text-text-secondary mb-2">{messages.header_study_plan()}</div>
           <div class="border-b border-border-primary mb-3"></div>
           <div class="space-y-4">
             <TemplateSelector />
@@ -122,7 +122,7 @@ const ectsTooltip = $derived(
       onclick={toggleAnalytics}
       class="flex h-9 items-center gap-1.5 rounded-lg border border-border-primary bg-bg-secondary px-3 py-2 cursor-pointer hover:bg-bg-secondary/80 hover:shadow-sm transition-all"
       title={ectsTooltip}
-      aria-label="Open progress analytics"
+      aria-label={messages.header_open_progress_analytics()}
     >
       <span class="text-xs font-bold text-text-primary">{requiredEcts > 0 ? `${passedEcts} / ${requiredEcts} ECTS` : `${passedEcts} ECTS`}</span>
     </button>
@@ -135,14 +135,14 @@ const ectsTooltip = $derived(
     }} />
 
     <!-- settings button -->
-    <Tooltip text="Settings & help" align="end">
+    <Tooltip text={messages.header_settings_help()} align="end">
       <button
         onclick={(event) => {
           toggleSettings();
           event.currentTarget.blur();
         }}
         class="flex cursor-pointer items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary hover:shadow-sm transition-all text-text-primary"
-        aria-label="Settings & help"
+        aria-label={messages.header_settings_help()}
       >
         <div class="i-lucide-settings h-4 w-4 text-text-primary"></div>
       </button>

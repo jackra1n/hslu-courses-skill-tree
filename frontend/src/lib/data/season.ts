@@ -1,9 +1,10 @@
+import * as messages from '$lib/paraglide/messages';
+
 export type Season = 'HS' | 'FS';
 
-export const SEASON_LABELS: Record<Season, string> = {
-	HS: 'Herbst (HS)',
-	FS: 'Frühling (FS)',
-};
+export function seasonLabel(season: Season): string {
+	return season === 'HS' ? messages.season_hs() : messages.season_fs();
+}
 
 export function otherSeason(season: Season): Season {
 	return season === 'HS' ? 'FS' : 'HS';
@@ -25,7 +26,7 @@ export function termOrdinal(year: number, season: Season): number {
 }
 
 export function formatTerm(term: Term): string {
-	return `${term.season} ${term.year}`;
+	return `${termessages.season} ${termessages.year}`;
 }
 
 // Default start term for a brand-new user: autumn (the standard intake) of the
@@ -34,7 +35,7 @@ export function currentStartTerm(now: Date = new Date()): Term {
 	return { year: now.getFullYear(), season: 'HS' };
 }
 
-// The calendar term a 1-indexed plan semester falls in, given the start term.
+// The calendar term a 1-indexed plan semester falls in, given the start termessages.
 export function termOfSemester(semester: number, start: Term): Term {
 	const ordinal = termOrdinal(start.year, start.season) + (semester - 1);
 	return {
