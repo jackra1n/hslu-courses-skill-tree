@@ -25,15 +25,19 @@ let _templateIndex: {
 	byId: Map<string, CurriculumTemplate>;
 } | null = null;
 
-export function getAvailableTemplates(): readonly CurriculumTemplate[] {
-	_templateIndex ??= (() => {
+function getTemplateIndex(): NonNullable<typeof _templateIndex> {
+	if (!_templateIndex) {
 		const templates = getCatalog().templates;
-		return {
+		_templateIndex = {
 			templates,
 			byId: new Map(templates.map((template) => [template.id, template])),
 		};
-	})();
-	return _templateIndex.templates;
+	}
+	return _templateIndex;
+}
+
+export function getAvailableTemplates(): readonly CurriculumTemplate[] {
+	return getTemplateIndex().templates;
 }
 
 function getDefaultTemplate(): CurriculumTemplate | undefined {
@@ -41,7 +45,7 @@ function getDefaultTemplate(): CurriculumTemplate | undefined {
 }
 
 export function getTemplateById(id: string): CurriculumTemplate | undefined {
-	return _templateIndex?.byId.get(id);
+	return getTemplateIndex().byId.get(id);
 }
 
 export function getTemplatesByProgram(

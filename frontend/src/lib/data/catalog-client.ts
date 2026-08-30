@@ -61,7 +61,7 @@ export function createCatalogClient(
 	return {
 		load() {
 			if (value) return Promise.resolve(value);
-			pending ??= request();
+			pending ??= Promise.resolve().then(request);
 			return pending;
 		},
 		get() {
