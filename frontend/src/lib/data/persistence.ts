@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { isPlanCustomized } from '$lib/data/plan-rules';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { clearAllPlans, loadAllPlans, savePlan } from '$lib/stores/planStorage';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { type Theme, theme, themeStore } from '$lib/stores/theme.svelte';
@@ -25,16 +25,17 @@ export type AppData = {
 
 export function collectAppData(): AppData {
 	const studyPlans = loadAllPlans();
-	studyPlans[courseStore.studyPlan.templateId] = courseStore.studyPlan;
+	const store = getCourseStore();
+	studyPlans[store.studyPlan.templateId] = store.studyPlan;
 
 	return {
 		version: CURRENT_VERSION,
-		currentTemplateId: courseStore.currentTemplate.id,
-		start: { season: courseStore.startSeason, year: courseStore.startYear },
+		currentTemplateId: store.currentTemplate.id,
+		start: { season: store.startSeason, year: store.startYear },
 		studyPlans,
 		slotStatus: Object.fromEntries(slotStatusMap()),
 		preferences: {
-			showShortNamesOnly: courseStore.showShortNamesOnly,
+			showShortNamesOnly: store.showShortNamesOnly,
 			showCourseTypeBadges: showCourseTypeBadges(),
 			theme: theme(),
 		},
@@ -45,7 +46,7 @@ export function applyAppData(data: AppData): void {
 	// Replace stale plans so removed plans never resurface on the next upload.
 	clearAllPlans();
 	for (const plan of Object.values(data.studyPlans)) savePlan(plan);
-	courseStore.restore(
+	getCourseStore().restore(
 		data.currentTemplateId,
 		data.start.year,
 		data.start.season,

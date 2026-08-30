@@ -1,6 +1,7 @@
 import {
-	AVAILABLE_TEMPLATES,
+	type CurriculumTemplate,
 	getAvailablePlans,
+	getAvailableTemplates,
 	getTemplateById,
 	getTemplatesByProgram,
 	setCoursePlan,
@@ -56,9 +57,17 @@ function generateNodeId(): string {
 	return `custom-${crypto.randomUUID()}`;
 }
 
+function requireDefaultTemplate(): CurriculumTemplate {
+	const template = getAvailableTemplates()[0];
+	if (!template) {
+		throw new Error('Catalog does not contain any curriculum templates.');
+	}
+	return template;
+}
+
 class CourseStore {
-	currentTemplate = $state(AVAILABLE_TEMPLATES[0]);
-	studyPlan = $state<StudyPlan>(createStudyPlan(AVAILABLE_TEMPLATES[0], {}));
+	currentTemplate = $state(requireDefaultTemplate());
+	studyPlan = $state<StudyPlan>(createStudyPlan(requireDefaultTemplate(), {}));
 	showShortNamesOnly = $state(false);
 	startSeason = $state<Season>(INITIAL_TERM.season);
 	startYear = $state<number>(INITIAL_TERM.year);
@@ -337,4 +346,16 @@ class CourseStore {
 	}
 }
 
-export const courseStore = new CourseStore();
+let _courseStore: CourseStore | undefined;
+
+export function initializeCourseStore(): CourseStore {
+	_courseStore ??= new CourseStore();
+	return _courseStore;
+}
+
+export function getCourseStore(): CourseStore {
+	if (!_courseStore) {
+		throw new Error('Course store has not been initialized.');
+	}
+	return _courseStore;
+}

@@ -3,7 +3,7 @@ import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte';
 import Sidebar from '$lib/components/ui/Sidebar.svelte';
 import ThemeSwitcher from '$lib/components/ui/ThemeSwitcher.svelte';
 import { collectAppData, importAppData } from '$lib/data/persistence';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import { downloadJson, pickTextFile } from '$lib/utils/file-transfer';
@@ -13,6 +13,8 @@ let { isOpen, onClose }: { isOpen: boolean; onClose: () => void } = $props();
 let showResetProgressDialog = $state(false);
 let showResetAllDataDialog = $state(false);
 let importError = $state<string | null>(null);
+
+const courseStore = getCourseStore();
 
 function handleExport() {
 	const date = new Date().toISOString().slice(0, 10);

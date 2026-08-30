@@ -1,4 +1,4 @@
-import { loadBundledCatalog } from './catalog-loader';
+import { getCatalog } from './catalog-loader';
 import type { CatalogCourse, Course } from './catalog-types';
 
 const courseCache = new Map<string, Course[]>();
@@ -16,7 +16,7 @@ export function loadCourseData(plan: string = 'HS25'): Course[] {
 	const cached = courseCache.get(plan);
 	if (cached) return cached;
 
-	const courses = loadBundledCatalog().courses.map((catalogCourse) => {
+	const courses = getCatalog().courses.map((catalogCourse) => {
 		const { typeByPlanSeason: _, ...course } = catalogCourse;
 		return { ...course, type: courseTypeForPlan(catalogCourse, plan) };
 	});

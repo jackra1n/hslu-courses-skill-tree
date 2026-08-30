@@ -16,7 +16,7 @@ import DisclaimerToast from '$lib/components/ui/DisclaimerToast.svelte';
 import { getNodeWidth } from '$lib/graph/layout';
 import { getEdgeStyle, getNodeStyle } from '$lib/graph/styles';
 import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { theme } from '$lib/stores/theme.svelte';
 import {
@@ -42,6 +42,8 @@ const nodeTypes = {
 let isDragging = $state(false);
 let hideAttribution = $state(false);
 let selectedNodeId = $state<string | null>(null);
+
+const courseStore = getCourseStore();
 
 const viewportSignal = useViewport();
 const viewport = $derived(viewportSignal.current);

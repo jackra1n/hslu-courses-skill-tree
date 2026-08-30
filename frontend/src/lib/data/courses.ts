@@ -1,4 +1,4 @@
-import { loadBundledCatalog } from './catalog-loader';
+import { getCatalog } from './catalog-loader';
 import type {
 	Course,
 	CurriculumTemplate,
@@ -20,24 +20,39 @@ export type {
 
 export type Status = 'locked' | 'available' | 'completed';
 
-export const AVAILABLE_TEMPLATES: CurriculumTemplate[] =
-	loadBundledCatalog().templates;
+let _templateIndex: {
+	templates: readonly CurriculumTemplate[];
+	byId: Map<string, CurriculumTemplate>;
+} | null = null;
 
-const DEFAULT_TEMPLATE = AVAILABLE_TEMPLATES[0];
+function getTemplateIndex(): NonNullable<typeof _templateIndex> {
+	if (!_templateIndex) {
+		const templates = getCatalog().templates;
+		_templateIndex = {
+			templates,
+			byId: new Map(templates.map((template) => [template.id, template])),
+		};
+	}
+	return _templateIndex;
+}
 
-const TEMPLATE_BY_ID = new Map(
-	AVAILABLE_TEMPLATES.map((template) => [template.id, template]),
-);
+export function getAvailableTemplates(): readonly CurriculumTemplate[] {
+	return getTemplateIndex().templates;
+}
+
+function getDefaultTemplate(): CurriculumTemplate | undefined {
+	return getAvailableTemplates()[0];
+}
 
 export function getTemplateById(id: string): CurriculumTemplate | undefined {
-	return TEMPLATE_BY_ID.get(id);
+	return getTemplateIndex().byId.get(id);
 }
 
 export function getTemplatesByProgram(
 	studiengang: string,
 	modell: StudyModel,
 ): CurriculumTemplate[] {
-	return AVAILABLE_TEMPLATES.filter(
+	return getAvailableTemplates().filter(
 		(template) =>
 			template.studiengang === studiengang && template.modell === modell,
 	);
@@ -51,9 +66,16 @@ export function getAvailablePlans(
 	return [...new Set(templates.map((template) => template.plan))].sort();
 }
 
+let _currentPlan: string | null = null;
+
+function currentPlan(): string {
+	_currentPlan ??= getDefaultTemplate()?.plan ?? 'HS25';
+	return _currentPlan;
+}
+
 export function getAvailableModels(studiengang: string): StudyModel[] {
 	const models = new Set<StudyModel>();
-	AVAILABLE_TEMPLATES.forEach((template) => {
+	getAvailableTemplates().forEach((template) => {
 		if (template.studiengang === studiengang) {
 			models.add(template.modell);
 		}
@@ -63,7 +85,6 @@ export function getAvailableModels(studiengang: string): StudyModel[] {
 
 let _sortedCourses: Course[] | null = null;
 let _coursesById: Record<string, Course> | null = null;
-let _currentPlan: string = DEFAULT_TEMPLATE?.plan ?? 'HS25';
 
 function buildCourseCollections(): {
 	sortedCourses: Course[];
@@ -72,8 +93,7 @@ function buildCourseCollections(): {
 	if (_sortedCourses && _coursesById) {
 		return { sortedCourses: _sortedCourses, coursesMap: _coursesById };
 	}
-
-	const courses = loadCourseData(_currentPlan);
+	const courses = loadCourseData(currentPlan());
 	const map: Record<string, Course> = {};
 	courses.forEach((course) => {
 		map[course.id] = course;

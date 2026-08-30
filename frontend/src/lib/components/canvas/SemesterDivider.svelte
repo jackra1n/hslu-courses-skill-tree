@@ -5,7 +5,7 @@ import {
 	calculatePlanSemesterAttendedCredits,
 	calculatePlanSemesterCredits,
 } from '$lib/data/study-plan';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { slotStatusMap } from '$lib/stores/progressStore.svelte';
 
 let {
@@ -19,6 +19,8 @@ let {
 	isPreview?: boolean;
 	length?: number;
 } = $props();
+
+const courseStore = getCourseStore();
 
 const viewportSignal = useViewport();
 const viewport = $derived(viewportSignal.current);

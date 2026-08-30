@@ -7,14 +7,14 @@ import {
 	getTemplatesByProgram,
 	type StudyModel,
 } from '$lib/data/courses';
-import { PROGRAM_PLANS, PROGRAMS } from '$lib/data/programs';
+import { getProgramPlans, getPrograms } from '$lib/data/programs';
 import {
 	planIntroYear,
 	resolvePlan,
 	SEASON_LABELS,
 	type Season,
 } from '$lib/data/season';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
 
 const MODEL_LABELS: Record<string, string> = {
@@ -29,6 +29,8 @@ let pendingProgram = $state<string | null>(null);
 let pendingModel = $state<StudyModel | null>(null);
 let pendingYear = $state<number | null>(null);
 let pendingSeason = $state<Season | null>(null);
+
+const courseStore = getCourseStore();
 
 const program = $derived(
 	pendingProgram ?? courseStore.currentTemplate.studiengang,
@@ -62,8 +64,8 @@ const canLoad = $derived(
 );
 
 const programOptions = $derived.by(() =>
-	PROGRAMS.map((entry) => {
-		const planCount = (PROGRAM_PLANS[entry.shortName] ?? []).length;
+	getPrograms().map((entry) => {
+		const planCount = getProgramPlans(entry.shortName).length;
 		return {
 			value: entry.shortName,
 			label: entry.name,

@@ -2,7 +2,7 @@
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { getCourseById } from '$lib/data/courses';
 import { SEASON_LABELS, type Season } from '$lib/data/season';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import {
 	hasSelection,
 	isElectiveSlot,
@@ -18,6 +18,8 @@ import ActionButtons from './ActionButtons.svelte';
 import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
 import PrerequisiteList from './PrerequisiteList.svelte';
 import StatusLegend from './StatusLegend.svelte';
+
+const courseStore = getCourseStore();
 
 const displayCourse = $derived.by(() => {
 	const sel = selection();

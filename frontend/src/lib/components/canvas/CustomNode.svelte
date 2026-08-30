@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Handle, Position } from '@xyflow/svelte';
 import type { Course, ExtendedNodeData, TemplateSlot } from '$lib/data/courses';
-import { courseStore } from '$lib/stores/courseStore.svelte';
+import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasMissingPrerequisites as checkMissingPrerequisites } from '$lib/utils/status';
 
 let {
@@ -19,6 +19,8 @@ let {
 	showRemoveButton?: boolean;
 	onRemove?: (nodeId: string) => void;
 } = $props();
+
+const courseStore = getCourseStore();
 
 const nodeData = $derived(data);
 const slot = $derived(nodeData.slot);
