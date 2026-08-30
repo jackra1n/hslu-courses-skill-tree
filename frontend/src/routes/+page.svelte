@@ -24,9 +24,9 @@ let legendOpen = $state(false);
 let phase = $state<StartupPhase>('catalog');
 
 async function startFromCatalog(): Promise<void> {
-	phase = 'progress';
 	try {
 		await loadCatalog();
+		phase = 'progress';
 	} catch (error) {
 		console.error('Failed to load course catalog', error);
 		phase = 'catalog-error';

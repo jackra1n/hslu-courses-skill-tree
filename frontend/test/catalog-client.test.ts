@@ -59,7 +59,7 @@ describe('catalog client', () => {
 		expect(client.get()).toBe(loaded);
 	});
 
-	test('sends the configured URL without credentials', async () => {
+	test('sends the configured URL with same-origin credentials', async () => {
 		const client = clientRespondingWith(() =>
 			jsonResponse(JSON.stringify(VALID_CATALOG)),
 		);
@@ -68,7 +68,7 @@ describe('catalog client', () => {
 
 		expect(calls).toHaveLength(1);
 		expect(calls[0].url).toBe(URL);
-		expect(calls[0].init?.credentials).toBe('omit');
+		expect(calls[0].init?.credentials).toBe('same-origin');
 		expect(calls[0].init?.headers).toEqual({
 			Accept: 'application/json',
 		});

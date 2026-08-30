@@ -31,7 +31,7 @@ export function createCatalogClient(
 	async function request(): Promise<CatalogData> {
 		try {
 			const response = await fetchFn(url, {
-				credentials: 'omit',
+				credentials: 'same-origin',
 				headers: { Accept: 'application/json' },
 			});
 			if (!response.ok) {
