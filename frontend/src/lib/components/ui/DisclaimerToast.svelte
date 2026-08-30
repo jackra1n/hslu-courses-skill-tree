@@ -60,6 +60,7 @@ function dismissToast() {
       </div>
       <button 
         onclick={dismissToast}
+        class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
         aria-label={messages.common_close()}
       >
         <div class="i-lucide-x w-4 h-4"></div>

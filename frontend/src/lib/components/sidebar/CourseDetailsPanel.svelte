@@ -114,6 +114,7 @@ const seasonInfo = $derived.by(() => {
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-xl font-bold text-text-primary">{displayCourse ? courseLabel(displayCourse) : ''}</h2>
           <button 
+            onclick={() => uiStore.deselectCourse()}
             class="flex items-center justify-center w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary transition-all"
             title={messages.details_deselect()}
             aria-label={messages.details_deselect()}

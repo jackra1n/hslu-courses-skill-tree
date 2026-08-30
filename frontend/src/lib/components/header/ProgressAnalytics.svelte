@@ -51,6 +51,7 @@ function widths(done: number, projected: number, required: number) {
       </div>
       <button
         onclick={close}
+        class="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary transition-colors text-text-primary flex-shrink-0"
         aria-label={messages.analytics_close()}
       >
         <div class="i-lucide-x h-4 w-4"></div>
