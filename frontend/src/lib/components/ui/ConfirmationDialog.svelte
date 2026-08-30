@@ -70,7 +70,7 @@ function handleBackdropClick(event: MouseEvent) {
       </div>
       <button
         class="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-secondary text-text-primary transition-colors"
-        aria-label="Close dialog"
+        aria-label={messages.common_close_dialog()}
         onclick={onCancel}
       >
         <div class="i-lucide-x w-4 h-4"></div>

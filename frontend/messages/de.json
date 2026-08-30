@@ -5,6 +5,7 @@
 	"common_confirm": "Bestätigen",
 	"common_got_it": "Verstanden",
 	"common_close": "Schliessen",
+	"common_close_dialog": "Dialog schliessen",
 	"common_clear": "Löschen",
 	"common_retry": "Erneut versuchen",
 
@@ -136,11 +137,13 @@
 	"legend_available_desc": "Kann belegt werden",
 	"legend_locked": "Gesperrt",
 	"legend_locked_desc": "Voraussetzungen fehlen",
+	"legend_button": "Legende",
 	"legend_edges": "Kanten-Hervorhebung",
 	"legend_prereq": "Voraussetzungen",
 	"legend_prereq_desc": "Benötigte Module",
 	"legend_dependents": "Abhängigkeiten",
 	"legend_dependents_desc": "Module, die dies voraussetzen",
+	"legend_toggle": "Status-Legende umschalten",
 
 	"prereq_title": "Voraussetzungen",
 	"prereq_assessment_passed": "Assessment-Stufe bestanden",
@@ -188,9 +191,11 @@
 	"combobox_select": "Option auswählen",
 	"combobox_options": "Optionen",
 	"combobox_search": "Suchen…",
+	"combobox_search_options": "Optionen durchsuchen",
 	"combobox_no_results": "Keine Ergebnisse gefunden",
 
 	"addnode_aria": "Modul zu Semester {semester} hinzufügen",
+	"remove_course_aria": "{label} entfernen",
 
 	"persistence_invalid_json": "Keine gültige JSON-Datei.",
 	"persistence_invalid_backup": "Diese Datei ist kein gültiges Skill-Tree-Backup.",

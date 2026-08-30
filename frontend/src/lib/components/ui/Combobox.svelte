@@ -234,7 +234,7 @@ $effect(() => {
           oninput={handleInputChange}
           onkeydown={handleKeydown}
           class="w-full px-2 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="Search options"
+          aria-label={messages.combobox_search_options()}
           aria-autocomplete="list"
           aria-controls="combobox-listbox"
         />

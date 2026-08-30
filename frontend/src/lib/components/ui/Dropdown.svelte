@@ -66,7 +66,7 @@ const getCurrentOption = $derived.by(() => {
     onclick={toggleDropdown}
     class="flex items-center justify-between px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
     style="min-width: {minWidth}"
-    aria-label="Select option"
+    aria-label={messages.dropdown_placeholder()}
     aria-expanded={isOpen}
   >
     <div class="flex items-center gap-2">

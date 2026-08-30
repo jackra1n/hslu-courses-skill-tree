@@ -5,6 +5,7 @@
 	"common_confirm": "Confirm",
 	"common_got_it": "Got it",
 	"common_close": "Close",
+	"common_close_dialog": "Close dialog",
 	"common_clear": "Clear",
 	"common_retry": "Retry",
 
@@ -136,11 +137,13 @@
 	"legend_available_desc": "Ready to take",
 	"legend_locked": "Locked",
 	"legend_locked_desc": "Prerequisites needed",
+	"legend_button": "Legend",
 	"legend_edges": "Edge Highlighting",
 	"legend_prereq": "Prerequisites",
 	"legend_prereq_desc": "Required courses",
 	"legend_dependents": "Dependents",
 	"legend_dependents_desc": "Courses that require this",
+	"legend_toggle": "Toggle status legend",
 
 	"prereq_title": "Prerequisites",
 	"prereq_assessment_passed": "Assessment Stage Passed",
@@ -189,9 +192,11 @@
 	"combobox_select": "Select option",
 	"combobox_options": "Options",
 	"combobox_search": "Search...",
+	"combobox_search_options": "Search options",
 	"combobox_no_results": "No results found",
 
 	"addnode_aria": "Add course to semester {semester}",
+	"remove_course_aria": "Remove {label}",
 
 	"persistence_invalid_json": "Not a valid JSON file.",
 	"persistence_invalid_backup": "This file is not a valid skill-tree backup.",

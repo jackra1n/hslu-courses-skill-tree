@@ -2,6 +2,7 @@
 import { Handle, Position } from '@xyflow/svelte';
 import type { Course, ExtendedNodeData, TemplateSlot } from '$lib/data/courses';
 import { moduleTypeBadge } from '$lib/data/module-type';
+import * as messages from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasMissingPrerequisites as checkMissingPrerequisites } from '$lib/utils/status';
 
@@ -74,7 +75,7 @@ function handleRemoveClick(event: MouseEvent) {
     <button
       class="absolute -top-3 -right-1 w-5 h-5 bg-red-500 text-white border-0 rounded-full cursor-pointer flex items-center justify-center z-10 transition-colors duration-200 hover:bg-red-600 active:bg-red-700"
       onclick={handleRemoveClick}
-      aria-label="Remove {nodeData.label}"
+      aria-label={messages.remove_course_aria({ label: nodeData.label ?? '' })}
       type="button"
     >
       <div class="i-lucide-x w-3.5 h-3.5"></div>

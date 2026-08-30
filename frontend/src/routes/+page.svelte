@@ -109,13 +109,13 @@ $effect(() => {
         <button
           type="button"
           class="flex w-full items-center justify-between gap-2 px-4 py-3 text-text-primary"
-          aria-label="Toggle status legend"
+          aria-label={messages.legend_toggle()}
           aria-pressed={legendOpen}
           onclick={() => legendOpen = !legendOpen}
         >
           <div class="flex items-center gap-2">
             <div class="i-lucide-info w-4 h-4"></div>
-            <span class="text-sm font-medium">Legend</span>
+            <span class="text-sm font-medium">{messages.legend_button()}</span>
           </div>
           {#if legendOpen}
             <div class="i-lucide-chevron-down h-4 w-4 text-text-secondary"></div>
