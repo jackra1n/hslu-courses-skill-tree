@@ -23,26 +23,26 @@
 		"worker:deploy": "wrangler deploy"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.5.8",
-		"@cloudflare/vitest-pool-workers": "^0.21.3",
-		"@iconify-json/lucide": "^1.2.112",
+		"@biomejs/biome": "^2.5.11",
+		"@cloudflare/vitest-pool-workers": "^0.22.0",
+		"@iconify-json/lucide": "^1.2.127",
 		"@sveltejs/adapter-auto": "^7.0.1",
-		"@sveltejs/kit": "^2.65.0",
-		"@sveltejs/vite-plugin-svelte": "^7.1.2",
-		"@types/node": "^26.2.0",
-		"@unocss/preset-icons": "^66.7.2",
-		"svelte": "^5.56.3",
-		"svelte-check": "^4.6.0",
+		"@sveltejs/kit": "^2.70.3",
+		"@sveltejs/vite-plugin-svelte": "^7.3.0",
+		"@types/node": "^26.4.0",
+		"@unocss/preset-icons": "^66.8.1",
+		"svelte": "^5.57.0",
+		"svelte-check": "^4.7.6",
 		"typescript": "^6.0.3",
-		"unocss": "^66.7.2",
-		"vite": "^8.0.16",
-		"vitest": "^4.1.10",
-		"wrangler": "^4.123.0"
+		"unocss": "^66.8.1",
+		"vite": "^8.2.2",
+		"vitest": "^4.1.11",
+		"wrangler": "^4.127.1"
 	},
 	"dependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",
-		"@xyflow/svelte": "^1.6.0",
-		"better-auth": "^1.6.29",
+		"@xyflow/svelte": "^1.6.5",
+		"better-auth": "^1.7.2",
 		"driver.js": "^1.8.0"
 	}
 }
