@@ -171,7 +171,8 @@ describe('catalog normalization', () => {
 		]);
 		expect(catalog.courses[0]).toEqual({
 			id: 'A',
-			label: 'Alpha new',
+			label: 'Alpha neu',
+			labelEn: 'Alpha new',
 			ects: 4,
 			prerequisites: [
 				{
@@ -356,6 +357,9 @@ test('production catalog satisfies its data and size contract', () => {
 	expect(catalog.programmes).toHaveLength(6);
 	expect(catalog.ectsRequirements.INF?.total).toBe(180);
 	expect(byId.get('CISO_ISSUES')?.label).toBe(
+		'CISO Issues - angewandte Praxis',
+	);
+	expect(byId.get('CISO_ISSUES')?.labelEn).toBe(
 		'CISO Issues - applied experience',
 	);
 	expect(byId.get('SOC')?.seasons).toEqual(['FS', 'HS']);
