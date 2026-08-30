@@ -1,3 +1,4 @@
+import * as messages from '$lib/paraglide/messages';
 import { browser } from '$app/environment';
 import { isPlanCustomized } from '$lib/data/plan-rules';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
@@ -64,12 +65,12 @@ export function importAppData(
 	try {
 		parsed = JSON.parse(json);
 	} catch {
-		return { ok: false, error: 'Not a valid JSON file.' };
+		return { ok: false, error: messages.persistence_invalid_json() };
 	}
 
 	const data = parseAppData(parsed);
 	if (!data)
-		return { ok: false, error: 'This file is not a valid skill-tree backup.' };
+		return { ok: false, error: messages.persistence_invalid_backup() };
 
 	applyAppData(data);
 	return { ok: true };

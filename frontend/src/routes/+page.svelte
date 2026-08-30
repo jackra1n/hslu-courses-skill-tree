@@ -8,12 +8,18 @@ import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
 import AssessmentInfo from '$lib/components/ui/AssessmentInfo.svelte';
 import SyncConflictDialog from '$lib/components/ui/SyncConflictDialog.svelte';
 import { catalogAssetUrl, loadCatalog } from '$lib/data/catalog-loader';
+import * as messages from '$lib/paraglide/messages';
+import { localeStore } from '$lib/stores/locale.svelte';
 import {
 	collectAppData,
 	hasMeaningfulStoredAppData,
 } from '$lib/data/persistence';
-import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
-import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
+import {
+	cloudSyncStore,
+} from '$lib/stores/cloudSyncStore.svelte';
+import {
+	initializeCourseStore,
+} from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { themeStore } from '$lib/stores/theme.svelte';
 import { hasSelection, uiStore } from '$lib/stores/uiStore.svelte';
@@ -35,9 +41,9 @@ async function startFromCatalog(): Promise<void> {
 
 	// Detect meaningful local state before any store initializer mutates it.
 	const localDataIsMeaningful = hasMeaningfulStoredAppData();
-	themeStore.init();
 	const courseStore = initializeCourseStore();
-	courseStore.init();
+	localeStore.init();
+	themeStore.init();
 	progressStore.init();
 	uiStore.init();
 	await cloudSyncStore.init(localDataIsMeaningful);
@@ -71,20 +77,20 @@ $effect(() => {
 {#if phase === 'catalog' || phase === 'progress'}
   <div class="flex h-screen items-center justify-center font-sans">
     <p class="text-sm text-text-secondary" role="status" aria-live="polite">
-      {phase === 'catalog' ? 'Loading course catalog…' : 'Loading your progress…'}
+      {phase === 'catalog' ? messages.page_loading_catalog() : messages.page_loading_progress()}
     </p>
   </div>
 {:else if phase === 'catalog-error'}
   <div class="flex h-screen items-center justify-center font-sans">
     <div class="flex flex-col items-center gap-4 text-center px-6">
-      <h1 class="text-lg font-semibold text-text-primary">Course catalog unavailable</h1>
-      <p class="text-sm text-text-secondary">Check your connection and try again.</p>
+      <h1 class="text-lg font-semibold text-text-primary">{messages.page_catalog_unavailable_title()}</h1>
+      <p class="text-sm text-text-secondary">{messages.page_catalog_unavailable_text()}</p>
       <button
         type="button"
         class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
         onclick={retryCatalog}
       >
-        Retry
+        {messages.common_retry()}
       </button>
     </div>
   </div>

@@ -2,76 +2,73 @@
 import { type Driver, type DriveStep, driver } from 'driver.js';
 import { onDestroy, onMount, tick } from 'svelte';
 import 'driver.js/dist/driver.css';
+import * as messages from '$lib/paraglide/messages';
 import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
 import { tutorialRequested, uiStore } from '$lib/stores/uiStore.svelte';
 
 const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
 
-const steps: DriveStep[] = [
-	{
-		popover: {
-			title: 'Welcome to HSLU Courses Skill Tree',
-			description:
-				'This short tour shows you how to explore your study plan, track courses, switch programs, and review your progress.',
+// Built per run so the popovers pick up the active locale.
+function buildSteps(): DriveStep[] {
+	return [
+		{
+			popover: {
+				title: messages.tutorial_welcome_title(),
+				description: messages.tutorial_welcome_description(),
+			},
 		},
-	},
-	{
-		element: '[data-tour="skill-tree"]',
-		popover: {
-			title: 'Explore your study plan',
-			description:
-				'Drag or scroll to move around the skill tree, and use the controls to zoom. Courses are arranged by semester and connected by prerequisites.',
+		{
+			element: '[data-tour="skill-tree"]',
+			popover: {
+				title: messages.tutorial_explore_title(),
+				description: messages.tutorial_explore_description(),
+			},
 		},
-	},
-	{
-		element: '.svelte-flow__node-custom',
-		popover: {
-			title: 'Open a course',
-			description:
-				'Select any course to view its details and prerequisites. In the details panel, mark it as attended or completed to track your status.',
+		{
+			element: '.svelte-flow__node-custom',
+			popover: {
+				title: messages.tutorial_course_title(),
+				description: messages.tutorial_course_description(),
+			},
+			onHighlightStarted: async (element) => {
+				if (!(element instanceof Element)) return;
+				// Pan the canvas to the course node. The command resolves once
+				// the animated transition has finished, so the highlight box is
+				// computed against the settled viewport, not mid-animation.
+				await canvasCommands.current?.centerOnElement(element);
+				await tick();
+				driverInstance?.refresh();
+			},
 		},
-		onHighlightStarted: async (element) => {
-			if (!(element instanceof Element)) return;
-			// Pan the canvas to the course node. The command resolves once
-			// the animated transition has finished, so the highlight box is
-			// computed against the settled viewport, not mid-animation.
-			await canvasCommands.current?.centerOnElement(element);
-			await tick();
-			driverInstance?.refresh();
+		{
+			element: '[data-tour="program"]',
+			popover: {
+				title: messages.tutorial_program_title(),
+				description: messages.tutorial_program_description(),
+			},
 		},
-	},
-	{
-		element: '[data-tour="program"]',
-		popover: {
-			title: 'Change your program',
-			description:
-				'Choose your degree program, study model, start year, and semester, then load the matching curriculum.',
+		{
+			element: '[data-tour="progress"]',
+			popover: {
+				title: messages.tutorial_progress_title(),
+				description: messages.tutorial_progress_description(),
+			},
 		},
-	},
-	{
-		element: '[data-tour="progress"]',
-		popover: {
-			title: 'Review your progress',
-			description:
-				'Open the ECTS summary to see passed, completed, and failed credits overall and by module type.',
+		{
+			element: '[data-tour="account"]',
+			popover: {
+				title: messages.tutorial_sync_title(),
+				description: messages.tutorial_sync_description(),
+			},
 		},
-	},
-	{
-		element: '[data-tour="account"]',
-		popover: {
-			title: 'Sync across devices',
-			description:
-				'Sign in with GitHub to sync your progress and study plan between devices. Already signed in? Review the sync status and sign out from this menu.',
+		{
+			popover: {
+				title: messages.tutorial_open_source_title(),
+				description: messages.tutorial_open_source_description(),
+			},
 		},
-	},
-	{
-		popover: {
-			title: 'Open source',
-			description:
-				'This project is open source. <a class="hslu-github-link" href="https://github.com/jackra1n/hslu-courses-skill-tree" target="_blank" rel="noreferrer"><span class="i-lucide-github h-4 w-4" aria-hidden="true"></span>jackra1n/hslu-courses-skill-tree</a> Curricula are maintained by hand, so double-check anything important against official HSLU sources, and please <a href="https://github.com/jackra1n/hslu-courses-skill-tree/issues" target="_blank" rel="noreferrer">open an issue</a> if something looks wrong.',
-		},
-	},
-];
+	];
+}
 
 let driverInstance: Driver | null = null;
 let starting = false;
@@ -145,12 +142,19 @@ async function runTutorial() {
 
 		if (driverInstance?.isActive()) return;
 
+		// driver.js interpolates {{current}}/{{total}} itself; feed the tokens
+		// through the message as literal params.
+		const progressText = messages.tutorial_progress({
+			current: '{{current}}',
+			total: '{{total}}',
+		});
+
 		driverInstance = driver({
 			showProgress: true,
-			progressText: 'Step {{current}} of {{total}}',
-			nextBtnText: 'Next',
-			prevBtnText: 'Back',
-			doneBtnText: 'Done',
+			progressText,
+			nextBtnText: messages.tutorial_next(),
+			prevBtnText: messages.tutorial_back(),
+			doneBtnText: messages.tutorial_done(),
 			smoothScroll: true,
 			allowClose: true,
 			allowKeyboardControl: true,
@@ -158,7 +162,7 @@ async function runTutorial() {
 			stagePadding: 8,
 			stageRadius: 8,
 			popoverClass: 'hslu-tutorial-popover',
-			steps,
+			steps: buildSteps(),
 			onDestroyed: () => {
 				localStorage.setItem(SEEN_KEY, 'true');
 				driverInstance = null;

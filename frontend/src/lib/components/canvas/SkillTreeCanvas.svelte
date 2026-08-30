@@ -1,4 +1,5 @@
 <script lang="ts">
+import * as messages from '$lib/paraglide/messages';
 import {
 	Background,
 	Controls,
@@ -178,10 +179,10 @@ function handleNodeClick({
 			id: slot.id,
 			label:
 				slot.type === 'elective'
-					? 'Wahl-Modul'
+					? messages.slot_wahl()
 					: slot.type === 'major'
-						? 'Major-Modul'
-						: 'Course',
+						? messages.slot_major()
+						: messages.slot_course(),
 			ects: 0,
 			prerequisites: [],
 			type: slot.type === 'major' ? 'Major-/Minormodul' : 'Erweiterungsmodul',

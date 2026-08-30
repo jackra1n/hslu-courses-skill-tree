@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import * as messages from '$lib/paraglide/messages';
 import { authClient } from '$lib/auth-client';
 import {
 	type AppData,
@@ -41,11 +42,9 @@ type SyncMetadata = {
 
 const METADATA_KEY = 'hslu-skill-tree-cloud-sync';
 const DEBOUNCE_MS = 1_000;
-const LOCAL_SAFETY_MESSAGE =
-	'Cloud sync unavailable. Changes remain saved on this device.';
-const SIGN_IN_FAILED_MESSAGE =
-	'GitHub sign-in failed. Your local data is unchanged.';
-
+// Locale-aware at call time, not import time.
+const LOCAL_SAFETY_MESSAGE = () => messages.sync_unavailable();
+const SIGN_IN_FAILED_MESSAGE = () => messages.account_sign_in_failed();
 // ---- private state ----------------------------------------------------------
 
 let user = $state<SyncUser | null>(null);
@@ -141,7 +140,7 @@ async function flushPending(): Promise<void> {
 				if (!cloud) {
 					pendingSnapshot = snapshot;
 					status = 'error';
-					errorMessage = LOCAL_SAFETY_MESSAGE;
+					errorMessage = LOCAL_SAFETY_MESSAGE();
 					return;
 				}
 				conflict = {
@@ -158,7 +157,7 @@ async function flushPending(): Promise<void> {
 			if (!response.ok) {
 				pendingSnapshot = snapshot; // retry on next change or online
 				status = 'error';
-				errorMessage = LOCAL_SAFETY_MESSAGE;
+				errorMessage = LOCAL_SAFETY_MESSAGE();
 				return;
 			}
 
@@ -168,13 +167,13 @@ async function flushPending(): Promise<void> {
 			} catch {
 				pendingSnapshot = snapshot;
 				status = 'error';
-				errorMessage = LOCAL_SAFETY_MESSAGE;
+				errorMessage = LOCAL_SAFETY_MESSAGE();
 				return;
 			}
 			if (typeof body.revision !== 'number') {
 				pendingSnapshot = snapshot;
 				status = 'error';
-				errorMessage = LOCAL_SAFETY_MESSAGE;
+				errorMessage = LOCAL_SAFETY_MESSAGE();
 				return;
 			}
 
@@ -186,7 +185,7 @@ async function flushPending(): Promise<void> {
 		}
 	} catch {
 		status = 'error';
-		errorMessage = LOCAL_SAFETY_MESSAGE;
+		errorMessage = LOCAL_SAFETY_MESSAGE();
 	} finally {
 		inFlight = false;
 	}
@@ -219,7 +218,7 @@ export const cloudSyncStore = {
 			session = await authClient.getSession();
 		} catch {
 			status = 'error';
-			errorMessage = LOCAL_SAFETY_MESSAGE;
+			errorMessage = LOCAL_SAFETY_MESSAGE();
 			return;
 		}
 
@@ -247,7 +246,7 @@ export const cloudSyncStore = {
 			cloudResponse = await fetch('/api/progress', { method: 'GET' });
 		} catch {
 			status = 'error';
-			errorMessage = LOCAL_SAFETY_MESSAGE;
+			errorMessage = LOCAL_SAFETY_MESSAGE();
 			return;
 		}
 
@@ -271,7 +270,7 @@ export const cloudSyncStore = {
 
 		if (!cloudResponse.ok) {
 			status = 'error';
-			errorMessage = LOCAL_SAFETY_MESSAGE;
+			errorMessage = LOCAL_SAFETY_MESSAGE();
 			return;
 		}
 
@@ -279,7 +278,7 @@ export const cloudSyncStore = {
 		const cloud = parseAppData(body?.data);
 		if (!cloud) {
 			status = 'error';
-			errorMessage = LOCAL_SAFETY_MESSAGE;
+			errorMessage = LOCAL_SAFETY_MESSAGE();
 			return;
 		}
 
@@ -349,7 +348,7 @@ export const cloudSyncStore = {
 			});
 		} catch {
 			status = 'error';
-			errorMessage = SIGN_IN_FAILED_MESSAGE;
+			errorMessage = SIGN_IN_FAILED_MESSAGE();
 		}
 	},
 

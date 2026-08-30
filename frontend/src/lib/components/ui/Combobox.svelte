@@ -1,4 +1,5 @@
 <script lang="ts">
+import * as messages from '$lib/paraglide/messages';
 interface Option {
 	value: string;
 	label: string;
@@ -24,10 +25,10 @@ let {
 	options,
 	selected,
 	onSelect,
-	placeholder = 'Select option',
+	placeholder = messages.dropdown_placeholder(),
 	minWidth = 'auto',
-	searchPlaceholder = 'Search...',
-	noResultsText = 'No results found',
+	searchPlaceholder = messages.combobox_search(),
+	noResultsText = messages.combobox_no_results(),
 	normalize = (text: string) =>
 		text
 			.toLowerCase()
@@ -203,7 +204,7 @@ $effect(() => {
     onkeydown={handleKeydown}
     class="flex items-center justify-between px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer w-full"
     style="min-width: {minWidth}"
-    aria-label="Select option"
+    aria-label={messages.combobox_select()}
     aria-expanded={isOpen}
     aria-haspopup="listbox"
     aria-controls="combobox-listbox"
@@ -243,7 +244,7 @@ $effect(() => {
         id="combobox-listbox"
         role="listbox"
         class="max-h-60 overflow-y-auto rounded-b-lg"
-        aria-label="Options"
+        aria-label={messages.combobox_options()}
       >
         {#each filteredOptions as option, index (option.value)}
           <li

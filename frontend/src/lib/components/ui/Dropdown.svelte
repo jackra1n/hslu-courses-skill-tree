@@ -1,4 +1,5 @@
 <script lang="ts">
+import * as messages from '$lib/paraglide/messages';
 interface Option {
 	value: string;
 	label: string;
@@ -19,7 +20,7 @@ let {
 	options,
 	selected,
 	onSelect,
-	placeholder = 'Select option',
+	placeholder = messages.dropdown_placeholder(),
 	minWidth = 'auto',
 }: Props = $props();
 

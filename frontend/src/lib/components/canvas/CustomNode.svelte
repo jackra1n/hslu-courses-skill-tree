@@ -3,6 +3,7 @@ import { Handle, Position } from '@xyflow/svelte';
 import type { Course, ExtendedNodeData, TemplateSlot } from '$lib/data/courses';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasMissingPrerequisites as checkMissingPrerequisites } from '$lib/utils/status';
+import { moduleTypeBadge } from '$lib/data/module-type';
 
 let {
 	id,
@@ -53,23 +54,6 @@ function getCourseTypeColor(type?: string): string {
 			return 'bg-yellow-500';
 		default:
 			return 'bg-gray-500';
-	}
-}
-
-function getCourseTypeLabel(type?: string): string {
-	switch (type) {
-		case 'Kernmodul':
-			return 'Kern';
-		case 'Projektmodul':
-			return 'Projekt';
-		case 'Erweiterungsmodul':
-			return 'Wahl';
-		case 'Major-/Minormodul':
-			return 'Major/Minor';
-		case 'Zusatzmodul':
-			return 'Zusatz';
-		default:
-			return 'Modul';
 	}
 }
 
@@ -129,7 +113,7 @@ function handleRemoveClick(event: MouseEvent) {
             course.type
           )} shadow-sm"
         >
-          {getCourseTypeLabel(course.type)}
+          {moduleTypeBadge(course.type)}
         </div>
       </div>
     {:else if isElectiveSlot}
