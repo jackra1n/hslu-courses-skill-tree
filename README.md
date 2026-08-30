@@ -28,6 +28,7 @@ An interactive skill tree visualization tool for university courses. Track your 
 - **Local Storage**: Your progress is automatically saved in your browser
 - **Cloud Sync**: Sign in with GitHub to sync your progress across devices, with conflict resolution when edits overlap
 - **Dark/Light Theme**: Switch between themes to match your preference
+- **Bilingual Interface**: English and German UI, switchable in settings with automatic browser-language detection — course names included (HSLU provides both)
 - **Curriculum Templates**: Pre-configured study plans for different programs
 
 ## Roadmap
@@ -37,16 +38,15 @@ An interactive skill tree visualization tool for university courses. Track your 
 - [x] **Custom Study Plans**: Allow users to create and save their own personalized curriculum plans
 - [ ] **Course Links**: Direct links to HSLU course pages and registration systems
 - [x] **Progress Analytics**: Visualize your academic progress and credit accumulation
-- [x] **Cloud Sync**: Sign in with GitHub to back up and sync your progress across devices
-- [ ] **Internationalization (i18n)**: Add German translation support for better accessibility
+- [x] **Internationalization (i18n)**: English and German interface with a language switcher and bilingual course names
 
 ## Tech Stack
 
 - **Bun**
 - **SvelteKit**
 - **Svelte 5 and TypeScript**
-- **UnoCSS** (Tailwindcss4, icons, webfonts)
 - **Iconify icons** (lucide)
+- **Paraglide JS** (type-safe i18n, compile-time messages)
 
 ## Development
 
@@ -61,3 +61,7 @@ Start the development server:
 ```sh
 bun run dev --open
 ```
+
+### Translations
+
+UI strings live in `frontend/messages/{en,de}.json` ([Paraglide JS](https://paraglidejs.com) message format) and are compiled into `frontend/src/lib/paraglide/` by the Vite plugin during `bun run dev` / `bun run build`. Course names come from the generated catalog, which stores both the German and English module names.
