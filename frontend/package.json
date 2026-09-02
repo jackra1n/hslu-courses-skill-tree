@@ -11,6 +11,7 @@
 		"catalog:generate": "bun scripts/generate-catalog.ts",
 		"catalog:check": "bun scripts/generate-catalog.ts --check",
 		"catalog:test": "bun run i18n:compile && bun test test/catalog-generator.test.ts test/catalog-client.test.ts",
+		"i18n:check": "bun scripts/check-i18n.ts",
 		"prebuild": "bun run catalog:check",
 		"i18n:compile": "paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide",
 		"check": "bun run i18n:compile && bun run catalog:check && svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
