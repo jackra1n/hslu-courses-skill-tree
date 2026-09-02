@@ -12,8 +12,10 @@ import {
 	collectAppData,
 	hasMeaningfulStoredAppData,
 } from '$lib/data/persistence';
+import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
+import { localeStore } from '$lib/stores/locale.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { themeStore } from '$lib/stores/theme.svelte';
 import { hasSelection, uiStore } from '$lib/stores/uiStore.svelte';
@@ -24,6 +26,8 @@ let legendOpen = $state(false);
 let phase = $state<StartupPhase>('catalog');
 
 async function startFromCatalog(): Promise<void> {
+	localeStore.init();
+
 	try {
 		await loadCatalog();
 		phase = 'progress';
@@ -35,9 +39,9 @@ async function startFromCatalog(): Promise<void> {
 
 	// Detect meaningful local state before any store initializer mutates it.
 	const localDataIsMeaningful = hasMeaningfulStoredAppData();
-	themeStore.init();
 	const courseStore = initializeCourseStore();
 	courseStore.init();
+	themeStore.init();
 	progressStore.init();
 	uiStore.init();
 	await cloudSyncStore.init(localDataIsMeaningful);
@@ -71,20 +75,20 @@ $effect(() => {
 {#if phase === 'catalog' || phase === 'progress'}
   <div class="flex h-screen items-center justify-center font-sans">
     <p class="text-sm text-text-secondary" role="status" aria-live="polite">
-      {phase === 'catalog' ? 'Loading course catalog…' : 'Loading your progress…'}
+      {phase === 'catalog' ? m.page_loading_catalog() : m.page_loading_progress()}
     </p>
   </div>
 {:else if phase === 'catalog-error'}
   <div class="flex h-screen items-center justify-center font-sans">
     <div class="flex flex-col items-center gap-4 text-center px-6">
-      <h1 class="text-lg font-semibold text-text-primary">Course catalog unavailable</h1>
-      <p class="text-sm text-text-secondary">Check your connection and try again.</p>
+      <h1 class="text-lg font-semibold text-text-primary">{m.page_catalog_unavailable_title()}</h1>
+      <p class="text-sm text-text-secondary">{m.page_catalog_unavailable_text()}</p>
       <button
         type="button"
         class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
         onclick={retryCatalog}
       >
-        Retry
+        {m.common_retry()}
       </button>
     </div>
   </div>
@@ -107,13 +111,13 @@ $effect(() => {
         <button
           type="button"
           class="flex w-full items-center justify-between gap-2 px-4 py-3 text-text-primary"
-          aria-label="Toggle status legend"
+          aria-label={m.legend_toggle()}
           aria-pressed={legendOpen}
           onclick={() => legendOpen = !legendOpen}
         >
           <div class="flex items-center gap-2">
             <div class="i-lucide-info w-4 h-4"></div>
-            <span class="text-sm font-medium">Legend</span>
+            <span class="text-sm font-medium">{m.legend_button()}</span>
           </div>
           {#if legendOpen}
             <div class="i-lucide-chevron-down h-4 w-4 text-text-secondary"></div>

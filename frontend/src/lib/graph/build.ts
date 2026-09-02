@@ -6,6 +6,7 @@ import {
 	mapPlanCourseProviders,
 	resolveCourse,
 } from '$lib/data/study-plan';
+import * as m from '$lib/paraglide/messages';
 import type {
 	Course,
 	ExtendedNodeData,
@@ -123,9 +124,9 @@ function toSlotSnapshot(planNode: PlanNode): TemplateSlot {
 }
 
 function getFallbackLabel(slotType: TemplateSlot['type']): string {
-	if (slotType === 'elective') return 'Wahl-Modul';
-	if (slotType === 'major') return 'Major-Modul';
-	return 'Course';
+	if (slotType === 'elective') return m.slot_wahl();
+	if (slotType === 'major') return m.slot_major();
+	return m.slot_course();
 }
 
 // The provider node sitting in the earliest semester row, or undefined if none.

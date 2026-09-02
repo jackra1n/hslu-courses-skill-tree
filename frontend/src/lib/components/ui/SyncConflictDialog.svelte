@@ -1,14 +1,14 @@
 <script lang="ts">
 import { fade, scale } from 'svelte/transition';
+import * as m from '$lib/paraglide/messages';
 import {
 	cloudSyncStore,
 	type SyncConflict,
 } from '$lib/stores/cloudSyncStore.svelte';
 
 const conflict = $derived(cloudSyncStore.conflict);
-
 function formatTime(timestamp: number | null): string {
-	if (timestamp === null) return 'Unknown';
+	if (timestamp === null) return m.sync_unknown_time();
 	return new Date(timestamp).toLocaleString(undefined, {
 		dateStyle: 'medium',
 		timeStyle: 'short',
@@ -49,15 +49,14 @@ function counts(data: SyncConflict['local']) {
           </svg>
         </div>
         <h2 id="sync-conflict-title" class="text-lg font-semibold text-text-primary">
-          Choose which progress to keep
+          {m.sync_title()}
         </h2>
       </div>
 
       <!-- Content -->
       <div class="px-6 py-6 space-y-4">
         <p class="text-sm text-text-secondary leading-relaxed">
-          This device and your cloud account have different progress. Pick one; the other stays saved
-          on this device.
+          {m.sync_description()}
         </p>
 
         <div class="grid gap-3 sm:grid-cols-2">
@@ -69,27 +68,27 @@ function counts(data: SyncConflict['local']) {
               </div>
               <dl class="space-y-1.5 text-sm">
                 <div class="flex justify-between gap-2">
-                  <dt class="text-text-secondary">Updated</dt>
+                  <dt class="text-text-secondary">{m.sync_updated()}</dt>
                   <dd class="text-text-primary">{formatTime(time)}</dd>
                 </div>
                 <div class="flex justify-between gap-2">
-                  <dt class="text-text-secondary">Attended</dt>
+                  <dt class="text-text-secondary">{m.sync_attended()}</dt>
                   <dd class="text-text-primary">{counts(data).attended}</dd>
                 </div>
                 <div class="flex justify-between gap-2">
-                  <dt class="text-text-secondary">Completed</dt>
+                  <dt class="text-text-secondary">{m.sync_completed()}</dt>
                   <dd class="text-text-primary">{counts(data).completed}</dd>
                 </div>
                 <div class="flex justify-between gap-2">
-                  <dt class="text-text-secondary">Saved plans</dt>
+                  <dt class="text-text-secondary">{m.sync_saved_plans()}</dt>
                   <dd class="text-text-primary">{counts(data).plans}</dd>
                 </div>
               </dl>
             </div>
           {/snippet}
 
-          {@render card('This device', 'i-lucide-monitor', conflict.local, conflict.localUpdatedAt)}
-          {@render card('Cloud data', 'i-lucide-cloud', conflict.cloud, conflict.cloudUpdatedAt)}
+          {@render card(m.sync_this_device(), 'i-lucide-monitor', conflict.local, conflict.localUpdatedAt)}
+          {@render card(m.sync_cloud_data(), 'i-lucide-cloud', conflict.cloud, conflict.cloudUpdatedAt)}
         </div>
       </div>
 
@@ -99,13 +98,13 @@ function counts(data: SyncConflict['local']) {
           class="rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors"
           onclick={() => cloudSyncStore.useLocalConflict()}
         >
-          Use this device
+          {m.sync_use_device()}
         </button>
         <button
           class="rounded-lg px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
           onclick={() => cloudSyncStore.useCloudConflict()}
         >
-          Use cloud data
+          {m.sync_use_cloud()}
         </button>
       </div>
     </div>

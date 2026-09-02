@@ -1,9 +1,18 @@
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import { sveltekit } from '@sveltejs/kit/vite';
 import UnoCSS from 'unocss/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-	plugins: [sveltekit(), UnoCSS()],
+	plugins: [
+		sveltekit(),
+		UnoCSS(),
+		paraglideVitePlugin({
+			project: './project.inlang',
+			outdir: './src/lib/paraglide',
+			strategy: ['localStorage', 'preferredLanguage', 'baseLocale'],
+		}),
+	],
 	server: {
 		proxy: {
 			// Local dev: the Worker on 8787 serves /api/* while the browser stays

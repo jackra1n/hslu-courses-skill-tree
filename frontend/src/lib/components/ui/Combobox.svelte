@@ -1,4 +1,6 @@
 <script lang="ts">
+import * as m from '$lib/paraglide/messages';
+
 interface Option {
 	value: string;
 	label: string;
@@ -24,10 +26,10 @@ let {
 	options,
 	selected,
 	onSelect,
-	placeholder = 'Select option',
+	placeholder = m.dropdown_placeholder(),
 	minWidth = 'auto',
-	searchPlaceholder = 'Search...',
-	noResultsText = 'No results found',
+	searchPlaceholder = m.combobox_search(),
+	noResultsText = m.combobox_no_results(),
 	normalize = (text: string) =>
 		text
 			.toLowerCase()
@@ -203,7 +205,7 @@ $effect(() => {
     onkeydown={handleKeydown}
     class="flex items-center justify-between px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer w-full"
     style="min-width: {minWidth}"
-    aria-label="Select option"
+    aria-label={m.combobox_select()}
     aria-expanded={isOpen}
     aria-haspopup="listbox"
     aria-controls="combobox-listbox"
@@ -232,7 +234,7 @@ $effect(() => {
           oninput={handleInputChange}
           onkeydown={handleKeydown}
           class="w-full px-2 py-1 text-sm border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          aria-label="Search options"
+          aria-label={m.combobox_search_options()}
           aria-autocomplete="list"
           aria-controls="combobox-listbox"
         />
@@ -243,7 +245,7 @@ $effect(() => {
         id="combobox-listbox"
         role="listbox"
         class="max-h-60 overflow-y-auto rounded-b-lg"
-        aria-label="Options"
+        aria-label={m.combobox_options()}
       >
         {#each filteredOptions as option, index (option.value)}
           <li

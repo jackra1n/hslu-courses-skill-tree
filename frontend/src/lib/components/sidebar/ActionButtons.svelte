@@ -1,5 +1,6 @@
 <script lang="ts">
 import { getCourseById } from '$lib/data/courses';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { selectedSlotId } from '$lib/stores/uiStore.svelte';
@@ -42,26 +43,26 @@ const prerequisitesMet = $derived.by(() => {
 </script>
 
 <div class="border-t border-border-primary pt-4 space-y-2">
-  <button 
+  <button
     onclick={() => _selectedSlotId && progressStore.markSlotAttended(_selectedSlotId)}
     disabled={!_selectedSlotId || isLocked || isCompleted || !prerequisitesMet}
     class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {(!_selectedSlotId || isLocked || isCompleted || !prerequisitesMet)
       ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500 dark:border-gray-700'
-      : isAttended 
-        ? 'bg-yellow-200 text-yellow-900 border-2 border-yellow-400 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:border-yellow-500 dark:hover:bg-yellow-700' 
+      : isAttended
+        ? 'bg-yellow-200 text-yellow-900 border-2 border-yellow-400 hover:bg-yellow-300 dark:bg-yellow-800 dark:text-yellow-100 dark:border-yellow-500 dark:hover:bg-yellow-700'
         : 'bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600 dark:hover:bg-gray-700'
     }"
   >
     {#if isAttended}
       <div class="i-lucide-check"></div>
-      Attended
+      {m.course_attended()}
     {:else}
       <div class="i-lucide-eye"></div>
-      Mark as Attended
+      {m.course_mark_attended()}
     {/if}
   </button>
-  
-  <button 
+
+  <button
     onclick={() => _selectedSlotId && progressStore.markSlotCompleted(_selectedSlotId)}
     disabled={!_selectedSlotId || isLocked || !prerequisitesMet}
     class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all {(!_selectedSlotId || isLocked || !prerequisitesMet)
@@ -73,10 +74,10 @@ const prerequisitesMet = $derived.by(() => {
   >
     {#if isCompleted}
       <div class="i-lucide-check-circle"></div>
-      Completed
+      {m.course_completed()}
     {:else}
       <div class="i-lucide-circle-check"></div>
-      Mark as Completed
+      {m.course_mark_completed()}
     {/if}
   </button>
 </div>

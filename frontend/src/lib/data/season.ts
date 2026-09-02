@@ -1,9 +1,10 @@
+import * as m from '$lib/paraglide/messages';
+
 export type Season = 'HS' | 'FS';
 
-export const SEASON_LABELS: Record<Season, string> = {
-	HS: 'Herbst (HS)',
-	FS: 'Frühling (FS)',
-};
+export function seasonLabel(season: Season): string {
+	return season === 'HS' ? m.season_hs() : m.season_fs();
+}
 
 export function otherSeason(season: Season): Season {
 	return season === 'HS' ? 'FS' : 'HS';

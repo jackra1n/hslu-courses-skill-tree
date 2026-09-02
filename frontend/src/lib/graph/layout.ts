@@ -1,4 +1,5 @@
-import type { Course } from '$lib/types';
+import type { Course } from '$lib/data/catalog-types';
+import { courseLabel } from '$lib/data/course-label';
 
 export function getNodeWidth(credits: number): number {
 	const blocks = Math.max(1, Math.round(credits / 3));
@@ -15,5 +16,5 @@ export function getNodeLabel(
 	if (showShortNamesOnly) {
 		return course.id;
 	}
-	return `${course.label} (${course.id})`;
+	return `${courseLabel(course)} (${course.id})`;
 }

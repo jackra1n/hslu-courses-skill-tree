@@ -1,5 +1,7 @@
 <script lang="ts">
+import { courseLabel } from '$lib/data/course-label';
 import { getCourseById } from '$lib/data/courses';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
@@ -64,7 +66,7 @@ function openAssessmentInfo() {
       class="text-sm font-semibold text-text-primary mb-2 flex items-center gap-2"
     >
       <div class="i-lucide-git-branch text-text-secondary"></div>
-      Prerequisites
+      {m.prereq_title()}
     </h3>
 
     {#if assessmentLevelPassed}
@@ -81,17 +83,20 @@ function openAssessmentInfo() {
               : "text-text-secondary"}
           >
             <div class="flex items-center gap-1">
-              <span class="font-semibold">Assessment Stage Passed</span>
+              <span class="font-semibold">{m.prereq_assessment_passed()}</span>
               <button
                 onclick={openAssessmentInfo}
                 class="text-blue-500 hover:text-blue-600 transition-colors inline-flex items-center"
-                aria-label="Learn more about assessment stage"
+                aria-label={m.prereq_assessment_more()}
               >
                 <div class="i-lucide-info text-xs"></div>
               </button>
             </div>
             <div class="text-xs opacity-60 mt-0.5">
-              {assessmentStageProgress.completedEcts} ECTS completed · {assessmentStageProgress.projectEcts} ECTS from project modules
+              {m.prereq_ects_progress({
+									completed: assessmentStageProgress.completedEcts,
+									project: assessmentStageProgress.projectEcts,
+								})}
             </div>
           </div>
         </div>
@@ -110,7 +115,7 @@ function openAssessmentInfo() {
             <div
               class="text-xs font-medium text-text-secondary bg-bg-primary px-2 py-1 rounded-full border border-border-primary"
             >
-              OR
+              {m.prereq_or()}
             </div>
           </li>
         {/if}
@@ -130,7 +135,7 @@ function openAssessmentInfo() {
                 ? 'i-lucide-triangle-alert text-yellow-600 dark:text-yellow-500'
                 : 'i-lucide-circle text-gray-400'} mt-0.5"
             title={shouldShowRuleWarning
-              ? "This prerequisite is not in your current study plan"
+              ? m.prereq_not_in_plan()
               : ""}
           ></div>
           <div class="flex-1">
@@ -143,12 +148,12 @@ function openAssessmentInfo() {
             >
               <div class="flex items-center gap-1">
                 <span class="font-semibold"
-                  >{rule.mustBePassed ? "Completed" : "Attended"}</span
+                  >{rule.mustBePassed ? m.course_completed() : m.course_attended()}</span
                 >
                 <span
                   >{rule.moduleLinkType === "oder"
-                    ? "one of:"
-                    : "all of:"}</span
+                    ? m.prereq_one_of()
+                    : m.prereq_all_of()}</span
                 >
               </div>
               <div class="ml-2 mt-1 space-y-1">
@@ -170,7 +175,7 @@ function openAssessmentInfo() {
                         ? 'text-text-primary'
                         : 'text-text-secondary'} {shouldApplyOpacity ? 'opacity-60' : ''}"
                     >
-                      {course?.label || moduleId}
+                      {course ? courseLabel(course) : moduleId}
                     </span>
                   </div>
                 {/each}
@@ -187,7 +192,7 @@ function openAssessmentInfo() {
       class="text-sm font-semibold text-text-primary mb-2 flex items-center gap-2"
     >
       <div class="i-lucide-git-branch text-text-secondary"></div>
-      Prerequisites
+      {m.prereq_title()}
     </h3>
 
     {#if assessmentLevelPassed}
@@ -204,24 +209,27 @@ function openAssessmentInfo() {
               : "text-text-secondary"}
           >
             <div class="flex items-center gap-1">
-              <span class="font-semibold">Assessment Stage Passed</span>
+              <span class="font-semibold">{m.prereq_assessment_passed()}</span>
               <button
                 onclick={openAssessmentInfo}
                 class="text-blue-500 hover:text-blue-600 ml-1 transition-colors inline-flex items-center"
-                aria-label="Learn more about assessment stage"
+                aria-label={m.prereq_assessment_more()}
               >
                 <div class="i-lucide-info text-xs"></div>
               </button>
             </div>
             <div class="text-xs opacity-60 mt-0.5">
-              {assessmentStageProgress.completedEcts} ECTS completed · {assessmentStageProgress.projectEcts} ECTS from project modules
+              {m.prereq_ects_progress({
+									completed: assessmentStageProgress.completedEcts,
+									project: assessmentStageProgress.projectEcts,
+								})}
             </div>
           </div>
         </div>
       </div>
-      <p class="text-sm text-text-secondary">No other prerequisites</p>
+      <p class="text-sm text-text-secondary">{m.prereq_no_other()}</p>
     {:else}
-      <p class="text-sm text-text-secondary">None</p>
+      <p class="text-sm text-text-secondary">{m.prereq_none()}</p>
     {/if}
   </div>
 {/if}

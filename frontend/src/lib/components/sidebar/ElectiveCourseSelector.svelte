@@ -3,8 +3,10 @@ import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
 import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
 import Combobox from '$lib/components/ui/Combobox.svelte';
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
+import { courseLabel } from '$lib/data/course-label';
 import { COURSES, type Course, getCourseById } from '$lib/data/courses';
-import { SEASON_LABELS, type Season } from '$lib/data/season';
+import { type Season, seasonLabel } from '$lib/data/season';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
 import {
@@ -69,12 +71,19 @@ const comboboxOptions = $derived.by(() => {
 		const outOfSeason = slotSeason !== null && !isOfferedIn(course, slotSeason);
 		return {
 			value: course.id,
-			label: `${course.label} (${course.id}) — ${course.ects} ECTS`,
-			keywords: [course.label, course.id],
+			label: m.elective_option_label({
+				name: courseLabel(course),
+				id: course.id,
+				ects: course.ects,
+			}),
+			// search matches either language, regardless of the active locale
+			keywords: [course.label, course.labelEn ?? '', course.id],
 			// keep an already-chosen course usable even if the start season later changed
 			disabled: outOfSeason && course.id !== selectedCourseId,
 			tooltip: outOfSeason
-				? `Only offered in ${formatSeasons(course.seasons)}`
+				? m.elective_only_offered({
+						seasons: formatSeasons(course.seasons),
+					})
 				: undefined,
 		};
 	});
@@ -83,10 +92,10 @@ const comboboxOptions = $derived.by(() => {
 });
 
 function formatSeasons(seasons: Season[] | undefined): string {
-	if (!seasons || seasons.length === 0) return 'other semesters';
+	if (!seasons || seasons.length === 0) return m.elective_other_semesters();
 	return (['HS', 'FS'] as Season[])
 		.filter((s) => seasons.includes(s))
-		.map((s) => SEASON_LABELS[s])
+		.map((s) => seasonLabel(s))
 		.join(' & ');
 }
 
@@ -106,20 +115,20 @@ function clearSelection() {
 <div class="border-t border-border-primary pt-4">
   <h3 class="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
     <div class="i-lucide-book-plus text-text-secondary"></div>
-    Select Course
+    {m.elective_select_title()}
   </h3>
   <div class="space-y-3">
     <div class="space-y-2">
       <div class="flex items-center justify-between">
         <label for="elective-course-select" class="text-sm font-medium text-text-primary">
-          Choose a course for this slot
+          {m.elective_choose()}
         </label>
         {#if selectedCourseId}
           <button 
             onclick={clearSelection}
             class="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
           >
-            Clear
+            {m.common_clear()}
           </button>
         {/if}
       </div>
@@ -127,9 +136,9 @@ function clearSelection() {
         options={comboboxOptions}
         selected={selectedCourseId || ''}
         onSelect={handleCourseSelect}
-        placeholder="Select a course..."
-        searchPlaceholder="Search courses..."
-        noResultsText="No courses found"
+        placeholder={m.elective_placeholder()}
+        searchPlaceholder={m.elective_search()}
+        noResultsText={m.elective_no_results()}
         minWidth="100%"
       />
     </div>

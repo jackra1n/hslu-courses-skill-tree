@@ -1,6 +1,8 @@
 <script lang="ts">
 import { Handle, Position } from '@xyflow/svelte';
 import type { Course, ExtendedNodeData, TemplateSlot } from '$lib/data/courses';
+import { moduleTypeBadge } from '$lib/data/module-type';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasMissingPrerequisites as checkMissingPrerequisites } from '$lib/utils/status';
 
@@ -56,23 +58,6 @@ function getCourseTypeColor(type?: string): string {
 	}
 }
 
-function getCourseTypeLabel(type?: string): string {
-	switch (type) {
-		case 'Kernmodul':
-			return 'Kern';
-		case 'Projektmodul':
-			return 'Projekt';
-		case 'Erweiterungsmodul':
-			return 'Wahl';
-		case 'Major-/Minormodul':
-			return 'Major/Minor';
-		case 'Zusatzmodul':
-			return 'Zusatz';
-		default:
-			return 'Modul';
-	}
-}
-
 function handleRemoveClick(event: MouseEvent) {
 	event.stopPropagation();
 	if (removeHandler) {
@@ -90,7 +75,7 @@ function handleRemoveClick(event: MouseEvent) {
     <button
       class="absolute -top-3 -right-1 w-5 h-5 bg-red-500 text-white border-0 rounded-full cursor-pointer flex items-center justify-center z-10 transition-colors duration-200 hover:bg-red-600 active:bg-red-700"
       onclick={handleRemoveClick}
-      aria-label="Remove {nodeData.label}"
+      aria-label={m.remove_course_aria({ label: nodeData.label ?? '' })}
       type="button"
     >
       <div class="i-lucide-x w-3.5 h-3.5"></div>
@@ -129,7 +114,7 @@ function handleRemoveClick(event: MouseEvent) {
             course.type
           )} shadow-sm"
         >
-          {getCourseTypeLabel(course.type)}
+          {moduleTypeBadge(course.type)}
         </div>
       </div>
     {:else if isElectiveSlot}
@@ -137,7 +122,7 @@ function handleRemoveClick(event: MouseEvent) {
         <div
           class="inline-block px-1.5 py-0.5 rounded-full text-xs font-medium text-white bg-gray-500 shadow-sm"
         >
-          Wahl
+          {moduleTypeBadge('Erweiterungsmodul')}
         </div>
       </div>
     {/if}

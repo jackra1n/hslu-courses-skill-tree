@@ -11,15 +11,16 @@ import { getProgramPlans, getPrograms } from '$lib/data/programs';
 import {
 	planIntroYear,
 	resolvePlan,
-	SEASON_LABELS,
 	type Season,
+	seasonLabel,
 } from '$lib/data/season';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
 
-const MODEL_LABELS: Record<string, string> = {
-	fulltime: 'Fulltime',
-	parttime: 'Parttime',
+const MODEL_LABELS: Record<string, () => string> = {
+	fulltime: () => m.model_fulltime(),
+	parttime: () => m.model_parttime(),
 };
 const MODEL_ORDER: StudyModel[] = ['fulltime', 'parttime'];
 const SEASONS: Season[] = ['HS', 'FS'];
@@ -70,7 +71,7 @@ const programOptions = $derived.by(() =>
 			value: entry.shortName,
 			label: entry.name,
 			disabled: planCount === 0,
-			tooltip: planCount === 0 ? 'Coming soon' : undefined,
+			tooltip: planCount === 0 ? m.template_coming_soon() : undefined,
 		};
 	}),
 );
@@ -85,9 +86,9 @@ const modelOptions = $derived.by(() => {
 		const isAvailable = availableModels.includes(value as StudyModel);
 		return {
 			value,
-			label: MODEL_LABELS[value as keyof typeof MODEL_LABELS] ?? value,
+			label: MODEL_LABELS[value as keyof typeof MODEL_LABELS]?.() ?? value,
 			disabled: !isAvailable,
-			tooltip: !isAvailable ? 'Coming soon' : undefined,
+			tooltip: !isAvailable ? m.template_coming_soon() : undefined,
 		};
 	});
 });
@@ -104,10 +105,12 @@ const yearOptions = $derived.by(() => {
 	return years.map((value) => ({ value: String(value), label: String(value) }));
 });
 
-const seasonOptions = SEASONS.map((value) => ({
-	value,
-	label: SEASON_LABELS[value],
-}));
+const seasonOptions = $derived(
+	SEASONS.map((value) => ({
+		value,
+		label: seasonLabel(value),
+	})),
+);
 
 function toggleCourseNames() {
 	courseStore.toggleShortNames();
@@ -178,7 +181,7 @@ function cancelTemplateSwitch() {
 <div class="space-y-3">
   <div class="space-y-1.5">
     <label for="program-select" class="text-xs font-medium text-text-secondary"
-      >Program</label
+      >{m.template_program()}</label
     >
     <Dropdown
       options={programOptions}
@@ -190,7 +193,7 @@ function cancelTemplateSwitch() {
 
   <div class="space-y-1.5">
     <label for="model-select" class="text-xs font-medium text-text-secondary"
-      >Study Model</label
+      >{m.template_study_model()}</label
     >
     <Dropdown
       options={modelOptions}
@@ -203,7 +206,7 @@ function cancelTemplateSwitch() {
   <div class="grid grid-cols-2 gap-2">
     <div class="space-y-1.5">
       <label for="start-year-select" class="text-xs font-medium text-text-secondary"
-        >Start Year</label
+        >{m.template_start_year()}</label
       >
       <Dropdown
         options={yearOptions}
@@ -214,7 +217,7 @@ function cancelTemplateSwitch() {
     </div>
     <div class="space-y-1.5">
       <label for="start-season-select" class="text-xs font-medium text-text-secondary"
-        >Start Season</label
+        >{m.template_start_season()}</label
       >
       <Dropdown
         options={seasonOptions}
@@ -233,22 +236,22 @@ function cancelTemplateSwitch() {
       : 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'}"
   >
     <div class="i-lucide-download"></div>
-    Load Template
+    {m.template_load()}
   </button>
 
   <div class="border-b border-border-primary"></div>
 
   <div class="space-y-3">
-    <div class="text-xs font-medium text-text-secondary">View Options</div>
+    <div class="text-xs font-medium text-text-secondary">{m.template_view_options()}</div>
     <div class="flex items-center justify-between">
-      <label for="show-full-course-names" class="text-sm text-text-primary">Show Full Course Names</label>
+      <label for="show-full-course-names" class="text-sm text-text-primary">{m.template_show_full_names()}</label>
       <button
         id="show-full-course-names"
         onclick={toggleCourseNames}
         class="relative w-11 h-6 rounded-full transition-colors duration-200 {!courseStore.showShortNamesOnly
           ? 'bg-blue-600 dark:bg-blue-500'
           : 'bg-gray-300 dark:bg-gray-600'}"
-        aria-label="Toggle full course names"
+        aria-label={m.template_toggle_full_names()}
         aria-pressed={!courseStore.showShortNamesOnly}
       >
         <div
@@ -259,14 +262,14 @@ function cancelTemplateSwitch() {
       </button>
     </div>
     <div class="flex items-center justify-between">
-      <label for="show-course-badges" class="text-sm text-text-primary">Show Course Badges</label>
+      <label for="show-course-badges" class="text-sm text-text-primary">{m.template_show_badges()}</label>
       <button
         id="show-course-badges"
         onclick={toggleCourseBadges}
         class="relative w-11 h-6 rounded-full transition-colors duration-200 {showCourseTypeBadges()
           ? 'bg-blue-600 dark:bg-blue-500'
           : 'bg-gray-300 dark:bg-gray-600'}"
-        aria-label="Toggle course badges"
+        aria-label={m.template_toggle_badges()}
         aria-pressed={showCourseTypeBadges()}
       >
         <div
@@ -281,10 +284,10 @@ function cancelTemplateSwitch() {
 
 {#if showWarningDialog}
   <ConfirmationDialog
-    title="Load New Template?"
-    message="Your customized study plan will be overwritten. Any custom nodes you've added or courses you've removed will be lost."
-    confirmText="Load Template"
-    cancelText="Cancel"
+    title={m.template_load_confirm_title()}
+    message={m.template_load_confirm_message()}
+    confirmText={m.template_load()}
+    cancelText={m.common_cancel()}
     variant="warning"
     onConfirm={confirmTemplateSwitch}
     onCancel={cancelTemplateSwitch}

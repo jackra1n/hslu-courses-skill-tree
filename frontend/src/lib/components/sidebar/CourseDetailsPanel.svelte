@@ -1,7 +1,10 @@
 <script lang="ts">
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
+import { courseLabel } from '$lib/data/course-label';
 import { getCourseById } from '$lib/data/courses';
-import { SEASON_LABELS, type Season } from '$lib/data/season';
+import { moduleTypeLabel } from '$lib/data/module-type';
+import { type Season, seasonLabel } from '$lib/data/season';
+import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import {
 	hasSelection,
@@ -87,7 +90,7 @@ const seasonInfo = $derived.by(() => {
 	);
 	return {
 		short: ordered.join(' + '),
-		full: ordered.map((season) => SEASON_LABELS[season]).join(' & '),
+		full: ordered.map((season) => seasonLabel(season)).join(' & '),
 	};
 });
 </script>
@@ -109,12 +112,12 @@ const seasonInfo = $derived.by(() => {
     <div class="p-6 space-y-6">
       <div>
         <div class="flex items-center justify-between mb-3">
-          <h2 class="text-xl font-bold text-text-primary">{displayCourse?.label || ''}</h2>
+          <h2 class="text-xl font-bold text-text-primary">{displayCourse ? courseLabel(displayCourse) : ''}</h2>
           <button 
             onclick={() => uiStore.deselectCourse()}
             class="flex items-center justify-center w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary transition-all"
-            title="Deselect course"
-            aria-label="Deselect course"
+            title={m.details_deselect()}
+            aria-label={m.details_deselect()}
           >
             <div class="i-lucide-x w-4 h-4"></div>
           </button>
@@ -127,10 +130,10 @@ const seasonInfo = $derived.by(() => {
           </div>
           <div class="flex items-center gap-1.5">
             <div class="i-lucide-calendar text-text-secondary"></div>
-            <span>Semester {activePlanNode?.semester ?? '?'}</span>
+            <span>{m.details_semester({ number: activePlanNode?.semester ?? '?' })}</span>
           </div>
           {#if seasonInfo}
-            <div class="flex items-center gap-1.5" title="Offered in {seasonInfo.full}">
+            <div class="flex items-center gap-1.5" title={m.details_offered_in({ seasons: seasonInfo.full })}>
               <div class="i-lucide-sun text-text-secondary"></div>
               <span>{seasonInfo.short}</span>
             </div>
@@ -140,7 +143,7 @@ const seasonInfo = $derived.by(() => {
         {#if displayCourse?.type}
           <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-100 rounded-md text-sm font-medium">
             <div class="i-lucide-layers text-purple-600 dark:text-purple-400"></div>
-            {displayCourse.type}
+            {moduleTypeLabel(displayCourse.type)}
           </div>
         {/if}
       </div>
@@ -174,10 +177,10 @@ const seasonInfo = $derived.by(() => {
       <div class="text-center py-8">
         <div class="i-lucide-mouse-pointer-click w-12 h-12 mx-auto text-text-secondary mb-3"></div>
         <p class="text-sm text-text-secondary">
-          Click on a course to view details and track your progress
+          {m.details_empty_hint()}
         </p>
         <p class="text-xs text-text-tertiary mt-2">
-          Click on dashed "Wahl-Modul" nodes to select courses
+          {m.details_empty_elective_hint()}
         </p>
       </div>
       

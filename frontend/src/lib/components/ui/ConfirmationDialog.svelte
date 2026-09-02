@@ -1,5 +1,6 @@
 <script lang="ts">
 import { fade, scale } from 'svelte/transition';
+import * as m from '$lib/paraglide/messages';
 
 interface Props {
 	title: string;
@@ -14,8 +15,8 @@ interface Props {
 let {
 	title,
 	message,
-	confirmText = 'Confirm',
-	cancelText = 'Cancel',
+	confirmText = m.common_confirm(),
+	cancelText = m.common_cancel(),
 	onConfirm,
 	onCancel,
 	variant = 'danger',
@@ -69,7 +70,7 @@ function handleBackdropClick(event: MouseEvent) {
       </div>
       <button
         class="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-secondary text-text-primary transition-colors"
-        aria-label="Close dialog"
+        aria-label={m.common_close_dialog()}
         onclick={onCancel}
       >
         <div class="i-lucide-x w-4 h-4"></div>

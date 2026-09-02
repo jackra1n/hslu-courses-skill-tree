@@ -19,6 +19,7 @@ export type PrerequisiteRule = {
 export type Course = {
 	id: string;
 	label: string;
+	labelEn?: string;
 	ects: number;
 	prerequisites: PrerequisiteRule[];
 	prerequisiteNote?: string;
