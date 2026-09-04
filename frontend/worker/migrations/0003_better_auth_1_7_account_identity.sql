@@ -35,6 +35,8 @@ select
 	"id",
 	"accountId",
 	"providerId",
+	-- GitHub is the only configured provider. An unexpected provider yields
+	-- NULL and aborts instead of assigning an unverified identity namespace.
 	case when "providerId" = 'github' then 'local:oauth:github' end,
 	"userId",
 	"accessToken",
