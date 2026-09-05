@@ -22,6 +22,21 @@ let phase = $state<Phase>('loading');
 let courses = $state<CatalogCourse[]>([]);
 let settingsOpen = $state(false);
 
+let query = $state('');
+const normalizedQuery = $derived(query.trim().toLowerCase());
+const filteredCourses = $derived(
+	normalizedQuery === ''
+		? courses
+		: courses.filter((course) => {
+				// Match both languages regardless of UI locale: users search
+				// for German and English titles interchangeably.
+				const haystacks = [course.id, course.label, course.labelEn ?? ''].map(
+					(text) => text.toLowerCase(),
+				);
+				return haystacks.some((text) => text.includes(normalizedQuery));
+			}),
+);
+
 async function load(): Promise<void> {
 	phase = 'loading';
 	try {
@@ -113,14 +128,58 @@ onMount(() => {
 				dependency-oriented Skill Tree.
 			</p>
 
-			<p class="mt-4 text-sm text-text-secondary">
-				{courses.length} courses
+			<div role="search" class="relative mt-4">
+				<div
+					class="i-lucide-search pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary"
+					aria-hidden="true"
+				></div>
+				<input
+					id="course-search"
+					type="search"
+					autocomplete="off"
+					bind:value={query}
+					placeholder={m.elective_search()}
+					aria-label={m.browser_search_label()}
+					class="h-10 w-full rounded-lg border border-border-primary bg-bg-secondary pl-9 pr-9 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-blue-500"
+				/>
+				{#if query}
+					<button
+						type="button"
+						onclick={() => (query = '')}
+						aria-label={m.common_clear()}
+						class="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-text-secondary transition-all hover:bg-bg-primary hover:text-text-primary"
+					>
+						<div class="i-lucide-x h-4 w-4" aria-hidden="true"></div>
+					</button>
+				{/if}
+			</div>
+			<p class="mt-4 text-sm text-text-secondary" aria-live="polite">
+				{#if normalizedQuery === ''}
+					{m.browser_count_all({ total: courses.length })}
+				{:else}
+					{m.browser_count_filtered({ filtered: filteredCourses.length, total: courses.length })}
+				{/if}
 			</p>
-			<ul class="mt-2 grid gap-2">
-				{#each courses as course (course.id)}
-					<CourseRow {course} />
-				{/each}
-			</ul>
+			{#if filteredCourses.length === 0}
+				<div
+					class="mt-2 rounded-lg border border-border-primary bg-bg-secondary p-6 text-center"
+				>
+					<p class="text-sm text-text-secondary">{m.elective_no_results()}</p>
+					<button
+						type="button"
+						onclick={() => (query = '')}
+						class="mt-2 cursor-pointer text-sm font-medium text-text-primary underline"
+					>
+						{m.common_clear()}
+					</button>
+				</div>
+			{:else}
+				<ul class="mt-2 grid gap-2">
+					{#each filteredCourses as course (course.id)}
+						<CourseRow {course} />
+					{/each}
+				</ul>
+			{/if}
 		</main>
 	</div>
 {/if}

@@ -19,6 +19,10 @@
 
 	"nav_skill_tree": "Skill Tree",
 
+	"browser_search_label": "Search courses",
+	"browser_count_all": "{total} courses",
+	"browser_count_filtered": "{filtered} of {total} courses",
+
 	"layout_title": "HSLU Courses Skill Tree - Interactive Course Planning",
 	"layout_description": "Interactive skill tree visualization for HSLU courses. Plan your academic journey with prerequisite tracking and course progression.",
 
