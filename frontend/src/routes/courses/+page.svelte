@@ -135,8 +135,8 @@ onMount(() => {
 				></div>
 				<input
 					id="course-search"
-					type="search"
-					autocomplete="off"
+					type="text"
+					inputmode="search"
 					bind:value={query}
 					placeholder={m.elective_search()}
 					aria-label={m.browser_search_label()}
