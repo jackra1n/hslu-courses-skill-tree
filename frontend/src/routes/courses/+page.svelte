@@ -5,7 +5,6 @@ import SettingsSidebar from '$lib/components/sidebar/SettingsSidebar.svelte';
 import Tooltip from '$lib/components/ui/Tooltip.svelte';
 import { loadCatalog } from '$lib/data/catalog-loader';
 import type { CatalogCourse } from '$lib/data/catalog-types';
-import { courseLabel } from '$lib/data/course-label';
 import {
 	collectAppData,
 	hasMeaningfulStoredAppData,
@@ -15,6 +14,7 @@ import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
+import CourseRow from './CourseRow.svelte';
 
 type Phase = 'loading' | 'ready' | 'error';
 
@@ -116,21 +116,9 @@ onMount(() => {
 			<p class="mt-4 text-sm text-text-secondary">
 				{courses.length} courses
 			</p>
-			<ul class="mt-2 grid gap-2 sm:grid-cols-2">
+			<ul class="mt-2 grid gap-2">
 				{#each courses as course (course.id)}
-					<li
-						class="rounded-lg border border-border-primary bg-bg-secondary p-3"
-					>
-						<article class="flex items-start gap-3">
-							<div class="i-lucide-book-open mt-0.5 shrink-0 text-text-tertiary"></div>
-							<div class="min-w-0">
-								<h2 class="truncate font-semibold">{courseLabel(course)}</h2>
-								<p class="mt-0.5 text-sm text-text-secondary">
-									{course.id} · {course.ects} ECTS
-								</p>
-							</div>
-						</article>
-					</li>
+					<CourseRow {course} />
 				{/each}
 			</ul>
 		</main>
