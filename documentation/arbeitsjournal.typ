@@ -10,6 +10,11 @@
     hours: 1.5,
     activity: "Projekt-Kickoff: Analyse der Modulanforderungen für WEBLAB, Konzeption der Repository- und Worktree-Struktur, Planung der Architektur-Dokumentation sowie Aufsetzen der Typst-Umgebung."
   ),
+  (
+    date: "2026-09-05",
+    hours: 1.0,
+    activity: "Course-Browser Grundgerüst: neue Route /courses als einfache Katalogliste auf Basis des bestehenden statischen Kurskatalogs angelegt, Styling an das App-Theme (Light/Dark-Tokens, Kartenlayout) angeglichen, Typcheck/Lint/Build verifiziert."
+  ),
 )
 
 // Berechnung der Statistiken
