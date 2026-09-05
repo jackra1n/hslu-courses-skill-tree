@@ -20,6 +20,11 @@
     hours: 0.5,
     activity: "Theme-Fix: Darkmode galt nur auf der Startseite, da themeStore nur dort initialisiert wurde. Initialisierung von Theme und Locale ins Root-Layout (+layout.svelte) verlagert, redundante Aufrufe aus den Seiten entfernt."
   ),
+  (
+    date: "2026-09-06",
+    hours: 1.0,
+    activity: "Course-Browser Header und Kurszeilen: schlanken Seiten-Header mit Skill-Tree-Rücklink, Login und Einstellungen statt vollem App-Header umgesetzt, mobile Warnung auf den Skill Tree begrenzt, Kurse als einspaltige Zeilen mit Modultyp- und Semester-Badges sowie Voraussetzungs- und Assessment-Hinweisen in neuer CourseRow-Komponente dargestellt, auf Desktop und Mobil verifiziert."
+  ),
 )
 
 // Berechnung der Statistiken
