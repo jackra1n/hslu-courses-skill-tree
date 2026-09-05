@@ -4,6 +4,7 @@ import { loadCatalog } from '$lib/data/catalog-loader';
 import type { CatalogCourse } from '$lib/data/catalog-types';
 import { courseLabel } from '$lib/data/course-label';
 import { localeStore } from '$lib/stores/locale.svelte';
+import { themeStore } from '$lib/stores/theme.svelte';
 
 type Phase = 'loading' | 'ready' | 'error';
 
@@ -14,6 +15,7 @@ async function load(): Promise<void> {
 	phase = 'loading';
 	try {
 		localeStore.init();
+		themeStore.init();
 		const catalog = await loadCatalog();
 		courses = catalog.courses;
 		phase = 'ready';
