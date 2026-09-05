@@ -17,6 +17,8 @@
 	"header_settings_help": "Einstellungen & Hilfe",
 	"header_ects_tooltip": "{passed} ECTS bestanden\n{planned} ECTS im Plan\n{attended} ECTS besucht (nicht bestanden)",
 
+	"nav_skill_tree": "Skill Tree",
+
 	"layout_title": "HSLU Courses Skill Tree - Interaktive Studienplanung",
 	"layout_description": "Interaktive Skill-Tree-Visualisierung für HSLU-Module. Plane dein Studium mit Voraussetzungs-Tracking und Modulfortschritt.",
 

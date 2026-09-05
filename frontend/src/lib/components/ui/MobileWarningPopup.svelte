@@ -1,5 +1,6 @@
 <script lang="ts">
 import { onMount } from 'svelte';
+import { page } from '$app/state';
 import * as m from '$lib/paraglide/messages';
 
 const STORAGE_KEY = 'mobile-warning-dismissed';
@@ -14,7 +15,7 @@ onMount(() => {
 	}
 
 	const checkMobile = () => {
-		if (window.innerWidth < 768 && !dismissed) {
+		if (window.innerWidth < 768 && !dismissed && page.url.pathname === '/') {
 			showPopup = true;
 		} else {
 			showPopup = false;
@@ -37,7 +38,7 @@ function dismissPopup() {
 }
 </script>
 
-{#if showPopup}
+{#if showPopup && page.url.pathname === '/'}
   <div data-mobile-warning class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full mx-4 p-6 text-center">
       <div class="mb-4">
