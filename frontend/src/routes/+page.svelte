@@ -15,9 +15,7 @@ import {
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
-import { localeStore } from '$lib/stores/locale.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
-import { themeStore } from '$lib/stores/theme.svelte';
 import { hasSelection, uiStore } from '$lib/stores/uiStore.svelte';
 
 type StartupPhase = 'catalog' | 'progress' | 'ready' | 'catalog-error';
@@ -26,8 +24,6 @@ let legendOpen = $state(false);
 let phase = $state<StartupPhase>('catalog');
 
 async function startFromCatalog(): Promise<void> {
-	localeStore.init();
-
 	try {
 		await loadCatalog();
 		phase = 'progress';
@@ -41,7 +37,6 @@ async function startFromCatalog(): Promise<void> {
 	const localDataIsMeaningful = hasMeaningfulStoredAppData();
 	const courseStore = initializeCourseStore();
 	courseStore.init();
-	themeStore.init();
 	progressStore.init();
 	uiStore.init();
 	await cloudSyncStore.init(localDataIsMeaningful);
