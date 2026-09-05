@@ -15,6 +15,11 @@
     hours: 1.0,
     activity: "Course-Browser Grundgerüst: neue Route /courses als einfache Katalogliste auf Basis des bestehenden statischen Kurskatalogs angelegt, Styling an das App-Theme (Light/Dark-Tokens, Kartenlayout) angeglichen, Typcheck/Lint/Build verifiziert."
   ),
+  (
+    date: "2026-09-05",
+    hours: 0.5,
+    activity: "Theme-Fix: Darkmode galt nur auf der Startseite, da themeStore nur dort initialisiert wurde. Initialisierung von Theme und Locale ins Root-Layout (+layout.svelte) verlagert, redundante Aufrufe aus den Seiten entfernt."
+  ),
 )
 
 // Berechnung der Statistiken
