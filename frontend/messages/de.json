@@ -17,6 +17,22 @@
 	"header_settings_help": "Einstellungen & Hilfe",
 	"header_ects_tooltip": "{passed} ECTS bestanden\n{planned} ECTS im Plan\n{attended} ECTS besucht (nicht bestanden)",
 
+	"nav_skill_tree": "Skill Tree",
+
+	"browser_search_label": "Kurse suchen",
+	"browser_filters": "Filter",
+	"browser_filter_season": "Semester",
+	"browser_filter_type": "Modultyp",
+	"browser_filter_ects": "ECTS",
+	"browser_all_seasons": "Alle Semester",
+	"browser_all_types": "Alle Typen",
+	"browser_all_ects": "Alle ECTS",
+	"browser_ects_min": "Minimale ECTS",
+	"browser_ects_max": "Maximale ECTS",
+	"browser_ects_range": "{min}–{max} ECTS",
+	"browser_count_all": "{total} Kurse",
+	"browser_count_filtered": "{filtered} von {total} Kursen",
+
 	"layout_title": "HSLU Courses Skill Tree - Interaktive Studienplanung",
 	"layout_description": "Interaktive Skill-Tree-Visualisierung für HSLU-Module. Plane dein Studium mit Voraussetzungs-Tracking und Modulfortschritt.",
 
