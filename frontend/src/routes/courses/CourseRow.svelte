@@ -32,7 +32,7 @@ function seasonTitle(season: Season): string {
 			aria-hidden="true"
 		></div>
 		<div class="min-w-0 flex-1">
-			<h2 class="font-semibold text-text-primary">
+			<h2 class="break-words font-semibold text-text-primary">
 				{courseLabel(course)}
 			</h2>
 			<p class="mt-0.5 text-sm text-text-secondary">
@@ -43,7 +43,7 @@ function seasonTitle(season: Season): string {
 					class="mt-1 flex items-center gap-1.5 text-xs text-text-secondary"
 				>
 					<span class="i-lucide-lock h-3.5 w-3.5 shrink-0" aria-hidden="true"></span>
-					<span class="truncate">
+					<span class="min-w-0 truncate">
 						{m.prereq_title()}: {visiblePrerequisites.join(', ')}{#if hiddenPrerequisiteCount > 0}
 							+{hiddenPrerequisiteCount}{/if}
 					</span>
