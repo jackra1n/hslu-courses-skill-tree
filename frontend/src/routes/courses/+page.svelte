@@ -175,44 +175,62 @@ onMount(() => {
 				aria-label={m.browser_filters_label()}
 				class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3"
 			>
-				<label class="flex min-h-11 items-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm">
-					<span class="shrink-0 text-text-tertiary">{m.browser_filter_season()}</span>
-					<select
-						bind:value={season}
-						aria-label={m.browser_filter_season()}
-						class="h-full min-h-11 w-full cursor-pointer bg-transparent text-text-primary focus:outline-none"
-					>
-						<option value="all">{m.browser_all_seasons()}</option>
-						<option value="HS">{seasonLabel('HS')}</option>
-						<option value="FS">{seasonLabel('FS')}</option>
-					</select>
+				<label class="block cursor-pointer rounded-lg border border-border-primary bg-bg-secondary px-3 pb-1.5 pt-1.5 transition-colors focus-within:border-blue-500">
+					<span class="block text-xs text-text-tertiary">{m.browser_filter_season()}</span>
+					<span class="relative block">
+						<select
+							bind:value={season}
+							aria-label={m.browser_filter_season()}
+							class="w-full cursor-pointer appearance-none bg-transparent py-1 pr-6 text-sm font-medium text-text-primary focus:outline-none"
+						>
+							<option value="all">{m.browser_all_seasons()}</option>
+							<option value="HS">{seasonLabel('HS')}</option>
+							<option value="FS">{seasonLabel('FS')}</option>
+						</select>
+						<span
+							class="i-lucide-chevron-down pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary"
+							aria-hidden="true"
+						></span>
+					</span>
 				</label>
-				<label class="flex min-h-11 items-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm">
-					<span class="shrink-0 text-text-tertiary">{m.browser_filter_type()}</span>
-					<select
-						bind:value={moduleType}
-						aria-label={m.browser_filter_type()}
-						class="h-full min-h-11 w-full cursor-pointer bg-transparent text-text-primary focus:outline-none"
-					>
-						{#each moduleTypeOptions as option (option)}
-							<option value={option}>
-								{option === 'all' ? m.browser_all_types() : moduleTypeLabel(option)}
-							</option>
-						{/each}
-					</select>
+				<label class="block cursor-pointer rounded-lg border border-border-primary bg-bg-secondary px-3 pb-1.5 pt-1.5 transition-colors focus-within:border-blue-500">
+					<span class="block text-xs text-text-tertiary">{m.browser_filter_type()}</span>
+					<span class="relative block">
+						<select
+							bind:value={moduleType}
+							aria-label={m.browser_filter_type()}
+							class="w-full cursor-pointer appearance-none bg-transparent py-1 pr-6 text-sm font-medium text-text-primary focus:outline-none"
+						>
+							{#each moduleTypeOptions as option (option)}
+								<option value={option}>
+									{option === 'all' ? m.browser_all_types() : moduleTypeLabel(option)}
+								</option>
+							{/each}
+						</select>
+						<span
+							class="i-lucide-chevron-down pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary"
+							aria-hidden="true"
+						></span>
+					</span>
 				</label>
-				<label class="flex min-h-11 items-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm">
-					<span class="shrink-0 text-text-tertiary">{m.browser_filter_ects()}</span>
-					<select
-						bind:value={ects}
-						aria-label={m.browser_filter_ects()}
-						class="h-full min-h-11 w-full cursor-pointer bg-transparent text-text-primary focus:outline-none"
-					>
-						<option value="all">{m.browser_all_ects()}</option>
-						<option value="small">{m.browser_ects_small()}</option>
-						<option value="medium">{m.browser_ects_medium()}</option>
-						<option value="large">{m.browser_ects_large()}</option>
-					</select>
+				<label class="block cursor-pointer rounded-lg border border-border-primary bg-bg-secondary px-3 pb-1.5 pt-1.5 transition-colors focus-within:border-blue-500">
+					<span class="block text-xs text-text-tertiary">{m.browser_filter_ects()}</span>
+					<span class="relative block">
+						<select
+							bind:value={ects}
+							aria-label={m.browser_filter_ects()}
+							class="w-full cursor-pointer appearance-none bg-transparent py-1 pr-6 text-sm font-medium text-text-primary focus:outline-none"
+						>
+							<option value="all">{m.browser_all_ects()}</option>
+							<option value="small">{m.browser_ects_small()}</option>
+							<option value="medium">{m.browser_ects_medium()}</option>
+							<option value="large">{m.browser_ects_large()}</option>
+						</select>
+						<span
+							class="i-lucide-chevron-down pointer-events-none absolute right-0 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary"
+							aria-hidden="true"
+						></span>
+					</span>
 				</label>
 			</div>
 			<div class="mt-4 flex items-center justify-between gap-3">
