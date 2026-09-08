@@ -118,6 +118,13 @@ body {
 	--legend-locked-border: 75 85 99; /* gray-600 */
 }
 
+/* Native select popups ignore color-scheme in some browsers and render white
+   rows with light text in dark mode. Pin option colors to the theme. */
+.dark option {
+	background-color: rgb(var(--bg-secondary));
+	color: rgb(var(--text-primary));
+}
+
 /* Transition for smooth theme switching */
 * {
 	transition:
