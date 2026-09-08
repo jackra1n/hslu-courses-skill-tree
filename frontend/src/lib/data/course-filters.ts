@@ -1,20 +1,21 @@
 import type { CatalogCourse, ModuleType } from './catalog-types';
 import type { Season } from './season';
 
-export type EctsFilter = 'all' | 'small' | 'medium' | 'large';
+// Inclusive ECTS bounds. Null means unbounded (matches everything).
+export type EctsRange = { min: number; max: number } | null;
 
 export type CourseFilters = {
 	query: string;
 	season: Season | 'all';
 	moduleType: ModuleType | 'all';
-	ects: EctsFilter;
+	ects: EctsRange;
 };
 
 export const EMPTY_FILTERS: CourseFilters = {
 	query: '',
 	season: 'all',
 	moduleType: 'all',
-	ects: 'all',
+	ects: null,
 };
 
 // The browser is plan-agnostic, so one type per course: the plan default,
@@ -46,17 +47,9 @@ function matchesSeason(course: CatalogCourse, season: Season | 'all'): boolean {
 	return seasons.length === 0 || seasons.includes(season);
 }
 
-function matchesEcts(course: CatalogCourse, ects: EctsFilter): boolean {
-	switch (ects) {
-		case 'all':
-			return true;
-		case 'small':
-			return course.ects < 6;
-		case 'medium':
-			return course.ects === 6;
-		case 'large':
-			return course.ects > 6;
-	}
+function matchesEcts(course: CatalogCourse, ects: EctsRange): boolean {
+	if (ects === null) return true;
+	return course.ects >= ects.min && course.ects <= ects.max;
 }
 
 // All dimensions combine with AND; an empty filter matches everything and
@@ -80,6 +73,6 @@ export function isFiltering(filters: CourseFilters): boolean {
 		filters.query.trim() !== '' ||
 		filters.season !== 'all' ||
 		filters.moduleType !== 'all' ||
-		filters.ects !== 'all'
+		filters.ects !== null
 	);
 }
