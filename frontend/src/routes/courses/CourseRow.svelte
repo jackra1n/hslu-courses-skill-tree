@@ -1,5 +1,6 @@
 <script lang="ts">
 import type { CatalogCourse } from '$lib/data/catalog-types';
+import { courseModuleType } from '$lib/data/course-filters';
 import { courseLabel } from '$lib/data/course-label';
 import { moduleTypeBadge } from '$lib/data/module-type';
 import { type Season, seasonLabel } from '$lib/data/season';
@@ -7,13 +8,7 @@ import * as m from '$lib/paraglide/messages';
 
 let { course }: { course: CatalogCourse } = $props();
 
-// The browser is plan-agnostic, so one type per course: the plan default,
-// falling back to a season-specific type when no default was computed.
-const moduleType = $derived(
-	course.typeByPlanSeason.default ??
-		course.typeByPlanSeason.HS ??
-		course.typeByPlanSeason.FS,
-);
+const moduleType = $derived(courseModuleType(course));
 const seasons = $derived(course.seasons ?? []);
 const prerequisiteIds = $derived([
 	...new Set(course.prerequisites.flatMap((rule) => rule.modules)),

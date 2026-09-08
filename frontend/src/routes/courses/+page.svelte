@@ -4,11 +4,19 @@ import AccountMenu from '$lib/components/header/AccountMenu.svelte';
 import SettingsSidebar from '$lib/components/sidebar/SettingsSidebar.svelte';
 import Tooltip from '$lib/components/ui/Tooltip.svelte';
 import { loadCatalog } from '$lib/data/catalog-loader';
-import type { CatalogCourse } from '$lib/data/catalog-types';
+import type { CatalogCourse, ModuleType } from '$lib/data/catalog-types';
+import {
+	type EctsFilter,
+	EMPTY_FILTERS,
+	filterCourses,
+	isFiltering,
+} from '$lib/data/course-filters';
+import { moduleTypeLabel } from '$lib/data/module-type';
 import {
 	collectAppData,
 	hasMeaningfulStoredAppData,
 } from '$lib/data/persistence';
+import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
@@ -22,20 +30,29 @@ let phase = $state<Phase>('loading');
 let courses = $state<CatalogCourse[]>([]);
 let settingsOpen = $state(false);
 
-let query = $state('');
-const normalizedQuery = $derived(query.trim().toLowerCase());
-const filteredCourses = $derived(
-	normalizedQuery === ''
-		? courses
-		: courses.filter((course) => {
-				// Match both languages regardless of UI locale: users search
-				// for German and English titles interchangeably.
-				const haystacks = [course.id, course.label, course.labelEn ?? ''].map(
-					(text) => text.toLowerCase(),
-				);
-				return haystacks.some((text) => text.includes(normalizedQuery));
-			}),
-);
+let query = $state(EMPTY_FILTERS.query);
+let season = $state<Season | 'all'>(EMPTY_FILTERS.season);
+let moduleType = $state<ModuleType | 'all'>(EMPTY_FILTERS.moduleType);
+let ects = $state<EctsFilter>(EMPTY_FILTERS.ects);
+const filters = $derived({ query, season, moduleType, ects });
+const filteredCourses = $derived(filterCourses(courses, filters));
+const filtering = $derived(isFiltering(filters));
+
+function clearFilters(): void {
+	query = EMPTY_FILTERS.query;
+	season = EMPTY_FILTERS.season;
+	moduleType = EMPTY_FILTERS.moduleType;
+	ects = EMPTY_FILTERS.ects;
+}
+
+const moduleTypeOptions: (ModuleType | 'all')[] = [
+	'all',
+	'Kernmodul',
+	'Projektmodul',
+	'Erweiterungsmodul',
+	'Major-/Minormodul',
+	'Zusatzmodul',
+];
 
 async function load(): Promise<void> {
 	phase = 'loading';
@@ -153,13 +170,69 @@ onMount(() => {
 					</button>
 				{/if}
 			</div>
-			<p class="mt-4 text-sm text-text-secondary" aria-live="polite">
-				{#if normalizedQuery === ''}
-					{m.browser_count_all({ total: courses.length })}
-				{:else}
-					{m.browser_count_filtered({ filtered: filteredCourses.length, total: courses.length })}
+			<div
+				role="group"
+				aria-label={m.browser_filters_label()}
+				class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3"
+			>
+				<label class="flex min-h-11 items-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm">
+					<span class="shrink-0 text-text-tertiary">{m.browser_filter_season()}</span>
+					<select
+						bind:value={season}
+						aria-label={m.browser_filter_season()}
+						class="h-full min-h-11 w-full cursor-pointer bg-transparent text-text-primary focus:outline-none"
+					>
+						<option value="all">{m.browser_all_seasons()}</option>
+						<option value="HS">{seasonLabel('HS')}</option>
+						<option value="FS">{seasonLabel('FS')}</option>
+					</select>
+				</label>
+				<label class="flex min-h-11 items-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm">
+					<span class="shrink-0 text-text-tertiary">{m.browser_filter_type()}</span>
+					<select
+						bind:value={moduleType}
+						aria-label={m.browser_filter_type()}
+						class="h-full min-h-11 w-full cursor-pointer bg-transparent text-text-primary focus:outline-none"
+					>
+						{#each moduleTypeOptions as option (option)}
+							<option value={option}>
+								{option === 'all' ? m.browser_all_types() : moduleTypeLabel(option)}
+							</option>
+						{/each}
+					</select>
+				</label>
+				<label class="flex min-h-11 items-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm">
+					<span class="shrink-0 text-text-tertiary">{m.browser_filter_ects()}</span>
+					<select
+						bind:value={ects}
+						aria-label={m.browser_filter_ects()}
+						class="h-full min-h-11 w-full cursor-pointer bg-transparent text-text-primary focus:outline-none"
+					>
+						<option value="all">{m.browser_all_ects()}</option>
+						<option value="small">{m.browser_ects_small()}</option>
+						<option value="medium">{m.browser_ects_medium()}</option>
+						<option value="large">{m.browser_ects_large()}</option>
+					</select>
+				</label>
+			</div>
+			<div class="mt-4 flex items-center justify-between gap-3">
+				<p class="text-sm text-text-secondary" aria-live="polite">
+					{#if !filtering}
+						{m.browser_count_all({ total: courses.length })}
+					{:else}
+						{m.browser_count_filtered({ filtered: filteredCourses.length, total: courses.length })}
+					{/if}
+				</p>
+				{#if filtering}
+					<button
+						type="button"
+						onclick={clearFilters}
+						class="shrink-0 cursor-pointer text-sm font-medium text-text-primary underline"
+					>
+						{m.common_clear()}
+					</button>
 				{/if}
-			</p>
+			</div>
 			{#if filteredCourses.length === 0}
 				<div
 					class="mt-2 rounded-lg border border-border-primary bg-bg-secondary p-6 text-center"
@@ -167,7 +240,7 @@ onMount(() => {
 					<p class="text-sm text-text-secondary">{m.elective_no_results()}</p>
 					<button
 						type="button"
-						onclick={() => (query = '')}
+						onclick={clearFilters}
 						class="mt-2 cursor-pointer text-sm font-medium text-text-primary underline"
 					>
 						{m.common_clear()}

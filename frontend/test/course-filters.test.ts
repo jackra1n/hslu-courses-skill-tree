@@ -1,13 +1,15 @@
 import { describe, expect, test } from 'bun:test';
 import type { CatalogCourse } from '../src/lib/data/catalog-types';
 import {
-	EMPTY_FILTERS,
 	courseModuleType,
+	EMPTY_FILTERS,
 	filterCourses,
 	isFiltering,
 } from '../src/lib/data/course-filters';
 
-function course(overrides: Partial<CatalogCourse> & { id: string }): CatalogCourse {
+function course(
+	overrides: Partial<CatalogCourse> & { id: string },
+): CatalogCourse {
 	return {
 		label: overrides.id,
 		ects: 3,
@@ -87,12 +89,12 @@ describe('filterCourses', () => {
 	});
 
 	test('query matches id and both languages case-insensitively', () => {
-		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'ainf' }))).toEqual(
-			['AINF'],
-		);
-		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'calculus' }))).toEqual(
-			['AINF'],
-		);
+		expect(
+			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'ainf' })),
+		).toEqual(['AINF']);
+		expect(
+			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'calculus' })),
+		).toEqual(['AINF']);
 		expect(
 			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'sicherheit' })),
 		).toEqual(['SEC']);
@@ -102,33 +104,40 @@ describe('filterCourses', () => {
 	});
 
 	test('season filter keeps both-season and unknown-season courses', () => {
-		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, season: 'HS' }))).toEqual(
-			['AINF', 'PROJ', 'MISC'],
-		);
-		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, season: 'FS' }))).toEqual(
-			['SEC', 'PROJ', 'MISC'],
-		);
+		expect(
+			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, season: 'HS' })),
+		).toEqual(['AINF', 'PROJ', 'MISC']);
+		expect(
+			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, season: 'FS' })),
+		).toEqual(['SEC', 'PROJ', 'MISC']);
 	});
 
 	test('module type filter uses the resolved plan-agnostic type', () => {
 		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, moduleType: 'Projektmodul' })),
+			ids(
+				filterCourses(COURSES, {
+					...EMPTY_FILTERS,
+					moduleType: 'Projektmodul',
+				}),
+			),
 		).toEqual(['PROJ']);
 		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, moduleType: 'Zusatzmodul' })),
+			ids(
+				filterCourses(COURSES, { ...EMPTY_FILTERS, moduleType: 'Zusatzmodul' }),
+			),
 		).toEqual([]);
 	});
 
 	test('ects buckets partition small, standard and large modules', () => {
-		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: 'small' }))).toEqual(
-			['AINF', 'MISC'],
-		);
-		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: 'medium' }))).toEqual(
-			['SEC'],
-		);
-		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: 'large' }))).toEqual(
-			['PROJ'],
-		);
+		expect(
+			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: 'small' })),
+		).toEqual(['AINF', 'MISC']);
+		expect(
+			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: 'medium' })),
+		).toEqual(['SEC']);
+		expect(
+			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: 'large' })),
+		).toEqual(['PROJ']);
 	});
 
 	test('dimensions combine with AND', () => {
@@ -164,7 +173,9 @@ describe('isFiltering', () => {
 	test('any active dimension counts as filtering', () => {
 		expect(isFiltering({ ...EMPTY_FILTERS, query: 'x' })).toBe(true);
 		expect(isFiltering({ ...EMPTY_FILTERS, season: 'HS' })).toBe(true);
-		expect(isFiltering({ ...EMPTY_FILTERS, moduleType: 'Kernmodul' })).toBe(true);
+		expect(isFiltering({ ...EMPTY_FILTERS, moduleType: 'Kernmodul' })).toBe(
+			true,
+		);
 		expect(isFiltering({ ...EMPTY_FILTERS, ects: 'large' })).toBe(true);
 	});
 });
