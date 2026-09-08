@@ -199,7 +199,7 @@ onMount(() => {
 				></span>
 			</button>
 			<div class="mt-3 lg:flex lg:items-start lg:gap-6">
-				<div class="{sidebarOpen ? 'block' : 'hidden'} lg:block lg:w-64 lg:shrink-0">
+				<div class="{sidebarOpen ? 'block' : 'hidden'} lg:block lg:w-64 lg:shrink-0 lg:pt-7">
 					<div class="lg:sticky lg:top-4">
 						<FilterSidebar
 							bind:season
