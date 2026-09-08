@@ -246,7 +246,7 @@ onMount(() => {
 							</button>
 						</div>
 					{:else}
-						<ul class="mt-2 grid gap-2">
+						<ul class="mt-2 grid grid-cols-1 gap-2">
 							{#each filteredCourses as course (course.id)}
 								<CourseRow {course} />
 							{/each}
