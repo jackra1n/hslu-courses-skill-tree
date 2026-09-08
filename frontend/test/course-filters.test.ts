@@ -128,16 +128,34 @@ describe('filterCourses', () => {
 		).toEqual([]);
 	});
 
-	test('ects buckets partition small, standard and large modules', () => {
+	test('ects range matches inclusively, null matches everything', () => {
 		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: 'small' })),
-		).toEqual(['AINF', 'MISC']);
+			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: null })),
+		).toEqual(['AINF', 'SEC', 'PROJ', 'MISC']);
 		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: 'medium' })),
-		).toEqual(['SEC']);
+			ids(
+				filterCourses(COURSES, {
+					...EMPTY_FILTERS,
+					ects: { min: 3, max: 6 },
+				}),
+			),
+		).toEqual(['AINF', 'SEC']);
 		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: 'large' })),
+			ids(
+				filterCourses(COURSES, {
+					...EMPTY_FILTERS,
+					ects: { min: 9, max: 9 },
+				}),
+			),
 		).toEqual(['PROJ']);
+		expect(
+			ids(
+				filterCourses(COURSES, {
+					...EMPTY_FILTERS,
+					ects: { min: 30, max: 45 },
+				}),
+			),
+		).toEqual([]);
 	});
 
 	test('dimensions combine with AND', () => {
@@ -148,7 +166,7 @@ describe('filterCourses', () => {
 					query: 'projekt',
 					season: 'FS',
 					moduleType: 'Projektmodul',
-					ects: 'large',
+					ects: { min: 9, max: 45 },
 				}),
 			),
 		).toEqual(['PROJ']);
@@ -176,6 +194,8 @@ describe('isFiltering', () => {
 		expect(isFiltering({ ...EMPTY_FILTERS, moduleType: 'Kernmodul' })).toBe(
 			true,
 		);
-		expect(isFiltering({ ...EMPTY_FILTERS, ects: 'large' })).toBe(true);
+		expect(isFiltering({ ...EMPTY_FILTERS, ects: { min: 3, max: 6 } })).toBe(
+			true,
+		);
 	});
 });
