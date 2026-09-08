@@ -25,6 +25,16 @@
     hours: 1.0,
     activity: "Course-Browser Header und Kurszeilen: schlanken Seiten-Header mit Skill-Tree-Rücklink, Login und Einstellungen statt vollem App-Header umgesetzt, mobile Warnung auf den Skill Tree begrenzt, Kurse als einspaltige Zeilen mit Modultyp- und Semester-Badges sowie Voraussetzungs- und Assessment-Hinweisen in neuer CourseRow-Komponente dargestellt, auf Desktop und Mobil verifiziert."
   ),
+  (
+    date: "2026-09-06",
+    hours: 1.0,
+    activity: "Course-Browser Suche: bilinguale Volltextsuche über Modul-ID sowie deutsche und englische Titel umgesetzt, Trefferzähler (x von y Kursen) und Empty-State mit Zurücksetzen sowie Clear-Button im Suchfeld hinzugefügt, auf Desktop und Mobil verifiziert."
+  ),
+  (
+    date: "2026-09-08",
+    hours: 3.0,
+    activity: "Mehrkriterien-Filter und Filter-Sidebar: reine filterCourses-Funktion (Suche, Semester, Modultyp, ECTS-Bereich) mit Unit-Tests angelegt, ECTS-Auswahl von Buckets auf inklusiven Bereich umgestellt, Filter in linke Sidebar verlegt (Desktop sticky mit Überschrift, mobil einklappbar mit Zähler-Badge), Dual-Thumb-ECTS-Slider über reale Katalogwerte ohne Dead-Zones umgesetzt, Darkmode-Popup-Fix für native Selects in Theme-CSS ergänzt, Layout-Iterationen per Screenshot verifiziert, Typcheck/Lint/Tests/Build verifiziert."
+  ),
 )
 
 // Berechnung der Statistiken
