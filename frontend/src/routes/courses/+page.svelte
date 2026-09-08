@@ -142,65 +142,69 @@ onMount(() => {
 			onClose={() => (settingsOpen = false)}
 		/>
 		<main class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
-			<h1 class="text-2xl font-bold">Course Browser</h1>
-			<p class="mt-1 text-sm text-text-secondary">
-				A discovery-oriented catalogue of all HSLU courses, complementing the
-				dependency-oriented Skill Tree.
-			</p>
-
-			<div role="search" class="relative mt-4">
-				<div
-					class="i-lucide-search pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary"
-					aria-hidden="true"
-				></div>
-				<input
-					id="course-search"
-					type="text"
-					inputmode="search"
-					bind:value={query}
-					placeholder={m.elective_search()}
-					aria-label={m.browser_search_label()}
-					class="h-10 w-full rounded-lg border border-border-primary bg-bg-secondary pl-9 pr-9 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-blue-500"
-				/>
-				{#if query}
+			<div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:items-start lg:gap-8">
+				<div class="lg:col-start-2">
+					<h1 class="text-2xl font-bold">Course Browser</h1>
+					<p class="mt-1 text-sm text-text-secondary">
+						A discovery-oriented catalogue of all HSLU courses, complementing the
+						dependency-oriented Skill Tree.
+					</p>
+					<div role="search" class="relative mt-4">
+						<div
+							class="i-lucide-search pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-tertiary"
+							aria-hidden="true"
+						></div>
+						<input
+							id="course-search"
+							type="text"
+							inputmode="search"
+							bind:value={query}
+							placeholder={m.elective_search()}
+							aria-label={m.browser_search_label()}
+							class="h-10 w-full rounded-lg border border-border-primary bg-bg-secondary pl-9 pr-9 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-blue-500"
+						/>
+						{#if query}
+							<button
+								type="button"
+								onclick={() => (query = '')}
+								aria-label={m.common_clear()}
+								class="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-text-secondary transition-all hover:bg-bg-primary hover:text-text-primary"
+							>
+								<div class="i-lucide-x h-4 w-4" aria-hidden="true"></div>
+							</button>
+						{/if}
+					</div>
 					<button
 						type="button"
-						onclick={() => (query = '')}
-						aria-label={m.common_clear()}
-						class="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-text-secondary transition-all hover:bg-bg-primary hover:text-text-primary"
+						onclick={() => (sidebarOpen = !sidebarOpen)}
+						aria-expanded={sidebarOpen}
+						class="mt-3 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm font-medium text-text-primary lg:hidden"
 					>
-						<div class="i-lucide-x h-4 w-4" aria-hidden="true"></div>
+						<span
+							class="i-lucide-sliders-horizontal h-4 w-4 text-text-tertiary"
+							aria-hidden="true"
+						></span>
+						{m.browser_filters()}
+						{#if activeFilterCount > 0}
+							<span
+								class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-500 px-1.5 text-xs font-semibold text-white"
+							>
+								{activeFilterCount}
+							</span>
+						{/if}
+						<span
+							class="i-lucide-chevron-down h-4 w-4 text-text-tertiary transition-transform {sidebarOpen
+								? 'rotate-180'
+								: ''}"
+							aria-hidden="true"
+						></span>
 					</button>
-				{/if}
-			</div>
-			<button
-				type="button"
-				onclick={() => (sidebarOpen = !sidebarOpen)}
-				aria-expanded={sidebarOpen}
-				class="mt-3 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm font-medium text-text-primary lg:hidden"
-			>
-				<span
-					class="i-lucide-sliders-horizontal h-4 w-4 text-text-tertiary"
-					aria-hidden="true"
-				></span>
-				{m.browser_filters()}
-				{#if activeFilterCount > 0}
-					<span
-						class="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-500 px-1.5 text-xs font-semibold text-white"
-					>
-						{activeFilterCount}
-					</span>
-				{/if}
-				<span
-					class="i-lucide-chevron-down h-4 w-4 text-text-tertiary transition-transform {sidebarOpen
-						? 'rotate-180'
-						: ''}"
-					aria-hidden="true"
-				></span>
-			</button>
-			<div class="mt-3 lg:flex lg:items-start lg:gap-6">
-				<div class="{sidebarOpen ? 'block' : 'hidden'} lg:block lg:w-64 lg:shrink-0 lg:pt-7">
+				</div>
+				<div class="{sidebarOpen ? 'block' : 'hidden'} mt-3 lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:mt-0 lg:block">
 					<div class="lg:sticky lg:top-4">
+						<h2 class="mb-2 hidden text-sm font-semibold text-text-primary lg:block">
+							{m.browser_filters()}
+						</h2>
 						<FilterSidebar
 							bind:season
 							bind:moduleType
@@ -209,7 +213,7 @@ onMount(() => {
 						/>
 					</div>
 				</div>
-				<div class="mt-4 min-w-0 flex-1 lg:mt-0">
+				<div class="mt-4 min-w-0 lg:col-start-2 lg:mt-3">
 					<div class="flex items-center justify-between gap-3">
 						<p class="text-sm text-text-secondary" aria-live="polite">
 							{#if !filtering}
