@@ -40,6 +40,21 @@
     hours: 0.5,
     activity: "Course-Browser Feinschliff und Fehlerbehebungen: Seitenlayout auf Viewporthöhe begrenzt und Kursliste als eigenständig scrollbar umgesetzt, Dual-Thumb-ECTS-Slider so geklemmt, dass Unter- und Obergrenze nicht überkreuzt werden können, sowie Tutorial aus dem globalen Layout in die Skill-Tree-Seite verschoben und Tutorial-Aktion in den Course-Browser-Einstellungen ausgeblendet. Scrollverhalten auf Desktop und Mobil sowie Slider- und Tutorialverhalten im Browser und Typcheck/Lint verifiziert."
   ),
+  (
+    date: "2026-09-15",
+    hours: 2.0,
+    activity: "Responsive Kursdetailansicht: auswählbare Kurszeilen mit dauerhaftem Detailbereich auf grossen Bildschirmen sowie zugänglichem Overlay auf Tablet und Mobil umgesetzt. Modul-ID, lokalisierter Titel, ECTS, Modultyp, Angebotssemester und strukturierte Voraussetzungen inklusive UND-/ODER-Verknüpfungen, Bestehensanforderungen und Zusatzhinweisen dargestellt. Fokusführung, Escape-Schliessen, Scrollverhalten und Layoutbreite auf Desktop und Mobil iterativ im Browser verifiziert."
+  ),
+  (
+    date: "2026-09-15",
+    hours: 1.5,
+    activity: "Personalisierter Kursfilter: Option «Nur Module anzeigen, die ich als Nächstes belegen kann» in die Filter-Sidebar integriert und mit dem reaktiven Fortschritt des Skill Trees verbunden. Bereits besuchte oder bestandene Module, nicht erfüllte Voraussetzungen und die Assessment-Stufe berücksichtigt, Kombination mit allen bestehenden Filtern und Zurücksetzen umgesetzt sowie die Fachlogik mit Regressionstests und den vollständigen UI-Ablauf auf Desktop und Mobil verifiziert."
+  ),
+  (
+    date: "2026-09-15",
+    hours: 2.0,
+    activity: "Lokalisierung und Prüfungsformen: verbliebene fest codierte Texte des Course Browsers in die deutsch-englischen Übersetzungskataloge verschoben. ModeOfAssessments aus zehn HSLU-Semesterständen mit 591 aktuellen Modulen analysiert, neun Rohwerte auf vier stabile Kategorien für Semesterarbeit, schriftliche, mündliche und elektronische Prüfung normalisiert und im Kursdetail als lokalisierte Badges angezeigt. Mehrfachwerte im Katalog erhalten, in der UI zusammengefasst und unbekannte zukünftige Werte durch strikte Generatorvalidierung abgesichert. Unit-Tests, Internationalisierungsprüfung, Typcheck, Build und beide Sprachvarianten im Browser verifiziert."
+  ),
 )
 
 // Berechnung der Statistiken
