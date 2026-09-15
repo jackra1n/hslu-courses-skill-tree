@@ -1,7 +1,8 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
+import AssessmentModeBadges from '$lib/components/ui/AssessmentModeBadges.svelte';
 import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
-import type { AssessmentMode, CatalogCourse } from '$lib/data/catalog-types';
+import type { CatalogCourse } from '$lib/data/catalog-types';
 import { courseModuleType } from '$lib/data/course-filters';
 import { courseLabel } from '$lib/data/course-label';
 import { seasonLabel } from '$lib/data/season';
@@ -26,9 +27,6 @@ let isOverlay = $state(false);
 const moduleType = $derived(course ? courseModuleType(course) : undefined);
 const seasons = $derived(course?.seasons ?? []);
 const prerequisiteNote = $derived(course?.prerequisiteNote?.trim() ?? '');
-const assessmentModes = $derived(
-	course ? [...new Set(course.assessmentModes)] : [],
-);
 const alternateLabel = $derived.by(() => {
 	if (!course) return null;
 	const displayed = courseLabel(course);
@@ -39,19 +37,6 @@ const alternateLabel = $derived.by(() => {
 	}
 	return course.label;
 });
-
-function assessmentModeLabel(mode: AssessmentMode): string {
-	switch (mode) {
-		case 'coursework':
-			return m.browser_assessment_coursework();
-		case 'written_exam':
-			return m.browser_assessment_written_exam();
-		case 'oral_exam':
-			return m.browser_assessment_oral_exam();
-		case 'electronic_exam':
-			return m.browser_assessment_electronic_exam();
-	}
-}
 
 function focusableElements(): HTMLElement[] {
 	return Array.from(
@@ -190,19 +175,15 @@ $effect(() => {
 				</dl>
 			</section>
 
-			{#if assessmentModes.length > 0}
+			{#if course.assessmentModes.length > 0}
 				<section class="mt-6 border-t border-border-primary pt-5" aria-labelledby="course-detail-assessment">
 					<h3 id="course-detail-assessment" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
 						<span class="i-lucide-clipboard-check h-4 w-4 text-text-secondary" aria-hidden="true"></span>
-						{m.browser_details_assessment()}
+						{m.assessment_methods()}
 					</h3>
-					<ul class="mt-3 flex flex-wrap gap-2">
-						{#each assessmentModes as mode}
-							<li class="rounded-full border border-border-primary bg-bg-primary px-3 py-1.5 text-sm text-text-secondary">
-								{assessmentModeLabel(mode)}
-							</li>
-						{/each}
-					</ul>
+					<div class="mt-3">
+						<AssessmentModeBadges modes={course.assessmentModes} />
+					</div>
 				</section>
 			{/if}
 

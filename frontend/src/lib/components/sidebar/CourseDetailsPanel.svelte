@@ -1,4 +1,5 @@
 <script lang="ts">
+import AssessmentModeBadges from '$lib/components/ui/AssessmentModeBadges.svelte';
 import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { courseLabel } from '$lib/data/course-label';
@@ -148,6 +149,17 @@ const seasonInfo = $derived.by(() => {
       {#if isElectiveSlot()}
         <ElectiveCourseSelector slotId={selection()?.id || ''} />
       {:else}
+        {#if displayCourse && displayCourse.assessmentModes.length > 0}
+          <section class="border-t border-border-primary pt-5" aria-labelledby="skill-tree-detail-assessment">
+            <h3 id="skill-tree-detail-assessment" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
+              <span class="i-lucide-clipboard-check h-4 w-4 text-text-secondary" aria-hidden="true"></span>
+              {m.assessment_methods()}
+            </h3>
+            <div class="mt-3">
+              <AssessmentModeBadges modes={displayCourse.assessmentModes} />
+            </div>
+          </section>
+        {/if}
         {#if warningType}
           <PrerequisiteWarning type={warningType} />
         {/if}

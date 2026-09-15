@@ -1,6 +1,7 @@
 <script lang="ts">
 import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
 import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
+import AssessmentModeBadges from '$lib/components/ui/AssessmentModeBadges.svelte';
 import Combobox from '$lib/components/ui/Combobox.svelte';
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { courseLabel } from '$lib/data/course-label';
@@ -146,6 +147,17 @@ function clearSelection() {
 </div>
 
 {#if selectedCourse}
+  {#if selectedCourse.assessmentModes.length > 0}
+    <section class="mt-6 border-t border-border-primary pt-5" aria-labelledby="skill-tree-elective-assessment">
+      <h3 id="skill-tree-elective-assessment" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
+        <span class="i-lucide-clipboard-check h-4 w-4 text-text-secondary" aria-hidden="true"></span>
+        {m.assessment_methods()}
+      </h3>
+      <div class="mt-3">
+        <AssessmentModeBadges modes={selectedCourse.assessmentModes} />
+      </div>
+    </section>
+  {/if}
   {#if warningType}
     <PrerequisiteWarning showBorder={true} type={warningType} />
   {/if}
