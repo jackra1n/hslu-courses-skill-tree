@@ -180,7 +180,7 @@ $effect(() => {
     type="button"
     tabindex="-1"
     aria-label={m.details_deselect()}
-    class="fixed inset-0 z-40 cursor-default bg-black/45 xl:hidden"
+    class="fixed inset-0 z-[70] cursor-default bg-black/45 xl:hidden"
     onclick={closeDetails}
   ></button>
 {/if}
@@ -188,16 +188,16 @@ $effect(() => {
 <aside
   bind:this={panel}
   id="skill-tree-course-detail-panel"
-  class={`fixed inset-y-0 right-0 z-50 w-full overflow-y-auto border border-border-primary bg-bg-secondary shadow-2xl transition-transform duration-300 ease-out sm:max-w-lg
+  class={`fixed inset-y-0 right-0 z-[80] w-full overflow-y-auto border border-border-primary bg-bg-secondary shadow-2xl transition-transform duration-300 ease-out sm:max-w-lg
     ${isDrawerOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'}
-    xl:static xl:max-w-none xl:w-full xl:border-y-0 xl:border-r-0 xl:border-l xl:translate-x-0 xl:shadow-none xl:pointer-events-auto`}
+    xl:static xl:z-auto xl:max-w-none xl:w-full xl:border-y-0 xl:border-r-0 xl:border-l xl:translate-x-0 xl:shadow-none xl:pointer-events-auto`}
   role={isDrawerOpen ? (isOverlay ? 'dialog' : 'region') : undefined}
   aria-modal={isDrawerOpen && isOverlay ? 'true' : undefined}
   aria-labelledby={isDrawerOpen ? TITLE_ID : undefined}
   onkeydown={handleKeydown}
 >
   {#if hasSelection()}
-    <div class="p-6 space-y-6">
+    <div class="p-4 space-y-4">
       <header>
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
@@ -205,11 +205,11 @@ $effect(() => {
               <p class="font-mono text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
                 {displayCourse.id}
               </p>
-              <h2 id={TITLE_ID} class="mt-2 text-2xl font-bold leading-tight text-text-primary">
+              <h2 id={TITLE_ID} class="mt-1 text-lg font-semibold leading-snug text-text-primary">
                 {courseLabel(displayCourse)}
               </h2>
               {#if alternateLabel}
-                <p class="mt-1 text-sm text-text-secondary">{alternateLabel}</p>
+                <p class="mt-1 text-xs text-text-secondary">{alternateLabel}</p>
               {/if}
             {/if}
           </div>
@@ -227,63 +227,42 @@ $effect(() => {
       </header>
 
       {#if displayCourse}
-        <section aria-labelledby="skill-tree-detail-summary">
-          <h3 id="skill-tree-detail-summary" class="text-sm font-semibold text-text-primary">
-            {m.course_details_summary()}
-          </h3>
-          <dl class="mt-2 grid grid-cols-2 gap-2">
-            <div class="rounded-lg border border-border-primary bg-bg-primary p-3">
-              <dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
-                <span class="i-lucide-graduation-cap h-3.5 w-3.5" aria-hidden="true"></span>
-                {m.course_details_ects()}
-              </dt>
-              <dd class="mt-1 font-semibold text-text-primary">{displayCourse.ects} ECTS</dd>
-            </div>
-            <div class="rounded-lg border border-border-primary bg-bg-primary p-3">
-              <dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
-                <span class="i-lucide-layers h-3.5 w-3.5" aria-hidden="true"></span>
-                {m.course_details_type()}
-              </dt>
-              <dd class="mt-1 font-semibold text-text-primary">
-                {#if displayCourse.type}
-                  <ModuleTypeBadge type={displayCourse.type} />
-                {:else}
-                  {m.course_details_unknown()}
-                {/if}
-              </dd>
-            </div>
-            <div class="rounded-lg border border-border-primary bg-bg-primary p-3">
-              <dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
-                <span class="i-lucide-calendar-clock h-3.5 w-3.5" aria-hidden="true"></span>
-                {m.course_details_plan_semester()}
-              </dt>
-              <dd class="mt-1 font-semibold text-text-primary">
-                {m.details_semester({ number: activePlanNode?.semester ?? '?' })}
-              </dd>
-            </div>
-            <div class="rounded-lg border border-border-primary bg-bg-primary p-3">
-              <dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
-                <span class="i-lucide-calendar-days h-3.5 w-3.5" aria-hidden="true"></span>
-                {m.course_details_seasons()}
-              </dt>
-              <dd class="mt-1 font-semibold text-text-primary">
-                {offeredSeasons ?? m.course_details_unknown()}
-              </dd>
-            </div>
-          </dl>
-        </section>
+        <dl class="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-text-secondary">
+          <div>
+            <dt class="sr-only">{m.course_details_ects()}</dt>
+            <dd class="font-semibold text-text-primary">{displayCourse.ects} ECTS</dd>
+          </div>
+          <div>
+            <dt class="sr-only">{m.course_details_type()}</dt>
+            <dd>
+              {#if displayCourse.type}
+                <ModuleTypeBadge type={displayCourse.type} />
+              {:else}
+                {m.course_details_unknown()}
+              {/if}
+            </dd>
+          </div>
+          <div>
+            <dt class="sr-only">{m.course_details_plan_semester()}</dt>
+            <dd>{m.details_semester({ number: activePlanNode?.semester ?? '?' })}</dd>
+          </div>
+          <div class="w-full flex flex-wrap gap-x-2 text-xs">
+            <dt>{m.course_details_seasons()}</dt>
+            <dd>{offeredSeasons ?? m.course_details_unknown()}</dd>
+          </div>
+        </dl>
       {/if}
 
       {#if isElectiveSlot()}
         <ElectiveCourseSelector slotId={selection()?.id || ''} />
       {:else}
         {#if displayCourse && displayCourse.assessmentModes.length > 0}
-          <section class="border-t border-border-primary pt-5" aria-labelledby="skill-tree-detail-assessment">
+          <section class="border-t border-border-primary pt-3" aria-labelledby="skill-tree-detail-assessment">
             <h3 id="skill-tree-detail-assessment" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
               <span class="i-lucide-clipboard-check h-4 w-4 text-text-secondary" aria-hidden="true"></span>
               {m.assessment_methods()}
             </h3>
-            <div class="mt-3">
+            <div class="mt-2">
               <AssessmentModeBadges modes={displayCourse.assessmentModes} />
             </div>
           </section>
@@ -295,7 +274,7 @@ $effect(() => {
       {/if}
 
       {#if prerequisiteNote}
-        <section class="border-t border-border-primary pt-5" aria-labelledby="skill-tree-detail-note">
+        <section class="border-t border-border-primary pt-3" aria-labelledby="skill-tree-detail-note">
           <h3 id="skill-tree-detail-note" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
             <span class="i-lucide-info h-4 w-4 text-text-secondary" aria-hidden="true"></span>
             {m.course_details_note()}

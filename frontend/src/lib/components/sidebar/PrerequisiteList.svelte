@@ -60,14 +60,14 @@ function openAssessmentInfo() {
 }
 </script>
 
-<section class="border-t border-border-primary pt-5" aria-labelledby="skill-tree-detail-prerequisites">
+<section class="border-t border-border-primary pt-3" aria-labelledby="skill-tree-detail-prerequisites">
   <h3 id="skill-tree-detail-prerequisites" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
     <span class="i-lucide-git-branch h-4 w-4 text-text-secondary" aria-hidden="true"></span>
     {m.prereq_title()}
   </h3>
 
   {#if assessmentLevelPassed}
-    <div class="mt-3 flex items-start gap-2 rounded-lg border border-border-primary bg-bg-primary p-3 text-sm">
+    <div class="mt-2 flex items-start gap-2 text-sm">
       <span
         class="{assessmentStageProgress.passed
           ? 'i-lucide-check text-green-500'
@@ -99,7 +99,7 @@ function openAssessmentInfo() {
   {/if}
 
   {#if prerequisites.length > 0}
-    <ul class="mt-3 space-y-3">
+    <ul class="mt-2 space-y-2">
       {#each prerequisites as rule, index}
         {@const ruleData = renderPrerequisiteRule(rule)}
         {@const previousRule = index > 0 ? prerequisites[index - 1] : null}
@@ -118,11 +118,7 @@ function openAssessmentInfo() {
           </li>
         {/if}
 
-        <li
-          class="rounded-lg border bg-bg-primary p-3 {shouldShowRuleWarning
-            ? 'border-yellow-400 dark:border-yellow-700'
-            : 'border-border-primary'}"
-        >
+        <li>
           <div class="flex items-start gap-2">
             <span
               class="{ruleData.met
@@ -146,7 +142,7 @@ function openAssessmentInfo() {
                 </span>
                 {rule.moduleLinkType === 'oder' ? m.prereq_one_of() : m.prereq_all_of()}
               </p>
-              <ul class="mt-2 space-y-1.5">
+              <ul class="mt-1 space-y-1">
                 {#each rule.modules as moduleId}
                   {@const course = getCourseById(moduleId)}
                   {@const moduleMet = isModuleMet(moduleId, rule.mustBePassed)}
@@ -163,7 +159,7 @@ function openAssessmentInfo() {
                     <span class="min-w-0">
                       <span class="font-mono text-xs font-semibold text-text-secondary">{moduleId}</span>
                       {#if course}
-                        <span class="block break-words {moduleMet ? 'text-text-primary' : 'text-text-secondary'}">
+                        <span class="break-words {moduleMet ? 'text-text-primary' : 'text-text-secondary'}">
                           {courseLabel(course)}
                         </span>
                       {/if}
@@ -177,8 +173,8 @@ function openAssessmentInfo() {
       {/each}
     </ul>
   {:else if assessmentLevelPassed}
-    <p class="mt-3 text-sm text-text-secondary">{m.prereq_no_other()}</p>
+    <p class="mt-2 text-sm text-text-secondary">{m.prereq_no_other()}</p>
   {:else}
-    <p class="mt-3 text-sm text-text-secondary">{m.prereq_none()}</p>
+    <p class="mt-2 text-sm text-text-secondary">{m.prereq_none()}</p>
   {/if}
 </section>
