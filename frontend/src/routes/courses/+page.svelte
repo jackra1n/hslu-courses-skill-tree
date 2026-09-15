@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount } from 'svelte';
+import { onMount, tick } from 'svelte';
 import AccountMenu from '$lib/components/header/AccountMenu.svelte';
 import SettingsSidebar from '$lib/components/sidebar/SettingsSidebar.svelte';
 import Tooltip from '$lib/components/ui/Tooltip.svelte';
@@ -21,6 +21,7 @@ import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
+import CourseDetailPanel from './CourseDetailPanel.svelte';
 import CourseRow from './CourseRow.svelte';
 import FilterSidebar from './FilterSidebar.svelte';
 
@@ -29,6 +30,8 @@ type Phase = 'loading' | 'ready' | 'error';
 let phase = $state<Phase>('loading');
 let courses = $state<CatalogCourse[]>([]);
 let settingsOpen = $state(false);
+let selectedCourse = $state<CatalogCourse | null>(null);
+let selectedTrigger: HTMLButtonElement | null = null;
 
 let query = $state(EMPTY_FILTERS.query);
 let season = $state<Season | 'all'>(EMPTY_FILTERS.season);
@@ -36,6 +39,9 @@ let moduleType = $state<ModuleType | 'all'>(EMPTY_FILTERS.moduleType);
 let ects = $state<EctsRange>(EMPTY_FILTERS.ects);
 let sidebarOpen = $state(false);
 const filters = $derived({ query, season, moduleType, ects });
+const courseById = $derived(
+	new Map(courses.map((course) => [course.id, course])),
+);
 const filteredCourses = $derived(filterCourses(courses, filters));
 const filtering = $derived(isFiltering(filters));
 const activeFilterCount = $derived(
@@ -55,6 +61,17 @@ function clearFilters(): void {
 	season = EMPTY_FILTERS.season;
 	moduleType = EMPTY_FILTERS.moduleType;
 	ects = EMPTY_FILTERS.ects;
+}
+function selectCourse(course: CatalogCourse, trigger: HTMLButtonElement): void {
+	selectedCourse = course;
+	selectedTrigger = trigger;
+}
+
+async function closeCourseDetails(): Promise<void> {
+	selectedCourse = null;
+	await tick();
+	if (selectedTrigger?.isConnected) selectedTrigger.focus();
+	selectedTrigger = null;
 }
 
 async function load(): Promise<void> {
@@ -112,7 +129,7 @@ onMount(() => {
 {:else}
 	<div class="flex h-screen h-dvh overflow-hidden flex-col bg-bg-primary font-sans text-text-primary">
 		<header class="shrink-0 border-b border-border-primary bg-bg-primary px-4 py-2 sm:py-3">
-			<div class="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
+			<div class="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-3">
 				<a
 					href="/"
 					class="flex min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-text-secondary transition-all hover:bg-bg-secondary hover:text-text-primary"
@@ -142,8 +159,8 @@ onMount(() => {
 			onClose={() => (settingsOpen = false)}
 			showTutorial={false}
 		/>
-		<main class="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-4 py-6">
-			<div class="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:items-start lg:gap-8">
+		<main class="mx-auto flex min-h-0 w-full max-w-[90rem] flex-1 flex-col px-4 py-6">
+			<div class="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:items-start lg:gap-8 xl:grid-cols-[16rem_minmax(0,1fr)_30rem]">
 				<div class="lg:col-start-2">
 					<h1 class="text-2xl font-bold">Course Browser</h1>
 					<p class="mt-1 text-sm text-text-secondary">
@@ -250,12 +267,21 @@ onMount(() => {
 						{:else}
 							<ul class="grid grid-cols-1 gap-2">
 								{#each filteredCourses as course (course.id)}
-									<CourseRow {course} />
+									<CourseRow
+										{course}
+										selected={selectedCourse?.id === course.id}
+										onSelect={selectCourse}
+									/>
 								{/each}
 							</ul>
 						{/if}
 					</div>
 				</div>
+				<CourseDetailPanel
+					course={selectedCourse}
+					{courseById}
+					onClose={closeCourseDetails}
+				/>
 			</div>
 		</main>
 	</div>
