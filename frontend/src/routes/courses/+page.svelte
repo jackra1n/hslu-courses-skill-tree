@@ -127,23 +127,20 @@ onMount(() => {
 </script>
 
 <svelte:head>
-	<title>Course Browser</title>
-	<meta
-		name="description"
-		content="Browse all HSLU courses as a catalogue list."
-	/>
+	<title>{m.browser_title()}</title>
+	<meta name="description" content={m.browser_meta_description()} />
 </svelte:head>
 
 {#if phase === 'loading'}
 	<div class="flex min-h-screen items-center justify-center font-sans">
-		<p class="text-text-secondary" role="status">Loading courses…</p>
+		<p class="text-text-secondary" role="status">{m.browser_loading()}</p>
 	</div>
 {:else if phase === 'error'}
 	<div class="flex min-h-screen items-center justify-center font-sans">
 		<p class="text-text-primary" role="alert">
-			Could not load the course catalogue.
+			{m.browser_load_error()}
 			<button type="button" class="underline" onclick={load}>
-				Try again
+				{m.common_retry()}
 			</button>
 		</p>
 	</div>
@@ -183,10 +180,9 @@ onMount(() => {
 		<main class="mx-auto flex min-h-0 w-full max-w-[90rem] flex-1 flex-col px-4 py-6">
 			<div class="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:items-start lg:gap-8 xl:grid-cols-[16rem_minmax(0,1fr)_30rem]">
 				<div class="lg:col-start-2">
-					<h1 class="text-2xl font-bold">Course Browser</h1>
+					<h1 class="text-2xl font-bold">{m.browser_title()}</h1>
 					<p class="mt-1 text-sm text-text-secondary">
-						A discovery-oriented catalogue of all HSLU courses, complementing the
-						dependency-oriented Skill Tree.
+						{m.browser_description()}
 					</p>
 					<div role="search" class="relative mt-4">
 						<div

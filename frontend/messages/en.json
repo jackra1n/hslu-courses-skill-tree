@@ -20,6 +20,11 @@
 	"nav_skill_tree": "Skill Tree",
 
 	"browser_search_label": "Search courses",
+	"browser_title": "Course Browser",
+	"browser_description": "A discovery-oriented catalogue of all HSLU courses, complementing the dependency-oriented Skill Tree.",
+	"browser_meta_description": "Browse all HSLU courses in a searchable and filterable catalogue.",
+	"browser_loading": "Loading courses…",
+	"browser_load_error": "Could not load the course catalogue.",
 	"browser_filters": "Filters",
 	"browser_filter_season": "Semester",
 	"browser_filter_type": "Module type",
