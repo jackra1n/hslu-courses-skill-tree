@@ -1,5 +1,6 @@
 <script lang="ts">
-import type { ModuleType } from '$lib/data/catalog-types';
+import { assessmentModeLabel } from '$lib/data/assessment-mode';
+import type { AssessmentMode, ModuleType } from '$lib/data/catalog-types';
 import type { EctsRange } from '$lib/data/course-filters';
 import { moduleTypeLabel } from '$lib/data/module-type';
 import { type Season, seasonLabel } from '$lib/data/season';
@@ -7,25 +8,33 @@ import * as m from '$lib/paraglide/messages';
 
 let {
 	season = $bindable('all'),
-	moduleType = $bindable('all'),
+	moduleTypes = $bindable([]),
+	assessmentModes = $bindable([]),
 	ects = $bindable(null),
 	nextOnly = $bindable(false),
 	ectsSteps,
 }: {
 	season: Season | 'all';
-	moduleType: ModuleType | 'all';
+	moduleTypes: ModuleType[];
+	assessmentModes: AssessmentMode[];
 	ects: EctsRange;
 	nextOnly: boolean;
 	ectsSteps: number[];
 } = $props();
 
-const moduleTypeOptions: (ModuleType | 'all')[] = [
-	'all',
+const moduleTypeOptions: ModuleType[] = [
 	'Kernmodul',
 	'Projektmodul',
 	'Erweiterungsmodul',
 	'Major-/Minormodul',
 	'Zusatzmodul',
+];
+
+const assessmentModeOptions: AssessmentMode[] = [
+	'coursework',
+	'written_exam',
+	'oral_exam',
+	'electronic_exam',
 ];
 
 // the slider indexes into the distinct ECTS values present in the
@@ -149,26 +158,24 @@ function setMax(input: HTMLInputElement): void {
 			aria-hidden="true"
 		></span>
 	</label>
-	<label
-		class="flex h-11 cursor-pointer items-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm transition-colors focus-within:border-blue-500"
-	>
-		<span class="shrink-0 text-text-tertiary">{m.browser_filter_type()}</span>
-		<select
-			bind:value={moduleType}
-			aria-label={m.browser_filter_type()}
-			class="h-full min-w-0 flex-1 cursor-pointer appearance-none truncate bg-transparent pr-6 font-medium text-text-primary focus:outline-none"
-		>
-			{#each moduleTypeOptions as option (option)}
-				<option value={option}>
-					{option === 'all' ? m.browser_all_types() : moduleTypeLabel(option)}
-				</option>
-			{/each}
-		</select>
-		<span
-			class="i-lucide-chevron-down pointer-events-none -ml-6 h-4 w-4 shrink-0 text-text-tertiary"
-			aria-hidden="true"
-		></span>
-	</label>
+	<fieldset class="rounded-lg border border-border-primary bg-bg-secondary px-3 pb-2">
+		<legend class="px-1 text-sm font-semibold text-text-primary">{m.browser_filter_type()}</legend>
+		{#each moduleTypeOptions as option}
+			<label class="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-text-primary">
+				<input type="checkbox" bind:group={moduleTypes} value={option} class="h-4 w-4 shrink-0 cursor-pointer accent-blue-500" />
+				{moduleTypeLabel(option)}
+			</label>
+		{/each}
+	</fieldset>
+	<fieldset class="rounded-lg border border-border-primary bg-bg-secondary px-3 pb-2">
+		<legend class="px-1 text-sm font-semibold text-text-primary">{m.assessment_methods()}</legend>
+		{#each assessmentModeOptions as option}
+			<label class="flex min-h-11 cursor-pointer items-center gap-3 text-sm text-text-primary">
+				<input type="checkbox" bind:group={assessmentModes} value={option} class="h-4 w-4 shrink-0 cursor-pointer accent-blue-500" />
+				{assessmentModeLabel(option)}
+			</label>
+		{/each}
+	</fieldset>
 	<label
 		class="flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border border-border-primary bg-bg-secondary p-3 transition-colors hover:bg-bg-primary focus-within:border-blue-500"
 	>

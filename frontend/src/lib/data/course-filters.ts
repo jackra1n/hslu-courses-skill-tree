@@ -1,4 +1,8 @@
-import type { CatalogCourse, ModuleType } from './catalog-types';
+import type {
+	AssessmentMode,
+	CatalogCourse,
+	ModuleType,
+} from './catalog-types';
 import type { Season } from './season';
 
 // inclusive ECTS bounds. Null means unbounded (matches everything).
@@ -7,14 +11,16 @@ export type EctsRange = { min: number; max: number } | null;
 export type CourseFilters = {
 	query: string;
 	season: Season | 'all';
-	moduleType: ModuleType | 'all';
+	moduleTypes: ModuleType[];
+	assessmentModes: AssessmentMode[];
 	ects: EctsRange;
 };
 
 export const EMPTY_FILTERS: CourseFilters = {
 	query: '',
 	season: 'all',
-	moduleType: 'all',
+	moduleTypes: [],
+	assessmentModes: [],
 	ects: null,
 };
 
@@ -62,8 +68,14 @@ export function filterCourses(
 		(course) =>
 			matchesQuery(course, filters.query) &&
 			matchesSeason(course, filters.season) &&
-			(filters.moduleType === 'all' ||
-				courseModuleType(course) === filters.moduleType) &&
+			(filters.moduleTypes.length === 0 ||
+				filters.moduleTypes.some(
+					(type) => courseModuleType(course) === type,
+				)) &&
+			(filters.assessmentModes.length === 0 ||
+				course.assessmentModes.some((mode) =>
+					filters.assessmentModes.includes(mode),
+				)) &&
 			matchesEcts(course, filters.ects),
 	);
 }
@@ -72,7 +84,8 @@ export function isFiltering(filters: CourseFilters): boolean {
 	return (
 		filters.query.trim() !== '' ||
 		filters.season !== 'all' ||
-		filters.moduleType !== 'all' ||
+		filters.moduleTypes.length > 0 ||
+		filters.assessmentModes.length > 0 ||
 		filters.ects !== null
 	);
 }

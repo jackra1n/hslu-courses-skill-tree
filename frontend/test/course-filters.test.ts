@@ -28,6 +28,7 @@ const COURSES: CatalogCourse[] = [
 		ects: 3,
 		seasons: ['HS'],
 		typeByPlanSeason: { default: 'Kernmodul' },
+		assessmentModes: ['written_exam'],
 	}),
 	course({
 		id: 'SEC',
@@ -36,6 +37,7 @@ const COURSES: CatalogCourse[] = [
 		ects: 6,
 		seasons: ['FS'],
 		typeByPlanSeason: { default: 'Major-/Minormodul' },
+		assessmentModes: ['oral_exam', 'written_exam'],
 	}),
 	course({
 		id: 'PROJ',
@@ -43,6 +45,7 @@ const COURSES: CatalogCourse[] = [
 		ects: 9,
 		seasons: ['HS', 'FS'],
 		typeByPlanSeason: { HS: 'Projektmodul', FS: 'Projektmodul' },
+		assessmentModes: ['coursework'],
 	}),
 	course({
 		id: 'MISC',
@@ -118,15 +121,46 @@ describe('filterCourses', () => {
 			ids(
 				filterCourses(COURSES, {
 					...EMPTY_FILTERS,
-					moduleType: 'Projektmodul',
+					moduleTypes: ['Projektmodul'],
 				}),
 			),
 		).toEqual(['PROJ']);
 		expect(
 			ids(
-				filterCourses(COURSES, { ...EMPTY_FILTERS, moduleType: 'Zusatzmodul' }),
+				filterCourses(COURSES, {
+					...EMPTY_FILTERS,
+					moduleTypes: ['Zusatzmodul'],
+				}),
 			),
 		).toEqual([]);
+	});
+
+	test('selected types and assessment modes use OR within groups and AND across groups', () => {
+		expect(
+			ids(
+				filterCourses(COURSES, {
+					...EMPTY_FILTERS,
+					moduleTypes: ['Kernmodul', 'Projektmodul'],
+				}),
+			),
+		).toEqual(['AINF', 'PROJ']);
+		expect(
+			ids(
+				filterCourses(COURSES, {
+					...EMPTY_FILTERS,
+					assessmentModes: ['written_exam', 'coursework'],
+				}),
+			),
+		).toEqual(['AINF', 'SEC', 'PROJ']);
+		expect(
+			ids(
+				filterCourses(COURSES, {
+					...EMPTY_FILTERS,
+					moduleTypes: ['Kernmodul', 'Projektmodul'],
+					assessmentModes: ['written_exam', 'oral_exam'],
+				}),
+			),
+		).toEqual(['AINF']);
 	});
 
 	test('ects range matches inclusively, null matches everything', () => {
@@ -166,7 +200,7 @@ describe('filterCourses', () => {
 					...EMPTY_FILTERS,
 					query: 'projekt',
 					season: 'FS',
-					moduleType: 'Projektmodul',
+					moduleTypes: ['Projektmodul'],
 					ects: { min: 9, max: 45 },
 				}),
 			),
@@ -176,7 +210,7 @@ describe('filterCourses', () => {
 				filterCourses(COURSES, {
 					...EMPTY_FILTERS,
 					season: 'HS',
-					moduleType: 'Major-/Minormodul',
+					moduleTypes: ['Major-/Minormodul'],
 				}),
 			),
 		).toEqual([]);
@@ -192,11 +226,14 @@ describe('isFiltering', () => {
 	test('any active dimension counts as filtering', () => {
 		expect(isFiltering({ ...EMPTY_FILTERS, query: 'x' })).toBe(true);
 		expect(isFiltering({ ...EMPTY_FILTERS, season: 'HS' })).toBe(true);
-		expect(isFiltering({ ...EMPTY_FILTERS, moduleType: 'Kernmodul' })).toBe(
+		expect(isFiltering({ ...EMPTY_FILTERS, moduleTypes: ['Kernmodul'] })).toBe(
 			true,
 		);
 		expect(isFiltering({ ...EMPTY_FILTERS, ects: { min: 3, max: 6 } })).toBe(
 			true,
 		);
+		expect(
+			isFiltering({ ...EMPTY_FILTERS, assessmentModes: ['oral_exam'] }),
+		).toBe(true);
 	});
 });

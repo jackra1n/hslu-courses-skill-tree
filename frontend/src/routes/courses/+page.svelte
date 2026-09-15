@@ -4,7 +4,11 @@ import AccountMenu from '$lib/components/header/AccountMenu.svelte';
 import SettingsSidebar from '$lib/components/sidebar/SettingsSidebar.svelte';
 import Tooltip from '$lib/components/ui/Tooltip.svelte';
 import { loadCatalog } from '$lib/data/catalog-loader';
-import type { CatalogCourse, ModuleType } from '$lib/data/catalog-types';
+import type {
+	AssessmentMode,
+	CatalogCourse,
+	ModuleType,
+} from '$lib/data/catalog-types';
 import {
 	type EctsRange,
 	EMPTY_FILTERS,
@@ -40,11 +44,12 @@ let courseStore = $state.raw<ReturnType<typeof initializeCourseStore> | null>(
 
 let query = $state(EMPTY_FILTERS.query);
 let season = $state<Season | 'all'>(EMPTY_FILTERS.season);
-let moduleType = $state<ModuleType | 'all'>(EMPTY_FILTERS.moduleType);
+let moduleTypes = $state<ModuleType[]>([]);
+let assessmentModes = $state<AssessmentMode[]>([]);
 let ects = $state<EctsRange>(EMPTY_FILTERS.ects);
 let nextOnly = $state(false);
 let sidebarOpen = $state(false);
-const filters = $derived({ query, season, moduleType, ects });
+const filters = $derived({ query, season, moduleTypes, assessmentModes, ects });
 const courseById = $derived(
 	new Map(courses.map((course) => [course.id, course])),
 );
@@ -65,7 +70,8 @@ const filtering = $derived(isFiltering(filters) || nextOnly);
 const activeFilterCount = $derived(
 	(query.trim() !== '' ? 1 : 0) +
 		(season !== 'all' ? 1 : 0) +
-		(moduleType !== 'all' ? 1 : 0) +
+		(moduleTypes.length > 0 ? 1 : 0) +
+		(assessmentModes.length > 0 ? 1 : 0) +
 		(ects !== null ? 1 : 0) +
 		(nextOnly ? 1 : 0),
 );
@@ -78,7 +84,8 @@ const ectsSteps = $derived(
 function clearFilters(): void {
 	query = EMPTY_FILTERS.query;
 	season = EMPTY_FILTERS.season;
-	moduleType = EMPTY_FILTERS.moduleType;
+	moduleTypes = [];
+	assessmentModes = [];
 	ects = EMPTY_FILTERS.ects;
 	nextOnly = false;
 }
@@ -235,14 +242,15 @@ onMount(() => {
 						></span>
 					</button>
 				</div>
-				<div class="{sidebarOpen ? 'block' : 'hidden'} mt-3 lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:mt-0 lg:block">
-					<div class="lg:sticky lg:top-4">
+				<div class="{sidebarOpen ? 'block' : 'hidden'} mt-3 max-h-[45dvh] shrink-0 overflow-y-auto lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:mt-0 lg:block lg:min-h-0 lg:max-h-none lg:h-full">
+					<div>
 						<h2 class="mb-2 hidden text-sm font-semibold text-text-primary lg:block">
 							{m.browser_filters()}
 						</h2>
 						<FilterSidebar
 							bind:season
-							bind:moduleType
+							bind:moduleTypes
+							bind:assessmentModes
 							bind:ects
 							bind:nextOnly
 							{ectsSteps}
