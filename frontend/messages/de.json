@@ -37,7 +37,7 @@
 	"browser_ects_range": "{min}–{max} ECTS",
 	"browser_count_all": "{total} Kurse",
 	"browser_count_filtered": "{filtered} von {total} Kursen",
-	"browser_next_courses": "Nur Module anzeigen, die ich als Nächstes belegen kann",
+	"browser_next_courses": "Nur als Nächstes belegbare Module",
 	"browser_next_courses_help": "Basierend auf Voraussetzungen und deinem Fortschritt.",
 	"browser_open_course": "Details für {course} öffnen",
 	"browser_details_back": "Zurück zu den Kursen",

@@ -37,7 +37,7 @@
 	"browser_ects_range": "{min}–{max} ECTS",
 	"browser_count_all": "{total} courses",
 	"browser_count_filtered": "{filtered} of {total} courses",
-	"browser_next_courses": "Only show courses I can take next",
+	"browser_next_courses": "Only courses I can take next",
 	"browser_next_courses_help": "Based on prerequisites and your progress.",
 	"browser_open_course": "Open details for {course}",
 	"browser_details_back": "Back to courses",
