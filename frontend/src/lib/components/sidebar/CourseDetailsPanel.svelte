@@ -247,7 +247,7 @@ $effect(() => {
             <dd>{m.details_semester({ number: activePlanNode?.semester ?? '?' })}</dd>
           </div>
           <div class="w-full flex flex-wrap gap-x-2 text-xs">
-            <dt>{m.course_details_seasons()}</dt>
+            <dt class="font-semibold text-text-primary">{m.course_details_seasons()}:</dt>
             <dd>{offeredSeasons ?? m.course_details_unknown()}</dd>
           </div>
         </dl>

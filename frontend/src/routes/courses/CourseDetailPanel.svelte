@@ -149,7 +149,7 @@ $effect(() => {
 					</dd>
 				</div>
 				<div class="w-full flex flex-wrap gap-x-2 text-xs">
-					<dt>{m.course_details_seasons()}</dt>
+					<dt class="font-semibold text-text-primary">{m.course_details_seasons()}:</dt>
 					<dd>
 						{seasons.length > 0
 							? seasons.map((season) => seasonLabel(season)).join(' · ')
@@ -184,7 +184,7 @@ $effect(() => {
 				{/if}
 
 				{#if course.prerequisites.length > 0}
-					<ul class="mt-2 space-y-2">
+					<ul class="mt-3 space-y-3">
 						{#each course.prerequisites as rule, index}
 							{#if index > 0 && course.prerequisites[index - 1]?.prerequisiteLinkType === 'oder'}
 								<li class="flex items-center gap-2" aria-hidden="true">
@@ -193,7 +193,7 @@ $effect(() => {
 									<span class="h-px flex-1 bg-border-primary"></span>
 								</li>
 							{/if}
-							<li>
+							<li class="border-l-2 border-border-primary pl-3">
 								<p class="text-sm text-text-secondary">
 									<span class="font-semibold text-text-primary">
 										{rule.mustBePassed
@@ -202,15 +202,15 @@ $effect(() => {
 									</span>
 									{rule.moduleLinkType === 'oder' ? m.prereq_one_of() : m.prereq_all_of()}
 								</p>
-								<ul class="mt-1 space-y-1">
+								<ul class="mt-1.5 space-y-2">
 									{#each rule.modules as moduleId}
 										{@const prerequisite = courseById.get(moduleId)}
 										<li class="flex items-start gap-2 text-sm">
-											<span class="i-lucide-book-open mt-0.5 h-4 w-4 shrink-0 text-text-tertiary" aria-hidden="true"></span>
+											<span class="i-lucide-book-open mt-0.5 h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true"></span>
 											<span class="min-w-0">
-												<span class="font-mono text-xs font-semibold text-text-secondary">{moduleId}</span>
+												<span class="font-mono text-xs text-text-secondary">{moduleId}</span>
 												{#if prerequisite}
-													<span class="break-words text-text-secondary">{courseLabel(prerequisite)}</span>
+													<span class="block break-words font-medium text-text-primary">{courseLabel(prerequisite)}</span>
 												{/if}
 											</span>
 										</li>
