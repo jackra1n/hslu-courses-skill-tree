@@ -82,17 +82,24 @@ const prerequisiteNote = $derived.by(
 	() => displayCourse?.prerequisiteNote?.trim() ?? '',
 );
 const isDrawerOpen = $derived(hasSelection());
-
-const seasonInfo = $derived.by(() => {
+const alternateLabel = $derived.by(() => {
+	if (!displayCourse) return null;
+	const displayed = courseLabel(displayCourse);
+	if (displayed === displayCourse.label) {
+		return displayCourse.labelEn &&
+			displayCourse.labelEn !== displayCourse.label
+			? displayCourse.labelEn
+			: null;
+	}
+	return displayCourse.label;
+});
+const offeredSeasons = $derived.by(() => {
 	const seasons = displayCourse?.seasons;
 	if (!seasons || seasons.length === 0) return null;
-	const ordered = (['HS', 'FS'] as Season[]).filter((season) =>
-		seasons.includes(season),
-	);
-	return {
-		short: ordered.join(' + '),
-		full: ordered.map((season) => seasonLabel(season)).join(' & '),
-	};
+	return (['HS', 'FS'] as Season[])
+		.filter((season) => seasons.includes(season))
+		.map((season) => seasonLabel(season))
+		.join(' · ');
 });
 </script>
 
@@ -111,40 +118,80 @@ const seasonInfo = $derived.by(() => {
 >
   {#if hasSelection()}
     <div class="p-6 space-y-6">
-      <div>
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-xl font-bold text-text-primary">{displayCourse ? courseLabel(displayCourse) : ''}</h2>
-          <button 
+      <header>
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            {#if displayCourse}
+              <p class="font-mono text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
+                {displayCourse.id}
+              </p>
+              <h2 class="mt-2 text-2xl font-bold leading-tight text-text-primary">
+                {courseLabel(displayCourse)}
+              </h2>
+              {#if alternateLabel}
+                <p class="mt-1 text-sm text-text-secondary">{alternateLabel}</p>
+              {/if}
+            {/if}
+          </div>
+          <button
+            type="button"
             onclick={() => uiStore.deselectCourse()}
-            class="flex items-center justify-center w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary transition-all"
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             title={m.details_deselect()}
             aria-label={m.details_deselect()}
           >
-            <div class="i-lucide-x w-4 h-4"></div>
+            <span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
           </button>
         </div>
-        
-        <div class="flex items-center gap-4 text-sm text-text-secondary mb-2">
-          <div class="flex items-center gap-1.5">
-            <div class="i-lucide-book-open text-text-secondary"></div>
-                   <span>{displayCourse?.ects || 0} ECTS</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <div class="i-lucide-calendar text-text-secondary"></div>
-            <span>{m.details_semester({ number: activePlanNode?.semester ?? '?' })}</span>
-          </div>
-          {#if seasonInfo}
-            <div class="flex items-center gap-1.5" title={m.details_offered_in({ seasons: seasonInfo.full })}>
-              <div class="i-lucide-sun text-text-secondary"></div>
-              <span>{seasonInfo.short}</span>
+      </header>
+
+      {#if displayCourse}
+        <section aria-labelledby="skill-tree-detail-summary">
+          <h3 id="skill-tree-detail-summary" class="text-sm font-semibold text-text-primary">
+            {m.course_details_summary()}
+          </h3>
+          <dl class="mt-2 grid grid-cols-2 gap-2">
+            <div class="rounded-lg border border-border-primary bg-bg-primary p-3">
+              <dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
+                <span class="i-lucide-graduation-cap h-3.5 w-3.5" aria-hidden="true"></span>
+                {m.course_details_ects()}
+              </dt>
+              <dd class="mt-1 font-semibold text-text-primary">{displayCourse.ects} ECTS</dd>
             </div>
-          {/if}
-        </div>
-        
-        {#if displayCourse?.type}
-          <ModuleTypeBadge type={displayCourse.type} />
-        {/if}
-      </div>
+            <div class="rounded-lg border border-border-primary bg-bg-primary p-3">
+              <dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
+                <span class="i-lucide-layers h-3.5 w-3.5" aria-hidden="true"></span>
+                {m.course_details_type()}
+              </dt>
+              <dd class="mt-1 font-semibold text-text-primary">
+                {#if displayCourse.type}
+                  <ModuleTypeBadge type={displayCourse.type} />
+                {:else}
+                  {m.course_details_unknown()}
+                {/if}
+              </dd>
+            </div>
+            <div class="rounded-lg border border-border-primary bg-bg-primary p-3">
+              <dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
+                <span class="i-lucide-calendar-clock h-3.5 w-3.5" aria-hidden="true"></span>
+                {m.course_details_plan_semester()}
+              </dt>
+              <dd class="mt-1 font-semibold text-text-primary">
+                {m.details_semester({ number: activePlanNode?.semester ?? '?' })}
+              </dd>
+            </div>
+            <div class="rounded-lg border border-border-primary bg-bg-primary p-3">
+              <dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
+                <span class="i-lucide-calendar-days h-3.5 w-3.5" aria-hidden="true"></span>
+                {m.course_details_seasons()}
+              </dt>
+              <dd class="mt-1 font-semibold text-text-primary">
+                {offeredSeasons ?? m.course_details_unknown()}
+              </dd>
+            </div>
+          </dl>
+        </section>
+      {/if}
 
       {#if isElectiveSlot()}
         <ElectiveCourseSelector slotId={selection()?.id || ''} />
@@ -167,14 +214,15 @@ const seasonInfo = $derived.by(() => {
       {/if}
 
       {#if prerequisiteNote}
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-          <div class="flex items-start gap-2">
-            <div class="i-lucide-info text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"></div>
-            <p class="text-sm text-blue-700 dark:text-blue-200">
-              {prerequisiteNote}
-            </p>
-          </div>
-        </div>
+        <section class="border-t border-border-primary pt-5" aria-labelledby="skill-tree-detail-note">
+          <h3 id="skill-tree-detail-note" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
+            <span class="i-lucide-info h-4 w-4 text-text-secondary" aria-hidden="true"></span>
+            {m.course_details_note()}
+          </h3>
+          <p class="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary">
+            {prerequisiteNote}
+          </p>
+        </section>
       {/if}
 
       {#if !isElectiveSlot()}

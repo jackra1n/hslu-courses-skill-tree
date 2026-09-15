@@ -138,38 +138,38 @@ $effect(() => {
 
 			<section class="mt-6" aria-labelledby="course-detail-summary">
 				<h3 id="course-detail-summary" class="text-sm font-semibold text-text-primary">
-					{m.browser_details_summary()}
+					{m.course_details_summary()}
 				</h3>
 				<dl class="mt-2 grid grid-cols-2 gap-2">
 					<div class="rounded-lg border border-border-primary bg-bg-primary p-3">
 						<dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
 							<span class="i-lucide-graduation-cap h-3.5 w-3.5" aria-hidden="true"></span>
-							{m.browser_details_ects()}
+							{m.course_details_ects()}
 						</dt>
 						<dd class="mt-1 font-semibold text-text-primary">{course.ects} ECTS</dd>
 					</div>
 					<div class="rounded-lg border border-border-primary bg-bg-primary p-3">
 						<dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
 							<span class="i-lucide-layers h-3.5 w-3.5" aria-hidden="true"></span>
-							{m.browser_details_type()}
+							{m.course_details_type()}
 						</dt>
 						<dd class="mt-1 font-semibold text-text-primary">
 							{#if moduleType}
 								<ModuleTypeBadge type={moduleType} />
 							{:else}
-								{m.browser_details_unknown()}
+								{m.course_details_unknown()}
 							{/if}
 						</dd>
 					</div>
 					<div class="col-span-2 rounded-lg border border-border-primary bg-bg-primary p-3">
 						<dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
 							<span class="i-lucide-calendar-days h-3.5 w-3.5" aria-hidden="true"></span>
-							{m.browser_details_seasons()}
+							{m.course_details_seasons()}
 						</dt>
 						<dd class="mt-1 font-semibold text-text-primary">
 							{seasons.length > 0
 								? seasons.map((season) => seasonLabel(season)).join(' · ')
-								: m.browser_details_unknown()}
+								: m.course_details_unknown()}
 						</dd>
 					</div>
 				</dl>
@@ -245,7 +245,7 @@ $effect(() => {
 				<section class="mt-6 border-t border-border-primary pt-5" aria-labelledby="course-detail-note">
 					<h3 id="course-detail-note" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
 						<span class="i-lucide-info h-4 w-4 text-text-secondary" aria-hidden="true"></span>
-						{m.browser_details_note()}
+						{m.course_details_note()}
 					</h3>
 					<p class="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary">
 						{prerequisiteNote}
