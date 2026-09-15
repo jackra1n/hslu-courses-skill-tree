@@ -110,8 +110,8 @@ onMount(() => {
 		</p>
 	</div>
 {:else}
-	<div class="flex min-h-screen min-h-dvh flex-col bg-bg-primary font-sans text-text-primary">
-		<header class="border-b border-border-primary bg-bg-primary px-4 py-2 sm:py-3">
+	<div class="flex h-screen h-dvh overflow-hidden flex-col bg-bg-primary font-sans text-text-primary">
+		<header class="shrink-0 border-b border-border-primary bg-bg-primary px-4 py-2 sm:py-3">
 			<div class="mx-auto flex w-full max-w-5xl items-center justify-between gap-3">
 				<a
 					href="/"
@@ -141,8 +141,8 @@ onMount(() => {
 			isOpen={settingsOpen}
 			onClose={() => (settingsOpen = false)}
 		/>
-		<main class="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
-			<div class="lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:items-start lg:gap-8">
+		<main class="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-4 py-6">
+			<div class="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:items-start lg:gap-8">
 				<div class="lg:col-start-2">
 					<h1 class="text-2xl font-bold">Course Browser</h1>
 					<p class="mt-1 text-sm text-text-secondary">
@@ -213,7 +213,7 @@ onMount(() => {
 						/>
 					</div>
 				</div>
-				<div class="mt-4 min-w-0 lg:col-start-2 lg:mt-3">
+				<div class="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden lg:col-start-2 lg:row-start-2 lg:mt-3 lg:self-stretch">
 					<div class="flex items-center justify-between gap-3">
 						<p class="text-sm text-text-secondary" aria-live="polite">
 							{#if !filtering}
@@ -232,26 +232,28 @@ onMount(() => {
 							</button>
 						{/if}
 					</div>
-					{#if filteredCourses.length === 0}
-						<div
-							class="mt-2 rounded-lg border border-border-primary bg-bg-secondary p-6 text-center"
-						>
-							<p class="text-sm text-text-secondary">{m.elective_no_results()}</p>
-							<button
-								type="button"
-								onclick={clearFilters}
-								class="mt-2 cursor-pointer text-sm font-medium text-text-primary underline"
+					<div class="mt-2 min-h-0 flex-1 overflow-y-auto">
+						{#if filteredCourses.length === 0}
+							<div
+								class="rounded-lg border border-border-primary bg-bg-secondary p-6 text-center"
 							>
-								{m.common_clear()}
-							</button>
-						</div>
-					{:else}
-						<ul class="mt-2 grid grid-cols-1 gap-2">
-							{#each filteredCourses as course (course.id)}
-								<CourseRow {course} />
-							{/each}
-						</ul>
-					{/if}
+								<p class="text-sm text-text-secondary">{m.elective_no_results()}</p>
+								<button
+									type="button"
+									onclick={clearFilters}
+									class="mt-2 cursor-pointer text-sm font-medium text-text-primary underline"
+								>
+									{m.common_clear()}
+								</button>
+							</div>
+						{:else}
+							<ul class="grid grid-cols-1 gap-2">
+								{#each filteredCourses as course (course.id)}
+									<CourseRow {course} />
+								{/each}
+							</ul>
+						{/if}
+					</div>
 				</div>
 			</div>
 		</main>
