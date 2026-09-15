@@ -3,7 +3,6 @@ import { onMount } from 'svelte';
 import 'virtual:uno.css';
 import '$lib/styles/theme.css';
 import favicon from '$lib/assets/icon.png';
-import GuidedTutorial from '$lib/components/ui/GuidedTutorial.svelte';
 import MobileWarningPopup from '$lib/components/ui/MobileWarningPopup.svelte';
 import * as m from '$lib/paraglide/messages';
 import { localeStore } from '$lib/stores/locale.svelte';
@@ -29,4 +28,3 @@ onMount(() => {
 {@render children?.()}
 
 <MobileWarningPopup />
-<GuidedTutorial />

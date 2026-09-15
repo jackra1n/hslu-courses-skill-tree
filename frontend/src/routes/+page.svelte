@@ -6,6 +6,7 @@ import Header from '$lib/components/header/Header.svelte';
 import CourseDetailsPanel from '$lib/components/sidebar/CourseDetailsPanel.svelte';
 import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
 import AssessmentInfo from '$lib/components/ui/AssessmentInfo.svelte';
+import GuidedTutorial from '$lib/components/ui/GuidedTutorial.svelte';
 import SyncConflictDialog from '$lib/components/ui/SyncConflictDialog.svelte';
 import { catalogAssetUrl, loadCatalog } from '$lib/data/catalog-loader';
 import {
@@ -100,6 +101,7 @@ $effect(() => {
     
     <!-- assessment info modal -->
     <AssessmentInfo />
+    <GuidedTutorial />
 
     <div class="lg:hidden fixed bottom-4 right-4 z-30 w-72 max-w-[90vw]">
       <div class={`rounded-2xl border border-border-primary bg-bg-primary shadow-2xl backdrop-blur transition-all duration-300 overflow-hidden flex flex-col-reverse ${legendOpen ? 'max-h-96' : 'max-h-14'}`}>

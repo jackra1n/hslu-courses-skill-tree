@@ -140,6 +140,7 @@ onMount(() => {
 		<SettingsSidebar
 			isOpen={settingsOpen}
 			onClose={() => (settingsOpen = false)}
+			showTutorial={false}
 		/>
 		<main class="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-4 py-6">
 			<div class="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:items-start lg:gap-8">

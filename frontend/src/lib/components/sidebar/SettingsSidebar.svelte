@@ -10,7 +10,15 @@ import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import { downloadJson, pickTextFile } from '$lib/utils/file-transfer';
 
-let { isOpen, onClose }: { isOpen: boolean; onClose: () => void } = $props();
+let {
+	isOpen,
+	onClose,
+	showTutorial = true,
+}: {
+	isOpen: boolean;
+	onClose: () => void;
+	showTutorial?: boolean;
+} = $props();
 
 let showResetProgressDialog = $state(false);
 let showResetAllDataDialog = $state(false);
@@ -90,16 +98,18 @@ function confirmResetAllData() {
             <span>{m.settings_view_github()}</span>
             <div class="i-lucide-external-link h-4 w-4 text-text-secondary ml-auto"></div>
           </a>
-          <button
-            onclick={() => {
-              closeSidebar();
-              uiStore.requestTutorial();
-            }}
-            class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
-          >
-            <div class="i-lucide-book-open h-4 w-4 text-text-primary"></div>
-            <span>{m.settings_start_tutorial()}</span>
-          </button>
+          {#if showTutorial}
+            <button
+              onclick={() => {
+                closeSidebar();
+                uiStore.requestTutorial();
+              }}
+              class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
+            >
+              <div class="i-lucide-book-open h-4 w-4 text-text-primary"></div>
+              <span>{m.settings_start_tutorial()}</span>
+            </button>
+          {/if}
           <div class="flex w-full items-center justify-between gap-3 px-1 py-2 text-base text-text-primary">
             <span>{m.settings_theme()}</span>
             <ThemeSwitcher />
