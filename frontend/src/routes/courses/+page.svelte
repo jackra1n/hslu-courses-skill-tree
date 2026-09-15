@@ -299,6 +299,7 @@ onMount(() => {
 					course={selectedCourse}
 					{courseById}
 					onClose={closeCourseDetails}
+					onNavigate={(course) => (selectedCourse = course)}
 				/>
 			</div>
 		</main>

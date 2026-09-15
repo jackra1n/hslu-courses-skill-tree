@@ -12,15 +12,18 @@ let {
 	course,
 	courseById,
 	onClose,
+	onNavigate,
 }: {
 	course: CatalogCourse | null;
 	courseById: ReadonlyMap<string, CatalogCourse>;
 	onClose: () => void;
+	onNavigate: (course: CatalogCourse) => void;
 } = $props();
 
 const TITLE_ID = 'course-browser-detail-title';
 
 let panel: HTMLElement;
+let content = $state<HTMLDivElement>();
 let closeButton = $state<HTMLButtonElement>();
 let isOverlay = $state(false);
 
@@ -84,6 +87,15 @@ $effect(() => {
 	if (!course || !isOverlay) return;
 	void tick().then(() => closeButton?.focus());
 });
+
+async function navigateToPrerequisite(
+	prerequisite: CatalogCourse,
+): Promise<void> {
+	onNavigate(prerequisite);
+	await tick();
+	if (content) content.scrollTop = 0;
+	closeButton?.focus({ preventScroll: true });
+}
 </script>
 
 {#if course}
@@ -109,7 +121,7 @@ $effect(() => {
 	onkeydown={handleKeydown}
 >
 	{#if course}
-		<div class="min-h-0 flex-1 overflow-y-auto p-4 space-y-4">
+		<div bind:this={content} class="min-h-0 flex-1 overflow-y-auto p-4 space-y-4">
 			<header class="flex items-start justify-between gap-3">
 				<div class="min-w-0">
 				<p class="font-mono text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
@@ -193,7 +205,7 @@ $effect(() => {
 									<span class="h-px flex-1 bg-border-primary"></span>
 								</li>
 							{/if}
-							<li class="border-l-2 border-border-primary pl-3">
+							<li>
 								<p class="text-sm text-text-secondary">
 									<span class="font-semibold text-text-primary">
 										{rule.mustBePassed
@@ -205,14 +217,26 @@ $effect(() => {
 								<ul class="mt-1.5 space-y-2">
 									{#each rule.modules as moduleId}
 										{@const prerequisite = courseById.get(moduleId)}
-										<li class="flex items-start gap-2 text-sm">
-											<span class="i-lucide-book-open mt-0.5 h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true"></span>
-											<span class="min-w-0">
-												<span class="font-mono text-xs text-text-secondary">{moduleId}</span>
-												{#if prerequisite}
-													<span class="block break-words font-medium text-text-primary">{courseLabel(prerequisite)}</span>
-												{/if}
-											</span>
+										<li>
+											{#if prerequisite}
+												{@const prerequisiteType = courseModuleType(prerequisite)}
+												<button
+													type="button"
+													onclick={() => navigateToPrerequisite(prerequisite)}
+													aria-label={m.browser_open_course({ course: courseLabel(prerequisite) })}
+													class="block w-full cursor-pointer rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-left transition-colors hover:border-blue-500 hover:bg-blue-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+												>
+													<span class="flex items-center justify-between gap-2">
+														<span class="min-w-0 break-words font-mono text-xs text-text-secondary">{moduleId}</span>
+														{#if prerequisiteType}
+															<ModuleTypeBadge type={prerequisiteType} />
+														{/if}
+													</span>
+													<span class="block break-words text-sm font-medium text-text-primary">{courseLabel(prerequisite)}</span>
+												</button>
+											{:else}
+												<div class="rounded-lg border border-border-primary px-3 py-2 font-mono text-xs text-text-secondary">{moduleId}</div>
+											{/if}
 										</li>
 									{/each}
 								</ul>
