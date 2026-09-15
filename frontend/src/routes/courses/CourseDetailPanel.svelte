@@ -114,7 +114,9 @@ $effect(() => {
 <aside
 	bind:this={panel}
 	id="course-detail-panel"
-	class="{course ? 'fixed' : 'hidden'} inset-y-0 right-0 z-50 w-full flex-col overflow-hidden border-border-primary bg-bg-secondary shadow-2xl sm:max-w-lg xl:static xl:col-start-3 xl:row-start-1 xl:row-span-2 xl:flex xl:h-full xl:min-h-0 xl:w-auto xl:max-w-none xl:self-stretch xl:rounded-xl xl:border xl:shadow-none"
+	class="inset-y-0 right-0 z-50 w-full flex-col overflow-hidden border-border-primary bg-bg-secondary shadow-2xl sm:max-w-lg xl:static xl:col-start-3 xl:row-start-1 xl:row-span-2 xl:flex xl:h-full xl:min-h-0 xl:w-auto xl:max-w-none xl:self-stretch xl:rounded-xl xl:border xl:shadow-none"
+	class:fixed={course && isOverlay}
+	class:hidden={!course}
 	class:flex={course}
 	role={course ? (isOverlay ? 'dialog' : 'region') : undefined}
 	aria-modal={course && isOverlay ? 'true' : undefined}
