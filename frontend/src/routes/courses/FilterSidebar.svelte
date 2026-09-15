@@ -9,11 +9,13 @@ let {
 	season = $bindable('all'),
 	moduleType = $bindable('all'),
 	ects = $bindable(null),
+	nextOnly = $bindable(false),
 	ectsSteps,
 }: {
 	season: Season | 'all';
 	moduleType: ModuleType | 'all';
 	ects: EctsRange;
+	nextOnly: boolean;
 	ectsSteps: number[];
 } = $props();
 
@@ -166,6 +168,23 @@ function setMax(input: HTMLInputElement): void {
 			class="i-lucide-chevron-down pointer-events-none -ml-6 h-4 w-4 shrink-0 text-text-tertiary"
 			aria-hidden="true"
 		></span>
+	</label>
+	<label
+		class="flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border border-border-primary bg-bg-secondary p-3 transition-colors hover:bg-bg-primary focus-within:border-blue-500"
+	>
+		<input
+			type="checkbox"
+			bind:checked={nextOnly}
+			class="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-blue-500"
+		/>
+		<span class="min-w-0">
+			<span class="block text-sm font-medium leading-snug text-text-primary">
+				{m.browser_next_courses()}
+			</span>
+			<span class="mt-1 block text-xs leading-relaxed text-text-tertiary">
+				{m.browser_next_courses_help()}
+			</span>
+		</span>
 	</label>
 </div>
 

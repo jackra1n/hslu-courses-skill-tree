@@ -11,6 +11,7 @@ import {
 	filterCourses,
 	isFiltering,
 } from '$lib/data/course-filters';
+import { nextCourseIds } from '$lib/data/course-readiness';
 import {
 	collectAppData,
 	hasMeaningfulStoredAppData,
@@ -19,8 +20,9 @@ import { type Season } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
-import { progressStore } from '$lib/stores/progressStore.svelte';
+import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
+import { getAssessmentStageProgress } from '$lib/utils/status';
 import CourseDetailPanel from './CourseDetailPanel.svelte';
 import CourseRow from './CourseRow.svelte';
 import FilterSidebar from './FilterSidebar.svelte';
@@ -32,23 +34,40 @@ let courses = $state<CatalogCourse[]>([]);
 let settingsOpen = $state(false);
 let selectedCourse = $state<CatalogCourse | null>(null);
 let selectedTrigger: HTMLButtonElement | null = null;
+let courseStore = $state.raw<ReturnType<typeof initializeCourseStore> | null>(
+	null,
+);
 
 let query = $state(EMPTY_FILTERS.query);
 let season = $state<Season | 'all'>(EMPTY_FILTERS.season);
 let moduleType = $state<ModuleType | 'all'>(EMPTY_FILTERS.moduleType);
 let ects = $state<EctsRange>(EMPTY_FILTERS.ects);
+let nextOnly = $state(false);
 let sidebarOpen = $state(false);
 const filters = $derived({ query, season, moduleType, ects });
 const courseById = $derived(
 	new Map(courses.map((course) => [course.id, course])),
 );
-const filteredCourses = $derived(filterCourses(courses, filters));
-const filtering = $derived(isFiltering(filters));
+const catalogFilteredCourses = $derived(filterCourses(courses, filters));
+const nextCourseIdSet = $derived.by(() => {
+	if (!courseStore) return new Set<string>();
+	const plan = courseStore.studyPlan;
+	const statuses = slotStatusMap();
+	const assessmentStageMet = getAssessmentStageProgress(plan, statuses).passed;
+	return nextCourseIds(courses, plan, statuses, assessmentStageMet);
+});
+const filteredCourses = $derived(
+	nextOnly
+		? catalogFilteredCourses.filter((course) => nextCourseIdSet.has(course.id))
+		: catalogFilteredCourses,
+);
+const filtering = $derived(isFiltering(filters) || nextOnly);
 const activeFilterCount = $derived(
 	(query.trim() !== '' ? 1 : 0) +
 		(season !== 'all' ? 1 : 0) +
 		(moduleType !== 'all' ? 1 : 0) +
-		(ects !== null ? 1 : 0),
+		(ects !== null ? 1 : 0) +
+		(nextOnly ? 1 : 0),
 );
 // slider stops are the distinct ECTS values in the catalog, so every stop
 // matches real courses.
@@ -61,6 +80,7 @@ function clearFilters(): void {
 	season = EMPTY_FILTERS.season;
 	moduleType = EMPTY_FILTERS.moduleType;
 	ects = EMPTY_FILTERS.ects;
+	nextOnly = false;
 }
 function selectCourse(course: CatalogCourse, trigger: HTMLButtonElement): void {
 	selectedCourse = course;
@@ -82,7 +102,8 @@ async function load(): Promise<void> {
 		// the settings sidebar and account menu need the same stores as the
 		// skill Tree page, without its study-plan specific header controls.
 		const localDataIsMeaningful = hasMeaningfulStoredAppData();
-		initializeCourseStore().init();
+		courseStore = initializeCourseStore();
+		courseStore.init();
 		progressStore.init();
 		uiStore.init();
 		await cloudSyncStore.init(localDataIsMeaningful);
@@ -227,6 +248,7 @@ onMount(() => {
 							bind:season
 							bind:moduleType
 							bind:ects
+							bind:nextOnly
 							{ectsSteps}
 						/>
 					</div>
