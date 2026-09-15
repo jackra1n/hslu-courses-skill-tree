@@ -47,20 +47,22 @@ const maxPct = $derived(lastIdx > 0 ? (maxIdx / lastIdx) * 100 : 100);
 // whichever was touched last so either remains draggable.
 let lastTouched = $state<'min' | 'max'>('max');
 
-function setMin(idx: number): void {
+function setMin(input: HTMLInputElement): void {
 	if (ectsSteps.length === 0) return;
 	lastTouched = 'min';
-	const clamped = Math.min(idx, maxIdx);
+	const clamped = Math.min(input.valueAsNumber, maxIdx);
+	input.valueAsNumber = clamped;
 	ects =
 		clamped === 0 && maxIdx === lastIdx
 			? null
 			: { min: ectsSteps[clamped] ?? 0, max: ectsSteps[maxIdx] ?? 0 };
 }
 
-function setMax(idx: number): void {
+function setMax(input: HTMLInputElement): void {
 	if (ectsSteps.length === 0) return;
 	lastTouched = 'max';
-	const clamped = Math.max(idx, minIdx);
+	const clamped = Math.max(input.valueAsNumber, minIdx);
+	input.valueAsNumber = clamped;
 	ects =
 		minIdx === 0 && clamped === lastIdx
 			? null
@@ -97,7 +99,7 @@ function setMax(idx: number): void {
 					max={lastIdx}
 					step="1"
 					value={minIdx}
-					oninput={(event) => setMin(Number(event.currentTarget.value))}
+					oninput={(event) => setMin(event.currentTarget)}
 					onpointerdown={() => (lastTouched = 'min')}
 					onfocus={() => (lastTouched = 'min')}
 					aria-label={m.browser_ects_min()}
@@ -110,7 +112,7 @@ function setMax(idx: number): void {
 					max={lastIdx}
 					step="1"
 					value={maxIdx}
-					oninput={(event) => setMax(Number(event.currentTarget.value))}
+					oninput={(event) => setMax(event.currentTarget)}
 					onpointerdown={() => (lastTouched = 'max')}
 					onfocus={() => (lastTouched = 'max')}
 					aria-label={m.browser_ects_max()}
