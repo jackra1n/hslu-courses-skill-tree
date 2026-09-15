@@ -60,176 +60,125 @@ function openAssessmentInfo() {
 }
 </script>
 
-{#if prerequisites && prerequisites.length > 0}
-  <div class="border-t border-border-primary pt-4">
-    <h3
-      class="text-sm font-semibold text-text-primary mb-2 flex items-center gap-2"
-    >
-      <div class="i-lucide-git-branch text-text-secondary"></div>
-      {m.prereq_title()}
-    </h3>
+<section class="border-t border-border-primary pt-5" aria-labelledby="skill-tree-detail-prerequisites">
+  <h3 id="skill-tree-detail-prerequisites" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
+    <span class="i-lucide-git-branch h-4 w-4 text-text-secondary" aria-hidden="true"></span>
+    {m.prereq_title()}
+  </h3>
 
-    {#if assessmentLevelPassed}
-      <div class="mb-3 flex items-start gap-2 text-sm">
-        <div
-          class="{assessmentStageProgress.passed
-            ? 'i-lucide-check text-green-500'
-            : 'i-lucide-circle text-gray-400'} mt-0.5"
-        ></div>
-        <div class="flex-1">
-          <div
-            class={assessmentStageProgress.passed
-              ? "text-text-primary"
-              : "text-text-secondary"}
+  {#if assessmentLevelPassed}
+    <div class="mt-3 flex items-start gap-2 rounded-lg border border-border-primary bg-bg-primary p-3 text-sm">
+      <span
+        class="{assessmentStageProgress.passed
+          ? 'i-lucide-check text-green-500'
+          : 'i-lucide-circle text-gray-400'} mt-0.5 h-4 w-4 shrink-0"
+        aria-hidden="true"
+      ></span>
+      <div class="min-w-0 flex-1">
+        <div class="flex items-center gap-1">
+          <span class="font-semibold {assessmentStageProgress.passed ? 'text-text-primary' : 'text-text-secondary'}">
+            {m.prereq_assessment_passed()}
+          </span>
+          <button
+            type="button"
+            onclick={openAssessmentInfo}
+            class="inline-flex text-blue-500 transition-colors hover:text-blue-600"
+            aria-label={m.prereq_assessment_more()}
           >
-            <div class="flex items-center gap-1">
-              <span class="font-semibold">{m.prereq_assessment_passed()}</span>
-              <button
-                onclick={openAssessmentInfo}
-                class="text-blue-500 hover:text-blue-600 transition-colors inline-flex items-center"
-                aria-label={m.prereq_assessment_more()}
-              >
-                <div class="i-lucide-info text-xs"></div>
-              </button>
-            </div>
-            <div class="text-xs opacity-60 mt-0.5">
-              {m.prereq_ects_progress({
-									completed: assessmentStageProgress.completedEcts,
-									project: assessmentStageProgress.projectEcts,
-								})}
-            </div>
-          </div>
+            <span class="i-lucide-info h-3.5 w-3.5" aria-hidden="true"></span>
+          </button>
         </div>
+        <p class="mt-0.5 text-xs text-text-tertiary">
+          {m.prereq_ects_progress({
+            completed: assessmentStageProgress.completedEcts,
+            project: assessmentStageProgress.projectEcts,
+          })}
+        </p>
       </div>
-    {/if}
+    </div>
+  {/if}
 
-    <ul class="space-y-1.5">
+  {#if prerequisites.length > 0}
+    <ul class="mt-3 space-y-3">
       {#each prerequisites as rule, index}
         {@const ruleData = renderPrerequisiteRule(rule)}
-        {@const prevRule = index > 0 ? prerequisites[index - 1] : null}
+        {@const previousRule = index > 0 ? prerequisites[index - 1] : null}
         {@const showOrSeparator =
-          prevRule && prevRule.prerequisiteLinkType === "oder"}
+          previousRule?.prerequisiteLinkType === 'oder'}
+        {@const anyInPlan = rule.modules.some((id) => isPrerequisiteInPlan(id))}
+        {@const allInPlan = rule.modules.every((id) => isPrerequisiteInPlan(id))}
+        {@const shouldShowRuleWarning =
+          rule.moduleLinkType === 'oder' ? !anyInPlan : !allInPlan}
 
         {#if showOrSeparator}
-          <li class="flex items-center justify-center py-1">
-            <div
-              class="text-xs font-medium text-text-secondary bg-bg-primary px-2 py-1 rounded-full border border-border-primary"
-            >
-              {m.prereq_or()}
-            </div>
+          <li class="flex items-center gap-2" aria-hidden="true">
+            <span class="h-px flex-1 bg-border-primary"></span>
+            <span class="text-xs font-medium text-text-tertiary">{m.prereq_or()}</span>
+            <span class="h-px flex-1 bg-border-primary"></span>
           </li>
         {/if}
 
-        {@const anyInPlan = rule.modules.some((id) => isPrerequisiteInPlan(id))}
-        {@const allInPlan = rule.modules.every((id) =>
-          isPrerequisiteInPlan(id)
-        )}
-        {@const shouldShowRuleWarning =
-          rule.moduleLinkType === "oder" ? !anyInPlan : !allInPlan}
-
-        <li class="flex items-start gap-2 text-sm">
-          <div
-            class="{ruleData.met
-              ? 'i-lucide-check text-green-500'
-              : shouldShowRuleWarning
-                ? 'i-lucide-triangle-alert text-yellow-600 dark:text-yellow-500'
-                : 'i-lucide-circle text-gray-400'} mt-0.5"
-            title={shouldShowRuleWarning
-              ? m.prereq_not_in_plan()
-              : ""}
-          ></div>
-          <div class="flex-1">
-            <div
-              class={ruleData.met
-                ? "text-text-primary"
+        <li
+          class="rounded-lg border bg-bg-primary p-3 {shouldShowRuleWarning
+            ? 'border-yellow-400 dark:border-yellow-700'
+            : 'border-border-primary'}"
+        >
+          <div class="flex items-start gap-2">
+            <span
+              class="{ruleData.met
+                ? 'i-lucide-check text-green-500'
                 : shouldShowRuleWarning
-                  ? "text-yellow-600 dark:text-yellow-500"
-                  : "text-text-secondary"}
-            >
-              <div class="flex items-center gap-1">
-                <span class="font-semibold"
-                  >{rule.mustBePassed ? m.course_completed() : m.course_attended()}</span
-                >
-                <span
-                  >{rule.moduleLinkType === "oder"
-                    ? m.prereq_one_of()
-                    : m.prereq_all_of()}</span
-                >
-              </div>
-              <div class="ml-2 mt-1 space-y-1">
+                  ? 'i-lucide-triangle-alert text-yellow-600 dark:text-yellow-500'
+                  : 'i-lucide-circle text-gray-400'} mt-0.5 h-4 w-4 shrink-0"
+              title={shouldShowRuleWarning ? m.prereq_not_in_plan() : ''}
+              aria-hidden="true"
+            ></span>
+            <div class="min-w-0 flex-1">
+              <p
+                class="text-sm {ruleData.met
+                  ? 'text-text-primary'
+                  : shouldShowRuleWarning
+                    ? 'text-yellow-700 dark:text-yellow-400'
+                    : 'text-text-secondary'}"
+              >
+                <span class="font-semibold">
+                  {rule.mustBePassed ? m.course_completed() : m.course_attended()}
+                </span>
+                {rule.moduleLinkType === 'oder' ? m.prereq_one_of() : m.prereq_all_of()}
+              </p>
+              <ul class="mt-2 space-y-1.5">
                 {#each rule.modules as moduleId}
                   {@const course = getCourseById(moduleId)}
                   {@const moduleMet = isModuleMet(moduleId, rule.mustBePassed)}
                   {@const inPlan = isPrerequisiteInPlan(moduleId)}
-                  {@const shouldApplyOpacity = !shouldShowRuleWarning && !inPlan}
-                  <div class="flex items-center gap-1.5 text-xs">
-                    <div
-                      class="{moduleMet
-                        ? 'i-lucide-check text-green-500'
-                        : 'i-lucide-minus text-gray-400'} text-xs {shouldApplyOpacity
-                        ? 'opacity-60'
-                        : ''}"
-                    ></div>
+                  {@const shouldApplyOpacity =
+                    !shouldShowRuleWarning && !inPlan}
+                  <li class="flex items-start gap-2 text-sm {shouldApplyOpacity ? 'opacity-60' : ''}">
                     <span
                       class="{moduleMet
-                        ? 'text-text-primary'
-                        : 'text-text-secondary'} {shouldApplyOpacity ? 'opacity-60' : ''}"
-                    >
-                      {course ? courseLabel(course) : moduleId}
+                        ? 'i-lucide-check text-green-500'
+                        : 'i-lucide-minus text-gray-400'} mt-0.5 h-4 w-4 shrink-0"
+                      aria-hidden="true"
+                    ></span>
+                    <span class="min-w-0">
+                      <span class="font-mono text-xs font-semibold text-text-secondary">{moduleId}</span>
+                      {#if course}
+                        <span class="block break-words {moduleMet ? 'text-text-primary' : 'text-text-secondary'}">
+                          {courseLabel(course)}
+                        </span>
+                      {/if}
                     </span>
-                  </div>
+                  </li>
                 {/each}
-              </div>
+              </ul>
             </div>
           </div>
         </li>
       {/each}
     </ul>
-  </div>
-{:else}
-  <div class="border-t border-border-primary pt-4">
-    <h3
-      class="text-sm font-semibold text-text-primary mb-2 flex items-center gap-2"
-    >
-      <div class="i-lucide-git-branch text-text-secondary"></div>
-      {m.prereq_title()}
-    </h3>
-
-    {#if assessmentLevelPassed}
-      <div class="mb-3 flex items-start gap-2 text-sm">
-        <div
-          class="{assessmentStageProgress.passed
-            ? 'i-lucide-check text-green-500'
-            : 'i-lucide-circle text-gray-400'} mt-0.5"
-        ></div>
-        <div class="flex-1">
-          <div
-            class={assessmentStageProgress.passed
-              ? "text-text-primary"
-              : "text-text-secondary"}
-          >
-            <div class="flex items-center gap-1">
-              <span class="font-semibold">{m.prereq_assessment_passed()}</span>
-              <button
-                onclick={openAssessmentInfo}
-                class="text-blue-500 hover:text-blue-600 ml-1 transition-colors inline-flex items-center"
-                aria-label={m.prereq_assessment_more()}
-              >
-                <div class="i-lucide-info text-xs"></div>
-              </button>
-            </div>
-            <div class="text-xs opacity-60 mt-0.5">
-              {m.prereq_ects_progress({
-									completed: assessmentStageProgress.completedEcts,
-									project: assessmentStageProgress.projectEcts,
-								})}
-            </div>
-          </div>
-        </div>
-      </div>
-      <p class="text-sm text-text-secondary">{m.prereq_no_other()}</p>
-    {:else}
-      <p class="text-sm text-text-secondary">{m.prereq_none()}</p>
-    {/if}
-  </div>
-{/if}
+  {:else if assessmentLevelPassed}
+    <p class="mt-3 text-sm text-text-secondary">{m.prereq_no_other()}</p>
+  {:else}
+    <p class="mt-3 text-sm text-text-secondary">{m.prereq_none()}</p>
+  {/if}
+</section>
