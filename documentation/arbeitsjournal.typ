@@ -55,6 +55,21 @@
     hours: 2.0,
     activity: "Lokalisierung und Prüfungsformen: verbliebene fest codierte Texte des Course Browsers in die deutsch-englischen Übersetzungskataloge verschoben. ModeOfAssessments aus zehn HSLU-Semesterständen mit 591 aktuellen Modulen analysiert, neun Rohwerte auf vier stabile Kategorien für Semesterarbeit, schriftliche, mündliche und elektronische Prüfung normalisiert und im Kursdetail als lokalisierte Badges angezeigt. Mehrfachwerte im Katalog erhalten, in der UI zusammengefasst und unbekannte zukünftige Werte durch strikte Generatorvalidierung abgesichert. Unit-Tests, Internationalisierungsprüfung, Typcheck, Build und beide Sprachvarianten im Browser verifiziert."
   ),
+  (
+    date: "2026-09-16",
+    hours: 2.0,
+    activity: "Design-Konsistenz zwischen Course Browser und Skill Tree: Desktop-Positionierung des Browser-Detailpanels korrigiert, gemeinsame Modultyp-Badges mit einheitlichen Farben eingeführt und lokalisierte Prüfungsformen auch in regulären und Wahlmodul-Details des Skill Trees ergänzt. Informationshierarchie und Voraussetzungsdarstellung angeglichen. Nach Nutzerfeedback die zunächst zu grosszügigen Metadatenkarten wieder entfernt und beide Detailansichten auf kleinere Titel, Inline-Metadaten und kompaktere Abstände umgestellt; Verfügbarkeit durch eine hervorgehobene Beschriftung klarer gegliedert. Skill-Tree-Drawer mit einheitlichem Breakpoint, Fokusführung, Escape-Schliessen, Scroll-Reset und korrigierter Überlagerung des Headers verbessert. Desktop- und Mobilansichten sowie deutsche und englische Prüfungslabels im Browser geprüft; Typchecks, Tests und Build durchgeführt. Aufwand geschätzt."
+  ),
+  (
+    date: "2026-09-16",
+    hours: 1.0,
+    activity: "Voraussetzungen im Course Browser iterativ überarbeitet: zunächst Textkontrast und Gruppierung verbessert, anschliessend die weiterhin schwer unterscheidbaren Einträge durch kompakte, anklickbare Kurskarten ersetzt. Wiederholte Buch-Icons und linke Trennlinien entfernt; Modul-ID, Kurstitel und Modultyp-Badge rechts oben geben jeder Voraussetzung eine klare visuelle Einheit. Klick und Tastaturaktivierung öffnen den referenzierten Kurs im selben Detailpanel, ohne die Filter zu verändern; Scrollposition und Fokus werden beim Wechsel zurückgesetzt, beim Schliessen kehrt der Fokus zum ursprünglichen Listeneintrag zurück. Fehlende Katalogreferenzen bleiben nicht interaktiv. Navigation, Filtererhalt und Darstellung auf Desktop und Mobil sowie Typcheck verifiziert. Aufwand geschätzt."
+  ),
+  (
+    date: "2026-09-16",
+    hours: 0.75,
+    activity: "Mehrfachauswahl für Modultyp und Prüfungsformen: Modultyp-Dropdown durch eine Checkbox-Liste ersetzt und eine gleich gestaltete Liste für Semesterarbeit, schriftliche, mündliche und elektronische Prüfung ergänzt. Ausgewählte Werte innerhalb einer Gruppe werden mit ODER, unterschiedliche Filtergruppen mit UND verknüpft; leere Auswahl bedeutet keine Einschränkung. Filterzustand, Aktivitätszähler, Zurücksetzen und bestehende Tests auf den neuen Vertrag umgestellt, gemeinsame Übersetzungsfunktion für Prüfungsformen extrahiert und obsolete Texte entfernt. Filterbereich für kleine Viewports scrollbar gemacht, damit die Trefferliste erreichbar bleibt. Mehrfachauswahl und Zurücksetzen auf Desktop und Mobil geprüft; 13 Filter- und Belegbarkeitstests, Typcheck und Produktionsbuild erfolgreich. Aufwand geschätzt."
+  ),
 )
 
 // Berechnung der Statistiken
