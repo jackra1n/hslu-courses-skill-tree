@@ -109,99 +109,82 @@ $effect(() => {
 	onkeydown={handleKeydown}
 >
 	{#if course}
-		<div class="flex h-14 shrink-0 items-center justify-between border-b border-border-primary px-4 sm:px-5">
-			<button
-				bind:this={closeButton}
-				type="button"
-				onclick={onClose}
-				aria-label={m.browser_details_close()}
-				class="flex h-10 cursor-pointer items-center gap-2 rounded-lg px-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 xl:ml-auto xl:w-10 xl:justify-center xl:px-0"
-			>
-				<span class="i-lucide-arrow-left h-4 w-4 xl:hidden" aria-hidden="true"></span>
-				<span class="xl:sr-only">{m.browser_details_back()}</span>
-				<span class="i-lucide-x hidden h-4 w-4 xl:block" aria-hidden="true"></span>
-			</button>
-		</div>
-
-		<div class="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
-			<header>
+		<div class="min-h-0 flex-1 overflow-y-auto p-4 space-y-4">
+			<header class="flex items-start justify-between gap-3">
+				<div class="min-w-0">
 				<p class="font-mono text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
 					{course.id}
 				</p>
-				<h2 id={TITLE_ID} class="mt-2 text-2xl font-bold leading-tight text-text-primary">
+				<h2 id={TITLE_ID} class="mt-1 text-lg font-semibold leading-snug text-text-primary">
 					{courseLabel(course)}
 				</h2>
 				{#if alternateLabel}
-					<p class="mt-1 text-sm text-text-secondary">{alternateLabel}</p>
+					<p class="mt-1 text-xs text-text-secondary">{alternateLabel}</p>
 				{/if}
+				</div>
+				<button
+					bind:this={closeButton}
+					type="button"
+					onclick={onClose}
+					aria-label={m.browser_details_close()}
+					class="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+				>
+					<span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
+				</button>
 			</header>
 
-			<section class="mt-6" aria-labelledby="course-detail-summary">
-				<h3 id="course-detail-summary" class="text-sm font-semibold text-text-primary">
-					{m.course_details_summary()}
-				</h3>
-				<dl class="mt-2 grid grid-cols-2 gap-2">
-					<div class="rounded-lg border border-border-primary bg-bg-primary p-3">
-						<dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
-							<span class="i-lucide-graduation-cap h-3.5 w-3.5" aria-hidden="true"></span>
-							{m.course_details_ects()}
-						</dt>
-						<dd class="mt-1 font-semibold text-text-primary">{course.ects} ECTS</dd>
-					</div>
-					<div class="rounded-lg border border-border-primary bg-bg-primary p-3">
-						<dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
-							<span class="i-lucide-layers h-3.5 w-3.5" aria-hidden="true"></span>
-							{m.course_details_type()}
-						</dt>
-						<dd class="mt-1 font-semibold text-text-primary">
-							{#if moduleType}
-								<ModuleTypeBadge type={moduleType} />
-							{:else}
-								{m.course_details_unknown()}
-							{/if}
-						</dd>
-					</div>
-					<div class="col-span-2 rounded-lg border border-border-primary bg-bg-primary p-3">
-						<dt class="flex items-center gap-1.5 text-xs text-text-tertiary">
-							<span class="i-lucide-calendar-days h-3.5 w-3.5" aria-hidden="true"></span>
-							{m.course_details_seasons()}
-						</dt>
-						<dd class="mt-1 font-semibold text-text-primary">
-							{seasons.length > 0
-								? seasons.map((season) => seasonLabel(season)).join(' · ')
-								: m.course_details_unknown()}
-						</dd>
-					</div>
-				</dl>
-			</section>
+			<dl class="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-text-secondary">
+				<div>
+					<dt class="sr-only">{m.course_details_ects()}</dt>
+					<dd class="font-semibold text-text-primary">{course.ects} ECTS</dd>
+				</div>
+				<div>
+					<dt class="sr-only">{m.course_details_type()}</dt>
+					<dd>
+						{#if moduleType}
+							<ModuleTypeBadge type={moduleType} />
+						{:else}
+							{m.course_details_unknown()}
+						{/if}
+					</dd>
+				</div>
+				<div class="w-full flex flex-wrap gap-x-2 text-xs">
+					<dt>{m.course_details_seasons()}</dt>
+					<dd>
+						{seasons.length > 0
+							? seasons.map((season) => seasonLabel(season)).join(' · ')
+							: m.course_details_unknown()}
+					</dd>
+				</div>
+			</dl>
 
 			{#if course.assessmentModes.length > 0}
-				<section class="mt-6 border-t border-border-primary pt-5" aria-labelledby="course-detail-assessment">
+				<section class="border-t border-border-primary pt-3" aria-labelledby="course-detail-assessment">
 					<h3 id="course-detail-assessment" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
 						<span class="i-lucide-clipboard-check h-4 w-4 text-text-secondary" aria-hidden="true"></span>
 						{m.assessment_methods()}
 					</h3>
-					<div class="mt-3">
+					<div class="mt-2">
 						<AssessmentModeBadges modes={course.assessmentModes} />
 					</div>
 				</section>
 			{/if}
 
-			<section class="mt-6 border-t border-border-primary pt-5" aria-labelledby="course-detail-prerequisites">
+			<section class="border-t border-border-primary pt-3" aria-labelledby="course-detail-prerequisites">
 				<h3 id="course-detail-prerequisites" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
 					<span class="i-lucide-git-branch h-4 w-4 text-text-secondary" aria-hidden="true"></span>
 					{m.prereq_title()}
 				</h3>
 
 				{#if course.assessmentLevelPassed}
-					<div class="mt-3 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-200">
+					<div class="mt-2 flex items-start gap-2 text-sm text-text-secondary">
 						<span class="i-lucide-badge-check mt-0.5 h-4 w-4 shrink-0" aria-hidden="true"></span>
 						<span>{m.prereq_assessment_passed()}</span>
 					</div>
 				{/if}
 
 				{#if course.prerequisites.length > 0}
-					<ul class="mt-3 space-y-3">
+					<ul class="mt-2 space-y-2">
 						{#each course.prerequisites as rule, index}
 							{#if index > 0 && course.prerequisites[index - 1]?.prerequisiteLinkType === 'oder'}
 								<li class="flex items-center gap-2" aria-hidden="true">
@@ -210,7 +193,7 @@ $effect(() => {
 									<span class="h-px flex-1 bg-border-primary"></span>
 								</li>
 							{/if}
-							<li class="rounded-lg border border-border-primary bg-bg-primary p-3">
+							<li>
 								<p class="text-sm text-text-secondary">
 									<span class="font-semibold text-text-primary">
 										{rule.mustBePassed
@@ -219,7 +202,7 @@ $effect(() => {
 									</span>
 									{rule.moduleLinkType === 'oder' ? m.prereq_one_of() : m.prereq_all_of()}
 								</p>
-								<ul class="mt-2 space-y-1.5">
+								<ul class="mt-1 space-y-1">
 									{#each rule.modules as moduleId}
 										{@const prerequisite = courseById.get(moduleId)}
 										<li class="flex items-start gap-2 text-sm">
@@ -227,7 +210,7 @@ $effect(() => {
 											<span class="min-w-0">
 												<span class="font-mono text-xs font-semibold text-text-secondary">{moduleId}</span>
 												{#if prerequisite}
-													<span class="block break-words text-text-primary">{courseLabel(prerequisite)}</span>
+													<span class="break-words text-text-secondary">{courseLabel(prerequisite)}</span>
 												{/if}
 											</span>
 										</li>
@@ -237,12 +220,12 @@ $effect(() => {
 						{/each}
 					</ul>
 				{:else if !course.assessmentLevelPassed}
-					<p class="mt-3 text-sm text-text-secondary">{m.prereq_none()}</p>
+					<p class="mt-2 text-sm text-text-secondary">{m.prereq_none()}</p>
 				{/if}
 			</section>
 
 			{#if prerequisiteNote}
-				<section class="mt-6 border-t border-border-primary pt-5" aria-labelledby="course-detail-note">
+				<section class="border-t border-border-primary pt-3" aria-labelledby="course-detail-note">
 					<h3 id="course-detail-note" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
 						<span class="i-lucide-info h-4 w-4 text-text-secondary" aria-hidden="true"></span>
 						{m.course_details_note()}
