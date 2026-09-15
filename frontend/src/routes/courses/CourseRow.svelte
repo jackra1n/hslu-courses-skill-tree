@@ -1,8 +1,8 @@
 <script lang="ts">
+import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import type { CatalogCourse } from '$lib/data/catalog-types';
 import { courseModuleType } from '$lib/data/course-filters';
 import { courseLabel } from '$lib/data/course-label';
-import { moduleTypeBadge } from '$lib/data/module-type';
 import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 
@@ -64,11 +64,7 @@ function seasonTitle(season: Season): string {
 			{/if}
 			<span class="mt-2 flex flex-wrap items-center gap-1.5">
 				{#if moduleType}
-					<span
-						class="rounded-md border border-border-primary bg-bg-primary px-1.5 py-0.5 text-xs font-medium text-text-secondary"
-					>
-						{moduleTypeBadge(moduleType)}
-					</span>
+					<ModuleTypeBadge type={moduleType} short />
 				{/if}
 				{#each seasons as season (season)}
 					<span

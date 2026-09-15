@@ -1,8 +1,8 @@
 <script lang="ts">
+import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { courseLabel } from '$lib/data/course-label';
 import { getCourseById } from '$lib/data/courses';
-import { moduleTypeLabel } from '$lib/data/module-type';
 import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
@@ -141,10 +141,7 @@ const seasonInfo = $derived.by(() => {
         </div>
         
         {#if displayCourse?.type}
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-100 rounded-md text-sm font-medium">
-            <div class="i-lucide-layers text-purple-600 dark:text-purple-400"></div>
-            {moduleTypeLabel(displayCourse.type)}
-          </div>
+          <ModuleTypeBadge type={displayCourse.type} />
         {/if}
       </div>
 

@@ -1,9 +1,9 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
+import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import type { AssessmentMode, CatalogCourse } from '$lib/data/catalog-types';
 import { courseModuleType } from '$lib/data/course-filters';
 import { courseLabel } from '$lib/data/course-label';
-import { moduleTypeLabel } from '$lib/data/module-type';
 import { seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 
@@ -169,7 +169,11 @@ $effect(() => {
 							{m.browser_details_type()}
 						</dt>
 						<dd class="mt-1 font-semibold text-text-primary">
-							{moduleTypeLabel(moduleType)}
+							{#if moduleType}
+								<ModuleTypeBadge type={moduleType} />
+							{:else}
+								{m.browser_details_unknown()}
+							{/if}
 						</dd>
 					</div>
 					<div class="col-span-2 rounded-lg border border-border-primary bg-bg-primary p-3">

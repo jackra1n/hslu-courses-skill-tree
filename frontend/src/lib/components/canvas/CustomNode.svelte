@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Handle, Position } from '@xyflow/svelte';
+import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import type { Course, ExtendedNodeData, TemplateSlot } from '$lib/data/courses';
-import { moduleTypeBadge } from '$lib/data/module-type';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { hasMissingPrerequisites as checkMissingPrerequisites } from '$lib/utils/status';
@@ -40,23 +40,6 @@ const hasMissingPrerequisites = $derived.by(() => {
 	}
 	return checkMissingPrerequisites(courseStore.studyPlan, id);
 });
-
-function getCourseTypeColor(type?: string): string {
-	switch (type) {
-		case 'Kernmodul':
-			return 'bg-blue-500';
-		case 'Projektmodul':
-			return 'bg-orange-500';
-		case 'Erweiterungsmodul':
-			return 'bg-green-500';
-		case 'Major-/Minormodul':
-			return 'bg-purple-500';
-		case 'Zusatzmodul':
-			return 'bg-yellow-500';
-		default:
-			return 'bg-gray-500';
-	}
-}
 
 function handleRemoveClick(event: MouseEvent) {
 	event.stopPropagation();
@@ -107,23 +90,10 @@ function handleRemoveClick(event: MouseEvent) {
   {/if}
 
   {#if nodeData.showCourseTypeBadges}
-    {#if course?.type}
+    {@const moduleType = course?.type ?? (isElectiveSlot ? 'Erweiterungsmodul' : undefined)}
+    {#if moduleType}
       <div>
-        <div
-          class="inline-block px-1.5 py-0.5 rounded-full text-xs font-medium text-white {getCourseTypeColor(
-            course.type
-          )} shadow-sm"
-        >
-          {moduleTypeBadge(course.type)}
-        </div>
-      </div>
-    {:else if isElectiveSlot}
-      <div>
-        <div
-          class="inline-block px-1.5 py-0.5 rounded-full text-xs font-medium text-white bg-gray-500 shadow-sm"
-        >
-          {moduleTypeBadge('Erweiterungsmodul')}
-        </div>
+        <ModuleTypeBadge type={moduleType} short variant="solid" />
       </div>
     {/if}
   {/if}
