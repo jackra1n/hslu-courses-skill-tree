@@ -185,6 +185,7 @@ function handleNodeClick({
 						: m.slot_course(),
 			ects: 0,
 			prerequisites: [],
+			assessmentModes: [],
 			type: slot.type === 'major' ? 'Major-/Minormodul' : 'Erweiterungsmodul',
 		};
 		uiStore.selectCourse(electiveCourse, slot.id);

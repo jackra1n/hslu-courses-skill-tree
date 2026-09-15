@@ -620,6 +620,7 @@
 			"ects": 4,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -630,6 +631,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -640,6 +642,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -658,6 +661,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -681,6 +685,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -692,6 +697,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -701,6 +707,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -712,6 +719,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "At least 120 ECTS credits achieved",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -721,6 +729,7 @@
 			"ects": 18,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -730,6 +739,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -739,6 +749,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": []
 		},
@@ -749,6 +760,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -761,6 +773,7 @@
 				{ "modules": ["ISF_MM"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -777,6 +790,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -787,6 +801,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -797,6 +812,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -807,6 +823,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -816,6 +833,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -834,6 +852,7 @@
 			],
 			"prerequisiteNote": "Krinflab kann im selben Semester besucht werden (1. Semesterhälfte).",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -857,6 +876,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -868,6 +888,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Wichtig: Kenntnisse in objektorientierter Programmierung werden vorausgesetzt! Grundkenntnisse in Unity Entwicklung sind empfohlen, vgl. Module GAMEDEV, GAME (DI) oder äquivalent.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -878,6 +899,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -888,6 +910,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -901,6 +924,7 @@
 			],
 			"prerequisiteNote": "In Ausnahmefällen können Studierende ohne den Besuch von DABS zu BIDS zugelassen werden. Entsprechende Studierende müssen sich in dem Fall selbständig und ausserhalb von BIDS die Grundlagen der Programmiersprache R erarbeiten. Studierende melden sich in dem Fall zeitnah per Email beim Dozenten mit einer Beschreibung, woher sie äquivalente Kenntnisse in R haben bzw. wie sie sich diese erarbeiten wollen.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -911,6 +935,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -920,6 +945,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": []
 		},
@@ -929,6 +955,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -940,6 +967,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Students are expected to have already studied math and programming and to be strong at both subjects (details below). However, because this module is open to so many study programs, we do not name specific modules you have to take. Instead, subject competences are listed as module requirements, the acquisition of which students can achieve by attending modules or through self-study. Sufficient qualification is the responsibility of the students themselves. If you have any questions, we are happy to offer individual advice. These are the required competencies:\n \nLinear Algebra\n+ Vectors, position vectors, vector operations\n+ Matrices as linear mappings; matrix operations\n+ Vector norm, scalar product and its interpretation as projection\n+ Cosine formula for determining the angle between vectors\n+ Determination and interpretation of eigenvectors and eigenvalues\n \nAnalysis\n+ Functions in one and more variables\n+ Continuous and convex functions\n+ Partial derivatives and gradient\n+ Visualisation e.g. contour plots\n+ Local and global minima and maxima\n \nStatistics\n+ Mean, median, variance and standard deviation\n+ Population vs. sample, Bessel correction\n+ Covariance matrix\n+ Normal distribution",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -950,6 +978,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -960,6 +989,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -970,6 +1000,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -981,6 +1012,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Module ISLAB, SPRG, INTROL, CYBER besucht von Vorteil",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -999,6 +1031,7 @@
 				{ "modules": ["DBS"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -1009,6 +1042,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1018,6 +1052,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": []
 		},
@@ -1029,6 +1064,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Achtung, Modul-Voraussetzungen gelten bei folgenden Studiengängen:\n- Informatik (Curriculum 16): Assessment-Stufe bestanden\n- Information & Cyber Security: Assessment-Stufe bestanden\n- Digital Ideation (Fokus Informatik): Assessment-Stufe bestanden",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1039,6 +1075,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -1049,6 +1086,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -1059,6 +1097,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -1069,6 +1108,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -1079,6 +1119,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -1097,6 +1138,7 @@
 			],
 			"prerequisiteNote": "Das Modul ISF wird zwingend vorausgesetzt. Das Modul D-MATH wird ebenfalls vorausgesetzt. Studierende, die das Modul D-MATH nicht belegen konnten (z.B. Studierende des BSc WI), müssen die relevanten Teile von D-MATH (Elementare Zahlentheorie I – III) vor dem Modulbeginn im Selbststudium erarbeiten. Die entsprechenden Unterlagen sind beim Modulverantwortlichen, josef.schuler@hslu.ch, erhältlich, resp. sind in Ilias hochgeladen. Die relevanten Teile von D-MATH werden in einer Präsenz im Modul in einem zügigen Tempo repetiert.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1107,6 +1149,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -1117,6 +1160,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -1136,6 +1180,7 @@
 			],
 			"prerequisiteNote": "Entrepreneurship spirit, fluent in English, willing and ready to perform far above average. Assessment level passed conditionally",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -1149,6 +1194,7 @@
 			],
 			"prerequisiteNote": "Anerkennung für Digital Ideation Studierende des 4. und 6. Semesters, die das Modul I.BA_263_STUGA2 / Studio Game 2) besucht haben. (gemäss Andres Wanner)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -1159,6 +1205,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1172,6 +1219,7 @@
 			],
 			"prerequisiteNote": "ISF, idealerweise auch ISM",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -1182,6 +1230,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -1193,6 +1242,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Students should have CEFR Level B2 as a minimum.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -1203,6 +1253,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -1213,6 +1264,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1222,6 +1274,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -1233,6 +1286,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Proven B2 Level English (passed FCE, at least IELTS Academic Band 6.0, or other equivalent)",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -1257,6 +1311,7 @@
 			],
 			"prerequisiteNote": "Frühere Studierende hatten CNA und Network. ISLAB zuvor besuchen gibt einige Vorteile, ist aber nicht Voraussetzung.\nAlle können das Modul zum Zeitpunkt des für sie relevanten Modulplans besuchen",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1274,6 +1329,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -1284,6 +1340,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -1294,6 +1351,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -1304,6 +1362,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -1315,6 +1374,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "It is recommended that students have a minimum CEFR competence of B2.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -1326,6 +1386,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Grundlagen gelesen vor Antritt der Woche, gemäss Auftrag der Dozierenden. Inhalte werden am ersten Tag summarisch geprüft.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1336,6 +1397,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -1353,6 +1415,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -1363,6 +1426,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -1373,6 +1437,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1383,6 +1448,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1396,6 +1462,7 @@
 			],
 			"prerequisiteNote": "Information Security Management ISM (erwünscht)\nInformation Security Lab ISL (erwünscht)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1407,6 +1474,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Achtung: Dieses Modul setzt die Fähigkeit voraus, kleinere Programme in einer der gängigen Programmiersprachen (Java, JavaScript, C/C++, C#, Python, etc.) schreiben und verstehen zu können.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1418,6 +1486,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Weitere Voraussetzungen:\n- Zum Auftrag passende Fachkompetenzen (vgl. bisheriger Leistungsnachweis, Berufserfahrungen, Abklärungsgespräch).\n- Genehmigter Antrag durch die Studiengangleitung des Moduls. (Dazu Email der Zielvereinbarung an die Studiengangleitung des Moduls mit CC an MV und Studiengangleitung des/r Studierenden senden.)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1442,6 +1511,7 @@
 			],
 			"prerequisiteNote": "Die Meinung ist dass eines der Programmiermodule besucht ist, wenn die Assessmentstufe nur bedingt bestanden ist.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1453,6 +1523,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Weitere Voraussetzungen:\n- Zum Auftrag passende Fachkompetenzen (vgl. bisheriger Leistungsnachweis, Berufserfahrungen, Abklärungsgespräch).\n- Genehmigter Antrag durch die Studiengangleitung des Moduls. (Dazu Email der Zielvereinbarung an die Studiengangleitung des Moduls mit CC an MV und Studiengangleitung des/r Studierenden senden.)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1463,6 +1534,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam", "oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1475,6 +1547,7 @@
 				{ "modules": ["SPREN1"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1486,6 +1559,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Grundverständnis Betriebssysteme",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1499,6 +1573,7 @@
 			],
 			"prerequisiteNote": "Information Security Lab ISL (erwünscht)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1510,6 +1585,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Students are expected to have already studied math and programming and to be strong at both subjects (details below). However, because this module is open to so many study programs, we do not name specific modules you have to take. Instead, subject competences are listed as module requirements, the acquisition of which students can achieve by attending modules or through self-study. Sufficient qualification is the responsibility of the students themselves. If you have any questions, we are happy to offer individual advice. These are the required competencies:\n \nLinear Algebra\n+ Vectors, position vectors, vector operations\n+ Matrices as linear mappings; matrix operations\n+ Vector norm, scalar product and its interpretation as projection\n+ Cosine formula for determining the angle between vectors\n+ Determination and interpretation of eigenvectors and eigenvalues\n \nAnalysis\n+ Functions in one and more variables\n+ Continuous and convex functions\n+ Partial derivatives and gradient\n+ Visualisation e.g. contour plots\n+ Local and global minima and maxima\n \nStatistics\n+ Mean, median, variance and standard deviation\n+ Population vs. sample, Bessel correction\n+ Covariance matrix\n+ Normal distribution",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1519,6 +1595,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -1529,6 +1606,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1541,6 +1619,7 @@
 				{ "modules": ["ISF_MM"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1555,6 +1634,7 @@
 				{ "modules": ["PRG"], "mustBePassed": true, "moduleLinkType": "oder", "prerequisiteLinkType": "oder" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1585,6 +1665,7 @@
 			],
 			"prerequisiteNote": "ACHTUNG (betrifft nur Studierende im Curriculum C12): Falls das Modul FITI bereits bestanden wurde, ist der Besuch von CAB nicht mehr möglich!",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -1595,6 +1676,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -1604,6 +1686,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": []
 		},
@@ -1615,6 +1698,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Wirtschaftsinformatik, Informatik C16, Information & Cyber Security:\n- sämtliche vorgängigen Projektmodule des entsprechenden Studiengangs bestanden\n- mindestens 150 ECTS erworben, davon mindestens 27 ECTS aus den Projektmodulen\n\nArtificial Intelligence & Machine Learning:\n- zusätzlich das Modul ADML bestanden",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1625,6 +1709,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1636,6 +1721,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Assessment Stufe bestanden",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -1647,6 +1733,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Es werden keine Erfahrungen mit Spieleprogrammierung oder -entwicklung benötigt.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -1657,6 +1744,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Alle Pflichtmodule des 1.– 5. Semesters sind bestanden.\nMindestens 150 ECTS liegen vor.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": []
 		},
@@ -1666,6 +1754,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -1684,6 +1773,7 @@
 			],
 			"prerequisiteNote": "Elementary programming skills in C or Python, Linux command line environment and shell scripts, networking fundamentals.\nInterested students who have not taken the “Internet of Things (IOT)” module, but think they already know the material taught in that course, please contact Prof. Dr. Angela Nicoara for enrollment.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -1693,6 +1783,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -1703,6 +1794,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1713,6 +1805,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1725,6 +1818,7 @@
 			],
 			"prerequisiteNote": "Selbstorganisiertes Arbeiten in Gruppen erforderlich.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": []
 		},
@@ -1735,6 +1829,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1745,6 +1840,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -1758,6 +1854,7 @@
 			],
 			"prerequisiteNote": "Es wird empfohlen, das Modul \"Enterprise Programming Lab\" (ENLAB) vorgängig oder gleichzeitig zu besuchen.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -1774,6 +1871,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -1785,6 +1883,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "keine Voraussetzungen",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -1795,6 +1894,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Alle Pflichtmodule des 1.– 5. Semesters sind bestanden.\nMindestens 150 ECTS liegen vor.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -1806,6 +1906,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Betreffend Studiengänge der HSLU T&A gilt: Alle Pflichtmodule der Stufe Basic bestanden.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -1816,6 +1917,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1825,6 +1927,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -1835,6 +1938,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1846,6 +1950,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Da Major-Modul, ist bestandene Assessment-Stufe zwingend",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -1855,6 +1960,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -1866,6 +1972,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Modul-Voraussetzung für Studiengänge der HSLU T&A: Alle Pflichtmodule auf Stufe Basic bestanden.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -1877,6 +1984,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "\"Lineare Algebra\" (LIAL) oder \"Informatik Mathematik\" (IMATH) wird empfohlen. \nDas Modul kann nicht zusammen mit \"Computer Vision & AI\" (CVAI) besucht werden.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1887,6 +1995,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -1903,6 +2012,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": []
 		},
@@ -1913,6 +2023,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam", "oral_exam", "electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1924,6 +2035,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Die Studierenden werden aufgrund ihrer Leistungen im Modul PTA ausgewählt und angefragt, ob sie ihre PTA-Produktidee weiterverfolgen möchten. Es soll ein erster technischer Prototyp erstellt werden.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1934,6 +2046,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1945,6 +2058,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "-\tBei den Kernmodulen mindestens 57 Credits vorliegend.\n-\tBei den Studiengängen Informatik & Wirtschaftsinformatik mindestens 24 Credits in Projektmodulen vorliegend\n-\tBeim Studiengang Information & Cyber Security mindestens 18 Credits in Projektmodulen vorliegend",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1975,6 +2089,7 @@
 			],
 			"prerequisiteNote": "Theorie und praktische Arbeitsweise im Labor:\n- INTROL (ICS)\n- CNA (I)\n- NETT (WI)\n\nTheorie:\n- ISF (ICS, I, WI)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1985,6 +2100,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -1996,6 +2112,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Programmierkenntnisse in SQL und Python\nLinux Grundkenntnisse von Vorteil",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2006,6 +2123,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Keine",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2022,6 +2140,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -2032,6 +2151,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Besuch von I.BA_161_STUPROT.16 (StudioPhysicalPrototyping) empfohlen",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -2042,6 +2162,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2052,6 +2173,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "electronic_exam", "coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -2062,6 +2184,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2072,6 +2195,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2081,6 +2205,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2098,6 +2223,7 @@
 			],
 			"prerequisiteNote": "Studio Game Design & Engineering 1\nund/oder Studio User Experience Design & Engineering 1",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -2107,6 +2233,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2116,6 +2243,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2125,6 +2253,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2136,6 +2265,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2147,6 +2277,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Grundlagenkenntnisse bezüglich Software-Erstellung, Kenntnisse einer objektorientierten Programmiersprache (z.B. Java oder Python).",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2157,6 +2288,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2167,6 +2299,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "empfohlen:\n- The History of Creative Sparks (SPARK)\n- Digital Technologies Fundamental (DIGITECH)\n- User Experience Design & Engineering (UX)",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -2177,6 +2310,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Studierende des Fokus Design müssen vor Beginn des Moduls die Einführung in die Holzwerkstatt absolviert haben.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2186,6 +2320,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": []
 		},
@@ -2203,6 +2338,7 @@
 			],
 			"prerequisiteNote": "Algorithmen & Datenstrukturen (AD) oder Algorithmic Thinking & Programming 2 (PRG2) muss vor diesem Modul, oder parallel dazu besucht werden.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2213,6 +2349,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -2223,6 +2360,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -2233,6 +2371,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2242,6 +2381,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2258,6 +2398,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2267,6 +2408,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": []
 		},
@@ -2285,6 +2427,7 @@
 			],
 			"prerequisiteNote": "Für Studierende des Studiengangs AIML gelten keine Voraussetzungen, weil dieser Studiengang PTA bzw. SPTA nicht im Curriculum führt.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2309,6 +2452,7 @@
 			],
 			"prerequisiteNote": "Das Modul \"Programmierung\" (PRG) mit mindestens der Note 5.0 bestanden; alternativ OOP bzw. PLAB bestanden.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -2326,6 +2470,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2336,6 +2481,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2346,6 +2492,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2356,6 +2503,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2373,6 +2521,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -2383,6 +2532,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -2393,6 +2543,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2403,6 +2554,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -2412,6 +2564,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": []
 		},
@@ -2423,6 +2576,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Studiengänge der HSLU T&A: Alle Pflichtmodule auf Stufe Basic bestanden.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2433,6 +2587,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2445,6 +2600,7 @@
 				{ "modules": ["DBS"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam", "written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": []
 		},
@@ -2474,6 +2630,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2484,6 +2641,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2494,6 +2652,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam", "coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2504,6 +2663,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -2513,6 +2673,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2543,6 +2704,7 @@
 			],
 			"prerequisiteNote": "ACHTUNG (betrifft nur Studierende im Curriculum C12): Falls das Modul FITI bereits bestanden wurde, ist der Besuch von CI nicht mehr möglich!",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -2572,6 +2734,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2582,6 +2745,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2592,6 +2756,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -2602,6 +2767,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2612,6 +2778,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -2622,6 +2789,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -2632,6 +2800,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2642,6 +2811,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2653,6 +2823,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Studiengang Artificial Intelligence and Machine Learning:\n• Assessement Stufe bestanden\n\nAlle anderen Studiengänge mit Assessment Stufe:\n• Assessment Stufe bestanden\n• 2 Mathematik Vorlesungen bestanden in den Themen Mathematik Grundlagen, sowie Diskrete Mathematik/Lineare Algebra\n\nAndere Studiengänge:\n• Nach Vereinbarung\n\nKenntnisse in Python Programmierung\n\nSlides and Videos in English: Please make sure you have B2 level or greater in English Language",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2664,6 +2835,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "-",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -2675,6 +2847,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Module in Programmierung und Projektmanagement besucht. \nEmpfehlungen: PRG, PROG, OOP, PLAB, ADS, PMB, FKOM",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -2692,6 +2865,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2703,6 +2877,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Für T&A-Maschinentechnik Studierende die Moduleingangsbedingung ist, dass Lineare Regelungssysteme (LRS) bestanden sein muss, vor das Modul ROBO besucht werden kann.\nFür T&A-Digital Engineering Studierende die Moduleingangsbedingung ist, dass Lineare Regelungssysteme (LRS) bestanden sein muss, und beide PYTHON & LINALG bestanden sein müssen, vor das Modul ROBO besucht werden kann.\n\nAIML-Bachelor-Studierende können anstelle dieses ROBO-Moduls das Modul AROB Angewandte Robotik an der T&A in Horw belegen. Sie müssen mindestens das eine oder das andere belegen. Sie können aber auch beide besuchen (in verschiedenen Semestern)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2712,6 +2887,7 @@
 			"ects": 30,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -2722,6 +2898,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -2734,6 +2911,7 @@
 				{ "modules": ["PROG_MM"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2744,6 +2922,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -2753,6 +2932,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": []
 		},
@@ -2763,6 +2943,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Module in Programmierung (z.B. PRG, OOP) und Projektmanagement besucht.\n\nHinweis: AI/ML-Studierende können (IIP1 & IIP2) mit dem Schwerpunkt IT und Data Science ODER (IPREN1 & IPREN2) mit dem Schwerpunkt Robotik, IOT und eingebettete Systeme belegen. Es ist jedoch nicht erlaubt, sowohl IIP als auch IPREN zu belegen.\n\n\nNote: AI/ML Students can take (IIP1 & IIP2) with  a focus on IT and data science   OR  (IPREN1 & IPREN2)  with a focus on robotics, IOT and embedded systems. However, it is not allowed to take both IIP and IPREN.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -2792,6 +2973,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -2802,6 +2984,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2819,6 +3002,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2832,6 +3016,7 @@
 			],
 			"prerequisiteNote": "Grundkenntnisse in\n- Modulo-Arithmetik, bspw. 5 modulo 3 = 2\n- Python",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2842,6 +3027,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2853,6 +3039,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Keine",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -2866,6 +3053,7 @@
 			],
 			"prerequisiteNote": "Der vorgängige Besuch des Moduls «Applikationsentwicklung» (APPE) oder des Moduls \"Software Development & Architecture\" (SWDA) wird empfohlen.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2876,6 +3064,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -2885,6 +3074,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -2895,6 +3085,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -2905,6 +3096,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -2915,6 +3107,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -2925,6 +3118,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -2936,6 +3130,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Basiskenntnisse in Computerarchitektur und C Programmierung sind empfohlen oder koennen waehrend des Moduls erworben werden.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2945,6 +3140,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -2955,6 +3151,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -2965,6 +3162,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -2975,6 +3173,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -2985,6 +3184,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -2995,6 +3195,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -3007,6 +3208,7 @@
 				{ "modules": ["CYBER"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3018,6 +3220,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Students are recommended to have taken previous classes on Linear Algebra, Applied Statistics, and Python Programming. While not compulsory, students who take these modules prior to ARINT will find the material more accessible.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -3029,6 +3232,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "It is recommended that students have a minimum CEFR competence of B2.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3039,6 +3243,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -3049,6 +3254,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -3066,6 +3272,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -3076,6 +3283,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -3100,6 +3308,7 @@
 			],
 			"prerequisiteNote": "Dieses Modul legt einen starken Fokus auf Algorithmen und Datenstrukturen. Weiter sollten die Teilnehmenden bereits einiges an Programmiererfahrung mitbringen, d.h. ein Besuch gegen Ende des Studiums ist von Vorteil.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -3110,6 +3319,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -3120,6 +3330,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3130,6 +3341,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -3142,6 +3354,7 @@
 				{ "modules": ["ISF_MM"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -3152,6 +3365,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3162,6 +3376,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3173,6 +3388,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Networking fundamentals, basics on systems programming, familiarity with C programming, debugging, Linux command line, shell scripts, basic crypto protocols.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3205,6 +3421,7 @@
 			],
 			"prerequisiteNote": "Kenntnisse gemäss REVE1",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3215,6 +3432,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3225,6 +3443,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -3236,6 +3455,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Die Grundlagen der Computerarchitektur und des Programmierens in C werden vorausgesetzt oder können während der Blockwoche erworben werden.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam", "electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3246,6 +3466,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -3255,6 +3476,7 @@
 			"ects": 2,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": []
 		},
@@ -3266,6 +3488,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Wichtig: Kenntnisse in objektorientierter Programmierung werden vorausgesetzt! Grundkenntnisse in Unity Entwicklung sind empfohlen, vgl. Module GAMEDEV, GAME (DI) oder äquivalent.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3277,6 +3500,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "WICHTIG:\n- Es werden Kompetenzen entsprechend dem Modul \"Web-Technologien\" (WEBT) vorausgesetzt.\n- Weiter wird der vorgängige Besuch des Moduls \"Software Development & Architecture \" (SWDA) sehr empfohlen, vormals APPE oder SWDE.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3286,6 +3510,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3295,6 +3520,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3304,6 +3530,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3314,6 +3541,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -3324,6 +3552,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -3334,6 +3563,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -3343,6 +3573,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3360,6 +3591,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3370,6 +3602,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "keine voraussgesetzten Module empfohlen",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3379,6 +3612,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3390,6 +3624,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Studiengang Digital Ideation (Fokus Informatik): 1. und 2. Semester erfolgreich bestanden.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3400,6 +3635,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -3409,6 +3645,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3418,6 +3655,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3430,6 +3668,7 @@
 				{ "modules": ["MOBPRO"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3439,6 +3678,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3448,6 +3688,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3457,6 +3698,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3475,6 +3717,7 @@
 			],
 			"prerequisiteNote": "PRG mit mindestens der Note 5 abgeschlossen, anstelle von OOP bzw. PLAB.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3485,6 +3728,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Englischkenntnisse auf Niveau des Moduls „English-Booster“ sind sehr empfehlenswert.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3494,6 +3738,7 @@
 			"ects": 12,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3504,6 +3749,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -3513,6 +3759,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3522,6 +3769,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3531,6 +3779,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3541,6 +3790,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3551,6 +3801,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -3560,6 +3811,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3571,6 +3823,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Studiengänge HSLU T&A: Alle Pflichtmodule auf Stufe Basic bestanden.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -3582,6 +3835,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Grundkenntnisse in HTML5, CSS, JS erforderlich",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3591,6 +3845,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3600,6 +3855,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3610,6 +3866,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3621,6 +3878,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Familiarity with C programming, Linux command line, shell scripts, networking fundamentals.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -3631,6 +3889,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Studierende engagieren sich im Rahmen des Studienganges in Form eines Projektes mit sozialen Aspekten (z. B. Betreuung ausländischer Studierender, Studierendenakquisition, Durchführung einer Exkursion oder eines Events, Aufbau einer Website oder von Social Media):\n-\tDie Projektidee muss vorgängig bei der Studiengangleitung eingegeben und von dieser bewilligt werden.\n-\tAlle Pflichtmodule auf Stufe Basic besucht.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": []
 		},
@@ -3641,6 +3900,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -3651,6 +3911,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -3661,6 +3922,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -3670,6 +3932,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3680,6 +3943,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3690,6 +3954,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3699,6 +3964,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3717,6 +3983,7 @@
 			],
 			"prerequisiteNote": "Das Modul \"Programmierung\" (PRG) mit mindestens der Note 5.0 bestanden; alternativ OOP bzw. PLAB bestanden.\nGrundlegende Programmierkenntnisse und -erfahrungen werden vorausgesetzt, bzw. ansonsten die Bereitschaft, sich diese parallel zum Modul anzueignen.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -3746,6 +4013,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -3755,6 +4023,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3765,6 +4034,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Bei Bedarf schlagen modulverantwortliche Dozierende geeignete und interessierte Studierende der Studiengangleitung vor.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": []
 		},
@@ -3782,6 +4052,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -3801,6 +4072,7 @@
 			],
 			"prerequisiteNote": "Achtung: Im Falle von PRG muss dieses Modul mindesten mit der Note 5 bestanden sein!\nFachliche Voraussetzungen: Gute Kenntnisse und praktische Erfahrung in objektorientierter Programmierung mit Java sind erforderlich.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -3812,6 +4084,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Zur Zulassung zu diesem Modul muss ein Assessment erfolgreich absolviert werden. Informationen zu diesem Assessment werden interessierten Studierenden vor der ersten Semesterwoche bekanntgegeben.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3821,6 +4094,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -3830,6 +4104,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3841,6 +4116,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Basic knowledge of math and statistics; good command of written and spoken English; students will practice to use the terminology in German and English and flexibly switch between both\n\nRequirements for Computer Science:\n- Core module \"Analysis\" (ANLIS) or core module \"Mathematics Basics\" (MATH) passed.\n- Core module \"Applied Statistics for Data Science\" (ASTAT) passed.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3853,6 +4129,7 @@
 				{ "modules": ["ADML_MM"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3863,6 +4140,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Muss im gleichen Semester oder in einem späterem Semester wie CVAI besucht werden. (d.h. nicht vor CVAI)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -3874,6 +4152,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "WI: Passed assessment level & Modul Datenmanagement (I.BA_DAMA.17)\nI: Passed assessment level & Modul Datenbanksysteme (I.BA_DBS.17)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3885,6 +4164,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Voraussetzungen: In Anlehnung an die Ausschreibung des ausländischen Veranstalters bzw. der ausländischen Hochschule.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3895,6 +4175,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3905,6 +4186,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3915,6 +4197,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -3927,6 +4210,7 @@
 				{ "modules": ["APPLAI"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3937,6 +4221,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3947,6 +4232,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3957,6 +4243,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -3968,6 +4255,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Module in Programmierung und Projektmanagement besucht. \nEmpfehlungen: PRG, PROG, OOP, PLAB, ADS, PMB, FKOM",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -3978,6 +4266,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -3989,6 +4278,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Students joining this module should have proven level C1 in English.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -3999,6 +4289,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -4009,6 +4300,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -4019,6 +4311,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -4030,6 +4323,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "decent knowledge of descriptive statistics (ASTA1)",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -4040,6 +4334,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4053,6 +4348,7 @@
 			],
 			"prerequisiteNote": "Ein vorgängiger oder paralleler Besuch der Vorlesung ADPENTEST ist empfehlenswert, aber nicht Bedingung.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4064,6 +4360,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Der Stoff der kaufmännischen Berufsmaturität wird vorausgesetzt.\nParallel zu MAT1 erhalten Sie Zugang zum digitalen Begleitkurs Mathematik. Damit können Sie im eigenen Tempo die Voraussetzungen (Stoff der Berufsmaturität) repetieren.\nEin erster Einblick in den digitalen Begleitkurs:\nhttps://education.doandbe.ch/mathe-digital/info\n\nWeitere Möglichkeiten:\nSelbstevaluation ganz unten auf der verlinkten Seite:\nhttps://www.hslu.ch/de-ch/wirtschaft/studium/bachelor/business-administration/zulassung/#vorbereitungskurse\nSelbstständige Repetition: https://emath.hslu.ch/ → Vorkenntnisse Berufsmatura:\nhttps://emath.hslu.ch/functions/index.php?target=crs_de_90_Vorkenntnisse%20Berufsmatura",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4075,6 +4372,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Vorkenntnisse in JAVA und Verständnis von Scripting sind von Vorteil",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4087,6 +4385,7 @@
 				{ "modules": ["SPTA"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4096,6 +4395,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": []
 		},
@@ -4106,6 +4406,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -4117,6 +4418,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Meistens wird MAT2 ein oder zwei Semester nach dem Grundlagenmodul Mathematik (Kernmodul) des jeweiligen Studiengangs besucht.\nDer Besuch von MAT2 parallel zu zum entsprechenden Kernmodul ist insbesondere für Studierende mit Vorkenntnissen in Differentialrechnung möglich.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4141,6 +4443,7 @@
 			],
 			"prerequisiteNote": "Systems & Security oder ähnliche Vorkenntnisse",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -4151,6 +4454,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Bedingt eine einschlägige berufliche Anstellung im Umfang von mindestens 40 Stellenprozenten in einem einschlägigen Berufsumfeld.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -4162,6 +4466,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Der erste Wochen-Block entspricht dem Modul IPCV und wird zusammen mit IPCV durchgeführt. Studierende ausserhalb des Studiengangs AI&ML können nur entweder CVAI (6 ECTS) oder IPCV (3 ECTS) belegen. Studierende die bereits IPCV besucht haben, können CVAI nicht besuchen. Lineare Algebra oder Informatik Mathematik wird empfohlen.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4172,6 +4477,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4190,6 +4496,7 @@
 			],
 			"prerequisiteNote": "This is a block module which happens at the end of the Semester. Therefore, it can be taken in the same semester as ADML or ML (which are prerequisites).\n\nDies ist ein Blockmodul, das am Ende des Semesters stattfindet. Daher kann es im selben Semester wie ADML oder ML (die Voraussetzung sind) belegt werden.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -4200,6 +4507,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4211,6 +4519,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -4222,6 +4531,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "FRW Vorkenntnisse auf Stufe Abschluss kaufmännische BM oder Modul I.BA_ACBA.16",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4241,6 +4551,7 @@
 			],
 			"prerequisiteNote": "Es ist empfohlen NETW1 zuerst zu besuchen. Inf Studierende können mit CNA teilnehmen, aber sie müssen wesentliche Teile von NETW1 nacharbeiten, ausser sie haben darin Praxiserfahrung.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4252,6 +4563,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Personal application including CV required. Deadline March 31st 2025. There is a cap of 20 students. Allocation is on a first come, first served basis.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -4262,6 +4574,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -4282,6 +4595,7 @@
 			],
 			"prerequisiteNote": "Voraussetzung für das Modul ist, dass die Assessmentstufe erreicht wurde. \nEs wird empfohlen, als Voraussetzung die Module NETW1 und NETW2 oder alternativ CNA oder OSA besucht zu haben.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4292,6 +4606,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -4302,6 +4617,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -4313,6 +4629,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Teilnahme ab 3. Semester.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -4322,6 +4639,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -4332,6 +4650,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4343,6 +4662,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Beherrschen des Mathematikstoffes einer tech. BM. ggf. ist der Besuch des Mathematik-Vorkurses der HSLU T&A empfohlen (zu geringe Punktzahl im Assessment) oder obligatorisch (z.B. kaufmännische BM).",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4353,6 +4673,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4371,6 +4692,7 @@
 			],
 			"prerequisiteNote": "Programming in Python and Machine Learning basics are necessary for successful completion",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -4385,6 +4707,7 @@
 				{ "modules": ["PLAB"], "mustBePassed": true, "moduleLinkType": "oder", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4395,6 +4718,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -4405,6 +4729,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -4423,6 +4748,7 @@
 			],
 			"prerequisiteNote": "Beachte: Es werden Unity-Kenntnisse vorausgesetzt!\n\nPräzisierung betreffend Modulvoraussetzungen:\n- Die Studiengänge Informatik und Wirtschaftsinformatik setzen das Modul \"GAMEDEV\" voraus.\n- Der Studiengang Digital Ideation setzt das Modul \"113_GAME\" voraus.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -4433,6 +4759,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4443,6 +4770,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4454,6 +4782,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Das Modul setzt Mathematik auf Stufe der technischen Berufsmaturität voraus",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4465,6 +4794,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Passed all compulsory modules at the home university and at least 24 ECTS credits at the partner university.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -4475,6 +4805,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4485,6 +4816,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -4496,6 +4828,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Englischkenntnisse auf Niveau des Moduls „English-Booster“ sind sehr empfehlenswert.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4506,6 +4839,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4516,6 +4850,7 @@
 			"ects": 12,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -4526,6 +4861,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4536,6 +4872,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -4546,6 +4883,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4557,6 +4895,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "None",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4567,6 +4906,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4577,6 +4917,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4595,6 +4936,7 @@
 			],
 			"prerequisiteNote": "Bei guten statistischen Vorkenntnissen wäre ein Besuch von ASTAT und ASTATF im gleichen Semester nach vorgängiger Absprache möglich.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4605,6 +4947,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -4615,6 +4958,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -4626,6 +4970,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Vorgängiger Besuch von I.BA_132_4DAUT.22 (4D Authoring) (für Fokus Informatik) oder DK.BA_DI_152_COMGD.22 (Computer Graphics Design) für Fokus Design empfohlen",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -4636,6 +4981,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4647,6 +4993,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Studierende engagieren sich im Rahmen des Studienganges in Form eines Projektes mit sozialen Aspekten (z. B. Betreuung ausländischer Studierender, Studierendenakquisition, Durchführung einer Exkursion oder eines Events, Aufbau einer Website oder von Social Media):\n-\tDie Projektidee muss vorgängig bei der Studiengangleitung eingegeben und von dieser bewilligt werden.\n-\tAlle Pflichtmodule auf Stufe Basic besucht.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4657,6 +5004,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4668,6 +5016,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Work through the foundations of the syllabus for this module in self-study with the following core reading (chapters 1 to 5):   “Doing Agile Right - Transformation Without Chaos”; Darrell Rigby, Sarah Elk, Steve Berez, 2020   EAN: 9781633698703; ISBN: 978-1-63369-870-3",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -4679,6 +5028,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Students are recommended to have taken previous classes on Linear Algebra, Applied Statistics, and Python Programming. While not compulsory, students who had taken these modules prior to ARTIFIN will find the material more accessible.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4690,6 +5040,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -4700,6 +5051,7 @@
 			"ects": 12,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4711,6 +5063,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "keine voraussgesetzten Module empfohlen",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4721,6 +5074,7 @@
 			"ects": 12,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -4735,6 +5089,7 @@
 				{ "modules": ["PRG"], "mustBePassed": false, "moduleLinkType": "oder", "prerequisiteLinkType": "oder" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4745,6 +5100,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4756,6 +5112,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Optional NETW1 und NETW2, Optional MOBILSEC",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4766,6 +5123,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -4776,6 +5134,7 @@
 			"ects": 12,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -4787,6 +5146,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "AI/ML-Studierende müssen das Assessment Level (bedingt) bestanden haben\nAndere Studierende müssen mindestens 6 Credits in Mathematik auf Assessment-Level bestanden haben",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4797,6 +5157,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4807,6 +5168,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4817,6 +5179,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -4828,6 +5191,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Work through the foundations of the syllabus for this module in self-study with the following core reading:  “Project Management: A Systems Approach to Planning, Scheduling, and Controlling”; Harold Krezner, 2022; Chapters 1 - 3 EAN 1119805376; ISBN: 978-1119805373",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -4838,6 +5202,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4848,6 +5213,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -4858,6 +5224,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -4868,6 +5235,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4878,6 +5246,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4889,6 +5258,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "keine Vorkenntnisse nötig",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4899,6 +5269,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4909,6 +5280,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -4919,6 +5291,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -4928,6 +5301,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -4938,6 +5312,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -4948,6 +5323,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -4958,6 +5334,7 @@
 			"ects": 9,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -4969,6 +5346,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Artificial Intelligence and Machine Learning Bachelor Students must have passed the assessment level\nAll other students must have taken the 3 credit module Machine Learning (ML_MM) before taking AISUS\n\nThere is a requirement to do pre-reading before attending the first day of the block week. This will be circulated 3 weeks in advance.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -4979,6 +5357,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -4990,6 +5369,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Reading for the foundations in self-study (chapters 1 to 5): \"Mastering Digital Business\", Nicholas D. Evans, 2017, EAN: 97817801734; ISBN 1780173458",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -5002,6 +5382,7 @@
 				{ "modules": ["PRG"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5012,6 +5393,7 @@
 			"ects": 9,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -5022,6 +5404,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5032,6 +5415,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -5042,6 +5426,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -5056,6 +5441,7 @@
 			],
 			"prerequisiteNote": "ACHTUNG, wichtiger Hinweis:\n- Für die BSc Informatik Studienjahrgänge \"FS21 und älter\" fungiert SWDA als Erweiterungsmodul oder als Majormodul zum Major \"Software Development\" (Nachfolge-Modul von APPE).\n- Für die BSc Informatik Studienjahrgänge \"HS21 und jünger\" ist SWDA ein Kernmodul und wird von allen Studierenden besucht.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5066,6 +5452,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -5077,6 +5464,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Alle Pflichtmodule des 1.– 5. Semesters sind bestanden.\nMindestens 150 ECTS liegen vor.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -5087,6 +5475,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5097,6 +5486,7 @@
 			"ects": 9,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -5107,6 +5497,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5118,6 +5509,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Alle Pflichtmodule des 1.– 5. Semesters sind bestanden.\nMindestens 150 ECTS liegen vor.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5129,6 +5521,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "English knowledge level intermediate or above is mandatory (at least B1 level)\n\nFor Students of the T&A: At time of signing up - one of the following Project Modules has to be completed and passed: PDP1, PDP2, PREN1 or PREN2",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -5139,6 +5532,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -5149,6 +5543,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -5166,6 +5561,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5176,6 +5572,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -5194,6 +5591,7 @@
 			],
 			"prerequisiteNote": "Algorithmen & Datenstrukturen (AD) oder Algorithmic Thinking & Programming 2 (PRG2) muss vor diesem Modul, oder parallel dazu besucht werden.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5204,6 +5602,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5215,6 +5614,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "empfohlen:\n- The History of Creative Sparks (SPARK)\n- Digital Technologies Fundamental (DIGITECH)\n- User Experience Design & Engineering (UX)",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -5226,6 +5626,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "keine",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5237,6 +5638,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Studierende des Fokus Design müssen vor Beginn des Moduls die Einführung in die Holzwerkstatt absolviert haben.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5247,6 +5649,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5257,6 +5660,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5267,6 +5671,7 @@
 			"ects": 2,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -5277,6 +5682,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Keine",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": []
 		},
@@ -5288,6 +5694,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Besuch von I.BA_161_STUPROT.16 (StudioPhysicalPrototyping) empfohlen",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -5297,6 +5704,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": []
 		},
@@ -5306,6 +5714,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -5315,6 +5724,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -5324,6 +5734,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -5333,6 +5744,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": []
 		},
@@ -5342,6 +5754,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -5351,6 +5764,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -5363,6 +5777,7 @@
 				{ "modules": ["PMB"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -5372,6 +5787,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -5382,6 +5798,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -5392,6 +5809,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -5402,6 +5820,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5412,6 +5831,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5422,6 +5842,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam", "coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5434,6 +5855,7 @@
 				{ "modules": ["BCHAIN"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -5444,6 +5866,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam", "electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5455,6 +5878,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Programmierkenntnisse in einer objektorientierten Sprache sind empfohlen.\nBesuchtes Modul Lineare Algebra (LIAL_MM) ist empfohlen, aber keine Voraussetzung.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5473,6 +5897,7 @@
 			],
 			"prerequisiteNote": "Students should be proficient in Python and at least one ML framework (PyTorch, TensorFlow).",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5483,6 +5908,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5500,6 +5926,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -5517,6 +5944,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -5527,6 +5955,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -5536,6 +5965,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -5547,6 +5977,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Bedingt eine einschlägige berufliche Anstellung im Umfang von mindestens 40 Stellenprozenten in einem einschlägigen Berufsumfeld.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5557,6 +5988,7 @@
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -5567,6 +5999,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -5585,6 +6018,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5595,6 +6029,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -5605,6 +6040,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -5615,6 +6051,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -5624,6 +6061,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -5634,6 +6072,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -5643,6 +6082,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -5652,6 +6092,7 @@
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -5661,6 +6102,7 @@
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -5670,6 +6112,7 @@
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -5679,6 +6122,7 @@
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -5688,6 +6132,7 @@
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": {},
 			"seasons": []
 		},
@@ -5698,6 +6143,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -5707,6 +6153,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": []
 		},
@@ -5717,6 +6164,7 @@
 			"ects": 45,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -5727,6 +6175,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -5737,6 +6186,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5747,6 +6197,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -5758,6 +6209,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Interesse an Startups und Gründung eines eigenen Unternehmens",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -5768,6 +6220,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -5778,6 +6231,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5788,6 +6242,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -5798,6 +6253,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5808,6 +6264,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5818,6 +6275,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -5828,6 +6286,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5840,6 +6299,7 @@
 				{ "modules": ["ANLIS"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5850,6 +6310,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -5860,6 +6321,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -5878,6 +6340,7 @@
 			],
 			"prerequisiteNote": "Basic knowledge of Machine Learning (ML) and good Python programming skills are expected.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -5895,6 +6358,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5905,6 +6369,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5915,6 +6380,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -5925,6 +6391,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -5936,6 +6403,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Der Vorgängige Besuch von DFF (MSF) oder mindestens eines Cloud-Modules (MSC) ist empfohlen, jedoch nicht zwingend.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -5946,6 +6414,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -5964,6 +6433,7 @@
 			],
 			"prerequisiteNote": "Python or C++ programming skills are required (depending on which task a group chooses).\nSome knowledge about ROS is necessary.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -5976,6 +6446,7 @@
 				{ "modules": ["OOP"], "mustBePassed": true, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -5989,6 +6460,7 @@
 			],
 			"prerequisiteNote": "ISF, idealerweise auch ISM",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -5999,6 +6471,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -6009,6 +6482,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6019,6 +6493,7 @@
 			"ects": 30,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6036,6 +6511,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -6046,6 +6522,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -6058,6 +6535,7 @@
 				{ "modules": ["ANA-G"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "und" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6068,6 +6546,7 @@
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -6078,6 +6557,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6089,6 +6569,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Students must have taken (or be taking) PROG or another Python module.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6100,6 +6581,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Nur Studierende des 1. und 2. Semesters sind zum Modul zugelassen.\nOnly students in the 1st and 2nd semesters are allowed to enroll in the module.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6110,6 +6592,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6120,6 +6603,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -6130,6 +6614,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6148,6 +6633,7 @@
 			],
 			"prerequisiteNote": "This is a block module which happens at the end of the Semester. Therefore, it can be taken in the same semester as ADML (which is a prerequisite).\n\nDies ist ein Blockmodul, das am Ende des Semesters stattfindet. Daher kann es im selben Semester wie ADML (die Voraussetzung ist) belegt werden.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -6158,6 +6644,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -6168,6 +6655,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -6178,6 +6666,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -6195,6 +6684,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -6205,6 +6695,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -6216,6 +6707,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "-",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -6226,6 +6718,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6236,6 +6729,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6246,6 +6740,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6257,6 +6752,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Es werden keine Erfahrungen mit Spieleprogrammierung oder -entwicklung benötigt.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6267,6 +6763,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6277,6 +6774,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6288,6 +6786,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "- Basic statistics and probability theory\n- Python programming\n\nRecommended preparatory module:\n- ASTAT_MM Applied Statistics for Data Science",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -6299,6 +6798,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "ACHTUNG! Studierende mit Major HCID müssen das Modul HCDE (6ECTS) besuchen und nicht dieses Modul (HCD)!",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6310,6 +6810,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Für T&A-Maschinentechnik Studierende die Moduleingangsbedingung ist, dass Lineare Regelungssysteme (LRS) bestanden sein muss, vor das Modul ROBO besucht werden kann.\nFür T&A-Digital Engineering Studierende die Moduleingangsbedingung ist, dass Lineare Regelungssysteme (LRS) bestanden sein muss, und beide PYTHON & LINALG bestanden sein müssen, vor das Modul ROBO besucht werden kann.\n\nAIML-Bachelor-Studierende können anstelle dieses ROBO-Moduls das Modul AROB Angewandte Robotik an der T&A in Horw belegen. Sie müssen mindestens das eine oder das andere belegen. Sie können aber auch beide besuchen (in verschiedenen Semestern)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework", "coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6320,6 +6821,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -6330,6 +6832,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6340,6 +6843,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -6350,6 +6854,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -6360,6 +6865,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6371,6 +6877,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Recommended to have B2 in English",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -6381,6 +6888,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6399,6 +6907,7 @@
 			],
 			"prerequisiteNote": "OOPCREA visited",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -6409,6 +6918,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -6419,6 +6929,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -6443,6 +6954,7 @@
 			],
 			"prerequisiteNote": "besucht",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -6453,6 +6965,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6463,6 +6976,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6473,6 +6987,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6486,6 +7001,7 @@
 				{ "modules": ["ANLS"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "oder" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6497,6 +7013,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Interesse am Entwurf und der Diskussion von Zukunftsgeschichten und an spekulativen Formen der Koexistenz von Mensch und Maschine wird vorausgesetzt.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS"]
 		},
@@ -6507,6 +7024,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -6517,6 +7035,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -6527,6 +7046,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -6545,6 +7065,7 @@
 			],
 			"prerequisiteNote": "T&A students who wish to take this MEDTECH module, must have previously attended ADML (Advanced Machine Learning at HSLU Informatik)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam", "coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -6555,6 +7076,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -6565,6 +7087,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6575,6 +7098,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -6592,6 +7116,7 @@
 				}
 			],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -6602,6 +7127,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -6613,6 +7139,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Assessment level completed, B2 level in English",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -6630,6 +7157,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6641,6 +7169,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "decent knowledge of descriptive statistics STCSB",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -6659,6 +7188,7 @@
 			],
 			"prerequisiteNote": "besucht",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -6677,6 +7207,7 @@
 			],
 			"prerequisiteNote": "besucht",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -6687,6 +7218,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS"]
 		},
@@ -6698,6 +7230,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Elementary programming skills in C or Python, Linux command line environment and shell scripts, networking fundamentals.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS"]
 		},
@@ -6708,6 +7241,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6718,6 +7252,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -6728,6 +7263,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6738,6 +7274,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -6748,6 +7285,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -6758,6 +7296,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -6769,6 +7308,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Students are expected to have already studied math and programming and to be strong at both subjects (details below). However, because this module is open to so many study programs, we do not name specific modules you have to take. Instead, subject competences are listed as module requirements, the acquisition of which students can achieve by attending modules or through self-study. Sufficient qualification is the responsibility of the students themselves. If you have any questions, we are happy to offer individual advice. These are the required competencies:\n \nLinear Algebra\n+ Vectors, position vectors, vector operations\n+ Matrices as linear mappings; matrix operations\n+ Vector norm, scalar product and its interpretation as projection\n+ Cosine formula for determining the angle between vectors\n+ Determination and interpretation of eigenvectors and eigenvalues\n \nAnalysis\n+ Functions in one and more variables\n+ Continuous and convex functions\n+ Partial derivatives and gradient\n+ Visualisation e.g. contour plots\n+ Local and global minima and maxima\n \nStatistics\n+ Mean, median, variance and standard deviation\n+ Population vs. sample, Bessel correction\n+ Covariance matrix\n+ Normal distribution",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6779,6 +7319,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS"]
 		},
@@ -6789,6 +7330,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6799,6 +7341,7 @@
 			"ects": 1,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6816,6 +7359,7 @@
 				}
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -6826,6 +7370,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -6836,6 +7381,7 @@
 			"ects": 15,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -6846,6 +7392,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6856,6 +7403,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6867,6 +7415,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "None",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -6877,6 +7426,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6887,6 +7437,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6897,6 +7448,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6907,6 +7459,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6917,6 +7470,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6927,6 +7481,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6937,6 +7492,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["oral_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["HS"]
 		},
@@ -6947,6 +7503,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -6958,6 +7515,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Bedingt eine einschlägige berufliche Anstellung im Umfang von mindestens 40 Stellenprozenten in einem Berufsumfeld entsprechend den zentralen Lernzielen der Bachelorausbildung des jeweiligen Studiengangs (vgl. Kompetenzen-Nachweis: offizielle Arbeitsbestätigung).\nDie Module BPRAXIS_1 bis _3 sind aufbauend organisiert. Der Einstieg ist aber auch bei _2 oder _3 direkt möglich. Wer plant mehrere BPRAXIS-Module zu absolvieren sollte bei _1 starten. Wer nur eines (bzw. das letzte Mal ein BPRAXIS-Modul absolviert) kann auch direkt das _3 absolvieren.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -6982,6 +7540,7 @@
 			],
 			"prerequisiteNote": "besucht",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		},
@@ -6992,6 +7551,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7003,6 +7563,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Bedingt eine einschlägige berufliche Anstellung im Umfang von mindestens 40 Stellenprozenten in einem Berufsumfeld entsprechend den zentralen Lernzielen der Bachelorausbildung des jeweiligen Studiengangs (vgl. Kompetenzen-Nachweis: offizielle Arbeitsbestätigung).\nDie Module BPRAXIS_1 bis _3 sind aufbauend organisiert. Der Einstieg ist aber auch bei _2 oder _3 direkt möglich. Wer plant mehrere BPRAXIS-Module zu absolvieren sollte bei _1 starten. Wer nur eines (bzw. das letzte Mal ein BPRAXIS-Modul absolviert) kann auch direkt das _3 absolvieren.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["electronic_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7016,6 +7577,7 @@
 				{ "modules": ["ANLS"], "mustBePassed": false, "moduleLinkType": "und", "prerequisiteLinkType": "oder" }
 			],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7026,6 +7588,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -7036,6 +7599,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -7046,6 +7610,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -7056,6 +7621,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7066,6 +7632,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -7076,6 +7643,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -7086,6 +7654,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "electronic_exam", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -7096,6 +7665,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7106,6 +7676,7 @@
 			"ects": 8,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS"]
 		},
@@ -7116,6 +7687,7 @@
 			"ects": 2,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7126,6 +7698,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7136,6 +7709,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["HS"]
 		},
@@ -7161,6 +7735,7 @@
 			],
 			"prerequisiteNote": "Für Studierende mit Studienbeginn FS 24 oder früher gilt DMATH bestanden.",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Major-/Minormodul", "FS": "Major-/Minormodul", "default": "Major-/Minormodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7171,6 +7746,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -7182,6 +7758,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Grundkenntnisse im Bereich Reverse Engineering und Malware-Analyse sind empfohlen, beispielsweise durch Erfahrung mit x86-Assembler und Tools wie IDA, Ghidra oder Binary Ninja. Erfahrung in systemnaher Programmierung (Assembler, C) ist ebenfalls hilfreich",
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -7193,6 +7770,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Runs as E-modul for AI/ML in HS25.\nRuns as K-modul for AI/ML after that.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7203,6 +7781,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -7213,6 +7792,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7231,6 +7811,7 @@
 			],
 			"prerequisiteNote": "Für Studierende mit Studienbeginn FS 24 oder früher gilt, dass KRYPTO_MM bestanden sein muss.\nFür Studierende mit Studienbeginn HS 24 oder später gilt, dass KRYPTOGM bestanden sein muss.\n\nTODO: add \"or KRYPTOGM\"",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7241,6 +7822,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["HS"]
 		},
@@ -7251,6 +7833,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["electronic_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7261,6 +7844,7 @@
 			"ects": 6,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7272,6 +7856,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "Bedingt eine einschlägige berufliche Anstellung im Umfang von mindestens 40 Stellenprozenten in einem Berufsumfeld entsprechend den zentralen Lernzielen der Bachelorausbildung des jeweiligen Studiengangs (vgl. Kompetenzen-Nachweis: offizielle Arbeitsbestätigung).\nDie Module BPRAXIS_1 bis _3 sind aufbauend organisiert. Der Einstieg ist aber auch bei _2 oder _3 direkt möglich. Wer plant mehrere BPRAXIS-Module zu absolvieren sollte bei _1 starten. Wer nur eines (bzw. das letzte Mal ein BPRAXIS-Modul absolviert) kann auch direkt das _3 absolvieren.",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "electronic_exam"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7283,6 +7868,7 @@
 			"prerequisites": [],
 			"prerequisiteNote": "This module is intended for students who have completed at least two semesters at HSLU-I. Students will need to communicate in English throughout the module so must be comfortable speaking English and communicating informally in English. (A level of B2 and upwards is recommended.)",
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -7293,6 +7879,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework", "coursework", "oral_exam"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["HS"]
 		},
@@ -7303,6 +7890,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["oral_exam", "coursework"],
 			"typeByPlanSeason": { "HS": "Erweiterungsmodul", "FS": "Erweiterungsmodul", "default": "Erweiterungsmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7313,6 +7901,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["written_exam"],
 			"typeByPlanSeason": { "HS": "Kernmodul", "FS": "Kernmodul", "default": "Kernmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7323,6 +7912,7 @@
 			"ects": 2,
 			"prerequisites": [],
 			"assessmentLevelPassed": false,
+			"assessmentModes": ["coursework"],
 			"typeByPlanSeason": { "HS": "Zusatzmodul", "FS": "Zusatzmodul", "default": "Zusatzmodul" },
 			"seasons": ["FS", "HS"]
 		},
@@ -7333,6 +7923,7 @@
 			"ects": 3,
 			"prerequisites": [],
 			"assessmentLevelPassed": true,
+			"assessmentModes": ["coursework", "coursework"],
 			"typeByPlanSeason": { "HS": "Projektmodul", "FS": "Projektmodul", "default": "Projektmodul" },
 			"seasons": ["HS"]
 		}

@@ -28,6 +28,12 @@ function createFixture(): string {
 				NameEnglish: 'Alpha old',
 				ShortName: 'A',
 				Ects: 2,
+				ModeOfAssessments: [
+					'Arbeit / Kompetenznachweis im Semester',
+					'schriftlich',
+					'mündlich',
+					'elektronisch',
+				],
 				ModuleOffers: [
 					{
 						DegreeProgramme: 'Informatik',
@@ -41,6 +47,12 @@ function createFixture(): string {
 				NameEnglish: '',
 				ShortName: 'B',
 				Ects: 3,
+				ModeOfAssessments: [
+					'Arbeit / Kompetenznachweis im Semester',
+					'schriftlich',
+					'mündlich',
+					'elektronisch',
+				],
 				ModuleOffers: [
 					{
 						DegreeProgramme: 'Other',
@@ -63,6 +75,14 @@ function createFixture(): string {
 				NameEnglish: 'Alpha new',
 				ShortName: 'A',
 				Ects: 4,
+				ModeOfAssessments: [
+					'Arbeit',
+					'Arbeit/Kompetenznachweis im Semester',
+					'schriftliche Prüfung',
+					'mündliche Prüfung',
+					'elektronische Prüfung',
+					'schriftliche Prüfung',
+				],
 				Prerequisites: [
 					{
 						Modules: ['B', 'C'],
@@ -184,6 +204,14 @@ describe('catalog normalization', () => {
 			],
 			prerequisiteNote: 'Bring experience',
 			assessmentLevelPassed: false,
+			assessmentModes: [
+				'coursework',
+				'coursework',
+				'written_exam',
+				'oral_exam',
+				'electronic_exam',
+				'written_exam',
+			],
 			typeByPlanSeason: {
 				HS: 'Erweiterungsmodul',
 				FS: 'Kernmodul',
@@ -192,6 +220,12 @@ describe('catalog normalization', () => {
 			seasons: ['FS', 'HS'],
 		});
 		expect(catalog.courses[1]?.label).toBe('Beta');
+		expect(catalog.courses[1]?.assessmentModes).toEqual([
+			'coursework',
+			'written_exam',
+			'oral_exam',
+			'electronic_exam',
+		]);
 		expect(catalog.courses[1]?.typeByPlanSeason).toEqual({
 			HS: 'Projektmodul',
 			FS: 'Projektmodul',
@@ -290,6 +324,21 @@ describe('catalog validation', () => {
 		const root = createFixture();
 		writeJson(root, 'hslu_data/modules/F24_modules.json', { data: [module] });
 		expectBuildError(root, message);
+	});
+
+	test('rejects unknown assessment modes', () => {
+		const root = createFixture();
+		writeJson(root, 'hslu_data/modules/H24_modules.json', {
+			data: [
+				{
+					Name: 'Module',
+					ShortName: 'MOD',
+					Ects: 3,
+					ModeOfAssessments: ['take-home constellation'],
+				},
+			],
+		});
+		expectBuildError(root, 'unknown assessment mode "take-home constellation"');
 	});
 
 	test('rejects invalid snapshot and template paths', () => {

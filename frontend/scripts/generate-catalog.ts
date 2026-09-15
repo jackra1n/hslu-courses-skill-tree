@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type {
+	AssessmentMode,
 	CatalogCourse,
 	CatalogData,
 	CurriculumTemplate,
@@ -25,6 +26,18 @@ const MODULE_TYPE_BY_VALUE: Record<string, ModuleType> = {
 	Erweiterungsmodul: 'Erweiterungsmodul',
 	'Major-/Minormodul': 'Major-/Minormodul',
 	Zusatzmodul: 'Zusatzmodul',
+};
+
+const ASSESSMENT_MODE_BY_VALUE: Record<string, AssessmentMode> = {
+	'Arbeit / Kompetenznachweis im Semester': 'coursework',
+	'Arbeit/Kompetenznachweis im Semester': 'coursework',
+	Arbeit: 'coursework',
+	schriftlich: 'written_exam',
+	'schriftliche Prüfung': 'written_exam',
+	mündlich: 'oral_exam',
+	'mündliche Prüfung': 'oral_exam',
+	elektronisch: 'electronic_exam',
+	'elektronische Prüfung': 'electronic_exam',
 };
 
 const SNAPSHOT_REGEX = /^([FH])(\d{2})_modules\.json$/;
@@ -55,6 +68,7 @@ type RawModule = {
 	Prerequisites?: RawModulePrerequisite[] | null;
 	PrerequisiteNote?: string | null;
 	AssessmentLevelPassed?: boolean;
+	ModeOfAssessments: AssessmentMode[];
 };
 
 type SemesterCode = {
@@ -203,6 +217,26 @@ function mapPrerequisites(
 	}));
 }
 
+function normaliseAssessmentModes(
+	value: unknown,
+	scope: string,
+): AssessmentMode[] {
+	if (value === undefined || value === null) return [];
+	if (!Array.isArray(value)) {
+		fail(scope, 'ModeOfAssessments must be an array');
+	}
+	return value.map((rawMode, index) => {
+		if (typeof rawMode !== 'string') {
+			fail(scope, `ModeOfAssessments[${index}] must be a string`);
+		}
+		const mode = ASSESSMENT_MODE_BY_VALUE[rawMode.trim()];
+		if (!mode) {
+			fail(scope, `unknown assessment mode "${rawMode}"`);
+		}
+		return mode;
+	});
+}
+
 function readModuleEntry(value: unknown, path: string): RawModule {
 	const scope = `${path}: module entry`;
 	if (typeof value !== 'object' || value === null) {
@@ -241,6 +275,8 @@ function readModuleEntry(value: unknown, path: string): RawModule {
 		'PrerequisiteNote' in value ? value.PrerequisiteNote : undefined;
 	const assessmentLevelPassed =
 		'AssessmentLevelPassed' in value ? value.AssessmentLevelPassed : undefined;
+	const modeOfAssessments =
+		'ModeOfAssessments' in value ? value.ModeOfAssessments : undefined;
 
 	return {
 		ShortName: shortName,
@@ -261,6 +297,10 @@ function readModuleEntry(value: unknown, path: string): RawModule {
 			typeof assessmentLevelPassed === 'boolean'
 				? assessmentLevelPassed
 				: undefined,
+		ModeOfAssessments: normaliseAssessmentModes(
+			modeOfAssessments,
+			`${scope} "${shortName}"`,
+		),
 	};
 }
 
@@ -333,6 +373,7 @@ function loadCourses(dataRoot: string): CatalogCourse[] {
 			prerequisites: mapPrerequisites(module.Prerequisites ?? []),
 			prerequisiteNote: module.PrerequisiteNote || undefined,
 			assessmentLevelPassed: module.AssessmentLevelPassed ?? undefined,
+			assessmentModes: module.ModeOfAssessments,
 			typeByPlanSeason,
 			seasons: (['FS', 'HS'] as const).filter((season) =>
 				seasonsByShortName.get(module.ShortName)?.has(season),

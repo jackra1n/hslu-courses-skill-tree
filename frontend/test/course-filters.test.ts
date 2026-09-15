@@ -14,6 +14,7 @@ function course(
 		label: overrides.id,
 		ects: 3,
 		prerequisites: [],
+		assessmentModes: [],
 		typeByPlanSeason: {},
 		...overrides,
 	};

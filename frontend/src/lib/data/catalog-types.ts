@@ -7,6 +7,12 @@ export type ModuleType =
 	| 'Major-/Minormodul'
 	| 'Zusatzmodul';
 
+export type AssessmentMode =
+	| 'coursework'
+	| 'written_exam'
+	| 'oral_exam'
+	| 'electronic_exam';
+
 export type PrerequisiteLink = 'und' | 'oder';
 
 export type PrerequisiteRule = {
@@ -24,6 +30,7 @@ export type Course = {
 	prerequisites: PrerequisiteRule[];
 	prerequisiteNote?: string;
 	assessmentLevelPassed?: boolean;
+	assessmentModes: AssessmentMode[];
 	type?: ModuleType;
 	// Seasons the module is offered in; empty/undefined means unknown (treated as any).
 	seasons?: Season[];

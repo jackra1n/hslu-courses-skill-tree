@@ -17,6 +17,7 @@ function course(
 		ects: 3,
 		prerequisites,
 		assessmentLevelPassed,
+		assessmentModes: [],
 		typeByPlanSeason: {},
 	};
 }
