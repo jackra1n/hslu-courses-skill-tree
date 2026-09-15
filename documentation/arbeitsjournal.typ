@@ -35,6 +35,11 @@
     hours: 3.0,
     activity: "Mehrkriterien-Filter und Filter-Sidebar: reine filterCourses-Funktion (Suche, Semester, Modultyp, ECTS-Bereich) mit Unit-Tests angelegt, ECTS-Auswahl von Buckets auf inklusiven Bereich umgestellt, Filter in linke Sidebar verlegt (Desktop sticky mit Überschrift, mobil einklappbar mit Zähler-Badge), Dual-Thumb-ECTS-Slider über reale Katalogwerte ohne Dead-Zones umgesetzt, Darkmode-Popup-Fix für native Selects in Theme-CSS ergänzt, Layout-Iterationen per Screenshot verifiziert, Typcheck/Lint/Tests/Build verifiziert."
   ),
+  (
+    date: "2026-09-15",
+    hours: 0.5,
+    activity: "Course-Browser Feinschliff und Fehlerbehebungen: Seitenlayout auf Viewporthöhe begrenzt und Kursliste als eigenständig scrollbar umgesetzt, Dual-Thumb-ECTS-Slider so geklemmt, dass Unter- und Obergrenze nicht überkreuzt werden können, sowie Tutorial aus dem globalen Layout in die Skill-Tree-Seite verschoben und Tutorial-Aktion in den Course-Browser-Einstellungen ausgeblendet. Scrollverhalten auf Desktop und Mobil sowie Slider- und Tutorialverhalten im Browser und Typcheck/Lint verifiziert."
+  ),
 )
 
 // Berechnung der Statistiken
