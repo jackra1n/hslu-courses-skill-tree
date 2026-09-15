@@ -1,4 +1,5 @@
 <script lang="ts">
+import { onMount, tick } from 'svelte';
 import AssessmentModeBadges from '$lib/components/ui/AssessmentModeBadges.svelte';
 import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
@@ -22,6 +23,12 @@ import ActionButtons from './ActionButtons.svelte';
 import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
 import PrerequisiteList from './PrerequisiteList.svelte';
 import StatusLegend from './StatusLegend.svelte';
+
+const TITLE_ID = 'skill-tree-course-detail-title';
+
+let panel: HTMLElement;
+let closeButton = $state<HTMLButtonElement>();
+let isOverlay = $state(false);
 
 const courseStore = getCourseStore();
 
@@ -101,20 +108,93 @@ const offeredSeasons = $derived.by(() => {
 		.map((season) => seasonLabel(season))
 		.join(' · ');
 });
+
+function focusableElements(): HTMLElement[] {
+	return Array.from(
+		panel.querySelectorAll<HTMLElement>(
+			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+		),
+	).filter((element) => !element.hasAttribute('hidden'));
+}
+
+function closeDetails(): void {
+	uiStore.deselectCourse();
+}
+
+function handleKeydown(event: KeyboardEvent): void {
+	if (!isDrawerOpen || !isOverlay) return;
+	if (event.key === 'Escape') {
+		event.preventDefault();
+		closeDetails();
+		return;
+	}
+	if (event.key !== 'Tab') return;
+
+	const focusable = focusableElements();
+	const first = focusable[0];
+	const last = focusable.at(-1);
+	if (!first || !last) return;
+
+	if (event.shiftKey && document.activeElement === first) {
+		event.preventDefault();
+		last.focus();
+	} else if (!event.shiftKey && document.activeElement === last) {
+		event.preventDefault();
+		first.focus();
+	}
+}
+
+onMount(() => {
+	const media = window.matchMedia('(max-width: 1279px)');
+	const updateOverlay = () => {
+		isOverlay = media.matches;
+	};
+	updateOverlay();
+	media.addEventListener('change', updateOverlay);
+	return () => media.removeEventListener('change', updateOverlay);
+});
+
+$effect(() => {
+	if (!displayCourse?.id) return;
+	void tick().then(() => {
+		panel.scrollTop = 0;
+	});
+});
+
+$effect(() => {
+	if (!isDrawerOpen || !isOverlay) return;
+	const focusOrigin =
+		document.activeElement instanceof HTMLElement &&
+		document.activeElement !== document.body
+			? document.activeElement
+			: null;
+	void tick().then(() => closeButton?.focus());
+	return () => {
+		if (focusOrigin?.isConnected) focusOrigin.focus();
+	};
+});
 </script>
 
-<!-- mobile backdrop -->
-<div
-  class={`fixed inset-0 z-30 bg-black/40 transition-opacity duration-200 lg:hidden ${isDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-  aria-hidden={!isDrawerOpen}
-  onclick={() => uiStore.deselectCourse()}
-></div>
+{#if isDrawerOpen}
+  <button
+    type="button"
+    tabindex="-1"
+    aria-label={m.details_deselect()}
+    class="fixed inset-0 z-40 cursor-default bg-black/45 xl:hidden"
+    onclick={closeDetails}
+  ></button>
+{/if}
 
 <aside
-  class={`bg-bg-secondary overflow-y-auto border border-border-primary transition-transform duration-300 ease-out
-    fixed top-[var(--app-header-height)] bottom-0 right-0 z-40 w-full max-w-md shadow-2xl
+  bind:this={panel}
+  id="skill-tree-course-detail-panel"
+  class={`fixed inset-y-0 right-0 z-50 w-full overflow-y-auto border border-border-primary bg-bg-secondary shadow-2xl transition-transform duration-300 ease-out sm:max-w-lg
     ${isDrawerOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'}
-    lg:static lg:top-auto lg:bottom-auto lg:right-auto lg:max-w-none lg:w-full lg:border-y-0 lg:border-r-0 lg:border-l lg:translate-x-0 lg:shadow-none lg:pointer-events-auto`}
+    xl:static xl:max-w-none xl:w-full xl:border-y-0 xl:border-r-0 xl:border-l xl:translate-x-0 xl:shadow-none xl:pointer-events-auto`}
+  role={isDrawerOpen ? (isOverlay ? 'dialog' : 'region') : undefined}
+  aria-modal={isDrawerOpen && isOverlay ? 'true' : undefined}
+  aria-labelledby={isDrawerOpen ? TITLE_ID : undefined}
+  onkeydown={handleKeydown}
 >
   {#if hasSelection()}
     <div class="p-6 space-y-6">
@@ -125,7 +205,7 @@ const offeredSeasons = $derived.by(() => {
               <p class="font-mono text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
                 {displayCourse.id}
               </p>
-              <h2 class="mt-2 text-2xl font-bold leading-tight text-text-primary">
+              <h2 id={TITLE_ID} class="mt-2 text-2xl font-bold leading-tight text-text-primary">
                 {courseLabel(displayCourse)}
               </h2>
               {#if alternateLabel}
@@ -134,8 +214,9 @@ const offeredSeasons = $derived.by(() => {
             {/if}
           </div>
           <button
+            bind:this={closeButton}
             type="button"
-            onclick={() => uiStore.deselectCourse()}
+            onclick={closeDetails}
             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             title={m.details_deselect()}
             aria-label={m.details_deselect()}
@@ -241,7 +322,7 @@ const offeredSeasons = $derived.by(() => {
         </p>
       </div>
       
-      <div class="hidden lg:block">
+      <div class="hidden xl:block">
         <StatusLegend />
       </div>
     </div>

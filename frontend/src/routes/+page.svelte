@@ -93,7 +93,7 @@ $effect(() => {
     <Header />
     
     <SvelteFlowProvider>
-      <div class="flex-1 min-h-0 lg:grid lg:grid-cols-[1fr_400px]">
+      <div class="flex-1 min-h-0 xl:grid xl:grid-cols-[1fr_400px]">
         <SkillTreeCanvas />
         <CourseDetailsPanel />
       </div>
@@ -103,7 +103,7 @@ $effect(() => {
     <AssessmentInfo />
     <GuidedTutorial />
 
-    <div class="lg:hidden fixed bottom-4 right-4 z-30 w-72 max-w-[90vw]">
+    <div class="xl:hidden fixed bottom-4 right-4 z-30 w-72 max-w-[90vw]">
       <div class={`rounded-2xl border border-border-primary bg-bg-primary shadow-2xl backdrop-blur transition-all duration-300 overflow-hidden flex flex-col-reverse ${legendOpen ? 'max-h-96' : 'max-h-14'}`}>
         <button
           type="button"
