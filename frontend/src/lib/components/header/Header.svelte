@@ -3,6 +3,7 @@ import { onMount } from 'svelte';
 import { getEctsRequirements } from '$lib/data/ects-requirements';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
+import { measureHeaderHeight } from '$lib/utils/header-height';
 import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
 import Tooltip from '../ui/Tooltip.svelte';
 import AccountMenu from './AccountMenu.svelte';
@@ -11,7 +12,6 @@ import TemplateSelector from './TemplateSelector.svelte';
 
 let programDropdownOpen = $state(false);
 let activeSidebar = $state<'settings' | 'analytics' | null>(null);
-let headerElement: HTMLElement;
 
 const courseStore = getCourseStore();
 
@@ -33,22 +33,10 @@ onMount(() => {
 			programDropdownOpen = false;
 		}
 	};
-	const updateHeaderHeight = () => {
-		document.documentElement.style.setProperty(
-			'--app-header-height',
-			`${headerElement.offsetHeight}px`,
-		);
-	};
-	const resizeObserver = new ResizeObserver(updateHeaderHeight);
-
 	document.addEventListener('click', handleClickOutside);
-	resizeObserver.observe(headerElement);
-	updateHeaderHeight();
 
 	return () => {
 		document.removeEventListener('click', handleClickOutside);
-		resizeObserver.disconnect();
-		document.documentElement.style.removeProperty('--app-header-height');
 	};
 });
 
@@ -82,7 +70,7 @@ const ectsTooltip = $derived(
 );
 </script>
 
-<header bind:this={headerElement} class="relative z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">
+<header {@attach measureHeaderHeight} class="relative z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">
   <div class="flex min-w-0 items-center gap-3">
     <div class="leading-tight">
       <h1 class="text-lg font-semibold text-text-primary sm:hidden">{m.header_title_short()}</h1>

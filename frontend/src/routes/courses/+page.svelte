@@ -26,6 +26,7 @@ import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
+import { measureHeaderHeight } from '$lib/utils/header-height';
 import { getAssessmentStageProgress } from '$lib/utils/status';
 import CourseDetailPanel from './CourseDetailPanel.svelte';
 import CourseRow from './CourseRow.svelte';
@@ -158,7 +159,7 @@ onMount(() => {
 	</div>
 {:else}
 	<div class="flex h-screen h-dvh overflow-hidden flex-col bg-bg-primary font-sans text-text-primary">
-		<header class="shrink-0 border-b border-border-primary bg-bg-primary px-4 py-2 sm:py-3">
+		<header {@attach measureHeaderHeight} class="shrink-0 border-b border-border-primary bg-bg-primary px-4 py-2 sm:py-3">
 			<div class="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-3">
 				<a
 					href="/"
