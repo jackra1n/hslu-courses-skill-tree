@@ -7,6 +7,8 @@ import { courseModuleType } from '$lib/data/course-filters';
 import { courseLabel } from '$lib/data/course-label';
 import { seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
+import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
+import CourseReviews from './CourseReviews.svelte';
 
 let {
 	course,
@@ -46,7 +48,10 @@ function focusableElements(): HTMLElement[] {
 		panel.querySelectorAll<HTMLElement>(
 			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
 		),
-	).filter((element) => !element.hasAttribute('hidden'));
+	).filter(
+		(element) =>
+			!element.matches(':disabled') && element.getClientRects().length > 0,
+	);
 }
 
 function handleKeydown(event: KeyboardEvent): void {
@@ -111,7 +116,7 @@ async function navigateToPrerequisite(
 <aside
 	bind:this={panel}
 	id="course-detail-panel"
-	class="inset-y-0 right-0 z-50 w-full flex-col overflow-hidden border-border-primary bg-bg-secondary shadow-2xl sm:max-w-lg xl:static xl:col-start-3 xl:row-start-1 xl:row-span-2 xl:flex xl:h-full xl:min-h-0 xl:w-auto xl:max-w-none xl:self-stretch xl:rounded-xl xl:border xl:shadow-none"
+	class="inset-y-0 right-0 z-50 w-full flex-col overflow-hidden border-border-primary bg-bg-secondary shadow-2xl sm:max-w-lg xl:static xl:z-auto xl:col-start-3 xl:row-start-1 xl:row-span-2 xl:flex xl:h-full xl:min-h-0 xl:w-auto xl:max-w-none xl:self-stretch xl:rounded-xl xl:border xl:shadow-none"
 	class:fixed={course && isOverlay}
 	class:hidden={!course}
 	class:flex={course}
@@ -259,6 +264,9 @@ async function navigateToPrerequisite(
 					</p>
 				</section>
 			{/if}
+			{#key `${course.id}:${cloudSyncStore.user?.id ?? ''}`}
+				<CourseReviews courseId={course.id} />
+			{/key}
 		</div>
 	{:else}
 		<div class="flex h-full flex-col items-center justify-center px-8 text-center">

@@ -71,7 +71,9 @@ From `frontend/`, run `bun run web:test` for all frontend tests in `test/`, incl
 
 Migration `0004_course_reviews.sql` adds one review per user/course to D1. All four dimensions are required integers from 1 to 5: `recommendation` and `content_interest` are star ratings; `difficulty` ranges from very easy to very hard, and `workload` from very low to very high. Keep averages separate: high difficulty or workload does not imply poor quality.
 
-Written `text` is optional and stored as an empty string for rating-only reviews. Timestamps use Unix milliseconds. Reviews reference existing users and are deleted with their account; course IDs are validated against the same generated catalog used by the frontend. The review UI is not implemented yet.
+Written `text` is optional and stored as an empty string for rating-only reviews. Timestamps use Unix milliseconds. Reviews reference existing users and are deleted with their account; course IDs are validated against the same generated catalog used by the frontend.
+
+The Course Browser detail panel shows public reviews and separate averages for each dimension. Signed-in users can create, edit, and delete their own review, with keyboard-accessible rating controls and a deletion confirmation. All four ratings must be selected; the optional text is limited to 5,000 characters. Failed saves retain the draft, while switching courses or accounts clears it. The GitHub sign-in callback returns to the selected course. The interface supports English, German, light and dark themes, and mobile layouts.
 
 | Method | Endpoint | Access | Success |
 | --- | --- | --- | --- |
