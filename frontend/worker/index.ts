@@ -1,4 +1,5 @@
 import { auth } from './auth';
+import { json } from './http';
 import { handleProgressRequest } from './progress';
 
 const ALLOWED_ORIGINS = new Set([
@@ -6,21 +7,6 @@ const ALLOWED_ORIGINS = new Set([
 	'http://localhost:5173',
 	'http://127.0.0.1:5173',
 ]);
-
-function json(
-	body: unknown,
-	status: number,
-	extraHeaders: Record<string, string> = {},
-): Response {
-	return new Response(JSON.stringify(body), {
-		status,
-		headers: {
-			'Content-Type': 'application/json',
-			'Cache-Control': 'no-store',
-			...extraHeaders,
-		},
-	});
-}
 
 // Structured error log: never request bodies, cookies, OAuth tokens, or AppData.
 function logError(scope: string, request: Request, error: unknown): void {

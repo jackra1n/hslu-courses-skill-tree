@@ -179,6 +179,37 @@ describe('handleProgressRequest', () => {
 		}
 	});
 
+	it('preserves Unicode when a request splits multibyte characters across chunks', async () => {
+		await seedUser('user-1');
+		const data = { ...SNAPSHOT, notes: 'Grüsse aus Luzern 🧠' };
+		const encoded = new TextEncoder().encode(
+			JSON.stringify({ data, expectedRevision: null }),
+		);
+		const body = new ReadableStream<Uint8Array>({
+			start(controller) {
+				for (let index = 0; index < encoded.length; index++) {
+					controller.enqueue(encoded.subarray(index, index + 1));
+				}
+				controller.close();
+			},
+		});
+		const response = await handleProgressRequest(
+			new Request('https://hsluskilltree.com/api/progress', {
+				method: 'PUT',
+				body,
+			}),
+			'user-1',
+			env.DB,
+		);
+		expect(response.status).toBe(200);
+		const stored = await handleProgressRequest(
+			request('GET'),
+			'user-1',
+			env.DB,
+		);
+		expect(await stored.json()).toMatchObject({ data });
+	});
+
 	it('rejects oversized payloads with 413 before parsing', async () => {
 		const big = new Request('https://hsluskilltree.com/api/progress', {
 			method: 'PUT',
