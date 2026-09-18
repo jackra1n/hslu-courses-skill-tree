@@ -90,7 +90,10 @@ export default {
 			}
 			try {
 				if (request.method === 'GET') {
-					return await getCourseReviews(id, env.DB);
+					const session = await auth.api.getSession({
+						headers: request.headers,
+					});
+					return await getCourseReviews(id, session?.user.id ?? null, env.DB);
 				}
 				const origin = request.headers.get('Origin');
 				if (!origin || !ALLOWED_ORIGINS.has(origin)) {

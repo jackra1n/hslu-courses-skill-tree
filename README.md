@@ -73,16 +73,18 @@ Migration `0004_course_reviews.sql` adds one review per user/course to D1. All f
 
 Written `text` is optional and stored as an empty string for rating-only reviews. Timestamps use Unix milliseconds. Reviews reference existing users and are deleted with their account; course IDs are validated against the same generated catalog used by the frontend.
 
-The Course Browser detail panel shows public reviews and separate averages for each dimension. Signed-in users can create, edit, and delete their own review, with keyboard-accessible rating controls and a deletion confirmation. All four ratings must be selected; the optional text is limited to 5,000 characters. Failed saves retain the draft, while switching courses or accounts clears it. The GitHub sign-in callback returns to the selected course. The interface supports English, German, light and dark themes, and mobile layouts.
+The Course Browser detail panel shows reviews without authors' names and separate averages for each dimension. Signed-in users can create, edit, and delete their own review, with keyboard-accessible rating controls and a deletion confirmation. All four ratings must be selected; the optional text is limited to 5,000 characters. Failed saves retain the draft, while switching courses or accounts clears it. The GitHub sign-in callback returns to the selected course. The interface supports English, German, light and dark themes, and mobile layouts.
+
+Recommendation and content-interest averages use five-star displays with partial fills. Difficulty and workload retain their descriptive scales. Each review's ratings are behind an info control supporting hover, keyboard focus, tap, and Escape. The form explains that the name is not shown, but the review remains linked to the account for editing and deletion; users should avoid personal details in their text.
 
 | Method | Endpoint | Access | Success |
 | --- | --- | --- | --- |
-| GET | `/api/courses/:courseId/reviews` | Public | `200 { reviews, summary }` |
+| GET | `/api/courses/:courseId/reviews` | Public | `200 { reviews, ownReviewId, summary }` |
 | POST | `/api/courses/:courseId/reviews` | Signed in | `201 { review }` |
 | PUT | `/api/reviews/:id` | Review owner | `200 { review }` |
 | DELETE | `/api/reviews/:id` | Review owner | `204`, empty body |
 
-Encode course IDs with `encodeURIComponent`. Reviews are returned newest first and expose the author's display name and user ID, not email or session data. `summary` contains `count` and separate averages for `recommendation`, `contentInterest`, `difficulty`, and `workload`; averages are `null` when no reviews exist. All responses use `Cache-Control: no-store`.
+Encode course IDs with `encodeURIComponent`. Reviews are returned newest first. GET, POST, and PUT review responses do not expose author names, user IDs, email, or session data. GET includes `ownReviewId` for the requesting user's review, or `null` for anonymous visitors and users without a review for that course. Ownership remains enforced server-side. `summary` contains `count` and separate averages for `recommendation`, `contentInterest`, `difficulty`, and `workload`; averages are `null` when no reviews exist. All responses use `Cache-Control: no-store`.
 
 POST and PUT accept exactly this JSON shape; only `text` may be omitted:
 

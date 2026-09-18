@@ -57,24 +57,32 @@ async function readReviewBody(
 }
 
 // used by SELECT and write RETURNING clauses so responses share one shape.
-// only the public display name is exposed, never email or session data.
-const REVIEW_COLUMNS = `id, course_id AS courseId, user_id AS userId,
-	(SELECT name FROM "user" WHERE "user".id = reviews.user_id) AS authorName,
+// reviewer identity stays in the database, including for mutation responses.
+const REVIEW_COLUMNS = `id, course_id AS courseId,
 	recommendation, content_interest AS contentInterest, difficulty, workload,
 	text, created_at AS createdAt, updated_at AS updatedAt`;
 
 export async function getCourseReviews(
 	courseId: string,
+	userId: string | null,
 	db: D1Database,
 ): Promise<Response> {
 	if (!courseIds.has(courseId)) return json({ error: 'course not found' }, 404);
-	const { results: reviews } = await db
-		.prepare(
-			`SELECT ${REVIEW_COLUMNS} FROM reviews
-			WHERE course_id = ? ORDER BY created_at DESC, id DESC`,
-		)
-		.bind(courseId)
-		.all<Review>();
+	const [{ results: reviews }, ownReviewId] = await Promise.all([
+		db
+			.prepare(
+				`SELECT ${REVIEW_COLUMNS} FROM reviews
+				WHERE course_id = ? ORDER BY created_at DESC, id DESC`,
+			)
+			.bind(courseId)
+			.all<Review>(),
+		userId === null
+			? null
+			: db
+					.prepare('SELECT id FROM reviews WHERE course_id = ? AND user_id = ?')
+					.bind(courseId, userId)
+					.first<string>('id'),
+	]);
 
 	let recommendation = 0;
 	let contentInterest = 0;
@@ -90,6 +98,7 @@ export async function getCourseReviews(
 	return json(
 		{
 			reviews,
+			ownReviewId,
 			summary: {
 				count,
 				recommendation: count ? recommendation / count : null,

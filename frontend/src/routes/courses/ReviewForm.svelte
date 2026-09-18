@@ -33,7 +33,8 @@ async function submit(event: SubmitEvent): Promise<void> {
 }
 </script>
 
-<form bind:this={form} onsubmit={submit} class="space-y-4 rounded-lg border border-border-secondary bg-bg-primary p-3" aria-label={initial ? m.reviews_edit() : m.reviews_write()}>
+<form bind:this={form} onsubmit={submit} class="space-y-4 rounded-lg border border-border-secondary bg-bg-primary p-3" aria-label={initial ? m.reviews_edit() : m.reviews_write()} aria-describedby={`${id}-privacy`}>
+	<p id={`${id}-privacy`} class="text-xs leading-relaxed text-text-secondary">{m.reviews_privacy()}</p>
 	<p class="text-xs text-text-secondary">{m.reviews_required()}</p>
 	<fieldset disabled={busy} class="min-w-0 space-y-4">
 		<ReviewRating label={m.reviews_recommendation()} bind:value={recommendation} stars />

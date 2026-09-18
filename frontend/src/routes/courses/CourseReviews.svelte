@@ -15,6 +15,8 @@ import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { locale } from '$lib/stores/locale.svelte';
 import ReviewForm from './ReviewForm.svelte';
+import ReviewRatingDetails from './ReviewRatingDetails.svelte';
+import ReviewStars from './ReviewStars.svelte';
 
 let { courseId }: { courseId: string } = $props();
 const id = $props.id();
@@ -36,7 +38,9 @@ let errorElement = $state<HTMLDivElement>();
 let actionButton = $state<HTMLButtonElement>();
 const user = $derived(cloudSyncStore.user);
 const ownReview = $derived(
-	data?.reviews.find((review) => review.userId === user?.id),
+	user
+		? data?.reviews.find((review) => review.id === data?.ownReviewId)
+		: undefined,
 );
 const numberFormat = $derived(
 	new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 }),
@@ -234,8 +238,13 @@ async function reload(): Promise<void> {
 					<div>
 						<dt class="text-xs text-text-secondary">{dimension.label}</dt>
 						<dd class="mt-0.5 flex items-center gap-1 text-lg font-semibold text-text-primary">
-							{#if dimension.stars}<span class="i-lucide-star h-4 w-4" aria-hidden="true"></span>{/if}
-							{average === null ? m.course_details_unknown() : numberFormat.format(average)}<span class="text-xs font-normal text-text-secondary">/ 5</span>
+							{#if average === null}
+								{m.course_details_unknown()}
+							{:else if dimension.stars}
+								<ReviewStars value={average} label={m.reviews_star_label({ value: numberFormat.format(average) })} />
+							{:else}
+								{numberFormat.format(average)}
+							{/if}
 						</dd>
 						{#if dimension.hint}<dd class="mt-0.5 text-xs text-text-secondary">{dimension.hint}</dd>{/if}
 					</div>
@@ -266,18 +275,13 @@ async function reload(): Promise<void> {
 			{#each data.reviews as review (review.id)}
 				<li>
 					<article class="rounded-lg border border-border-primary bg-bg-primary p-3">
-						<header class="flex flex-wrap items-baseline justify-between gap-1 text-xs">
-							<h4 class="break-words font-semibold text-text-primary">{review.userId === user?.id ? m.reviews_yours() : review.authorName}</h4>
-							<time datetime={new Date(review.createdAt).toISOString()} class="text-text-secondary">{dateFormat.format(review.createdAt)}</time>
+						<header class="flex items-center justify-between gap-2 text-xs">
+							<div class="min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+								<h4 class="font-semibold text-text-primary">{review.id === ownReview?.id ? m.reviews_yours() : m.reviews_anonymous()}</h4>
+								<time datetime={new Date(review.createdAt).toISOString()} class="text-text-secondary">{dateFormat.format(review.createdAt)}</time>
+							</div>
+							<ReviewRatingDetails {review} />
 						</header>
-						<dl class="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-							{#each dimensions as dimension}
-								<div class="flex flex-wrap justify-between gap-x-1">
-									<dt class="text-text-secondary">{dimension.label}</dt>
-									<dd class="font-medium text-text-primary">{review[dimension.key]}/5</dd>
-								</div>
-							{/each}
-						</dl>
 						{#if review.text}<p class="mt-3 whitespace-pre-wrap break-words text-sm leading-relaxed text-text-primary [overflow-wrap:anywhere]">{review.text}</p>{/if}
 						{#if review.updatedAt > review.createdAt}<p class="mt-2 text-xs text-text-secondary">{m.reviews_updated({ date: dateFormat.format(review.updatedAt) })}</p>{/if}
 					</article>

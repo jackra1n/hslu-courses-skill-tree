@@ -10,14 +10,13 @@ export type ReviewInput = ReviewRatings & { text: string };
 export type Review = ReviewInput & {
 	id: string;
 	courseId: string;
-	userId: string;
-	authorName: string;
 	createdAt: number;
 	updatedAt: number;
 };
 
 export type CourseReviewsResponse = {
 	reviews: Review[];
+	ownReviewId: string | null;
 	summary: { count: number } & {
 		[Dimension in keyof ReviewRatings]: number | null;
 	};

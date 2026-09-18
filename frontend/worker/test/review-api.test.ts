@@ -1,5 +1,9 @@
 import { env } from 'cloudflare:workers';
 import { beforeEach, describe, expect, it } from 'vitest';
+import type {
+	CourseReviewsResponse,
+	Review,
+} from '../../src/lib/data/review-types';
 import { auth } from '../auth';
 import worker from '../index';
 import { applyMigrations, resetTestData, seedUser } from './apply-migrations';
@@ -80,6 +84,7 @@ describe('public course reviews', () => {
 		expect(response.headers.get('Cache-Control')).toBe('no-store');
 		expect(await response.json()).toEqual({
 			reviews: [],
+			ownReviewId: null,
 			summary: {
 				count: 0,
 				recommendation: null,
@@ -95,32 +100,68 @@ describe('public course reviews', () => {
 		expect(unknown.status).toBe(404);
 	});
 
-	it('returns only the requested course, newest first, with separate averages and no private author data', async () => {
+	it('returns anonymous reviews with ownership scoped to the requesting user and course', async () => {
+		await seedUser('reviewer-3');
 		await env.DB.prepare(`INSERT INTO reviews
 			(id, course_id, user_id, recommendation, content_interest, difficulty, workload, created_at, updated_at)
 			VALUES
 			('old', 'WEBLAB', 'reviewer-1', 1, 2, 2, 3, 100, 100),
 			('new', 'WEBLAB', 'reviewer-2', 5, 3, 2, 4, 200, 200),
-			('other-course', 'AINF', 'reviewer-1', 5, 5, 5, 5, 300, 300)`).run();
-		const response = await worker.fetch(
-			request('GET', '/api/courses/WEBLAB/reviews'),
-			env,
-		);
-		expect(response.status).toBe(200);
-		const body = await response.json<{
-			reviews: { id: string; authorName: string }[];
-			summary: unknown;
-		}>();
-		expect(body.reviews.map((review) => review.id)).toEqual(['new', 'old']);
-		expect(body.reviews[0].authorName).toBe('Test reviewer-2');
-		expect(body.summary).toEqual({
-			count: 2,
-			recommendation: 3,
-			contentInterest: 2.5,
-			difficulty: 2,
-			workload: 3.5,
-		});
-		expect(JSON.stringify(body)).not.toContain('@test.example');
+			('other-course', 'AINF', 'reviewer-3', 5, 5, 5, 5, 300, 300)`).run();
+		const first = await sessionCookie('reviewer-1');
+		const second = await sessionCookie('reviewer-2');
+		const otherCourse = await sessionCookie('reviewer-3');
+		for (const [cookie, ownReviewId] of [
+			['', null],
+			[first, 'old'],
+			[second, 'new'],
+			[otherCourse, null],
+			[first.replace('=', '=tampered'), null],
+		] as const) {
+			const response = await worker.fetch(
+				request('GET', '/api/courses/WEBLAB/reviews', {
+					headers: { Cookie: cookie },
+				}),
+				env,
+			);
+			expect(response.status).toBe(200);
+			expect(response.headers.get('Cache-Control')).toBe('no-store');
+			const body = await response.json<CourseReviewsResponse>();
+			expect(body).toEqual({
+				ownReviewId,
+				reviews: [
+					{
+						id: 'new',
+						courseId: 'WEBLAB',
+						recommendation: 5,
+						contentInterest: 3,
+						difficulty: 2,
+						workload: 4,
+						text: '',
+						createdAt: 200,
+						updatedAt: 200,
+					},
+					{
+						id: 'old',
+						courseId: 'WEBLAB',
+						recommendation: 1,
+						contentInterest: 2,
+						difficulty: 2,
+						workload: 3,
+						text: '',
+						createdAt: 100,
+						updatedAt: 100,
+					},
+				],
+				summary: {
+					count: 2,
+					recommendation: 3,
+					contentInterest: 2.5,
+					difficulty: 2,
+					workload: 3.5,
+				},
+			});
+		}
 	});
 
 	it('decodes real catalog IDs and rejects malformed URL encoding', async () => {
@@ -151,10 +192,18 @@ describe('authenticated review writes', () => {
 			{ ...INPUT, text },
 		);
 		expect(created.status).toBe(201);
-		const { review } = await created.json<{
-			review: { id: string; createdAt: number; userId: string };
-		}>();
-		expect(review.userId).toBe('reviewer-1');
+		const body = await created.json<{ review: Review }>();
+		expect(body).toEqual({
+			review: {
+				id: expect.any(String),
+				courseId: 'WEBLAB',
+				...INPUT,
+				text,
+				createdAt: expect.any(Number),
+				updatedAt: expect.any(Number),
+			},
+		});
+		const { review } = body;
 		const path = `/api/reviews/${review.id}`;
 		const listed = await worker.fetch(
 			request('GET', '/api/courses/WEBLAB/reviews'),
@@ -168,10 +217,12 @@ describe('authenticated review writes', () => {
 		const replacement = { ...INPUT, recommendation: 2, workload: 5 };
 		const updated = await writeReview('PUT', path, cookie, replacement);
 		expect(updated.status).toBe(200);
-		expect(await updated.json()).toMatchObject({
+		expect(await updated.json()).toEqual({
 			review: {
 				id: review.id,
+				courseId: 'WEBLAB',
 				createdAt: review.createdAt,
+				updatedAt: expect.any(Number),
 				text: '',
 				...replacement,
 			},
@@ -213,7 +264,14 @@ describe('authenticated review writes', () => {
 		const { review } = await created.json<{ review: { id: string } }>();
 		const path = `/api/reviews/${review.id}`;
 		for (const method of ['PUT', 'DELETE']) {
-			expect((await writeReview(method, path, other)).status).toBe(404);
+			expect(
+				(
+					await writeReview(method, path, other, {
+						...INPUT,
+						recommendation: 1,
+					})
+				).status,
+			).toBe(404);
 			expect((await writeReview(method, path, '')).status).toBe(401);
 			expect(
 				(await writeReview(method, '/api/reviews/missing', owner)).status,
@@ -236,7 +294,8 @@ describe('authenticated review writes', () => {
 			env,
 		);
 		expect(await listed.json()).toMatchObject({
-			reviews: [{ id: review.id, userId: 'reviewer-1', ...INPUT }],
+			reviews: [{ id: review.id, ...INPUT }],
+			ownReviewId: null,
 			summary: { count: 1, ...INPUT },
 		});
 	});
