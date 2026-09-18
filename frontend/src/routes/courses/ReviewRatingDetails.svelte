@@ -123,7 +123,7 @@ $effect(() => () => clearTimeout(closeTimer));
 	<button
 		bind:this={trigger}
 		type="button"
-		class="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+		class="flex h-4 w-4 shrink-0 cursor-help items-center justify-center rounded-sm p-0 text-text-secondary hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
 		aria-label={m.reviews_rating_details()}
 		aria-expanded={open}
 		aria-controls={`${id}-ratings`}
@@ -132,7 +132,7 @@ $effect(() => () => clearTimeout(closeTimer));
 		onblur={blur}
 		onclick={toggle}
 	>
-		<span class="i-lucide-info h-5 w-5" aria-hidden="true"></span>
+		<span class="i-lucide-info h-4 w-4" aria-hidden="true"></span>
 	</button>
 	<div
 		bind:this={popover}

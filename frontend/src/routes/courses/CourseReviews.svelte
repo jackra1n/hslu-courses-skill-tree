@@ -282,7 +282,7 @@ async function reload(): Promise<void> {
 							</div>
 							<ReviewRatingDetails {review} />
 						</header>
-						{#if review.text}<p class="mt-3 whitespace-pre-wrap break-words text-sm leading-relaxed text-text-primary [overflow-wrap:anywhere]">{review.text}</p>{/if}
+						{#if review.text}<p class="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-text-primary [overflow-wrap:anywhere]">{review.text}</p>{/if}
 						{#if review.updatedAt > review.createdAt}<p class="mt-2 text-xs text-text-secondary">{m.reviews_updated({ date: dateFormat.format(review.updatedAt) })}</p>{/if}
 					</article>
 				</li>
