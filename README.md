@@ -75,7 +75,7 @@ Written `text` is optional and stored as an empty string for rating-only reviews
 
 The Course Browser detail panel shows reviews without authors' names and separate averages for each dimension. Signed-in users can create, edit, and delete their own review, with keyboard-accessible rating controls and a deletion confirmation. All four ratings must be selected; the optional text is limited to 5,000 characters. Failed saves retain the draft, while switching courses or accounts clears it. The GitHub sign-in callback returns to the selected course. The interface supports English, German, light and dark themes, and mobile layouts.
 
-Recommendation and content-interest averages use five-star displays with partial fills. Difficulty and workload retain their descriptive scales. Each review's ratings are behind an info control supporting hover, keyboard focus, tap, and Escape. The form explains that the name is not shown, but the review remains linked to the account for editing and deletion; users should avoid personal details in their text.
+Recommendation and content-interest averages use five-star displays with partial fills. Difficulty and workload retain their descriptive scales. Each review's ratings are behind an info control supporting hover, keyboard focus, tap, and Escape. Review headers show the date, with an additional label for your own review. The form explains that the name is not shown, but the review remains linked to the account for editing and deletion.
 
 | Method | Endpoint | Access | Success |
 | --- | --- | --- | --- |

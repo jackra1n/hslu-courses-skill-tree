@@ -277,7 +277,9 @@ async function reload(): Promise<void> {
 					<article class="rounded-lg border border-border-primary bg-bg-primary p-3">
 						<header class="flex items-center justify-between gap-2 text-xs">
 							<div class="min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-								<h4 class="font-semibold text-text-primary">{review.id === ownReview?.id ? m.reviews_yours() : m.reviews_anonymous()}</h4>
+								{#if review.id === ownReview?.id}
+									<h4 class="font-semibold text-text-primary">{m.reviews_yours()}</h4>
+								{/if}
 								<time datetime={new Date(review.createdAt).toISOString()} class="text-text-secondary">{dateFormat.format(review.createdAt)}</time>
 							</div>
 							<ReviewRatingDetails {review} />
