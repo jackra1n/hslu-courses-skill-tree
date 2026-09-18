@@ -1,5 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { auth } from '../auth';
 import worker from '../index';
 import { applyMigrations, resetTestData, seedUser } from './apply-migrations';
 
@@ -13,6 +14,53 @@ function request(
 		...init,
 		headers: { host: 'hsluskilltree.com', ...init.headers },
 	});
+}
+
+const INPUT = {
+	recommendation: 5,
+	contentInterest: 4,
+	difficulty: 2,
+	workload: 3,
+};
+
+// real sessions and signed cookies exercise Better Auth, not an auth mock.
+async function sessionCookie(userId: string): Promise<string> {
+	const context = await auth.$context;
+	const session = await context.internalAdapter.createSession(userId);
+	const encoder = new TextEncoder();
+	const key = await crypto.subtle.importKey(
+		'raw',
+		encoder.encode(context.secret),
+		{ name: 'HMAC', hash: 'SHA-256' },
+		false,
+		['sign'],
+	);
+	const signature = await crypto.subtle.sign(
+		'HMAC',
+		key,
+		encoder.encode(session.token),
+	);
+	const signed = `${session.token}.${btoa(String.fromCharCode(...new Uint8Array(signature)))}`;
+	return `${context.authCookies.sessionToken.name}=${encodeURIComponent(signed)}`;
+}
+
+function writeReview(
+	method: string,
+	path: string,
+	cookie: string,
+	body: unknown = INPUT,
+): Promise<Response> {
+	return worker.fetch(
+		request(method, path, {
+			headers: {
+				Origin: 'https://hsluskilltree.com',
+				Cookie: cookie,
+				'Content-Type': 'application/json',
+			},
+			body: method === 'DELETE' ? undefined : JSON.stringify(body),
+		}),
+		env,
+	);
 }
 
 beforeEach(async () => {
@@ -89,5 +137,279 @@ describe('public course reviews', () => {
 			env,
 		);
 		expect(malformed.status).toBe(400);
+	});
+});
+
+describe('authenticated review writes', () => {
+	it('persists create, replacement and deletion, updating public summaries each time', async () => {
+		const cookie = await sessionCookie('reviewer-1');
+		const text = "Grüsse 🧠'; DROP TABLE reviews; --";
+		const created = await writeReview(
+			'POST',
+			'/api/courses/WEBLAB/reviews',
+			cookie,
+			{ ...INPUT, text },
+		);
+		expect(created.status).toBe(201);
+		const { review } = await created.json<{
+			review: { id: string; createdAt: number; userId: string };
+		}>();
+		expect(review.userId).toBe('reviewer-1');
+		const path = `/api/reviews/${review.id}`;
+		const listed = await worker.fetch(
+			request('GET', '/api/courses/WEBLAB/reviews'),
+			env,
+		);
+		expect(await listed.json()).toMatchObject({
+			reviews: [{ id: review.id, text }],
+			summary: { count: 1, ...INPUT },
+		});
+
+		const replacement = { ...INPUT, recommendation: 2, workload: 5 };
+		const updated = await writeReview('PUT', path, cookie, replacement);
+		expect(updated.status).toBe(200);
+		expect(await updated.json()).toMatchObject({
+			review: {
+				id: review.id,
+				createdAt: review.createdAt,
+				text: '',
+				...replacement,
+			},
+		});
+		const afterUpdate = await worker.fetch(
+			request('GET', '/api/courses/WEBLAB/reviews'),
+			env,
+		);
+		expect(await afterUpdate.json()).toMatchObject({
+			summary: { count: 1, ...replacement },
+		});
+
+		const deleted = await writeReview('DELETE', path, cookie);
+		expect(deleted.status).toBe(204);
+		expect(await deleted.text()).toBe('');
+		const afterDelete = await worker.fetch(
+			request('GET', '/api/courses/WEBLAB/reviews'),
+			env,
+		);
+		expect(await afterDelete.json()).toMatchObject({
+			reviews: [],
+			summary: { count: 0, recommendation: null, workload: null },
+		});
+		expect((await writeReview('DELETE', path, cookie)).status).toBe(404);
+		expect(
+			(await writeReview('POST', '/api/courses/WEBLAB/reviews', cookie)).status,
+		).toBe(201);
+	});
+
+	it('allows only the author to edit or delete and rejects unsigned or tampered sessions', async () => {
+		const owner = await sessionCookie('reviewer-1');
+		const other = await sessionCookie('reviewer-2');
+		const created = await writeReview(
+			'POST',
+			'/api/courses/WEBLAB/reviews',
+			owner,
+		);
+		expect(created.status).toBe(201);
+		const { review } = await created.json<{ review: { id: string } }>();
+		const path = `/api/reviews/${review.id}`;
+		for (const method of ['PUT', 'DELETE']) {
+			expect((await writeReview(method, path, other)).status).toBe(404);
+			expect((await writeReview(method, path, '')).status).toBe(401);
+			expect(
+				(await writeReview(method, '/api/reviews/missing', owner)).status,
+			).toBe(404);
+		}
+		expect(
+			(await writeReview('POST', '/api/courses/AINF/reviews', '')).status,
+		).toBe(401);
+		expect(
+			(
+				await writeReview(
+					'POST',
+					'/api/courses/AINF/reviews',
+					owner.replace('=', '=tampered'),
+				)
+			).status,
+		).toBe(401);
+		const listed = await worker.fetch(
+			request('GET', '/api/courses/WEBLAB/reviews'),
+			env,
+		);
+		expect(await listed.json()).toMatchObject({
+			reviews: [{ id: review.id, userId: 'reviewer-1', ...INPUT }],
+			summary: { count: 1, ...INPUT },
+		});
+	});
+
+	it('rejects missing or foreign origins on every write even with a valid session', async () => {
+		const cookie = await sessionCookie('reviewer-1');
+		const created = await writeReview(
+			'POST',
+			'/api/courses/WEBLAB/reviews',
+			cookie,
+		);
+		const { review } = await created.json<{ review: { id: string } }>();
+		for (const method of ['POST', 'PUT', 'DELETE']) {
+			const path =
+				method === 'POST'
+					? '/api/courses/AINF/reviews'
+					: `/api/reviews/${review.id}`;
+			for (const origin of [null, 'https://hsluskilltree.com.evil.example']) {
+				const headers: Record<string, string> = { Cookie: cookie };
+				if (origin) headers.Origin = origin;
+				const response = await worker.fetch(
+					request(method, path, {
+						headers,
+						body:
+							method === 'DELETE'
+								? undefined
+								: JSON.stringify({ ...INPUT, recommendation: 1 }),
+					}),
+					env,
+				);
+				expect(response.status).toBe(403);
+			}
+		}
+		const rows = await env.DB.prepare(
+			'SELECT id, recommendation FROM reviews',
+		).all();
+		expect(rows.results).toEqual([{ id: review.id, recommendation: 5 }]);
+	});
+
+	it('returns a conflict for concurrent duplicate creation without replacing the first review', async () => {
+		const cookie = await sessionCookie('reviewer-1');
+		const responses = await Promise.all([
+			writeReview('POST', '/api/courses/WEBLAB/reviews', cookie, {
+				...INPUT,
+				recommendation: 1,
+			}),
+			writeReview('POST', '/api/courses/WEBLAB/reviews', cookie, {
+				...INPUT,
+				recommendation: 5,
+			}),
+		]);
+		expect(responses.map((response) => response.status).sort()).toEqual([
+			201, 409,
+		]);
+		const winner = responses[0].status === 201 ? responses[0] : responses[1];
+		const { review } = await winner.json<{
+			review: { id: string; recommendation: number };
+		}>();
+		const listed = await worker.fetch(
+			request('GET', '/api/courses/WEBLAB/reviews'),
+			env,
+		);
+		expect(await listed.json()).toMatchObject({
+			reviews: [{ id: review.id, recommendation: review.recommendation }],
+			summary: { count: 1, recommendation: review.recommendation },
+		});
+	});
+
+	it('validates input before persistence and does not accept client-supplied ownership or course changes', async () => {
+		const cookie = await sessionCookie('reviewer-1');
+		const invalid = [
+			null,
+			[],
+			{},
+			{ ...INPUT, recommendation: 0 },
+			{ ...INPUT, contentInterest: 6 },
+			{ ...INPUT, difficulty: 1.5 },
+			{ ...INPUT, workload: '3' },
+			{ ...INPUT, text: null },
+			{ ...INPUT, text: 'x'.repeat(5_001) },
+			{ ...INPUT, userId: 'reviewer-2' },
+		];
+		for (const body of invalid) {
+			expect(
+				(await writeReview('POST', '/api/courses/WEBLAB/reviews', cookie, body))
+					.status,
+			).toBe(400);
+		}
+		for (const body of ['{', undefined]) {
+			const response = await worker.fetch(
+				request('POST', '/api/courses/WEBLAB/reviews', {
+					headers: { Cookie: cookie, Origin: 'https://hsluskilltree.com' },
+					body,
+				}),
+				env,
+			);
+			expect(response.status).toBe(400);
+		}
+		expect(
+			(await writeReview('POST', '/api/courses/NOT-A-COURSE/reviews', cookie))
+				.status,
+		).toBe(404);
+		const count = await env.DB.prepare(
+			'SELECT COUNT(*) AS count FROM reviews',
+		).first<number>('count');
+		expect(count).toBe(0);
+
+		const created = await writeReview(
+			'POST',
+			'/api/courses/WEBLAB/reviews',
+			cookie,
+		);
+		const { review } = await created.json<{ review: { id: string } }>();
+		for (const body of [
+			{ ...INPUT, recommendation: 6 },
+			{ ...INPUT, courseId: 'AINF' },
+		]) {
+			expect(
+				(await writeReview('PUT', `/api/reviews/${review.id}`, cookie, body))
+					.status,
+			).toBe(400);
+		}
+		const listed = await worker.fetch(
+			request('GET', '/api/courses/WEBLAB/reviews'),
+			env,
+		);
+		expect(await listed.json()).toMatchObject({
+			reviews: [{ id: review.id, ...INPUT }],
+		});
+	});
+
+	it('accepts the text boundary but rejects an oversized UTF-8 body before parsing', async () => {
+		const cookie = await sessionCookie('reviewer-1');
+		const text = 'é'.repeat(5_000);
+		const created = await writeReview(
+			'POST',
+			'/api/courses/WEBLAB/reviews',
+			cookie,
+			{ ...INPUT, text },
+		);
+		expect(created.status).toBe(201);
+		const { review } = await created.json<{ review: { id: string } }>();
+		const oversized = await writeReview(
+			'PUT',
+			`/api/reviews/${review.id}`,
+			cookie,
+			{
+				...INPUT,
+				text: '🧠'.repeat(9_000),
+			},
+		);
+		expect(oversized.status).toBe(413);
+		const listed = await worker.fetch(
+			request('GET', '/api/courses/WEBLAB/reviews'),
+			env,
+		);
+		expect(await listed.json()).toMatchObject({
+			reviews: [{ id: review.id, text }],
+		});
+	});
+
+	it('rejects unsupported methods with the methods supported by each resource', async () => {
+		const collection = await worker.fetch(
+			request('DELETE', '/api/courses/WEBLAB/reviews'),
+			env,
+		);
+		expect(collection.status).toBe(405);
+		expect(collection.headers.get('Allow')).toBe('GET, POST');
+		const item = await worker.fetch(
+			request('POST', '/api/reviews/missing'),
+			env,
+		);
+		expect(item.status).toBe(405);
+		expect(item.headers.get('Allow')).toBe('PUT, DELETE');
 	});
 });

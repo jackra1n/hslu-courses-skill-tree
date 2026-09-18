@@ -1,7 +1,12 @@
 import { auth } from './auth';
 import { json } from './http';
 import { handleProgressRequest } from './progress';
-import { getCourseReviews } from './reviews';
+import {
+	createCourseReview,
+	deleteReview,
+	getCourseReviews,
+	updateReview,
+} from './reviews';
 
 const ALLOWED_ORIGINS = new Set([
 	'https://hsluskilltree.com',
@@ -66,18 +71,40 @@ export default {
 		const courseReviews = /^\/api\/courses\/([^/]+)\/reviews$/.exec(
 			url.pathname,
 		);
-		if (courseReviews) {
-			if (request.method !== 'GET') {
-				return json({ error: 'method not allowed' }, 405, { Allow: 'GET' });
+		const review = /^\/api\/reviews\/([^/]+)$/.exec(url.pathname);
+		const reviewRoute = courseReviews ?? review;
+		if (reviewRoute) {
+			const allowed = courseReviews
+				? request.method === 'GET' || request.method === 'POST'
+				: request.method === 'PUT' || request.method === 'DELETE';
+			if (!allowed) {
+				return json({ error: 'method not allowed' }, 405, {
+					Allow: courseReviews ? 'GET, POST' : 'PUT, DELETE',
+				});
 			}
-			let courseId: string;
+			let id: string;
 			try {
-				courseId = decodeURIComponent(courseReviews[1]);
+				id = decodeURIComponent(reviewRoute[1]);
 			} catch {
-				return json({ error: 'invalid course id' }, 400);
+				return json({ error: 'invalid id' }, 400);
 			}
 			try {
-				return await getCourseReviews(courseId, env.DB);
+				if (request.method === 'GET') {
+					return await getCourseReviews(id, env.DB);
+				}
+				const origin = request.headers.get('Origin');
+				if (!origin || !ALLOWED_ORIGINS.has(origin)) {
+					return json({ error: 'forbidden origin' }, 403);
+				}
+				const session = await auth.api.getSession({ headers: request.headers });
+				if (!session) return json({ error: 'unauthorized' }, 401);
+				if (courseReviews) {
+					return await createCourseReview(request, id, session.user.id, env.DB);
+				}
+				if (request.method === 'PUT') {
+					return await updateReview(request, id, session.user.id, env.DB);
+				}
+				return await deleteReview(id, session.user.id, env.DB);
 			} catch (error) {
 				logError('reviews', request, error);
 				return json({ error: 'internal' }, 500);

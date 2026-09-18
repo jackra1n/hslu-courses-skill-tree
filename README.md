@@ -67,11 +67,36 @@ bun run dev --open
 
 From `frontend/`, run `bun run web:test` for all frontend tests in `test/`, including catalog, filtering, and course-readiness behavior. Run `bun run worker:test` for Worker/D1 integration tests. CI runs both suites.
 
-### Course review storage
+### Course review API
 
 Migration `0004_course_reviews.sql` adds one review per user/course to D1. All four dimensions are required integers from 1 to 5: `recommendation` and `content_interest` are star ratings; `difficulty` ranges from very easy to very hard, and `workload` from very low to very high. Keep averages separate: high difficulty or workload does not imply poor quality.
 
-Written `text` is optional and stored as an empty string for rating-only reviews. Timestamps use Unix milliseconds. Reviews reference existing users and are deleted with their account; course IDs come from the static catalog. The review API and UI are not implemented yet, including catalog validation and owner-only write authorization.
+Written `text` is optional and stored as an empty string for rating-only reviews. Timestamps use Unix milliseconds. Reviews reference existing users and are deleted with their account; course IDs are validated against the same generated catalog used by the frontend. The review UI is not implemented yet.
+
+| Method | Endpoint | Access | Success |
+| --- | --- | --- | --- |
+| GET | `/api/courses/:courseId/reviews` | Public | `200 { reviews, summary }` |
+| POST | `/api/courses/:courseId/reviews` | Signed in | `201 { review }` |
+| PUT | `/api/reviews/:id` | Review owner | `200 { review }` |
+| DELETE | `/api/reviews/:id` | Review owner | `204`, empty body |
+
+Encode course IDs with `encodeURIComponent`. Reviews are returned newest first and expose the author's display name and user ID, not email or session data. `summary` contains `count` and separate averages for `recommendation`, `contentInterest`, `difficulty`, and `workload`; averages are `null` when no reviews exist. All responses use `Cache-Control: no-store`.
+
+POST and PUT accept exactly this JSON shape; only `text` may be omitted:
+
+```json
+{
+  "recommendation": 5,
+  "contentInterest": 4,
+  "difficulty": 2,
+  "workload": 3,
+  "text": "Useful practical exercises."
+}
+```
+
+PUT replaces all editable fields; omitting `text` clears it. IDs, authorship, and timestamps are server-controlled. Text is limited to 5,000 UTF-16 code units (`String.length`); the request body is limited to 32,768 bytes.
+
+Writes require an existing Better Auth session cookie and an allowed `Origin`, matching the progress API. Errors: `400` for invalid JSON, fields, ratings, text, or URL encoding; `401` for a missing/invalid session; `403` for a missing/untrusted origin; `404` for an unknown course or a missing/non-owned review; `409` for a duplicate user/course review; `413` for an oversized body; `405` with `Allow` for unsupported methods.
 
 ### Translations
 
