@@ -19,7 +19,7 @@ Die vorliegende Dokumentation begleitet das Semesterprojekt im Modul *WEBLAB (We
 Das Vorhaben baut auf einem bereits existierenden Projekt auf, dem *HSLU Courses Skill Tree*, welches im Haupt-Repository gepflegt wird. Die Modulleitung hat die Weiternutzung und Erweiterung dieser bestehenden Codebasis explizit genehmigt, unter der zentralen Auflage, dass alle im Rahmen von WEBLAB erbrachten Leistungen eindeutig vom Vorzustand abgrenzbar und nachvollziehbar sind.
 
 #callout(title: "Arbeitsentwurf, kein Implementierungsnachweis", fill-color: rgb("#eff6ff"), stroke-color: secondary-color)[
-  Dieses Dokument enthält neben bestehenden Bausteinen auch die geplante Zielarchitektur. Review-API, Review-Oberfläche und Playwright-E2E-Tests sind noch nicht implementiert; die beschriebenen Review-Endpunkte und Abläufe sind Entwürfe. Performance- und Barrierefreiheitsangaben sind Ziele, keine Messresultate oder Konformitätsnachweise. Die vollständige Überarbeitung und Reflexion erfolgen nach Abschluss der Implementierung.
+  Dieses Dokument enthält neben bestehenden Bausteinen auch die geplante Zielarchitektur. Das Review-Schema und die Review-API sind implementiert; Review-Oberfläche und Playwright-E2E-Tests fehlen noch. Die beschriebenen vollständigen UI-Abläufe bleiben Entwürfe. Performance- und Barrierefreiheitsangaben sind Ziele, keine Messresultate oder Konformitätsnachweise. Die vollständige Überarbeitung und Reflexion erfolgen nach Abschluss der Implementierung.
 ]
 
 Der Git-Tag:
@@ -85,7 +85,7 @@ Die Systemarchitektur verbindet maximale Reaktionsgeschwindigkeit für Endanwend
         [
           #box(fill: rgb("#fef3c7"), stroke: 1pt + rgb("#d97706"), radius: 4pt, inset: 10pt, width: 100%)[
             *Cloudflare Worker* \
-            #text(size: 0.85em, fill: muted-color)[Fetch-Handler \ Auth- & Progress-API \ Review-API geplant]
+            #text(size: 0.85em, fill: muted-color)[Fetch-Handler \ Auth-, Progress- & Review-API]
           ]
         ]
       )
@@ -122,14 +122,14 @@ Die Frontend-Architektur gliedert sich in folgende Hauptkomponenten:
 == 5.3 Level 2: Backend-Bausteine
 Das Backend wird durch einen einzelnen Cloudflare Worker bereitgestellt, welcher modulare Controller umfasst:
 - *Authentifizierungs-Middleware:* Prüft Session-Tokens auf geschützten Routen mittels Better Auth.
-- *Review-Controller (geplant):* Soll folgende CRUD-Endpunkte bereitstellen:
+- *Review-Controller:* Stellt folgende CRUD-Endpunkte bereit:
   - `GET /api/courses/:courseId/reviews`: Liefert alle Bewertungen sowie die berechneten Durchschnittswerte je Bewertungsdimension eines Moduls.
   - `POST /api/courses/:courseId/reviews`: Erstellt eine neue Bewertung (Authentifizierung vorausgesetzt, maximal eine Rezension pro Benutzer und Modul).
   - `PUT /api/reviews/:id`: Aktualisiert eine bestehende Bewertung (nur durch den Autor).
   - `DELETE /api/reviews/:id`: Entfernt eine Bewertung unwiderruflich (nur durch den Autor).
 - *Datenbankschema (D1):* Relationale Tabellen mit Fremdschlüsseln und Integritätsregeln:
   - `user` / `session`: Durch Better Auth verwaltete Identitäten und Sitzungen.
-  - `reviews` (Erweiterung): Vorgesehen sind `id`, `course_id`, `user_id`, `recommendation`, `content_interest`, `difficulty`, `workload`, optionaler `text`, `created_at` und `updated_at`. Alle vier Skalen verwenden Ganzzahlen von 1 bis 5. Schwierigkeit und Aufwand sind beschreibend, nicht positiv oder negativ zu werten; es gibt keinen Gesamtdurchschnitt über alle Dimensionen. Ein Unique-Constraint auf `(course_id, user_id)` begrenzt die Anzahl auf eine Rezension pro Nutzer und Modul.
+  - `reviews`: Enthält `id`, `course_id`, `user_id`, `recommendation`, `content_interest`, `difficulty`, `workload`, `text`, `created_at` und `updated_at`. Text ist optional und wird bei reinen Bewertungen als leerer String gespeichert. Alle vier Skalen verwenden Ganzzahlen von 1 bis 5. Schwierigkeit und Aufwand sind beschreibend, nicht positiv oder negativ zu werten; es gibt keinen Gesamtdurchschnitt über alle Dimensionen. Ein Unique-Constraint auf `(course_id, user_id)` begrenzt die Anzahl auf eine Rezension pro Nutzer und Modul.
 
 = 6. Laufzeitsicht
 
@@ -190,7 +190,7 @@ Zur Gewährleistung der Konsistenz gelten folgende Massnahmen:
 
 == 8.4 Teststrategie
 - *Unit-Tests (Bun):* Prüfen Katalogaufbereitung, Katalogzugriff, kombinierte Filter und die Belegbarkeit von Kursen.
-- *Integrationstests (Vitest + Cloudflare Workers Pool):* Prüfen Authentifizierung, Migrationen und die Progress-API mit einer lokalen D1-Instanz.
+- *Integrationstests (Vitest + Cloudflare Workers Pool):* Prüfen Authentifizierung, Migrationen, die Progress-API und Review-CRUD mit einer lokalen D1-Instanz. Review-Tests verwenden echte Better-Auth-Sitzungen und prüfen unter anderem Besitzrechte, Origin-Prüfung, Eingabevalidierung und konkurrierende doppelte Bewertungen.
 - *End-to-End-Tests (Playwright, geplant):* Sollen Katalogsuche, Filterkombinationen, Rezensions-CRUD und mobile Ansichten abdecken.
 
 = 9. Architekturentscheidungen (ADRs)
