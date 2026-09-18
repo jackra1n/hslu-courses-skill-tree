@@ -19,7 +19,7 @@ Die vorliegende Dokumentation begleitet das Semesterprojekt im Modul *WEBLAB (We
 Das Vorhaben baut auf einem bereits existierenden Projekt auf, dem *HSLU Courses Skill Tree*, welches im Haupt-Repository gepflegt wird. Die Modulleitung hat die Weiternutzung und Erweiterung dieser bestehenden Codebasis explizit genehmigt, unter der zentralen Auflage, dass alle im Rahmen von WEBLAB erbrachten Leistungen eindeutig vom Vorzustand abgrenzbar und nachvollziehbar sind.
 
 #callout(title: "Arbeitsentwurf, kein Implementierungsnachweis", fill-color: rgb("#eff6ff"), stroke-color: secondary-color)[
-  Dieses Dokument enthält neben bestehenden Bausteinen auch die geplante Zielarchitektur. Das Review-Schema und die Review-API sind implementiert; Review-Oberfläche und Playwright-E2E-Tests fehlen noch. Die beschriebenen vollständigen UI-Abläufe bleiben Entwürfe. Performance- und Barrierefreiheitsangaben sind Ziele, keine Messresultate oder Konformitätsnachweise. Die vollständige Überarbeitung und Reflexion erfolgen nach Abschluss der Implementierung.
+  Dieses Dokument enthält neben bestehenden Bausteinen auch die geplante Zielarchitektur. Review-Schema, Review-API und Review-Oberfläche sind implementiert; Playwright-E2E-Tests fehlen noch. Die Review-Abläufe wurden lokal im Browser gegen Worker und D1 mit synthetischen Benutzersitzungen geprüft. Der vollständige GitHub-OAuth-Ablauf wurde dabei nicht durchlaufen. Performance- und Barrierefreiheitsangaben sind Ziele, keine Messresultate oder Konformitätsnachweise. Die vollständige Überarbeitung und Reflexion erfolgen nach Abschluss der Implementierung.
 ]
 
 Der Git-Tag:
@@ -115,7 +115,7 @@ Die Frontend-Architektur gliedert sich in folgende Hauptkomponenten:
 - *Course-Browser-Ansicht (`/courses`):* Durchsuchbare Modulliste mit integrierter Mehrkriterien-Filterleiste (Semester, Studiengang, Modultyp, ECTS) und responsivem Kartenraster.
 - *Skill-Tree-Ansicht (`/`):* Interaktiver Abhängigkeitsgraph, der Modulabfolgen und Semesterplanungen visualisiert.
 - *Modul-Detailansicht (Panel / Dialog):* Präsentiert vertiefte Modulbeschreibungen, ECTS-Angaben, Vorbedingungen sowie die Liste der Rezensionen.
-- *Bewertungs-Komponenten (Review UI):* Formular zur Erfassung und Bearbeitung von Bewertungen, Sterne-Rating, Lösch-Bestätigungsdialoge und Rezensionselemente.
+- *Bewertungs-Komponenten (Review UI):* Formular zur Erfassung und Bearbeitung mit vier Pflichtskalen und optionalem Text. Weiterempfehlung und Inhaltsinteresse verwenden Sterne, Schwierigkeit und Aufwand beschriftete Zahlenskalen. Separate Durchschnittswerte, eigene Bearbeitungsaktionen und ein nativer Lösch-Bestätigungsdialog ergänzen die öffentliche Rezensionenliste. Fehlgeschlagene Speicherungen behalten den Entwurf; Modul- und Benutzerwechsel setzen ihn zurück.
 - *Zustandsverwaltung (Svelte Stores):* Reaktive Stores für Filterzustände, gecachten Modulkatalog, aktive Benutzersitzung und Synchronisationsstatus.
 - *API-Client:* Typsicherer Fetch-Client für die Kommunikation mit den Endpunkten des Workers (`/api/reviews`, `/api/auth`).
 
@@ -141,7 +141,7 @@ Das Backend wird durch einen einzelnen Cloudflare Worker bereitgestellt, welcher
    - Die Filterung wird synchron im Browser-Speicher ausgeführt.
    - Das DOM aktualisiert die Modulkarten flüssig ohne jegliche Netzwerkanfrage.
 
-== 6.2 Geplantes Szenario: Kursbewertung erfassen (CRUD - Create)
+== 6.2 Szenario: Kursbewertung erfassen (CRUD - Create)
 1. Ein angemeldeter Benutzer öffnet die Detailansicht eines Moduls.
 2. Der Client ruft `GET /api/courses/:courseId/reviews` ab, um existierende Rezensionen darzustellen.
 3. Der Benutzer bewertet Weiterempfehlung und Inhaltsinteresse mit je 1–5 Sternen sowie Schwierigkeit (sehr leicht bis sehr schwer) und Aufwand (sehr niedrig bis sehr hoch) auf getrennten Skalen von 1–5. Optional verfasst er einen Kommentar.
@@ -150,7 +150,7 @@ Das Backend wird durch einen einzelnen Cloudflare Worker bereitgestellt, welcher
 6. Der Worker fügt die Rezension in Cloudflare D1 ein und antwortet mit dem Status `201 Created`.
 7. Der Client zeigt die neue Rezension und die aktualisierten Durchschnittswerte je Bewertungsdimension an.
 
-== 6.3 Geplantes Szenario: Bewertung anpassen und löschen (CRUD - Update & Delete)
+== 6.3 Szenario: Bewertung anpassen und löschen (CRUD - Update & Delete)
 1. Der Benutzer betrachtet seine eigene Rezension in der Modulansicht.
 2. Die Oberfläche erkennt `review.userId === currentSession.user.id` und blendet Aktionen zum Bearbeiten und Löschen ein.
 3. *Bearbeitung (Update):* Der Benutzer passt den Text oder die Bewertung an. Ein `PUT /api/reviews/:id`-Request wird ausgelöst. Der Worker verifiziert die Autorenschaft und aktualisiert den Datensatz in D1.
