@@ -1,4 +1,9 @@
 import { courses } from '../src/lib/data/catalog.generated.json';
+import type {
+	CourseReviewsResponse,
+	Review,
+	ReviewInput,
+} from '../src/lib/data/review-types';
 import { json, readBoundedBody } from './http';
 
 const courseIds = new Set<string>();
@@ -6,25 +11,6 @@ for (const course of courses) courseIds.add(course.id);
 
 const MAX_BODY_BYTES = 32_768;
 const MAX_TEXT_LENGTH = 5_000;
-
-type Review = {
-	id: string;
-	courseId: string;
-	userId: string;
-	authorName: string;
-	recommendation: number;
-	contentInterest: number;
-	difficulty: number;
-	workload: number;
-	text: string;
-	createdAt: number;
-	updatedAt: number;
-};
-
-type ReviewInput = Pick<
-	Review,
-	'recommendation' | 'contentInterest' | 'difficulty' | 'workload' | 'text'
->;
 
 function isRating(value: unknown): value is number {
 	return (
@@ -111,7 +97,7 @@ export async function getCourseReviews(
 				difficulty: count ? difficulty / count : null,
 				workload: count ? workload / count : null,
 			},
-		},
+		} satisfies CourseReviewsResponse,
 		200,
 	);
 }
