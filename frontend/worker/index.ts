@@ -1,6 +1,7 @@
 import { auth } from './auth';
 import { json } from './http';
 import { handleProgressRequest } from './progress';
+import { getCourseReviews } from './reviews';
 
 const ALLOWED_ORIGINS = new Set([
 	'https://hsluskilltree.com',
@@ -12,7 +13,7 @@ const ALLOWED_ORIGINS = new Set([
 function logError(scope: string, request: Request, error: unknown): void {
 	console.error(
 		JSON.stringify({
-			event: 'sync-api-error',
+			event: 'api-error',
 			scope,
 			method: request.method,
 			path: new URL(request.url).pathname,
@@ -58,6 +59,27 @@ export default {
 				return await handleProgressRequest(request, session.user.id, env.DB);
 			} catch (error) {
 				logError('progress', request, error);
+				return json({ error: 'internal' }, 500);
+			}
+		}
+
+		const courseReviews = /^\/api\/courses\/([^/]+)\/reviews$/.exec(
+			url.pathname,
+		);
+		if (courseReviews) {
+			if (request.method !== 'GET') {
+				return json({ error: 'method not allowed' }, 405, { Allow: 'GET' });
+			}
+			let courseId: string;
+			try {
+				courseId = decodeURIComponent(courseReviews[1]);
+			} catch {
+				return json({ error: 'invalid course id' }, 400);
+			}
+			try {
+				return await getCourseReviews(courseId, env.DB);
+			} catch (error) {
+				logError('reviews', request, error);
 				return json({ error: 'internal' }, 500);
 			}
 		}
