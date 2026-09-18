@@ -106,6 +106,11 @@ async function load(): Promise<void> {
 	try {
 		const catalog = await loadCatalog();
 		courses = catalog.courses;
+		const requestedCourse = new URL(window.location.href).searchParams.get(
+			'course',
+		);
+		selectedCourse =
+			courses.find((course) => course.id === requestedCourse) ?? null;
 		// the settings sidebar and account menu need the same stores as the
 		// skill Tree page, without its study-plan specific header controls.
 		const localDataIsMeaningful = hasMeaningfulStoredAppData();
