@@ -115,7 +115,7 @@ Die Frontend-Architektur gliedert sich in folgende Hauptkomponenten:
 - *Course-Browser-Ansicht (`/courses`):* Durchsuchbare Modulliste mit integrierter Mehrkriterien-Filterleiste (Semester, Studiengang, Modultyp, ECTS) und responsivem Kartenraster.
 - *Skill-Tree-Ansicht (`/`):* Interaktiver Abhängigkeitsgraph, der Modulabfolgen und Semesterplanungen visualisiert.
 - *Modul-Detailansicht (Panel / Dialog):* Präsentiert vertiefte Modulbeschreibungen, ECTS-Angaben, Vorbedingungen sowie die Liste der Rezensionen.
-- *Bewertungs-Komponenten (Review UI):* Formular zur Erfassung und Bearbeitung mit vier Pflichtskalen und optionalem Text. Weiterempfehlung und Inhaltsinteresse verwenden Sterne, Schwierigkeit und Aufwand beschriftete Zahlenskalen. Separate Durchschnittswerte, eigene Bearbeitungsaktionen und ein nativer Lösch-Bestätigungsdialog ergänzen die öffentliche Rezensionenliste. Fehlgeschlagene Speicherungen behalten den Entwurf; Modul- und Benutzerwechsel setzen ihn zurück.
+- *Bewertungs-Komponenten (Review UI):* Formular zur Erfassung und Bearbeitung mit vier Pflichtskalen und optionalem Text. Weiterempfehlung und Inhaltsinteresse verwenden Sterne, auch für die Durchschnittswerte; Schwierigkeit und Aufwand bleiben beschriftete Zahlenskalen. Die öffentliche Rezensionenliste zeigt keine Namen. Einzelwertungen sind über ein Info-Symbol per Hover, Tastatur oder Tippen abrufbar. Das Formular erklärt die interne Kontozuordnung für Bearbeitung und Löschung trotz namenloser Anzeige. Ein nativer Dialog bestätigt Löschungen. Fehlgeschlagene Speicherungen behalten den Entwurf; Modul- und Benutzerwechsel setzen ihn zurück.
 - *Zustandsverwaltung (Svelte Stores):* Reaktive Stores für Filterzustände, gecachten Modulkatalog, aktive Benutzersitzung und Synchronisationsstatus.
 - *API-Client:* Typsicherer Fetch-Client für die Kommunikation mit den Endpunkten des Workers (`/api/reviews`, `/api/auth`).
 
@@ -123,7 +123,7 @@ Die Frontend-Architektur gliedert sich in folgende Hauptkomponenten:
 Das Backend wird durch einen einzelnen Cloudflare Worker bereitgestellt, welcher modulare Controller umfasst:
 - *Authentifizierungs-Middleware:* Prüft Session-Tokens auf geschützten Routen mittels Better Auth.
 - *Review-Controller:* Stellt folgende CRUD-Endpunkte bereit:
-  - `GET /api/courses/:courseId/reviews`: Liefert alle Bewertungen sowie die berechneten Durchschnittswerte je Bewertungsdimension eines Moduls.
+  - `GET /api/courses/:courseId/reviews`: Liefert alle Bewertungen sowie die berechneten Durchschnittswerte je Bewertungsdimension eines Moduls. Review-Antworten enthalten weder Namen noch Benutzer-IDs. Das sitzungsabhängige Feld `ownReviewId` bezeichnet nur die eigene Bewertung oder ist `null`; der Lesezugriff bleibt öffentlich.
   - `POST /api/courses/:courseId/reviews`: Erstellt eine neue Bewertung (Authentifizierung vorausgesetzt, maximal eine Rezension pro Benutzer und Modul).
   - `PUT /api/reviews/:id`: Aktualisiert eine bestehende Bewertung (nur durch den Autor).
   - `DELETE /api/reviews/:id`: Entfernt eine Bewertung unwiderruflich (nur durch den Autor).
@@ -152,7 +152,7 @@ Das Backend wird durch einen einzelnen Cloudflare Worker bereitgestellt, welcher
 
 == 6.3 Szenario: Bewertung anpassen und löschen (CRUD - Update & Delete)
 1. Der Benutzer betrachtet seine eigene Rezension in der Modulansicht.
-2. Die Oberfläche erkennt `review.userId === currentSession.user.id` und blendet Aktionen zum Bearbeiten und Löschen ein.
+2. Der Worker ermittelt anhand der Sitzung die eigene Bewertung und liefert deren ID als `ownReviewId`. Die Oberfläche vergleicht diese mit `review.id` und bietet Bearbeitung und Löschung der eigenen Bewertung an.
 3. *Bearbeitung (Update):* Der Benutzer passt den Text oder die Bewertung an. Ein `PUT /api/reviews/:id`-Request wird ausgelöst. Der Worker verifiziert die Autorenschaft und aktualisiert den Datensatz in D1.
 4. *Löschung (Delete):* Der Benutzer klickt auf "Löschen" und bestätigt den Dialog. Ein `DELETE /api/reviews/:id`-Request wird an den Worker gesendet. Nach erfolgreicher Autorisierungsprüfung entfernt D1 die Zeile und gibt `204 No Content` zurück.
 
