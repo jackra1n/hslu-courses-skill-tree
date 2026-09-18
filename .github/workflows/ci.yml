@@ -35,8 +35,8 @@ jobs:
       - name: Lint & format check
         run: bun run lint
 
-      - name: Catalog tests
-        run: bun run catalog:test
+      - name: Test frontend
+        run: bun run web:test
 
       - name: Check SvelteKit & TypeScript
         run: bun run check
