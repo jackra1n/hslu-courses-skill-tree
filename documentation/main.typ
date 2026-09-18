@@ -18,6 +18,10 @@ Die vorliegende Dokumentation begleitet das Semesterprojekt im Modul *WEBLAB (We
 
 Das Vorhaben baut auf einem bereits existierenden Projekt auf, dem *HSLU Courses Skill Tree*, welches im Haupt-Repository gepflegt wird. Die Modulleitung hat die Weiternutzung und Erweiterung dieser bestehenden Codebasis explizit genehmigt, unter der zentralen Auflage, dass alle im Rahmen von WEBLAB erbrachten Leistungen eindeutig vom Vorzustand abgrenzbar und nachvollziehbar sind.
 
+#callout(title: "Arbeitsentwurf, kein Implementierungsnachweis", fill-color: rgb("#eff6ff"), stroke-color: secondary-color)[
+  Dieses Dokument enthält neben bestehenden Bausteinen auch die geplante Zielarchitektur. Review-API, Review-Oberfläche und Playwright-E2E-Tests sind noch nicht implementiert; die beschriebenen Review-Endpunkte und Abläufe sind Entwürfe. Performance- und Barrierefreiheitsangaben sind Ziele, keine Messresultate oder Konformitätsnachweise. Die vollständige Überarbeitung und Reflexion erfolgen nach Abschluss der Implementierung.
+]
+
 Der Git-Tag:
 #align(center)[
   #box(
@@ -47,7 +51,7 @@ Der geplante Projektumfang umfasst folgende Schwerpunkte:
 
 Die Systemarchitektur verbindet maximale Reaktionsgeschwindigkeit für Endanwender mit geringer Betriebskomplexität durch den Einsatz moderner Edge-Infrastruktur:
 
-1. *Client-seitiger Katalog & lokale Filterung:* Der vollständige Modulkatalog der HSLU wird während des Build-Prozesses in ein kompaktes, stark optimiertes JSON-Bündel transformiert. Sämtliche Such-, Filter- und Sortieroperationen laufen unmittelbar im Browser über reaktive Svelte-Stores. Dies garantiert Reaktionszeiten im Submillisekundenbereich ohne Netzwerk-Latenzen.
+1. *Client-seitiger Katalog & lokale Filterung:* Der Modulkatalog wird während der Datenaufbereitung in ein statisches JSON-Bündel transformiert. Such- und Filteroperationen laufen reaktiv im Browser, ohne pro Filteränderung eine Netzwerkanfrage auszulösen.
 2. *Edge-API & persistente Datenspeicherung:* Dynamische Anforderungen (Authentifizierung, Rezensionen, Synchronisation) werden über eine leichtgewichtige Cloudflare-Worker-API verarbeitet. Als persistente Datenbank dient Cloudflare D1 (serverloses SQLite am Edge), was weltweite Verfügbarkeit mit minimalen Latenzen und voller ACID-Integrität verbindet.
 3. *Authentifizierung via Better Auth:* Die Benutzerverwaltung basiert auf Better Auth innerhalb des Cloudflare Workers. Unterstützt werden GitHub OAuth sowie abgesicherte, HTTP-only Session-Cookies.
 4. *Progressive Enhancement:* Modulsuche, Filter und der Skill Tree stehen anonymen Nutzern ohne Anmeldung uneingeschränkt zur Verfügung. Eine Authentifizierung ist ausschliesslich für schreibende Operationen erforderlich (Erstellen/Bearbeiten von Bewertungen, Cloud-Synchronisation des Studienplans).
@@ -81,7 +85,7 @@ Die Systemarchitektur verbindet maximale Reaktionsgeschwindigkeit für Endanwend
         [
           #box(fill: rgb("#fef3c7"), stroke: 1pt + rgb("#d97706"), radius: 4pt, inset: 10pt, width: 100%)[
             *Cloudflare Worker* \
-            #text(size: 0.85em, fill: muted-color)[Hono / Fetch-Handler \ Auth- & Review-API]
+            #text(size: 0.85em, fill: muted-color)[Fetch-Handler \ Auth- & Progress-API \ Review-API geplant]
           ]
         ]
       )
@@ -100,7 +104,7 @@ Die Systemarchitektur verbindet maximale Reaktionsgeschwindigkeit für Endanwend
       #v(0.4em)
       #box(fill: rgb("#dcfce7"), stroke: 1pt + rgb("#16a34a"), radius: 4pt, inset: 10pt, width: 60%)[
         *Cloudflare D1 (SQLite)* \
-        #text(size: 0.85em, fill: muted-color)[Tabellen: `user`, `session`, `reviews`, `progress`]
+        #text(size: 0.85em, fill: muted-color)[Bestand: `user`, `session`, `account`, `verification`, `user_data` \ Erweiterung: `reviews`]
       ]
     ]
   )
@@ -118,14 +122,14 @@ Die Frontend-Architektur gliedert sich in folgende Hauptkomponenten:
 == 5.3 Level 2: Backend-Bausteine
 Das Backend wird durch einen einzelnen Cloudflare Worker bereitgestellt, welcher modulare Controller umfasst:
 - *Authentifizierungs-Middleware:* Prüft Session-Tokens auf geschützten Routen mittels Better Auth.
-- *Review-Controller:* Verwaltet sämtliche CRUD-Operationen unter `/api/reviews`:
-  - `GET /api/courses/:courseId/reviews`: Liefert alle Bewertungen sowie die berechnete Durchschnittsnote eines Moduls.
+- *Review-Controller (geplant):* Soll folgende CRUD-Endpunkte bereitstellen:
+  - `GET /api/courses/:courseId/reviews`: Liefert alle Bewertungen sowie die berechneten Durchschnittswerte je Bewertungsdimension eines Moduls.
   - `POST /api/courses/:courseId/reviews`: Erstellt eine neue Bewertung (Authentifizierung vorausgesetzt, maximal eine Rezension pro Benutzer und Modul).
   - `PUT /api/reviews/:id`: Aktualisiert eine bestehende Bewertung (nur durch den Autor).
   - `DELETE /api/reviews/:id`: Entfernt eine Bewertung unwiderruflich (nur durch den Autor).
 - *Datenbankschema (D1):* Relationale Tabellen mit Fremdschlüsseln und Integritätsregeln:
   - `user` / `session`: Durch Better Auth verwaltete Identitäten und Sitzungen.
-  - `reviews`: Speichert `id`, `course_id`, `user_id`, `rating`, `comment`, `created_at`, `updated_at`. Ein Unique-Index auf `(course_id, user_id)` stellt sicher, dass pro Nutzer und Modul nur eine Rezension existieren kann.
+  - `reviews` (Erweiterung): Vorgesehen sind `id`, `course_id`, `user_id`, `recommendation`, `content_interest`, `difficulty`, `workload`, optionaler `text`, `created_at` und `updated_at`. Alle vier Skalen verwenden Ganzzahlen von 1 bis 5. Schwierigkeit und Aufwand sind beschreibend, nicht positiv oder negativ zu werten; es gibt keinen Gesamtdurchschnitt über alle Dimensionen. Ein Unique-Constraint auf `(course_id, user_id)` begrenzt die Anzahl auf eine Rezension pro Nutzer und Modul.
 
 = 6. Laufzeitsicht
 
@@ -137,16 +141,16 @@ Das Backend wird durch einen einzelnen Cloudflare Worker bereitgestellt, welcher
    - Die Filterung wird synchron im Browser-Speicher ausgeführt.
    - Das DOM aktualisiert die Modulkarten flüssig ohne jegliche Netzwerkanfrage.
 
-== 6.2 Szenario 2: Kursbewertung erfassen (CRUD - Create)
+== 6.2 Geplantes Szenario: Kursbewertung erfassen (CRUD - Create)
 1. Ein angemeldeter Benutzer öffnet die Detailansicht eines Moduls.
 2. Der Client ruft `GET /api/courses/:courseId/reviews` ab, um existierende Rezensionen darzustellen.
-3. Der Benutzer wählt eine Sterne-Bewertung (1–5), verfasst einen Kommentar und klickt auf "Bewertung abgeben".
+3. Der Benutzer bewertet Weiterempfehlung und Inhaltsinteresse mit je 1–5 Sternen sowie Schwierigkeit (sehr leicht bis sehr schwer) und Aufwand (sehr niedrig bis sehr hoch) auf getrennten Skalen von 1–5. Optional verfasst er einen Kommentar.
 4. Der Client sendet einen `POST /api/courses/:courseId/reviews`-Request inklusive Authentifizierungs-Cookie.
 5. Der Worker validiert die Sitzung, prüft das Payload-Schema und kontrolliert, ob für dieses Modul bereits ein Eintrag des Benutzers vorliegt.
 6. Der Worker fügt die Rezension in Cloudflare D1 ein und antwortet mit dem Status `201 Created`.
-7. Der Client aktualisiert den lokalen Store; die neue Rezension und der aktualisierte Notenschnitt werden sofort angezeigt.
+7. Der Client zeigt die neue Rezension und die aktualisierten Durchschnittswerte je Bewertungsdimension an.
 
-== 6.3 Szenario 3: Bewertung anpassen und löschen (CRUD - Update & Delete)
+== 6.3 Geplantes Szenario: Bewertung anpassen und löschen (CRUD - Update & Delete)
 1. Der Benutzer betrachtet seine eigene Rezension in der Modulansicht.
 2. Die Oberfläche erkennt `review.userId === currentSession.user.id` und blendet Aktionen zum Bearbeiten und Löschen ein.
 3. *Bearbeitung (Update):* Der Benutzer passt den Text oder die Bewertung an. Ein `PUT /api/reviews/:id`-Request wird ausgelöst. Der Worker verifiziert die Autorenschaft und aktualisiert den Datensatz in D1.
@@ -155,17 +159,18 @@ Das Backend wird durch einen einzelnen Cloudflare Worker bereitgestellt, welcher
 = 7. Verteilungssicht
 
 == 7.1 Infrastruktur-Komponenten
-- *Statische Assets & Frontend-Hosting:* Auslieferung über Cloudflare Pages mit globalem CDN.
+- *Statische Assets & Frontend-Hosting:* Auslieferung des statischen SvelteKit-Builds über GitHub Pages.
 - *Serverlose Ausführung:* Cloudflare Workers führen die API-Logik unmittelbar an weltweiten Edge-Knoten mit minimaler Kaltstartzeit aus.
 - *Relationaler Speicher:* Cloudflare D1 stellt eine verteilte SQLite-Instanz am Edge bereit.
 - *Identitätsanbieter:* GitHub OAuth zur Authentifizierung von Studierenden und Entwicklern.
 
 == 7.2 Continuous Integration & Continuous Deployment (CI/CD)
-- GitHub Actions führt bei jedem Push auf Feature-Branches und bei Pull Requests automatische Prüfschritte durch:
-  1. *Linting & Formatierung:* Biome überprüft Code-Stil und Formatierung; TypeScript prüft statische Typen (`tsc --noEmit`).
-  2. *Automatisierte Unit- & Integrationstests:* Vitest führt Unit-Tests sowie Worker-Integrationstests gegen eine lokale D1-Testinstanz aus.
-  3. *End-to-End-Tests:* Playwright simuliert reale Benutzerabläufe im Headless-Browser.
-  4. *Deployment:* Automatisches Erstellen von Cloudflare-Preview-Umgebungen zur Vorabprüfung.
+- GitHub Actions führt bei Pushes auf `master` und bei Pull Requests automatische Prüfschritte durch:
+  1. *Übersetzungen, Linting & Typen:* Prüfung der Sprachkataloge, Biome, Svelte Check und TypeScript für den Worker.
+  2. *Automatisierte Unit- & Integrationstests:* `bun run web:test` führt alle Frontend-Tests aus; `bun run worker:test` führt Vitest-Integrationstests in der lokalen Workers-/D1-Laufzeit aus.
+  3. *Build:* Erstellung des Produktionsbundles.
+- *Deployment:* Nach erfolgreicher CI auf `master` oder manueller Auslösung werden das Frontend auf GitHub Pages sowie D1-Migrationen und der API-Worker auf Cloudflare veröffentlicht. Automatische Preview-Deployments sind nicht eingerichtet.
+- *End-to-End-Tests:* Playwright ist geplant und noch nicht in CI integriert.
 
 = 8. Querschnittliche Konzepte
 
@@ -180,13 +185,13 @@ Zur Gewährleistung der Konsistenz gelten folgende Massnahmen:
 
 == 8.3 Responsives Design und Barrierefreiheit
 - *Fluid Layout:* Responsive Breakpoints differenzieren zwischen Mobile (\<640px), Tablet (640px–1024px) und Desktop (>1024px).
-- *Mobile Ergonomie:* Auf Smartphones werden Filter als leicht bedienbare Bottom-Sheets dargestellt. Touch-Ziele weisen eine Mindestgrösse von 48px auf.
-- *Barrierefreiheit:* Semantische HTML5-Tags (`<main>`, `<nav>`, `<article>`, `<dialog>`), ARIA-Attribute für interaktive Komponenten und kontrastreiche Farbschemata stellen die Konformität mit WCAG 2.1 AA sicher.
+- *Mobile Ergonomie:* Der Course Browser verwendet einklappbare Filter. Kursdetails erscheinen auf kleineren Bildschirmen als Overlay.
+- *Barrierefreiheit:* Tastaturbedienbarkeit, Fokusführung und semantische Beschriftungen sind Entwicklungsziele. Eine vollständige WCAG-Konformitätsprüfung liegt noch nicht vor.
 
 == 8.4 Teststrategie
-- *Unit-Tests (Vitest):* Testen isolierte Geschäftslogik wie Filterfunktionen, Sortieralgorithmen, Aggregation von Bewertungen und Validierungsschemata.
-- *Integrationstests (Vitest + Miniflare):* Prüfen die Worker-API-Routen gegen eine lokale D1-SQLite-Instanz im Speicher.
-- *End-to-End-Tests (Playwright):* Testen vollständige Benutzerpfade im Browser (Katalogsuche, Filterkombinationen, Rezensions-CRUD-Zyklus und mobile Ansichten).
+- *Unit-Tests (Bun):* Prüfen Katalogaufbereitung, Katalogzugriff, kombinierte Filter und die Belegbarkeit von Kursen.
+- *Integrationstests (Vitest + Cloudflare Workers Pool):* Prüfen Authentifizierung, Migrationen und die Progress-API mit einer lokalen D1-Instanz.
+- *End-to-End-Tests (Playwright, geplant):* Sollen Katalogsuche, Filterkombinationen, Rezensions-CRUD und mobile Ansichten abdecken.
 
 = 9. Architekturentscheidungen (ADRs)
 
