@@ -158,8 +158,6 @@
 	"modul_erweiterungsmodul": "Erweiterungsmodul",
 	"modul_major_minor": "Major-/Minor-Modul",
 	"modul_zusatzmodul": "Zusatzmodul",
-	"modul_wahl": "Wahl-Modul",
-	"modul_major": "Major-Modul",
 	"modul_course": "Modul",
 
 	"slot_custom": "Eigenes Modul",
@@ -218,7 +216,6 @@
 
 	"details_deselect": "Modul abwählen",
 	"details_semester": "Semester {number}",
-	"details_offered_in": "Angeboten in {seasons}",
 	"details_empty_hint": "Klicke auf ein Modul um Details zu sehen und deinen Fortschritt zu verfolgen",
 	"details_empty_elective_hint": "Klicke auf gestrichelte 'Wahl-Modul'-Knoten um Module auszuwählen",
 

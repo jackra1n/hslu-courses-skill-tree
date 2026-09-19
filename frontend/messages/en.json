@@ -158,8 +158,6 @@
 	"modul_erweiterungsmodul": "Extension module",
 	"modul_major_minor": "Major/Minor module",
 	"modul_zusatzmodul": "Supplementary module",
-	"modul_wahl": "Elective module",
-	"modul_major": "Major module",
 	"modul_course": "Course",
 
 	"slot_custom": "Custom module",
@@ -218,7 +216,6 @@
 
 	"details_deselect": "Deselect course",
 	"details_semester": "Semester {number}",
-	"details_offered_in": "Offered in {seasons}",
 	"details_empty_hint": "Click on a course to view details and track your progress",
 	"details_empty_elective_hint": "Click on dashed \"Elective module\" nodes to select courses",
 
