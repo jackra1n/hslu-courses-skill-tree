@@ -2,7 +2,6 @@
 import { onMount } from 'svelte';
 import 'virtual:uno.css';
 import '$lib/styles/theme.css';
-import MobileWarningPopup from '$lib/components/ui/MobileWarningPopup.svelte';
 import * as m from '$lib/paraglide/messages';
 import { localeStore } from '$lib/stores/locale.svelte';
 import { themeStore } from '$lib/stores/theme.svelte';
@@ -23,5 +22,3 @@ onMount(() => {
 </svelte:head>
 
 {@render children?.()}
-
-<MobileWarningPopup />

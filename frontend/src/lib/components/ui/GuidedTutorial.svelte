@@ -8,6 +8,8 @@ import { tutorialRequested, uiStore } from '$lib/stores/uiStore.svelte';
 
 const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
 
+let { active = $bindable(true) }: { active: boolean } = $props();
+
 // Built per run so the popovers pick up the active locale.
 function buildSteps(): DriveStep[] {
 	return [
@@ -72,32 +74,8 @@ function buildSteps(): DriveStep[] {
 
 let driverInstance: Driver | null = null;
 let starting = false;
-let bodyObserver: MutationObserver | null = null;
+let destroyed = false;
 let nodeObserver: MutationObserver | null = null;
-
-function waitForAbsent(selector: string, timeout = 0): Promise<void> {
-	return new Promise((resolve) => {
-		if (!document.querySelector(selector)) {
-			resolve();
-			return;
-		}
-
-		const finish = () => {
-			observer.disconnect();
-			if (bodyObserver === observer) bodyObserver = null;
-			if (timeoutId !== undefined) clearTimeout(timeoutId);
-			resolve();
-		};
-
-		const observer = new MutationObserver(() => {
-			if (!document.querySelector(selector)) finish();
-		});
-		bodyObserver = observer;
-		observer.observe(document.body, { childList: true, subtree: true });
-
-		const timeoutId = timeout > 0 ? setTimeout(finish, timeout) : undefined;
-	});
-}
 
 function waitForNode(selector: string, timeout: number): Promise<void> {
 	return new Promise((resolve) => {
@@ -123,9 +101,18 @@ function waitForNode(selector: string, timeout: number): Promise<void> {
 	});
 }
 
+function finishTutorial() {
+	// onDestroyed can be skipped before the first step animation settles.
+	driverInstance?.destroy();
+	driverInstance = null;
+	localStorage.setItem(SEEN_KEY, 'true');
+	active = false;
+}
+
 async function runTutorial() {
 	if (starting || driverInstance?.isActive()) return;
 	starting = true;
+	active = true;
 
 	try {
 		await tick();
@@ -133,14 +120,9 @@ async function runTutorial() {
 			requestAnimationFrame(() => resolve()),
 		);
 
-		// Wait for the first course node (bounded) and for the blocking mobile
-		// warning overlay to be gone so Driver.js never competes with it.
-		await Promise.all([
-			waitForNode('.svelte-flow__node-custom', 2000),
-			waitForAbsent('[data-mobile-warning]'),
-		]);
-
-		if (driverInstance?.isActive()) return;
+		// let the canvas mount before positioning the first highlighted step.
+		await waitForNode('.svelte-flow__node-custom', 2000);
+		if (destroyed || driverInstance?.isActive()) return;
 
 		// driver.js interpolates {{current}}/{{total}} itself; feed the tokens
 		// through the message as literal params.
@@ -163,21 +145,21 @@ async function runTutorial() {
 			stageRadius: 8,
 			popoverClass: 'hslu-tutorial-popover',
 			steps: buildSteps(),
-			onDestroyed: () => {
-				localStorage.setItem(SEEN_KEY, 'true');
-				driverInstance = null;
-			},
+			onDestroyStarted: finishTutorial,
 		});
 
 		driverInstance.drive();
 	} finally {
 		starting = false;
+		if (!driverInstance?.isActive()) active = false;
 	}
 }
 
 onMount(() => {
 	if (localStorage.getItem(SEEN_KEY) !== 'true') {
 		runTutorial();
+	} else {
+		active = false;
 	}
 });
 
@@ -189,12 +171,9 @@ $effect(() => {
 });
 
 onDestroy(() => {
-	bodyObserver?.disconnect();
+	destroyed = true;
 	nodeObserver?.disconnect();
-	if (driverInstance) {
-		driverInstance.destroy();
-		driverInstance = null;
-	}
+	if (driverInstance) finishTutorial();
 });
 </script>
 
