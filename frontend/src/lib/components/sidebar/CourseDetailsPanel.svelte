@@ -179,7 +179,7 @@ $effect(() => {
   {#if hasSelection()}
     {#if displayCourse}
       {#key `${selection()?.id}:${displayCourse.id}`}
-      <CourseDetailContent course={displayCourse} moduleType={displayCourse.type} titleId={TITLE_ID} semester={activePlanNode?.semester} elective={isElectiveSlot()}>
+      <CourseDetailContent course={displayCourse} moduleType={displayCourse.type} titleId={TITLE_ID} semester={activePlanNode?.semester} targetNodeId={activePlanNode?.id} elective={isElectiveSlot()}>
         {#snippet close()}
           <button
             bind:this={closeButton}

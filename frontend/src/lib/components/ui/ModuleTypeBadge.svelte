@@ -6,10 +6,12 @@ let {
 	type,
 	short = false,
 	variant = 'subtle',
+	size = 'sm',
 }: {
 	type: ModuleType;
 	short?: boolean;
 	variant?: 'solid' | 'subtle';
+	size?: 'sm' | 'md';
 } = $props();
 
 const solidColor: Record<ModuleType, string> = {
@@ -40,7 +42,7 @@ const color = $derived(
 </script>
 
 <span
-	class="inline-flex items-center rounded-md border px-1.5 py-0.5 text-xs font-medium {color}"
+	class="inline-flex items-center rounded-md border font-medium {size === 'md' ? 'px-2.5 py-1 text-sm' : 'px-1.5 py-0.5 text-xs'} {color}"
 >
 	{label}
 </span>

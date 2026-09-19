@@ -7,13 +7,16 @@ import { courseLabel } from '$lib/data/course-label';
 import { seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
+import { locale } from '$lib/stores/locale.svelte';
 import CourseReviews from './CourseReviews.svelte';
+import PrerequisiteSummary from './PrerequisiteSummary.svelte';
 
 let {
 	course,
 	moduleType,
 	titleId,
 	semester,
+	targetNodeId,
 	close,
 	prerequisites,
 	actions,
@@ -23,6 +26,7 @@ let {
 	moduleType?: ModuleType;
 	titleId: string;
 	semester?: number;
+	targetNodeId?: string;
 	close: Snippet;
 	prerequisites: Snippet;
 	actions?: Snippet;
@@ -45,6 +49,9 @@ const alternateLabel = $derived(
 			? course.labelEn
 			: null
 		: course.label,
+);
+const languageNames = $derived(
+	new Intl.DisplayNames([locale()], { type: 'language' }),
 );
 const hasPrerequisites = $derived(
 	course.assessmentLevelPassed ||
@@ -81,8 +88,8 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 		{@render close()}
 	</div>
 	<dl class="mt-4 flex flex-wrap items-center gap-2">
-		<div><dt class="sr-only">{m.course_details_ects()}</dt><dd class="rounded-md border border-border-primary px-2.5 py-1 text-sm font-semibold text-text-primary">{course.ects} ECTS</dd></div>
-		{#if moduleType}<div><dt class="sr-only">{m.course_details_type()}</dt><dd><ModuleTypeBadge type={moduleType} /></dd></div>{/if}
+		<div><dt class="sr-only">{m.course_details_ects()}</dt><dd class="inline-flex items-center rounded-md border border-border-primary px-2.5 py-1 text-sm font-medium text-text-primary">{course.ects} ECTS</dd></div>
+		{#if moduleType}<div><dt class="sr-only">{m.course_details_type()}</dt><dd><ModuleTypeBadge type={moduleType} size="md" /></dd></div>{/if}
 	</dl>
 	<dl class="mt-4 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 text-sm leading-relaxed">
 		<dt class="flex items-center gap-2 text-text-primary"><span class="i-lucide-calendar-days h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true"></span>{m.course_details_seasons()}</dt>
@@ -91,13 +98,17 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 			<dt class="flex items-center gap-2 text-text-primary"><span class="i-lucide-layers h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true"></span>{m.course_details_plan_semester()}</dt>
 			<dd class="text-text-secondary">{semester}</dd>
 		{/if}
+		{#if !elective}
+			<dt class="flex items-center gap-2 text-text-primary"><span class="i-lucide-languages h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true"></span>{m.course_details_languages()}</dt>
+			<dd class="text-text-secondary">{course.languages?.length ? course.languages.map((language) => languageNames.of(language)).join(', ') : m.course_details_unknown()}</dd>
+		{/if}
 	</dl>
 </header>
 
 {#if !elective}
 <div role="tablist" aria-label={m.course_details_tabs()} class="sticky top-0 z-10 mx-4 flex border-b border-border-primary bg-bg-secondary">
 	{#each tabs as tab, index}
-		<button type="button" role="tab" id={`${id}-tab-${tab}`} aria-selected={activeTab === tab} aria-controls={`${id}-panel-${tab}`} tabindex={activeTab === tab ? 0 : -1} onclick={() => selectTab(tab)} onkeydown={(event) => handleTabKey(event, index)} class={`min-h-11 min-w-0 flex-1 cursor-pointer border-b-2 px-2 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 ${activeTab === tab ? 'border-blue-500 text-text-primary' : 'border-transparent text-text-secondary hover:text-text-primary'}`}>
+		<button type="button" role="tab" id={`${id}-tab-${tab}`} aria-selected={activeTab === tab} aria-controls={`${id}-panel-${tab}`} tabindex={activeTab === tab ? 0 : -1} onclick={() => selectTab(tab)} onkeydown={(event) => handleTabKey(event, index)} class={`min-h-11 min-w-0 flex-auto cursor-pointer border-b-2 px-2 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 ${activeTab === tab ? 'border-blue-500 text-text-primary' : 'border-transparent text-text-secondary hover:text-text-primary'}`}>
 			{labels[tab]}
 		</button>
 	{/each}
@@ -117,8 +128,7 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 	<section class="border-t border-border-primary pt-4" aria-labelledby={`${id}-summary`}>
 		<h3 id={`${id}-summary`} class="text-sm font-semibold text-text-primary">{m.course_details_prerequisite_summary()}</h3>
 		{#if hasPrerequisites}
-			{#if course.assessmentLevelPassed}<p class="mt-3 flex items-start gap-2 text-sm leading-relaxed text-text-secondary"><span class="i-lucide-badge-check mt-0.5 h-4 w-4 shrink-0" aria-hidden="true"></span>{m.prereq_assessment_passed()}</p>{/if}
-			{#if course.prerequisites.length}<p class="mt-2 text-sm leading-relaxed text-text-secondary">{m.course_details_prerequisite_groups({ count: course.prerequisites.length })}</p>{/if}
+			<PrerequisiteSummary {course} {targetNodeId} />
 			<button type="button" class="mt-2 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline focus-visible:outline-blue-500" onclick={() => { selectTab('prerequisites'); document.getElementById(`${id}-tab-prerequisites`)?.focus(); }}>{m.course_details_view_prerequisites()}<span class="i-lucide-arrow-right h-4 w-4" aria-hidden="true"></span></button>
 		{:else}<p class="mt-2 text-sm leading-relaxed text-text-secondary">{m.prereq_none()}</p>{/if}
 	</section>
