@@ -155,7 +155,7 @@ function setMax(input: HTMLInputElement): void {
 		<fieldset>
 			<legend class="mb-2 text-sm font-semibold text-text-primary">{m.browser_filter_type()}</legend>
 			{#each moduleTypeOptions as option, index}
-				<label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-md py-2 text-sm text-text-primary hover:bg-bg-secondary focus-within:outline focus-within:outline-blue-500">
+				<label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm text-text-primary hover:bg-bg-secondary focus-within:outline focus-within:outline-blue-500">
 					<input type="checkbox" bind:group={moduleTypes} value={option} aria-labelledby={`${id}-type-${index}`} aria-describedby={`${id}-type-count-${index}`} class="h-5 w-5 shrink-0 cursor-pointer accent-blue-500" />
 					<span id={`${id}-type-${index}`} class="min-w-0 flex-1 break-words">{moduleTypeLabel(option)}</span>
 					<span id={`${id}-type-count-${index}`} class="rounded bg-bg-secondary px-1.5 text-xs tabular-nums text-text-secondary">{moduleTypeCounts[option] ?? 0}</span>
@@ -167,7 +167,7 @@ function setMax(input: HTMLInputElement): void {
 		<fieldset>
 			<legend class="mb-2 text-sm font-semibold text-text-primary">{m.assessment_methods()}</legend>
 			{#each assessmentModeOptions as option, index}
-				<label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-md py-2 text-sm text-text-primary hover:bg-bg-secondary focus-within:outline focus-within:outline-blue-500">
+				<label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm text-text-primary hover:bg-bg-secondary focus-within:outline focus-within:outline-blue-500">
 					<input type="checkbox" bind:group={assessmentModes} value={option} aria-labelledby={`${id}-mode-${index}`} aria-describedby={`${id}-mode-count-${index}`} class="h-5 w-5 shrink-0 cursor-pointer accent-blue-500" />
 					<span id={`${id}-mode-${index}`} class="min-w-0 flex-1 break-words">{assessmentModeLabel(option)}</span>
 					<span id={`${id}-mode-count-${index}`} class="rounded bg-bg-secondary px-1.5 text-xs tabular-nums text-text-secondary">{assessmentModeCounts[option] ?? 0}</span>
