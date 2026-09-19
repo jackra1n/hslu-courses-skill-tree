@@ -178,8 +178,11 @@ $effect(() => {
 >
   {#if hasSelection()}
     {#if displayCourse}
+      {#snippet electiveSelector()}
+        <ElectiveCourseSelector slotId={selection()?.id || ''} />
+      {/snippet}
       {#key `${selection()?.id}:${displayCourse.id}`}
-      <CourseDetailContent course={displayCourse} moduleType={displayCourse.type} titleId={TITLE_ID} semester={activePlanNode?.semester} targetNodeId={activePlanNode?.id} elective={isElectiveSlot()}>
+      <CourseDetailContent course={displayCourse} moduleType={displayCourse.type} titleId={TITLE_ID} semester={activePlanNode?.semester} targetNodeId={activePlanNode?.id} elective={isElectiveSlot() && !activePlanNode?.courseId} selector={isElectiveSlot() ? electiveSelector : undefined}>
         {#snippet close()}
           <button
             bind:this={closeButton}
@@ -193,12 +196,10 @@ $effect(() => {
           </button>
         {/snippet}
         {#snippet prerequisites()}
-        {#if !isElectiveSlot()}
         {#if warningType}
           <PrerequisiteWarning type={warningType} />
         {/if}
         <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} assessmentLevelPassed={displayCourse?.assessmentLevelPassed} separated={false} />
-        {/if}
         {#if prerequisiteNote}
           <section class="border-t border-border-primary pt-3" aria-labelledby="skill-tree-detail-note">
             <h3 id="skill-tree-detail-note" class="text-sm font-semibold text-text-primary">{m.course_details_note()}</h3>
@@ -207,9 +208,7 @@ $effect(() => {
         {/if}
         {/snippet}
         {#snippet actions()}
-          {#if isElectiveSlot()}
-            <ElectiveCourseSelector slotId={selection()?.id || ''} />
-          {:else}
+          {#if !isElectiveSlot() || activePlanNode?.courseId}
             <ActionButtons courseId={displayCourse.id} />
           {/if}
         {/snippet}

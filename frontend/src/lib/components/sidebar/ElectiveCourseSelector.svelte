@@ -1,19 +1,10 @@
 <script lang="ts">
-import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
-import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
-import AssessmentModeBadges from '$lib/components/ui/AssessmentModeBadges.svelte';
 import Dropdown from '$lib/components/ui/Dropdown.svelte';
-import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { courseLabel } from '$lib/data/course-label';
-import { COURSES, type Course, getCourseById } from '$lib/data/courses';
+import { COURSES, type Course } from '$lib/data/courses';
 import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
-import {
-	hasAssessmentStageViolation,
-	hasMissingPrerequisites,
-} from '$lib/utils/status';
 
 let { slotId }: { slotId: string } = $props();
 const id = $props.id();
@@ -21,32 +12,8 @@ const id = $props.id();
 const courseStore = getCourseStore();
 
 const selectedCourseId = $derived(courseStore.userSelections[slotId]);
-const selectedCourse = $derived.by(() => {
-	if (!selectedCourseId) return null;
-	return getCourseById(selectedCourseId) ?? null;
-});
 
 const slotNode = $derived(courseStore.studyPlan.nodes[slotId]);
-
-const warningType = $derived.by(() => {
-	if (!selectedCourse) return null;
-
-	const plan = courseStore.studyPlan;
-
-	if (hasPlanPrereqConflict(plan, slotId, { considerSameSemester: false })) {
-		return 'later-prerequisites';
-	}
-
-	if (hasMissingPrerequisites(plan, slotId)) {
-		return 'missing-prerequisites';
-	}
-
-	if (hasAssessmentStageViolation(plan, slotId)) {
-		return 'assessment-stage';
-	}
-
-	return null;
-});
 
 const availableCourses = $derived(
 	COURSES.filter((course) => {
@@ -149,22 +116,3 @@ function clearSelection() {
   </div>
 </div>
 
-{#if selectedCourse}
-  {#if selectedCourse.assessmentModes.length > 0}
-    <section class="mt-6 border-t border-border-primary pt-5" aria-labelledby="skill-tree-elective-assessment">
-      <h3 id="skill-tree-elective-assessment" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
-        <span class="i-lucide-clipboard-check h-4 w-4 text-text-secondary" aria-hidden="true"></span>
-        {m.assessment_methods()}
-      </h3>
-      <div class="mt-3">
-        <AssessmentModeBadges modes={selectedCourse.assessmentModes} />
-      </div>
-    </section>
-  {/if}
-  {#if warningType}
-    <PrerequisiteWarning showBorder={true} type={warningType} />
-  {/if}
-  
-  <PrerequisiteList prerequisites={selectedCourse.prerequisites || []} assessmentLevelPassed={selectedCourse.assessmentLevelPassed} />
-  <ActionButtons courseId={selectedCourse.id} />
-{/if}

@@ -246,3 +246,54 @@ test('closed settings stay out of keyboard navigation', async ({ page }) => {
 	await page.keyboard.press('Tab');
 	await expect(search).toBeFocused();
 });
+
+test('selected elective courses use the shared tabs and clearing returns to the picker', async ({
+	page,
+	isMobile,
+}) => {
+	await page.addInitScript(() => {
+		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
+	});
+	await page.goto('/');
+	if (isMobile) {
+		await page
+			.getByRole('button', { name: "Got it, don't show again", exact: true })
+			.click();
+	}
+	await page.locator('.svelte-flow__node[data-id="elective1-1"]').click();
+	const panel = page.locator('#skill-tree-course-detail-panel');
+	const picker = panel.getByRole('button', {
+		name: 'Choose a course for this slot',
+		exact: true,
+	});
+	await picker.click();
+	await page
+		.getByRole('option', {
+			name: 'Distributed Systems & Components (VSK_MM) — 6 ECTS',
+			exact: true,
+		})
+		.click();
+	await expect(
+		panel.getByRole('tab', { name: 'Overview', exact: true }),
+	).toHaveAttribute('aria-selected', 'true');
+	await expect(
+		panel.getByRole('heading', { name: 'Prerequisites summary', exact: true }),
+	).toBeVisible();
+	await panel.getByRole('tab', { name: 'Prerequisites', exact: true }).click();
+	await expect(
+		panel.getByRole('heading', { name: 'Prerequisites', exact: true }),
+	).toBeVisible();
+	await panel.getByRole('tab', { name: 'Reviews', exact: true }).click();
+	await expect(
+		panel.getByRole('heading', { name: 'Student reviews', exact: true }),
+	).toBeVisible();
+	await panel.getByRole('button', { name: 'Clear', exact: true }).click();
+	await expect(panel.getByRole('tab')).toHaveCount(0);
+	await expect(picker).toBeVisible();
+	await expect(
+		panel.getByRole('heading', {
+			name: 'Distributed Systems & Components',
+			exact: true,
+		}),
+	).toHaveCount(0);
+});

@@ -20,6 +20,7 @@ let {
 	close,
 	prerequisites,
 	actions,
+	selector,
 	elective = false,
 }: {
 	course: Omit<Course, 'type'>;
@@ -30,6 +31,7 @@ let {
 	close: Snippet;
 	prerequisites: Snippet;
 	actions?: Snippet;
+	selector?: Snippet;
 	elective?: boolean;
 } = $props();
 
@@ -104,6 +106,7 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 		{/if}
 	</dl>
 </header>
+{#if selector}<div class="px-5 pb-4">{@render selector()}</div>{/if}
 
 {#if !elective}
 <div role="tablist" aria-label={m.course_details_tabs()} class="sticky top-0 z-10 mx-4 flex border-b border-border-primary bg-bg-secondary">
