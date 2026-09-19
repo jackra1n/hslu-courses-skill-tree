@@ -210,12 +210,9 @@
 	"sync_use_cloud": "Use cloud data",
 	"sync_unknown_time": "Unknown",
 	"sync_unavailable": "Cloud sync unavailable. Changes remain saved on this device.",
-	"disclaimer_title": "Disclaimer",
-	"disclaimer_text": "HSLU Courses Skill Tree is not supported by HSLU. It's a private initiative run by students.",
+	"disclaimer_text": "An independent student project, not supported by HSLU.",
 
-	"mobile_title": "Best Experienced on Desktop",
-	"mobile_text": "You can still navigate on mobile, but this app really shines on a laptop or desktop where you get the full overview.",
-	"mobile_dismiss": "Got it, don't show again",
+	"mobile_text": "For a clearer view of the full skill tree, try a larger screen.",
 
 	"details_deselect": "Deselect course",
 	"details_semester": "Semester {number}",
@@ -304,10 +301,12 @@
 
 	"tutorial_progress": "Step {current} of {total}",
 	"tutorial_next": "Next",
+	"tutorial_start": "Start tour",
+	"tutorial_explore_alone": "Explore on my own",
 	"tutorial_back": "Back",
 	"tutorial_done": "Done",
 	"tutorial_welcome_title": "Welcome to HSLU Courses Skill Tree",
-	"tutorial_welcome_description": "This short tour shows you how to explore your study plan, track courses, switch programs, and review your progress.",
+	"tutorial_welcome_description": "Explore your study plan and track your progress.",
 	"tutorial_explore_title": "Explore your study plan",
 	"tutorial_explore_description": "Drag or scroll to move around the skill tree, and use the controls to zoom. Courses are arranged by semester and connected by prerequisites.",
 	"tutorial_course_title": "Open a course",

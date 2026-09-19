@@ -8,8 +8,6 @@ import { tutorialRequested, uiStore } from '$lib/stores/uiStore.svelte';
 
 const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
 
-let { active = $bindable(true) }: { active: boolean } = $props();
-
 // Built per run so the popovers pick up the active locale.
 function buildSteps(): DriveStep[] {
 	return [
@@ -17,6 +15,26 @@ function buildSteps(): DriveStep[] {
 			popover: {
 				title: m.tutorial_welcome_title(),
 				description: m.tutorial_welcome_description(),
+				popoverClass: 'hslu-tutorial-popover hslu-welcome-popover',
+				nextBtnText: m.tutorial_start(),
+				prevBtnText: m.tutorial_explore_alone(),
+				disableButtons: [],
+				onPrevClick: finishTutorial,
+				onNextClick: (_element, _step, { driver }) => {
+					localStorage.setItem(SEEN_KEY, 'true');
+					driver.moveNext();
+				},
+				onPopoverRender: (popover) => {
+					popover.progress.remove();
+					popover.footerButtons.append(popover.previousButton);
+					const disclaimer = document.createElement('p');
+					disclaimer.className = 'hslu-welcome-note';
+					disclaimer.textContent = m.disclaimer_text();
+					const mobileTip = document.createElement('p');
+					mobileTip.className = 'hslu-welcome-note hslu-welcome-mobile-tip';
+					mobileTip.textContent = m.mobile_text();
+					popover.description.append(disclaimer, mobileTip);
+				},
 			},
 		},
 		{
@@ -106,13 +124,11 @@ function finishTutorial() {
 	driverInstance?.destroy();
 	driverInstance = null;
 	localStorage.setItem(SEEN_KEY, 'true');
-	active = false;
 }
 
 async function runTutorial() {
 	if (starting || driverInstance?.isActive()) return;
 	starting = true;
-	active = true;
 
 	try {
 		await tick();
@@ -151,15 +167,12 @@ async function runTutorial() {
 		driverInstance.drive();
 	} finally {
 		starting = false;
-		if (!driverInstance?.isActive()) active = false;
 	}
 }
 
 onMount(() => {
 	if (localStorage.getItem(SEEN_KEY) !== 'true') {
 		runTutorial();
-	} else {
-		active = false;
 	}
 });
 
@@ -187,6 +200,42 @@ onDestroy(() => {
     padding: 1.25rem;
     min-width: 250px;
     max-width: 300px;
+  }
+
+  :global(.hslu-welcome-popover) {
+    box-sizing: border-box;
+    width: min(380px, calc(100vw - 32px));
+    min-width: 0;
+    max-width: 380px;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
+
+  :global(.hslu-welcome-note) {
+    margin-top: 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+
+  :global(.hslu-welcome-popover .driver-popover-navigation-btns) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  :global(.hslu-welcome-popover .driver-popover-navigation-btns button) {
+    min-height: 44px;
+    margin: 0;
+    white-space: normal;
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    :global(.hslu-welcome-mobile-tip) {
+      display: none;
+    }
   }
 
   :global(.hslu-tutorial-popover .driver-popover-title) {
@@ -265,14 +314,14 @@ onDestroy(() => {
     background-color: rgb(var(--bg-secondary));
   }
 
-  :global(.hslu-tutorial-popover .driver-popover-navigation-btns button:last-child) {
+  :global(.hslu-tutorial-popover .driver-popover-navigation-btns .driver-popover-next-btn) {
     background-color: rgb(37 99 235);
     border-color: rgb(37 99 235);
     color: #fff;
   }
 
-  :global(.hslu-tutorial-popover .driver-popover-navigation-btns button:last-child:hover),
-  :global(.hslu-tutorial-popover .driver-popover-navigation-btns button:last-child:focus) {
+  :global(.hslu-tutorial-popover .driver-popover-navigation-btns .driver-popover-next-btn:hover),
+  :global(.hslu-tutorial-popover .driver-popover-navigation-btns .driver-popover-next-btn:focus) {
     background-color: rgb(29 78 216);
     border-color: rgb(29 78 216);
   }

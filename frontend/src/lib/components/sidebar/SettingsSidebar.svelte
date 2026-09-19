@@ -110,6 +110,10 @@ function confirmResetAllData() {
               <span>{m.settings_start_tutorial()}</span>
             </button>
           {/if}
+          <div class="space-y-2 px-1 py-2 text-sm leading-relaxed text-text-secondary">
+            <p>{m.disclaimer_text()}</p>
+            <p>{m.mobile_text()}</p>
+          </div>
           <div class="flex w-full items-center justify-between gap-3 px-1 py-2 text-base text-text-primary">
             <span>{m.settings_theme()}</span>
             <ThemeSwitcher />

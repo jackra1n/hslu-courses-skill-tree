@@ -290,17 +290,11 @@ test('closed settings stay out of keyboard navigation', async ({ page }) => {
 
 test('selected elective courses use the shared tabs and clearing returns to the picker', async ({
 	page,
-	isMobile,
 }) => {
 	await page.addInitScript(() => {
 		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
 	});
 	await page.goto('/');
-	if (isMobile) {
-		await page
-			.getByRole('button', { name: "Got it, don't show again", exact: true })
-			.click();
-	}
 	await page.locator('.svelte-flow__node[data-id="elective1-1"]').click();
 	const panel = page.locator('#skill-tree-course-detail-panel');
 	const picker = panel.getByRole('button', {

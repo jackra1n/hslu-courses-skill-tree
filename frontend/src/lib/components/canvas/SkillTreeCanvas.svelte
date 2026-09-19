@@ -13,7 +13,6 @@ import { onMount } from 'svelte';
 import * as m from '$lib/paraglide/messages';
 import '@xyflow/svelte/dist/style.css';
 
-import DisclaimerToast from '$lib/components/ui/DisclaimerToast.svelte';
 import { getNodeWidth } from '$lib/graph/layout';
 import { getEdgeStyle, getNodeStyle } from '$lib/graph/styles';
 import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
@@ -274,5 +273,4 @@ onMount(() => {
     <Background gap={16} />
   </SvelteFlow>
 
-  <DisclaimerToast />
 </div>
