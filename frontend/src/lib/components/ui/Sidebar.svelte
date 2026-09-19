@@ -37,6 +37,7 @@ onMount(() => {
     : 'translate-x-full pointer-events-none'}"
   aria-label={label}
   aria-hidden={!isOpen}
+  inert={!isOpen}
 >
   {@render children()}
 </aside>

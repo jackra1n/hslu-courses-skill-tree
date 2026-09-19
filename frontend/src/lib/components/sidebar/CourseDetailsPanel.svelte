@@ -1,26 +1,25 @@
 <script lang="ts">
-import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
-import { courseLabel } from '$lib/data/course-label';
+import { onMount, tick } from 'svelte';
+import CourseDetailContent from '$lib/components/course/CourseDetailContent.svelte';
 import { getCourseById } from '$lib/data/courses';
-import { moduleTypeLabel } from '$lib/data/module-type';
-import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import {
 	hasSelection,
 	isElectiveSlot,
+	selectedSlotId,
 	selection,
 	uiStore,
 } from '$lib/stores/uiStore.svelte';
-import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
-import {
-	hasAssessmentStageViolation,
-	hasMissingPrerequisites,
-} from '$lib/utils/status';
 import ActionButtons from './ActionButtons.svelte';
 import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
-import PrerequisiteList from './PrerequisiteList.svelte';
 import StatusLegend from './StatusLegend.svelte';
+
+const TITLE_ID = 'skill-tree-course-detail-title';
+
+let panel: HTMLElement;
+let closeButton = $state<HTMLButtonElement>();
+let isOverlay = $state(false);
 
 const courseStore = getCourseStore();
 
@@ -46,6 +45,8 @@ const activePlanNode = $derived.by(() => {
 	const sel = selection();
 	if (!sel) return null;
 	const plan = courseStore.studyPlan;
+	const explicitSlot = selectedSlotId();
+	if (explicitSlot && plan.nodes[explicitSlot]) return plan.nodes[explicitSlot];
 	const slotMatch = plan.nodes[sel.id];
 	if (slotMatch) return slotMatch;
 	return (
@@ -53,125 +54,137 @@ const activePlanNode = $derived.by(() => {
 	);
 });
 
-const warningType = $derived.by(() => {
-	if (!displayCourse || !activePlanNode) return null;
-
-	const plan = courseStore.studyPlan;
-
-	if (
-		hasPlanPrereqConflict(plan, activePlanNode.id, {
-			considerSameSemester: false,
-		})
-	) {
-		return 'later-prerequisites';
-	}
-
-	if (hasMissingPrerequisites(plan, activePlanNode.id)) {
-		return 'missing-prerequisites';
-	}
-
-	if (hasAssessmentStageViolation(plan, activePlanNode.id)) {
-		return 'assessment-stage';
-	}
-
-	return null;
-});
-
-const prerequisiteNote = $derived.by(
-	() => displayCourse?.prerequisiteNote?.trim() ?? '',
-);
 const isDrawerOpen = $derived(hasSelection());
 
-const seasonInfo = $derived.by(() => {
-	const seasons = displayCourse?.seasons;
-	if (!seasons || seasons.length === 0) return null;
-	const ordered = (['HS', 'FS'] as Season[]).filter((season) =>
-		seasons.includes(season),
+function focusableElements(): HTMLElement[] {
+	return Array.from(
+		panel.querySelectorAll<HTMLElement>(
+			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])',
+		),
+	).filter(
+		(element) => element.tabIndex >= 0 && element.getClientRects().length > 0,
 	);
-	return {
-		short: ordered.join(' + '),
-		full: ordered.map((season) => seasonLabel(season)).join(' & '),
+}
+
+function closeDetails(): void {
+	uiStore.deselectCourse();
+}
+
+async function navigateToPrerequisite(courseId: string): Promise<void> {
+	const course = getCourseById(courseId);
+	if (!course) return;
+	const node = Object.values(courseStore.studyPlan.nodes).find(
+		(node) => node.courseId === courseId,
+	);
+	uiStore.selectCourse(course, node?.id);
+	await tick();
+	panel.scrollTop = 0;
+	closeButton?.focus({ preventScroll: true });
+}
+
+function handleKeydown(event: KeyboardEvent): void {
+	if (!isDrawerOpen || !isOverlay) return;
+	if (event.key === 'Escape') {
+		event.preventDefault();
+		closeDetails();
+		return;
+	}
+	if (event.key !== 'Tab') return;
+
+	const focusable = focusableElements();
+	const first = focusable[0];
+	const last = focusable.at(-1);
+	if (!first || !last) return;
+
+	if (event.shiftKey && document.activeElement === first) {
+		event.preventDefault();
+		last.focus();
+	} else if (!event.shiftKey && document.activeElement === last) {
+		event.preventDefault();
+		first.focus();
+	}
+}
+
+onMount(() => {
+	const media = window.matchMedia('(max-width: 1279px)');
+	const updateOverlay = () => {
+		isOverlay = media.matches;
+	};
+	updateOverlay();
+	media.addEventListener('change', updateOverlay);
+	return () => media.removeEventListener('change', updateOverlay);
+});
+
+$effect(() => {
+	if (!displayCourse?.id) return;
+	void tick().then(() => {
+		panel.scrollTop = 0;
+	});
+});
+
+$effect(() => {
+	if (!isDrawerOpen || !isOverlay) return;
+	const focusOrigin =
+		document.activeElement instanceof HTMLElement &&
+		document.activeElement !== document.body
+			? document.activeElement
+			: null;
+	void tick().then(() => closeButton?.focus());
+	return () => {
+		if (focusOrigin?.isConnected) focusOrigin.focus();
 	};
 });
 </script>
 
-<!-- mobile backdrop -->
-<div
-  class={`fixed inset-0 z-30 bg-black/40 transition-opacity duration-200 lg:hidden ${isDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-  aria-hidden={!isDrawerOpen}
-  onclick={() => uiStore.deselectCourse()}
-></div>
+{#if isDrawerOpen}
+  <button
+    type="button"
+    tabindex="-1"
+    aria-label={m.details_deselect()}
+    class="fixed inset-0 z-[70] cursor-default bg-black/45 xl:hidden"
+    onclick={closeDetails}
+  ></button>
+{/if}
 
 <aside
-  class={`bg-bg-secondary overflow-y-auto border border-border-primary transition-transform duration-300 ease-out
-    fixed top-[var(--app-header-height)] bottom-0 right-0 z-40 w-full max-w-md shadow-2xl
+  bind:this={panel}
+  id="skill-tree-course-detail-panel"
+  class={`fixed inset-y-0 right-0 z-[80] w-full overflow-y-auto border border-border-primary bg-bg-secondary shadow-2xl transition-transform duration-300 ease-out sm:max-w-lg
     ${isDrawerOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'}
-    lg:static lg:top-auto lg:bottom-auto lg:right-auto lg:max-w-none lg:w-full lg:border-y-0 lg:border-r-0 lg:border-l lg:translate-x-0 lg:shadow-none lg:pointer-events-auto`}
+    xl:static xl:z-auto xl:max-w-none xl:w-full xl:border-y-0 xl:border-r-0 xl:border-l xl:translate-x-0 xl:shadow-none xl:pointer-events-auto`}
+  role={isDrawerOpen ? (isOverlay ? 'dialog' : 'region') : undefined}
+  aria-modal={isDrawerOpen && isOverlay ? 'true' : undefined}
+  aria-labelledby={isDrawerOpen ? TITLE_ID : undefined}
+  onkeydown={handleKeydown}
 >
   {#if hasSelection()}
-    <div class="p-6 space-y-6">
-      <div>
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-xl font-bold text-text-primary">{displayCourse ? courseLabel(displayCourse) : ''}</h2>
-          <button 
-            onclick={() => uiStore.deselectCourse()}
-            class="flex items-center justify-center w-8 h-8 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary transition-all"
+    {#if displayCourse}
+      {#snippet electiveSelector()}
+        <ElectiveCourseSelector slotId={selection()?.id || ''} />
+      {/snippet}
+      {#key `${selection()?.id}:${displayCourse.id}`}
+      <CourseDetailContent course={displayCourse} moduleType={displayCourse.type} titleId={TITLE_ID} semester={activePlanNode?.semester} targetNodeId={activePlanNode?.id} elective={isElectiveSlot() && !activePlanNode?.courseId} selector={isElectiveSlot() ? electiveSelector : undefined} onNavigate={navigateToPrerequisite}>
+        {#snippet close()}
+          <button
+            bind:this={closeButton}
+            type="button"
+            onclick={closeDetails}
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             title={m.details_deselect()}
             aria-label={m.details_deselect()}
           >
-            <div class="i-lucide-x w-4 h-4"></div>
+            <span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
           </button>
-        </div>
-        
-        <div class="flex items-center gap-4 text-sm text-text-secondary mb-2">
-          <div class="flex items-center gap-1.5">
-            <div class="i-lucide-book-open text-text-secondary"></div>
-                   <span>{displayCourse?.ects || 0} ECTS</span>
-          </div>
-          <div class="flex items-center gap-1.5">
-            <div class="i-lucide-calendar text-text-secondary"></div>
-            <span>{m.details_semester({ number: activePlanNode?.semester ?? '?' })}</span>
-          </div>
-          {#if seasonInfo}
-            <div class="flex items-center gap-1.5" title={m.details_offered_in({ seasons: seasonInfo.full })}>
-              <div class="i-lucide-sun text-text-secondary"></div>
-              <span>{seasonInfo.short}</span>
-            </div>
+        {/snippet}
+        {#snippet actions()}
+          {#if !isElectiveSlot() || activePlanNode?.courseId}
+            <ActionButtons courseId={displayCourse.id} />
           {/if}
-        </div>
-        
-        {#if displayCourse?.type}
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-100 rounded-md text-sm font-medium">
-            <div class="i-lucide-layers text-purple-600 dark:text-purple-400"></div>
-            {moduleTypeLabel(displayCourse.type)}
-          </div>
-        {/if}
-      </div>
+        {/snippet}
+      </CourseDetailContent>
+      {/key}
+    {/if}
 
-      {#if isElectiveSlot()}
-        <ElectiveCourseSelector slotId={selection()?.id || ''} />
-      {:else}
-        {#if warningType}
-          <PrerequisiteWarning type={warningType} />
-        {/if}
-        <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} assessmentLevelPassed={displayCourse?.assessmentLevelPassed} />
-      {/if}
-
-      {#if prerequisiteNote}
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-          <div class="flex items-start gap-2">
-            <div class="i-lucide-info text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0"></div>
-            <p class="text-sm text-blue-700 dark:text-blue-200">
-              {prerequisiteNote}
-            </p>
-          </div>
-        </div>
-      {/if}
-
-      {#if !isElectiveSlot()}
-        <ActionButtons courseId={displayCourse?.id || ''} />
-      {/if}
-    </div>
   {:else}
     <div class="p-6 space-y-6">
       <div class="text-center py-8">
@@ -184,7 +197,7 @@ const seasonInfo = $derived.by(() => {
         </p>
       </div>
       
-      <div class="hidden lg:block">
+      <div class="hidden xl:block">
         <StatusLegend />
       </div>
     </div>

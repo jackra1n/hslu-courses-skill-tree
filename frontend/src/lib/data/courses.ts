@@ -42,8 +42,11 @@ export function getAvailableTemplates(): readonly CurriculumTemplate[] {
 	return getTemplateIndex().templates;
 }
 
-function getDefaultTemplate(): CurriculumTemplate | undefined {
-	return getAvailableTemplates()[0];
+export function getDefaultTemplate(): CurriculumTemplate | undefined {
+	return getAvailableTemplates().find(
+		(template) =>
+			template.studiengang === 'INF' && template.modell === 'fulltime',
+	);
 }
 
 export function getTemplateById(id: string): CurriculumTemplate | undefined {

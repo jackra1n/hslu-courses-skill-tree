@@ -1,50 +1,19 @@
 <script lang="ts">
-import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
-import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
-import Combobox from '$lib/components/ui/Combobox.svelte';
-import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
+import Dropdown from '$lib/components/ui/Dropdown.svelte';
 import { courseLabel } from '$lib/data/course-label';
-import { COURSES, type Course, getCourseById } from '$lib/data/courses';
+import { COURSES, type Course } from '$lib/data/courses';
 import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
-import {
-	hasAssessmentStageViolation,
-	hasMissingPrerequisites,
-} from '$lib/utils/status';
 
 let { slotId }: { slotId: string } = $props();
+const id = $props.id();
 
 const courseStore = getCourseStore();
 
 const selectedCourseId = $derived(courseStore.userSelections[slotId]);
-const selectedCourse = $derived.by(() => {
-	if (!selectedCourseId) return null;
-	return getCourseById(selectedCourseId) ?? null;
-});
 
 const slotNode = $derived(courseStore.studyPlan.nodes[slotId]);
-
-const warningType = $derived.by(() => {
-	if (!selectedCourse) return null;
-
-	const plan = courseStore.studyPlan;
-
-	if (hasPlanPrereqConflict(plan, slotId, { considerSameSemester: false })) {
-		return 'later-prerequisites';
-	}
-
-	if (hasMissingPrerequisites(plan, slotId)) {
-		return 'missing-prerequisites';
-	}
-
-	if (hasAssessmentStageViolation(plan, slotId)) {
-		return 'assessment-stage';
-	}
-
-	return null;
-});
 
 const availableCourses = $derived(
 	COURSES.filter((course) => {
@@ -66,7 +35,7 @@ function isOfferedIn(course: Course, season: Season): boolean {
 	);
 }
 
-const comboboxOptions = $derived.by(() => {
+const courseOptions = $derived.by(() => {
 	const options = availableCourses.map((course) => {
 		const outOfSeason = slotSeason !== null && !isOfferedIn(course, slotSeason);
 		return {
@@ -120,7 +89,7 @@ function clearSelection() {
   <div class="space-y-3">
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label for="elective-course-select" class="text-sm font-medium text-text-primary">
+        <label for={id} class="text-sm font-medium text-text-primary">
           {m.elective_choose()}
         </label>
         {#if selectedCourseId}
@@ -132,24 +101,18 @@ function clearSelection() {
           </button>
         {/if}
       </div>
-      <Combobox
-        options={comboboxOptions}
+      <Dropdown
+        options={courseOptions}
         selected={selectedCourseId || ''}
         onSelect={handleCourseSelect}
         placeholder={m.elective_placeholder()}
         searchPlaceholder={m.elective_search()}
         noResultsText={m.elective_no_results()}
-        minWidth="100%"
+        {id}
+        label={m.elective_choose()}
+        searchable
       />
     </div>
   </div>
 </div>
 
-{#if selectedCourse}
-  {#if warningType}
-    <PrerequisiteWarning showBorder={true} type={warningType} />
-  {/if}
-  
-  <PrerequisiteList prerequisites={selectedCourse.prerequisites || []} assessmentLevelPassed={selectedCourse.assessmentLevelPassed} />
-  <ActionButtons courseId={selectedCourse.id} />
-{/if}

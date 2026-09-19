@@ -1,6 +1,6 @@
 <script lang="ts">
 import { type Driver, type DriveStep, driver } from 'driver.js';
-import { onDestroy, onMount, tick } from 'svelte';
+import { flushSync, onDestroy, onMount, tick } from 'svelte';
 import 'driver.js/dist/driver.css';
 import * as m from '$lib/paraglide/messages';
 import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
@@ -15,6 +15,26 @@ function buildSteps(): DriveStep[] {
 			popover: {
 				title: m.tutorial_welcome_title(),
 				description: m.tutorial_welcome_description(),
+				popoverClass: 'hslu-tutorial-popover hslu-welcome-popover',
+				nextBtnText: m.tutorial_start(),
+				prevBtnText: m.tutorial_explore_alone(),
+				disableButtons: [],
+				onPrevClick: finishTutorial,
+				onNextClick: (_element, _step, { driver }) => {
+					localStorage.setItem(SEEN_KEY, 'true');
+					driver.moveNext();
+				},
+				onPopoverRender: (popover) => {
+					popover.progress.remove();
+					popover.footerButtons.append(popover.previousButton);
+					const disclaimer = document.createElement('p');
+					disclaimer.className = 'hslu-welcome-note';
+					disclaimer.textContent = m.disclaimer_text();
+					const mobileTip = document.createElement('p');
+					mobileTip.className = 'hslu-welcome-note hslu-welcome-mobile-tip';
+					mobileTip.textContent = m.mobile_text();
+					popover.description.append(disclaimer, mobileTip);
+				},
 			},
 		},
 		{
@@ -55,6 +75,13 @@ function buildSteps(): DriveStep[] {
 			},
 		},
 		{
+			element: '[data-tour="course-browser"]',
+			popover: {
+				title: m.tutorial_browser_title(),
+				description: m.tutorial_browser_description(),
+			},
+		},
+		{
 			element: '[data-tour="account"]',
 			popover: {
 				title: m.tutorial_sync_title(),
@@ -72,32 +99,8 @@ function buildSteps(): DriveStep[] {
 
 let driverInstance: Driver | null = null;
 let starting = false;
-let bodyObserver: MutationObserver | null = null;
+let destroyed = false;
 let nodeObserver: MutationObserver | null = null;
-
-function waitForAbsent(selector: string, timeout = 0): Promise<void> {
-	return new Promise((resolve) => {
-		if (!document.querySelector(selector)) {
-			resolve();
-			return;
-		}
-
-		const finish = () => {
-			observer.disconnect();
-			if (bodyObserver === observer) bodyObserver = null;
-			if (timeoutId !== undefined) clearTimeout(timeoutId);
-			resolve();
-		};
-
-		const observer = new MutationObserver(() => {
-			if (!document.querySelector(selector)) finish();
-		});
-		bodyObserver = observer;
-		observer.observe(document.body, { childList: true, subtree: true });
-
-		const timeoutId = timeout > 0 ? setTimeout(finish, timeout) : undefined;
-	});
-}
 
 function waitForNode(selector: string, timeout: number): Promise<void> {
 	return new Promise((resolve) => {
@@ -123,6 +126,14 @@ function waitForNode(selector: string, timeout: number): Promise<void> {
 	});
 }
 
+function finishTutorial() {
+	uiStore.setTutorialNavigationOpen(false);
+	// onDestroyed can be skipped before the first step animation settles.
+	driverInstance?.destroy();
+	driverInstance = null;
+	localStorage.setItem(SEEN_KEY, 'true');
+}
+
 async function runTutorial() {
 	if (starting || driverInstance?.isActive()) return;
 	starting = true;
@@ -133,14 +144,9 @@ async function runTutorial() {
 			requestAnimationFrame(() => resolve()),
 		);
 
-		// Wait for the first course node (bounded) and for the blocking mobile
-		// warning overlay to be gone so Driver.js never competes with it.
-		await Promise.all([
-			waitForNode('.svelte-flow__node-custom', 2000),
-			waitForAbsent('[data-mobile-warning]'),
-		]);
-
-		if (driverInstance?.isActive()) return;
+		// let the canvas mount before positioning the first highlighted step.
+		await waitForNode('.svelte-flow__node-custom', 2000);
+		if (destroyed || driverInstance?.isActive()) return;
 
 		// driver.js interpolates {{current}}/{{total}} itself; feed the tokens
 		// through the message as literal params.
@@ -163,10 +169,16 @@ async function runTutorial() {
 			stageRadius: 8,
 			popoverClass: 'hslu-tutorial-popover',
 			steps: buildSteps(),
-			onDestroyed: () => {
-				localStorage.setItem(SEEN_KEY, 'true');
-				driverInstance = null;
+			onHighlightStarted: (_element, step) => {
+				// reveal menu targets before driver.js measures their highlight.
+				flushSync(() =>
+					uiStore.setTutorialNavigationOpen(
+						step.element === '[data-tour="course-browser"]' ||
+							step.element === '[data-tour="account"]',
+					),
+				);
 			},
+			onDestroyStarted: finishTutorial,
 		});
 
 		driverInstance.drive();
@@ -189,12 +201,9 @@ $effect(() => {
 });
 
 onDestroy(() => {
-	bodyObserver?.disconnect();
+	destroyed = true;
 	nodeObserver?.disconnect();
-	if (driverInstance) {
-		driverInstance.destroy();
-		driverInstance = null;
-	}
+	if (driverInstance) finishTutorial();
 });
 </script>
 
@@ -208,6 +217,42 @@ onDestroy(() => {
     padding: 1.25rem;
     min-width: 250px;
     max-width: 300px;
+  }
+
+  :global(.hslu-welcome-popover) {
+    box-sizing: border-box;
+    width: min(380px, calc(100vw - 32px));
+    min-width: 0;
+    max-width: 380px;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
+
+  :global(.hslu-welcome-note) {
+    margin-top: 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+
+  :global(.hslu-welcome-popover .driver-popover-navigation-btns) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  :global(.hslu-welcome-popover .driver-popover-navigation-btns button) {
+    min-height: 44px;
+    margin: 0;
+    white-space: normal;
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    :global(.hslu-welcome-mobile-tip) {
+      display: none;
+    }
   }
 
   :global(.hslu-tutorial-popover .driver-popover-title) {
@@ -286,14 +331,14 @@ onDestroy(() => {
     background-color: rgb(var(--bg-secondary));
   }
 
-  :global(.hslu-tutorial-popover .driver-popover-navigation-btns button:last-child) {
+  :global(.hslu-tutorial-popover .driver-popover-navigation-btns .driver-popover-next-btn) {
     background-color: rgb(37 99 235);
     border-color: rgb(37 99 235);
     color: #fff;
   }
 
-  :global(.hslu-tutorial-popover .driver-popover-navigation-btns button:last-child:hover),
-  :global(.hslu-tutorial-popover .driver-popover-navigation-btns button:last-child:focus) {
+  :global(.hslu-tutorial-popover .driver-popover-navigation-btns .driver-popover-next-btn:hover),
+  :global(.hslu-tutorial-popover .driver-popover-navigation-btns .driver-popover-next-btn:focus) {
     background-color: rgb(29 78 216);
     border-color: rgb(29 78 216);
   }

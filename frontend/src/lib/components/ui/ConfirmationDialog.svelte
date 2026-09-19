@@ -1,5 +1,5 @@
 <script lang="ts">
-import { fade, scale } from 'svelte/transition';
+import { onMount } from 'svelte';
 import * as m from '$lib/paraglide/messages';
 
 interface Props {
@@ -22,32 +22,45 @@ let {
 	variant = 'danger',
 }: Props = $props();
 
-function handleEscape(event: KeyboardEvent) {
-	if (event.key === 'Escape') {
-		onCancel();
-	}
+let dialog: HTMLDialogElement;
+let cancelButton: HTMLButtonElement;
+const titleId = $props.id();
+
+onMount(() => {
+	dialog.showModal();
+	cancelButton.focus();
+	return () => dialog.close();
+});
+
+function finish(confirmed: boolean) {
+	// close while still connected so native focus restoration precedes unmount.
+	dialog.close();
+	if (confirmed) onConfirm();
+	else onCancel();
+}
+
+function handleKeydown(event: KeyboardEvent) {
+	// the native modal owns focus and Escape, not an underlying detail panel.
+	event.stopPropagation();
 }
 
 function handleBackdropClick(event: MouseEvent) {
 	if (event.target === event.currentTarget) {
-		onCancel();
+		finish(false);
 	}
 }
 </script>
 
-<div
-  class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
-  transition:fade={{ duration: 200 }}
+<dialog
+  bind:this={dialog}
+  class="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto border-0 bg-transparent p-0 text-text-primary backdrop:bg-black/50 backdrop:backdrop-blur-sm"
   onclick={handleBackdropClick}
-  onkeydown={handleEscape}
-  tabindex="-1"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="dialog-title"
+  onkeydown={handleKeydown}
+  oncancel={(event) => { event.preventDefault(); finish(false); }}
+  aria-labelledby={titleId}
 >
   <div
     class="w-full max-w-md rounded-2xl border border-border-primary bg-bg-primary shadow-2xl"
-    transition:scale={{ duration: 200, start: 0.95 }}
     role="document"
   >
     <!-- Header -->
@@ -66,12 +79,12 @@ function handleBackdropClick(event: MouseEvent) {
             </svg>
           </div>
         {/if}
-        <h2 id="dialog-title" class="text-lg font-semibold text-text-primary">{title}</h2>
+        <h2 id={titleId} class="text-lg font-semibold text-text-primary">{title}</h2>
       </div>
       <button
-        class="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-bg-secondary text-text-primary transition-colors"
+        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg hover:bg-bg-secondary text-text-primary transition-colors"
         aria-label={m.common_close_dialog()}
-        onclick={onCancel}
+        onclick={() => finish(false)}
       >
         <div class="i-lucide-x w-4 h-4"></div>
       </button>
@@ -85,19 +98,20 @@ function handleBackdropClick(event: MouseEvent) {
     <!-- Actions -->
     <div class="flex justify-end gap-3 border-t border-border-primary px-6 py-4">
       <button
-        class="rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors"
-        onclick={onCancel}
+        bind:this={cancelButton}
+        class="min-h-11 rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors"
+        onclick={() => finish(false)}
       >
         {cancelText}
       </button>
       <button
-        class="rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors {variant === 'danger' 
+        class="min-h-11 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors {variant === 'danger' 
           ? 'bg-red-600 hover:bg-red-700' 
           : 'bg-yellow-600 hover:bg-yellow-700'}"
-        onclick={onConfirm}
+        onclick={() => finish(true)}
       >
         {confirmText}
       </button>
     </div>
   </div>
-</div>
+</dialog>

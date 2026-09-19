@@ -26,8 +26,15 @@ function createFixture(): string {
 			{
 				Name: 'Alpha alt',
 				NameEnglish: 'Alpha old',
+				Language: 'D',
 				ShortName: 'A',
 				Ects: 2,
+				ModeOfAssessments: [
+					'Arbeit / Kompetenznachweis im Semester',
+					'schriftlich',
+					'mündlich',
+					'elektronisch',
+				],
 				ModuleOffers: [
 					{
 						DegreeProgramme: 'Informatik',
@@ -39,8 +46,15 @@ function createFixture(): string {
 			{
 				Name: 'Beta',
 				NameEnglish: '',
+				Language: 'D',
 				ShortName: 'B',
 				Ects: 3,
+				ModeOfAssessments: [
+					'Arbeit / Kompetenznachweis im Semester',
+					'schriftlich',
+					'mündlich',
+					'elektronisch',
+				],
 				ModuleOffers: [
 					{
 						DegreeProgramme: 'Other',
@@ -61,8 +75,17 @@ function createFixture(): string {
 			{
 				Name: 'Alpha neu',
 				NameEnglish: 'Alpha new',
+				Language: 'E',
 				ShortName: 'A',
 				Ects: 4,
+				ModeOfAssessments: [
+					'Arbeit',
+					'Arbeit/Kompetenznachweis im Semester',
+					'schriftliche Prüfung',
+					'mündliche Prüfung',
+					'elektronische Prüfung',
+					'schriftliche Prüfung',
+				],
 				Prerequisites: [
 					{
 						Modules: ['B', 'C'],
@@ -173,6 +196,7 @@ describe('catalog normalization', () => {
 			id: 'A',
 			label: 'Alpha neu',
 			labelEn: 'Alpha new',
+			languages: ['en'],
 			ects: 4,
 			prerequisites: [
 				{
@@ -184,6 +208,12 @@ describe('catalog normalization', () => {
 			],
 			prerequisiteNote: 'Bring experience',
 			assessmentLevelPassed: false,
+			assessmentModes: [
+				'coursework',
+				'written_exam',
+				'oral_exam',
+				'electronic_exam',
+			],
 			typeByPlanSeason: {
 				HS: 'Erweiterungsmodul',
 				FS: 'Kernmodul',
@@ -192,6 +222,13 @@ describe('catalog normalization', () => {
 			seasons: ['FS', 'HS'],
 		});
 		expect(catalog.courses[1]?.label).toBe('Beta');
+		expect(catalog.courses[1]?.languages).toEqual(['de']);
+		expect(catalog.courses[1]?.assessmentModes).toEqual([
+			'coursework',
+			'written_exam',
+			'oral_exam',
+			'electronic_exam',
+		]);
 		expect(catalog.courses[1]?.typeByPlanSeason).toEqual({
 			HS: 'Projektmodul',
 			FS: 'Projektmodul',
@@ -203,6 +240,40 @@ describe('catalog normalization', () => {
 			FS: 'Zusatzmodul',
 			default: 'Zusatzmodul',
 		});
+	});
+
+	test('keeps unknown latest languages unknown instead of inferring or backfilling', () => {
+		const root = createFixture();
+		writeJson(root, 'hslu_data/modules/F25_modules.json', {
+			data: [
+				{
+					ShortName: 'A',
+					Name: 'Alpha',
+					NameEnglish: 'Alpha English',
+					Ects: 4,
+					Language: 'D/unknown',
+				},
+				{
+					ShortName: 'B',
+					Name: 'Bilingual',
+					Ects: 3,
+					Language: ' D/E ',
+				},
+				{
+					ShortName: 'C',
+					Name: 'Malformed',
+					Ects: 1,
+					Language: ['D', 'E'],
+				},
+			],
+		});
+		const byId = new Map(
+			buildCatalog(root).courses.map((course) => [course.id, course]),
+		);
+		expect(byId.get('A')?.languages).toBeUndefined();
+		expect(byId.get('B')?.languages).toEqual(['de', 'en']);
+		expect(byId.get('C')?.languages).toBeUndefined();
+		expect(byId.get('D')?.languages).toBeUndefined();
 	});
 
 	test('normalizes and sorts programmes, templates, and ECTS', () => {
@@ -290,6 +361,21 @@ describe('catalog validation', () => {
 		const root = createFixture();
 		writeJson(root, 'hslu_data/modules/F24_modules.json', { data: [module] });
 		expectBuildError(root, message);
+	});
+
+	test('rejects unknown assessment modes', () => {
+		const root = createFixture();
+		writeJson(root, 'hslu_data/modules/H24_modules.json', {
+			data: [
+				{
+					Name: 'Module',
+					ShortName: 'MOD',
+					Ects: 3,
+					ModeOfAssessments: ['take-home constellation'],
+				},
+			],
+		});
+		expectBuildError(root, 'unknown assessment mode "take-home constellation"');
 	});
 
 	test('rejects invalid snapshot and template paths', () => {

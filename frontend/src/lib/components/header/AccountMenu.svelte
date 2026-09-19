@@ -6,9 +6,26 @@ import {
 	type SyncStatus,
 } from '$lib/stores/cloudSyncStore.svelte';
 
-let { onInteract }: { onInteract?: () => void } = $props();
+let {
+	onInteract,
+	navigationMenu = false,
+	accountMenuOpen = $bindable(false),
+}: {
+	onInteract?: () => void;
+	navigationMenu?: boolean;
+	accountMenuOpen?: boolean;
+} = $props();
 
-let accountMenuOpen = $state(false);
+const triggerClass = $derived(
+	navigationMenu
+		? 'flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:min-h-9 lg:w-auto lg:gap-2 lg:border lg:border-border-primary'
+		: 'flex h-11 w-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-border-primary bg-transparent text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 sm:h-9 sm:w-auto sm:px-3 sm:py-2',
+);
+const panelClass = $derived(
+	navigationMenu
+		? 'rounded-lg border border-border-primary bg-bg-primary p-3 lg:absolute lg:right-0 lg:top-full lg:mt-1 lg:w-64 lg:shadow-lg'
+		: 'fixed inset-x-4 top-[var(--app-header-height)] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-64 sm:shadow-lg',
+);
 
 function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
 	return event
@@ -82,7 +99,7 @@ async function handleSignOut() {
   {#if user}
     <button
       onclick={toggleAccountMenu}
-      class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-2 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
+      class={triggerClass}
       aria-label={m.account_menu()}
       aria-expanded={accountMenuOpen}
     >
@@ -96,13 +113,13 @@ async function handleSignOut() {
       {:else}
         <div class="i-lucide-user h-4 w-4 text-text-primary"></div>
       {/if}
-      <span class="hidden sm:inline max-w-40 truncate text-sm font-medium text-text-primary">{user.name}</span>
+      {#if navigationMenu}<span class="text-sm font-medium lg:hidden">{m.account_menu()}</span>{/if}
+      <span class={`${navigationMenu ? 'hidden lg:inline' : 'hidden sm:inline'} max-w-40 truncate text-sm font-medium text-text-primary`}>{user.name}</span>
     </button>
 
     {#if accountMenuOpen}
       <div
-        class="fixed inset-x-4 top-[var(--app-header-height)] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl overflow-visible
-               sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-64 sm:shadow-lg"
+        class={panelClass}
       >
         <div class="flex items-center gap-3 px-1 pb-3">
           {#if user.image}
@@ -144,18 +161,17 @@ async function handleSignOut() {
   {:else}
     <button
       onclick={toggleAccountMenu}
-      class="flex h-9 items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
+      class={triggerClass}
       aria-label={m.account_sign_in()}
       aria-expanded={accountMenuOpen}
     >
       <div class="i-lucide-user h-4 w-4 text-text-primary"></div>
-      <span class="text-sm font-medium text-text-primary">{m.account_sign_in()}</span>
+      <span class={`${navigationMenu ? '' : 'hidden sm:inline'} text-sm font-medium text-text-primary`}>{m.account_sign_in()}</span>
     </button>
 
     {#if accountMenuOpen}
       <div
-        class="fixed inset-x-4 top-[var(--app-header-height)] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl
-               sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-56 sm:shadow-lg"
+        class={panelClass}
       >
         <div class="px-1 pb-2 text-xs font-medium text-text-secondary">{m.account_sign_in_with()}</div>
         <button

@@ -1,12 +1,13 @@
 <script lang="ts">
 import { SvelteFlowProvider } from '@xyflow/svelte';
 import { onMount } from 'svelte';
+import { MediaQuery } from 'svelte/reactivity';
+import { slide } from 'svelte/transition';
 import SkillTreeCanvas from '$lib/components/canvas/SkillTreeCanvas.svelte';
 import Header from '$lib/components/header/Header.svelte';
 import CourseDetailsPanel from '$lib/components/sidebar/CourseDetailsPanel.svelte';
 import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
-import AssessmentInfo from '$lib/components/ui/AssessmentInfo.svelte';
-import SyncConflictDialog from '$lib/components/ui/SyncConflictDialog.svelte';
+import GuidedTutorial from '$lib/components/ui/GuidedTutorial.svelte';
 import { catalogAssetUrl, loadCatalog } from '$lib/data/catalog-loader';
 import {
 	collectAppData,
@@ -15,19 +16,16 @@ import {
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
-import { localeStore } from '$lib/stores/locale.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
-import { themeStore } from '$lib/stores/theme.svelte';
 import { hasSelection, uiStore } from '$lib/stores/uiStore.svelte';
 
 type StartupPhase = 'catalog' | 'progress' | 'ready' | 'catalog-error';
 
 let legendOpen = $state(false);
+const reducedMotion = new MediaQuery('(prefers-reduced-motion: reduce)');
 let phase = $state<StartupPhase>('catalog');
 
 async function startFromCatalog(): Promise<void> {
-	localeStore.init();
-
 	try {
 		await loadCatalog();
 		phase = 'progress';
@@ -41,7 +39,6 @@ async function startFromCatalog(): Promise<void> {
 	const localDataIsMeaningful = hasMeaningfulStoredAppData();
 	const courseStore = initializeCourseStore();
 	courseStore.init();
-	themeStore.init();
 	progressStore.init();
 	uiStore.init();
 	await cloudSyncStore.init(localDataIsMeaningful);
@@ -97,22 +94,22 @@ $effect(() => {
     <Header />
     
     <SvelteFlowProvider>
-      <div class="flex-1 min-h-0 lg:grid lg:grid-cols-[1fr_400px]">
+      <div class="flex-1 min-h-0 xl:grid xl:grid-cols-[1fr_400px]">
         <SkillTreeCanvas />
         <CourseDetailsPanel />
       </div>
     </SvelteFlowProvider>
     
-    <!-- assessment info modal -->
-    <AssessmentInfo />
+    <GuidedTutorial />
 
-    <div class="lg:hidden fixed bottom-4 right-4 z-30 w-72 max-w-[90vw]">
-      <div class={`rounded-2xl border border-border-primary bg-bg-primary shadow-2xl backdrop-blur transition-all duration-300 overflow-hidden flex flex-col-reverse ${legendOpen ? 'max-h-96' : 'max-h-14'}`}>
+    <div class="xl:hidden fixed bottom-4 right-4 z-30 w-72 max-w-[90vw]">
+      <div class="rounded-2xl border border-border-primary bg-bg-primary shadow-2xl overflow-hidden flex flex-col-reverse">
         <button
           type="button"
-          class="flex w-full items-center justify-between gap-2 px-4 py-3 text-text-primary"
+          class="flex min-h-11 w-full shrink-0 items-center justify-between gap-2 px-4 py-3 text-text-primary"
           aria-label={m.legend_toggle()}
-          aria-pressed={legendOpen}
+          aria-expanded={legendOpen}
+          aria-controls="mobile-status-legend"
           onclick={() => legendOpen = !legendOpen}
         >
           <div class="flex items-center gap-2">
@@ -125,11 +122,13 @@ $effect(() => {
             <div class="i-lucide-chevron-up h-4 w-4 text-text-secondary"></div>
           {/if}
         </button>
-        <div class="px-4 pb-4 pt-3 border-b border-border-primary" inert={!legendOpen}>
+        {#if legendOpen}
+        <div id="mobile-status-legend" transition:slide={{ duration: reducedMotion.current ? 0 : 200 }} class="max-h-80 overflow-y-auto px-4 pb-4 pt-3 border-b border-border-primary">
           <div class="[&>div:first-child]:border-t-0 [&>div:first-child]:pt-0">
             <StatusLegend />
           </div>
         </div>
+        {/if}
       </div>
 
     </div>
@@ -139,6 +138,3 @@ $effect(() => {
 <svelte:head>
 	<link rel="preload" as="fetch" type="application/json" href={catalogAssetUrl} crossorigin="anonymous" />
 </svelte:head>
-
-<!-- sync conflict dialog renders even while the app is gated -->
-<SyncConflictDialog />

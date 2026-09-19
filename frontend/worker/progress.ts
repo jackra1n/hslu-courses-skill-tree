@@ -1,44 +1,12 @@
 // /api/progress handler: one private snapshot row per authenticated user,
 // optimistic revision-based writes. Every response is no-store.
 
+import { json, readBoundedBody } from './http';
+
 const MAX_BODY_BYTES = 524_288;
 const APP_DATA_VERSION = 1;
 
 type SnapshotRow = { data: string; revision: number; updated_at: number };
-
-function json(body: unknown, status: number): Response {
-	return new Response(JSON.stringify(body), {
-		status,
-		headers: {
-			'Content-Type': 'application/json',
-			'Cache-Control': 'no-store',
-		},
-	});
-}
-
-// Reads the request body through a bounded stream, aborting above the limit.
-// Never call request.text()/request.json() on an unbounded body.
-async function readBoundedBody(request: Request): Promise<string | null> {
-	const reader = request.body?.getReader();
-	if (!reader) return null;
-	const chunks: Uint8Array[] = [];
-	let total = 0;
-	for (;;) {
-		const { done, value } = await reader.read();
-		if (done) break;
-		total += value.byteLength;
-		if (total > MAX_BODY_BYTES) {
-			await reader.cancel().catch(() => undefined);
-			return null;
-		}
-		chunks.push(value);
-	}
-	let out = '';
-	for (const chunk of chunks)
-		out += new TextDecoder().decode(chunk, { stream: true });
-	out += new TextDecoder().decode();
-	return out;
-}
 
 // Accepts exactly { data: unknown, expectedRevision: number | null } with a
 // version-1 object snapshot and a null-or-positive-integer revision.
@@ -120,7 +88,7 @@ export async function handleProgressRequest(
 	}
 
 	if (request.method === 'PUT' && url.pathname === '/api/progress') {
-		const raw = await readBoundedBody(request);
+		const raw = await readBoundedBody(request, MAX_BODY_BYTES);
 		if (raw === null) return json({ error: 'payload too large' }, 413);
 		const parsed = parsePutBody(raw);
 		if (!parsed.ok) return json({ error: 'invalid body' }, 400);

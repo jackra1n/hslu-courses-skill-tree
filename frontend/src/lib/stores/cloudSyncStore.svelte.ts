@@ -341,12 +341,17 @@ export const cloudSyncStore = {
 		}, DEBOUNCE_MS);
 	},
 
-	async signInWithGitHub(): Promise<void> {
+	async signInWithGitHub(callbackURL = window.location.href): Promise<void> {
+		syncError = null;
 		try {
-			await authClient.signIn.social({
+			const result = await authClient.signIn.social({
 				provider: 'github',
-				callbackURL: window.location.origin,
+				callbackURL,
 			});
+			if (result.error) {
+				status = 'error';
+				syncError = 'sign-in-failed';
+			}
 		} catch {
 			status = 'error';
 			syncError = 'sign-in-failed';

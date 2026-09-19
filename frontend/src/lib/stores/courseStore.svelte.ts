@@ -1,7 +1,7 @@
 import {
 	type CurriculumTemplate,
 	getAvailablePlans,
-	getAvailableTemplates,
+	getDefaultTemplate,
 	getTemplateById,
 	getTemplatesByProgram,
 	setCoursePlan,
@@ -59,16 +59,18 @@ function generateNodeId(): string {
 }
 
 function requireDefaultTemplate(): CurriculumTemplate {
-	const template = getAvailableTemplates()[0];
+	const template = getDefaultTemplate();
 	if (!template) {
-		throw new Error('Catalog does not contain any curriculum templates.');
+		throw new Error(
+			'Catalog does not contain the default Informatik curriculum.',
+		);
 	}
 	return template;
 }
 
 class CourseStore {
 	currentTemplate = $state(requireDefaultTemplate());
-	studyPlan = $state<StudyPlan>(createStudyPlan(requireDefaultTemplate(), {}));
+	studyPlan = $state<StudyPlan>(createStudyPlan(this.currentTemplate, {}));
 	showShortNamesOnly = $state(false);
 	startSeason = $state<Season>(INITIAL_TERM.season);
 	startYear = $state<number>(INITIAL_TERM.year);

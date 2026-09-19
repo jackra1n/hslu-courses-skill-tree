@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type {
+	AssessmentMode,
 	CatalogCourse,
 	CatalogData,
 	CurriculumTemplate,
@@ -27,6 +28,18 @@ const MODULE_TYPE_BY_VALUE: Record<string, ModuleType> = {
 	Zusatzmodul: 'Zusatzmodul',
 };
 
+const ASSESSMENT_MODE_BY_VALUE: Record<string, AssessmentMode> = {
+	'Arbeit / Kompetenznachweis im Semester': 'coursework',
+	'Arbeit/Kompetenznachweis im Semester': 'coursework',
+	Arbeit: 'coursework',
+	schriftlich: 'written_exam',
+	'schriftliche Prüfung': 'written_exam',
+	mündlich: 'oral_exam',
+	'mündliche Prüfung': 'oral_exam',
+	elektronisch: 'electronic_exam',
+	'elektronische Prüfung': 'electronic_exam',
+};
+
 const SNAPSHOT_REGEX = /^([FH])(\d{2})_modules\.json$/;
 const TEMPLATE_PATH_REGEX = /\.\/templates\/([^/]+)\/([^/]+)\/([^/]+)\.json$/i;
 const ECTS_PATH_REGEX = /\/([A-Za-z]+)_ects\.json$/;
@@ -49,12 +62,14 @@ type RawModulePrerequisite = {
 type RawModule = {
 	Name: string;
 	NameEnglish?: string | null;
+	Language?: string | null;
 	ShortName: string;
 	Ects: number;
 	ModuleOffers?: RawModuleOffer[];
 	Prerequisites?: RawModulePrerequisite[] | null;
 	PrerequisiteNote?: string | null;
 	AssessmentLevelPassed?: boolean;
+	ModeOfAssessments: AssessmentMode[];
 };
 
 type SemesterCode = {
@@ -203,6 +218,43 @@ function mapPrerequisites(
 	}));
 }
 
+function normaliseAssessmentModes(
+	value: unknown,
+	scope: string,
+): AssessmentMode[] {
+	if (value === undefined || value === null) return [];
+	if (!Array.isArray(value)) {
+		fail(scope, 'ModeOfAssessments must be an array');
+	}
+	const modes = new Set<AssessmentMode>();
+	for (const [index, rawMode] of value.entries()) {
+		if (typeof rawMode !== 'string') {
+			fail(scope, `ModeOfAssessments[${index}] must be a string`);
+		}
+		const mode = ASSESSMENT_MODE_BY_VALUE[rawMode.trim()];
+		if (!mode) {
+			fail(scope, `unknown assessment mode "${rawMode}"`);
+		}
+		modes.add(mode);
+	}
+	return [...modes];
+}
+
+function normaliseLanguages(
+	value: string | null | undefined,
+): string[] | undefined {
+	switch (value?.trim()) {
+		case 'D':
+			return ['de'];
+		case 'E':
+			return ['en'];
+		case 'D/E':
+			return ['de', 'en'];
+		default:
+			return undefined;
+	}
+}
+
 function readModuleEntry(value: unknown, path: string): RawModule {
 	const scope = `${path}: module entry`;
 	if (typeof value !== 'object' || value === null) {
@@ -234,6 +286,7 @@ function readModuleEntry(value: unknown, path: string): RawModule {
 	}
 
 	const nameEnglish = 'NameEnglish' in value ? value.NameEnglish : null;
+	const language = 'Language' in value ? value.Language : undefined;
 	const moduleOffers = 'ModuleOffers' in value ? value.ModuleOffers : undefined;
 	const prerequisites =
 		'Prerequisites' in value ? value.Prerequisites : undefined;
@@ -241,12 +294,15 @@ function readModuleEntry(value: unknown, path: string): RawModule {
 		'PrerequisiteNote' in value ? value.PrerequisiteNote : undefined;
 	const assessmentLevelPassed =
 		'AssessmentLevelPassed' in value ? value.AssessmentLevelPassed : undefined;
+	const modeOfAssessments =
+		'ModeOfAssessments' in value ? value.ModeOfAssessments : undefined;
 
 	return {
 		ShortName: shortName,
 		Name: name,
 		Ects: ects,
 		NameEnglish: typeof nameEnglish === 'string' ? nameEnglish : null,
+		Language: typeof language === 'string' ? language : null,
 		// Offer/prerequisite shapes are read tolerantly: absent fields behave
 		// exactly like the legacy runtime, which consumed the JSON unvalidated.
 		ModuleOffers: Array.isArray(moduleOffers)
@@ -261,6 +317,10 @@ function readModuleEntry(value: unknown, path: string): RawModule {
 			typeof assessmentLevelPassed === 'boolean'
 				? assessmentLevelPassed
 				: undefined,
+		ModeOfAssessments: normaliseAssessmentModes(
+			modeOfAssessments,
+			`${scope} "${shortName}"`,
+		),
 	};
 }
 
@@ -329,10 +389,12 @@ function loadCourses(dataRoot: string): CatalogCourse[] {
 			id: module.ShortName,
 			label: module.Name.trim(),
 			labelEn: module.NameEnglish?.trim() || undefined,
+			languages: normaliseLanguages(module.Language),
 			ects: module.Ects,
 			prerequisites: mapPrerequisites(module.Prerequisites ?? []),
 			prerequisiteNote: module.PrerequisiteNote || undefined,
 			assessmentLevelPassed: module.AssessmentLevelPassed ?? undefined,
+			assessmentModes: module.ModeOfAssessments,
 			typeByPlanSeason,
 			seasons: (['FS', 'HS'] as const).filter((season) =>
 				seasonsByShortName.get(module.ShortName)?.has(season),
