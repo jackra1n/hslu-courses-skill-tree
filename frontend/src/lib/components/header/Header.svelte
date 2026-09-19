@@ -166,9 +166,10 @@ const ectsTooltip = $derived(
     <nav bind:this={navigation} id={navigationId} aria-label={m.header_menu()}
       class={`header-navigation ${navigationOpen ? 'flex' : 'hidden'} fixed inset-x-3 top-[var(--app-header-height)] z-50 max-h-[calc(100dvh-var(--app-header-height)-12px)] flex-col gap-1 overflow-y-auto rounded-lg border border-border-primary bg-bg-primary p-2 shadow-xl lg:contents`}>
       <a data-tour="course-browser" href="/courses" onclick={closeMobileMenu}
-        class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:order-first lg:min-h-9 lg:gap-2 lg:border lg:border-border-primary">
-        <span class="i-lucide-library h-4 w-4 shrink-0" aria-hidden="true"></span>
-        {m.browser_title()}
+        class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:order-first lg:mr-2 lg:min-h-9 lg:gap-2 lg:text-text-secondary lg:hover:text-text-primary">
+        <span class="i-lucide-library h-4 w-4 shrink-0 lg:hidden" aria-hidden="true"></span>
+        <span class="lg:underline lg:underline-offset-4">{m.browser_title()}</span>
+        <span class="i-lucide-arrow-right ml-auto h-4 w-4 shrink-0 lg:ml-0" aria-hidden="true"></span>
       </a>
 
 
