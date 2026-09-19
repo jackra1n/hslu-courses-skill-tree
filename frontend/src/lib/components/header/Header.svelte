@@ -81,6 +81,11 @@ const ectsTooltip = $derived(
 
 
   <div class="flex flex-1 items-center justify-end gap-2">
+    <a href="/courses" class="hidden h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-border-primary px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-blue-500 lg:flex">
+      <span class="i-lucide-library h-4 w-4 shrink-0" aria-hidden="true"></span>
+      {m.browser_title()}
+      <span class="i-lucide-arrow-right h-4 w-4 shrink-0" aria-hidden="true"></span>
+    </a>
 
     <div class="relative program-dropdown">
       <button 
@@ -140,7 +145,7 @@ const ectsTooltip = $derived(
       </button>
     </Tooltip>
   </div>
-  <a href="/courses" class="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-border-primary px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-blue-500 lg:w-auto lg:shrink-0">
+  <a href="/courses" class="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-border-primary px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-blue-500 lg:hidden">
     <span class="i-lucide-library h-4 w-4 shrink-0" aria-hidden="true"></span>
     {m.browser_title()}
     <span class="i-lucide-arrow-right h-4 w-4 shrink-0" aria-hidden="true"></span>
