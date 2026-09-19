@@ -83,21 +83,24 @@ const dimensions = $derived([
 		hint: `1: ${m.reviews_low()} · 5: ${m.reviews_high()}`,
 	},
 ]);
-const errorMessage = $derived(
-	error === 'session'
-		? m.reviews_session_expired()
-		: error === 'conflict'
-			? m.reviews_conflict()
-			: error === 'invalid'
-				? m.reviews_invalid()
-				: error === 'delete'
-					? m.reviews_delete_error()
-					: error === 'sign-in'
-						? m.account_sign_in_failed()
-						: error === 'save'
-							? m.reviews_save_error()
-							: '',
-);
+const errorMessage = $derived.by(() => {
+	switch (error) {
+		case 'session':
+			return m.reviews_session_expired();
+		case 'conflict':
+			return m.reviews_conflict();
+		case 'invalid':
+			return m.reviews_invalid();
+		case 'delete':
+			return m.reviews_delete_error();
+		case 'sign-in':
+			return m.account_sign_in_failed();
+		case 'save':
+			return m.reviews_save_error();
+		default:
+			return '';
+	}
+});
 
 async function load(): Promise<void> {
 	loading = true;
@@ -128,16 +131,22 @@ async function showError(
 	fallback: 'save' | 'delete',
 ): Promise<void> {
 	if (controller.signal.aborted) return;
-	error =
-		cause instanceof ReviewApiError
-			? cause.status === 401
-				? 'session'
-				: cause.status === 409 || cause.status === 404
-					? 'conflict'
-					: cause.status === 400 || cause.status === 413
-						? 'invalid'
-						: fallback
-			: fallback;
+	error = fallback;
+	if (cause instanceof ReviewApiError) {
+		switch (cause.status) {
+			case 401:
+				error = 'session';
+				break;
+			case 404:
+			case 409:
+				error = 'conflict';
+				break;
+			case 400:
+			case 413:
+				error = 'invalid';
+				break;
+		}
+	}
 	await tick();
 	errorElement?.focus();
 }
