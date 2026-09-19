@@ -13,6 +13,8 @@ Der *Course Browser* erweitert den HSLU Courses Skill Tree um eine such- und fil
 
 *Bereits vorhanden:* Der graphische Skill Tree, die Aufbereitung der HSLU-Katalogdaten, Studienplan und Fortschritt, GitHub-Anmeldung über Better Auth sowie das Hosting mit GitHub Pages, Cloudflare Workers und D1. Der Git-Tag `pre-weblab` markiert diesen Ausgangszustand.
 
+*Nachweis der Umsetzung:* #link("https://github.com/jackra1n/hslu-courses-skill-tree/pull/16")[PR \#16: feat: add course browser] enthält die WEBLAB-Erweiterung. Der abgeschlossene Produktstand ist der Merge-Commit #link("https://github.com/jackra1n/hslu-courses-skill-tree/commit/1cc856d1a0225f9a390eabe8f7b2c0564d1fa087")[`1cc856d`]. Der #link("https://github.com/jackra1n/hslu-courses-skill-tree/compare/970711bfbd387fce4d2d11f98e871e0a0cca998e...1cc856d1a0225f9a390eabe8f7b2c0564d1fa087")[Vergleich mit dem Ausgangsstand `pre-weblab` (`970711b`)] zeigt den gesamten Produktbeitrag.
+
 *Im Rahmen von WEBLAB ergänzt:*
 - Course Browser unter `/courses` mit deutsch-englischer Suche nach Modul-ID und Titel.
 - Kombinierbare Filter für Semester, Modultyp, Prüfungsform, ECTS und als Nächstes belegbare Module.
