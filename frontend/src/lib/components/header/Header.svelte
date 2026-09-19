@@ -70,14 +70,15 @@ const ectsTooltip = $derived(
 );
 </script>
 
-<header {@attach measureHeaderHeight} class="relative z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:flex-nowrap sm:gap-4 sm:py-3">
+<header {@attach measureHeaderHeight} class="relative z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:gap-4 sm:py-3 lg:flex-nowrap">
   <div class="flex min-w-0 items-center gap-3">
     <div class="leading-tight">
-      <h1 class="text-lg font-semibold text-text-primary sm:hidden">{m.header_title_short()}</h1>
-      <h1 class="hidden text-lg font-semibold text-text-primary sm:block">{m.header_title()}</h1>
-      <p class="hidden text-xs text-text-secondary sm:block">{m.header_subtitle()}</p>
+      <h1 class="text-lg font-semibold text-text-primary lg:hidden">{m.header_title_short()}</h1>
+      <h1 class="hidden text-lg font-semibold text-text-primary lg:block">{m.header_title()}</h1>
+      <p class="hidden text-xs text-text-secondary lg:block">{m.header_subtitle()}</p>
     </div>
   </div>
+
 
   <div class="flex flex-1 items-center justify-end gap-2">
 
@@ -115,7 +116,7 @@ const ectsTooltip = $derived(
       title={ectsTooltip}
       aria-label={m.header_open_progress_analytics()}
     >
-      <span class="text-xs font-bold text-text-primary">{requiredEcts > 0 ? `${passedEcts} / ${requiredEcts} ECTS` : `${passedEcts} ECTS`}</span>
+      <span class="whitespace-nowrap text-xs font-bold text-text-primary">{requiredEcts > 0 ? `${passedEcts} / ${requiredEcts} ECTS` : `${passedEcts} ECTS`}</span>
     </button>
 
 
@@ -139,6 +140,11 @@ const ectsTooltip = $derived(
       </button>
     </Tooltip>
   </div>
+  <a href="/courses" class="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-border-primary px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-blue-500 lg:w-auto lg:shrink-0">
+    <span class="i-lucide-library h-4 w-4 shrink-0" aria-hidden="true"></span>
+    {m.browser_title()}
+    <span class="i-lucide-arrow-right h-4 w-4 shrink-0" aria-hidden="true"></span>
+  </a>
 </header>
 
 <SettingsSidebar
