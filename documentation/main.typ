@@ -16,7 +16,8 @@ Der *Course Browser* erweitert den HSLU Courses Skill Tree um eine such- und fil
 *Im Rahmen von WEBLAB ergänzt:*
 - Course Browser unter `/courses` mit deutsch-englischer Suche nach Modul-ID und Titel.
 - Kombinierbare Filter für Semester, Modultyp, Prüfungsform, ECTS und als Nächstes belegbare Module.
-- Responsive Kursdetails mit Navigation zu Voraussetzungen, ohne aktive Filter zu verlieren.
+- Sortierung nach lokalisiertem Kursnamen oder durchschnittlicher Weiterempfehlung, jeweils auf- oder absteigend.
+- Gemeinsame Kursdetails mit Tabs für Übersicht, Voraussetzungen und Rezensionen sowie Navigation zu Voraussetzungen ohne Filterverlust.
 - Rezensionen mit vier Bewertungsdimensionen, optionalem Text und vollständigem CRUD für die eigene Rezension.
 - Zugehörige Katalogerweiterungen, UI-Anpassungen sowie Unit-, Integrations- und E2E-Tests.
 
@@ -24,7 +25,7 @@ Skill Tree und Course Browser zeigen denselben Katalog in zwei unterschiedlichen
 
 = 2. Lösungsstrategie
 
-Statische Katalogdaten und dynamische Rezensionen bleiben getrennt. Der Course Browser filtert den bereits geladenen Katalog lokal; eine Filteränderung benötigt keine Serveranfrage. Der Belegbarkeitsfilter verwendet den bestehenden Studienfortschritt und die Modulvoraussetzungen.
+Statische Katalogdaten und dynamische Rezensionen bleiben getrennt. Der Course Browser filtert den bereits geladenen Katalog lokal; eine Filteränderung benötigt keine Serveranfrage. Der Belegbarkeitsfilter verwendet den bestehenden Studienfortschritt und die Modulvoraussetzungen. Für die bewertungsbasierte Sortierung lädt die Oberfläche aggregierte Weiterempfehlungen über die API; ohne diese Daten bleibt die Namenssortierung verfügbar.
 
 Rezensionen werden über den bestehenden API-Worker in D1 gespeichert. Die vorhandene Better-Auth-Sitzung identifiziert den Benutzer. Lesen ist öffentlich; Erstellen, Bearbeiten und Löschen erfordern eine Anmeldung. Damit benötigt die Erweiterung weder einen zusätzlichen Backend-Dienst noch eine zweite Anmeldung.
 
@@ -36,8 +37,8 @@ Rezensionen werden über den bestehenden API-Worker in D1 gespeichert. Die vorha
     columns: (3.4cm, 1fr),
     table.header([*Baustein*], [*Verantwortung und Herkunft*]),
     [Course Browser\ *Neu*], [SvelteKit-Route `/courses`: verbindet Suche, Filter, Trefferliste und ausgewähltes Modul. Lokale Svelte-Runes halten den Ansichtsstatus; reine Filterfunktionen berechnen die Treffer.],
-    [Kursdetails und Reviews\ *Neu*], [Zeigen Voraussetzungen und Rezensionen. Das Formular unterstützt Erstellen, Bearbeiten und bestätigtes Löschen. Bei Speicherfehlern bleibt der Entwurf erhalten.],
-    [Katalog und Fortschritt\ *Bestand, erweitert*], [Gemeinsame Datenbasis beider Ansichten. WEBLAB ergänzt insbesondere normalisierte Prüfungsformen und die Verwendung des Fortschritts im Belegbarkeitsfilter.],
+    [Kursdetails und Reviews\ *Neu*], [Gemeinsame Tabs für Übersicht, Voraussetzungen und Rezensionen in Course Browser und Skill Tree. Das Formular unterstützt Erstellen, Bearbeiten und bestätigtes Löschen; Speicherfehler erhalten den Entwurf.],
+    [Katalog und Fortschritt\ *Bestand, erweitert*], [Gemeinsame Datenbasis beider Ansichten. WEBLAB ergänzt Prüfungsformen, Unterrichtssprachen und die Verwendung des Studienfortschritts für Belegbarkeit und Voraussetzungshinweise.],
     [API-Worker und Auth\ *Bestand, erweitert*], [Better Auth verwaltet GitHub-Anmeldung und Sitzungen. Das neue Review-Modul validiert Anfragen und setzt Besitzrechte durch.],
     [Cloudflare D1\ *Bestand, erweitert*], [Bestehende Benutzer-, Sitzungs- und Fortschrittsdaten; neue Tabelle `reviews` mit Migration und Integritätsregeln.],
   )
@@ -52,6 +53,7 @@ Eine Rezension enthält Kurs- und Benutzerzuordnung, vier Ganzzahlbewertungen vo
   #table(
     columns: (auto, 1fr),
     table.header([*Route*], [*Vertrag*]),
+    [`GET /api/course-review-scores`], [Öffentliche Weiterempfehlungsdurchschnitte und Anzahl Rezensionen je bewertetem Kurs für die Sortierung.],
     [`GET /api/courses/:courseId/reviews`], [Öffentliche Rezensionen und getrennte Durchschnittswerte; `ownReviewId` kennzeichnet die eigene Rezension bei angemeldeten Benutzern.],
     [`POST /api/courses/:courseId/reviews`], [Erstellt eine Rezension für den angemeldeten Benutzer.],
     [`PUT /api/reviews/:id`], [Bearbeitet ausschliesslich die eigene Rezension.],
@@ -67,6 +69,7 @@ Die öffentliche Ausgabe enthält keine Namen oder Benutzer-IDs. Intern bleibt d
 
 1. `/courses` lädt den statischen Katalog.
 2. Suche und Filter werden lokal ausgewertet: verschiedene Filtergruppen mit UND, mehrere Werte derselben Gruppe mit ODER.
+   Die Treffer werden nach Name oder durchschnittlicher Weiterempfehlung sortiert. Unbewertete Kurse stehen bei Bewertungssortierung zuletzt; gleiche Bewertungen werden alphabetisch geordnet.
 3. Eine Kursauswahl öffnet die Details neben der Liste oder auf kleinen Bildschirmen als Dialog.
 4. Ein Klick auf eine Voraussetzung wechselt zum referenzierten Modul, auch ausserhalb der aktuellen Treffer. Filter bleiben erhalten; beim Schliessen kehrt der Fokus zur ursprünglichen Kurszeile zurück.
 
@@ -92,7 +95,7 @@ GitHub Actions prüft Übersetzungen, Typen, Linting und alle drei Testebenen. D
 
 *Responsive Bedienung:* Mobile Filter sind einklappbar. Der Kursdetaildialog begrenzt den Tastaturfokus, unterstützt Escape und stellt den ursprünglichen Fokus wieder her. Suche und Fachtexte sind deutsch und englisch verfügbar.
 
-*Tests:* 41 Frontend-Tests prüfen unter anderem Katalog und Filterlogik; 36 Worker-Integrationstests decken bestehende APIs und die neue Review-Ressource ab. 14 Playwright-Fälle prüfen sieben Abläufe auf Desktop und Mobil: kombinierte Filter, Voraussetzungennavigation, Tastaturauswahl, Fokus bei geschlossenen Einstellungen, persistentes Review-CRUD, Gast-/Fremdkonto-Zugriff und Wiederholung nach Speicherfehlern.
+*Tests:* Frontend-Tests prüfen Katalog, Filterlogik und Voraussetzungsauswertung. Worker-Integrationstests decken bestehende APIs, Review-CRUD und Bewertungsaggregate ab. Playwright prüft Desktop- und Mobilabläufe für Filter, Sortierung, gemeinsame Kursdetails, Fokusführung, persistentes Review-CRUD, Zugriffsrechte sowie Navigation und Einführung.
 
 Die E2E-Tests verwenden das Produktionsbundle, den echten Worker, isolierte migrierte D1-Datenbanken und echte Testsitzungen. Der externe GitHub-OAuth-Ablauf ist nicht automatisiert. Ausführung unter `frontend/`: `bun run web:test`, `bun run worker:test` und `bun run e2e:test`; Playwright benötigt einmalig `bunx playwright install chromium`.
 
@@ -108,7 +111,7 @@ Die E2E-Tests verwenden das Produktionsbundle, den echten Worker, isolierte migr
 #let quality = json("quality/summary.json")
 #let category-keys = ("performance", "accessibility", "best-practices", "seo")
 
-Lighthouse #quality.lighthouseVersion, gemessen am 19. September 2026 am lokal ausgelieferten Produktionsbundle, Produktstand #raw(quality.productRevision). Je Ansicht wurde ein mobiler und ein Desktop-Erstaufruf ohne gespeicherte Einstellungen gemessen. Umgebung und Befehle stehen in `quality/summary.json`.
+Lighthouse #quality.lighthouseVersion, gemessen am 19. September 2026 am lokal ausgelieferten Produktionsbundle, Produktstand #raw(quality.productRevision). Die Messung liegt vor der anschliessenden UI-/UX-Überarbeitung. Je Ansicht wurde ein mobiler und ein Desktop-Erstaufruf ohne gespeicherte Einstellungen gemessen. Umgebung und Befehle stehen in `quality/summary.json`.
 
 #block(breakable: false, table(
   columns: (2.9cm, 1fr, 1fr, 1fr, 1fr, 1fr),
@@ -123,13 +126,13 @@ Lighthouse #quality.lighthouseVersion, gemessen am 19. September 2026 am lokal a
 
 Die Bewertung konzentriert sich auf die Nutzung durch Menschen. Agentic Browsing wird nicht einbezogen. Der Mittelwert der vier ausgewerteten Kategorien liegt auf Desktop und Mobil jeweils über 90.
 
-*Grenzen:* Der mobile Course Browser erreicht einen LCP von 2.97 s und liegt damit über dem guten Bereich von höchstens 2.5 s. Das bestehende Skill-Tree-Tutorial verursacht durch ein ungültiges ARIA-Attribut in Driver.js eine Accessibility-Wertung von 94 auf Desktop. Die Messungen sind lokale Labordaten, keine Felddaten oder vollständige WCAG-Prüfung. Automatisierte Browserprüfungen verwenden Chromium, keine physischen Mobilgeräte.
+*Grenzen:* Im gemessenen Stand erreichte der mobile Course Browser einen LCP von 2.97 s und lag damit über dem guten Bereich von höchstens 2.5 s. Ein ungültiges ARIA-Attribut im Driver.js-Tutorial führte beim Skill Tree zu einer Accessibility-Wertung von 94 auf Desktop. Die Messungen sind lokale Labordaten, keine Felddaten oder vollständige WCAG-Prüfung. Automatisierte Browserprüfungen verwenden Chromium, keine physischen Mobilgeräte.
 
 = 9. Reflexion und Fazit
 
 *Gut gelungen:* Die Wiederverwendung von Katalog, Anmeldung und D1 ermöglicht eine zusammenhängende Erweiterung statt einer zweiten Anwendung. Die reine Filterlogik und die Review-Constraints lassen sich unabhängig von der Oberfläche prüfen; E2E-Tests ergänzen die tatsächlichen Benutzerabläufe.
 
-*Herausforderungen:* Kursdetails mussten auf kleinen Bildschirmen kompakt bleiben. Besonders die Navigation zu Voraussetzungen ausserhalb der Trefferliste erforderte getrennte Zustände für Filter, Auswahl und Fokus. Bei Rezensionen mussten die namenlose öffentliche Anzeige und die notwendige interne Besitzerzuordnung klar unterschieden werden.
+*Herausforderungen:* Kursdetails mussten auf kleinen Bildschirmen kompakt bleiben. Gemeinsame Tabs für Übersicht, Voraussetzungen und Rezensionen vereinheitlichen nun beide Ansichten. Die Navigation zu Voraussetzungen ausserhalb der Trefferliste erfordert weiterhin getrennte Zustände für Filter, Auswahl und Fokus. Mobile Navigation und Einführung wurden iterativ vereinfacht; bei Rezensionen bleiben namenlose Anzeige und interne Besitzerzuordnung klar getrennt.
 
 *Für ein nächstes Projekt:* Die isolierte Worker-/D1-Testumgebung sollte früher verfügbar sein. Damit können Persistenz, Authentifizierung und Fehlerzustände bereits während der Oberflächenentwicklung gemeinsam geprüft werden. Kurze Layout-Iterationen mit realen Kursdaten helfen, unnötige Detailfülle früh zu erkennen.
 

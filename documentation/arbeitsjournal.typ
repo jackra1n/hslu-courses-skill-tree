@@ -20,6 +20,8 @@
   (date: "2026-09-17", hours: 3, activity: "Isolierte Playwright-Umgebung mit echtem Worker und D1 aufgebaut, Browserabläufe getestet und in CI integriert."),
   (date: "2026-09-18", hours: 2.5, activity: "Lighthouse-Messungen durchgeführt, Zugänglichkeitsfehler behoben und Tutorial ohne Dependency-Patch geprüft."),
   (date: "2026-09-19", hours: 2, activity: "Architektur, Reflexion und Arbeitsjournal überarbeitet; Qualitätsnachweis und PDF-Darstellung geprüft."),
+  (date: "2026-09-19", hours: 2, activity: "Kursdetails von Course Browser und Skill Tree in gemeinsame Tabs überführt; Unterrichtssprachen und studienplanbezogene Voraussetzungshinweise ergänzt."),
+  (date: "2026-09-20", hours: 3, activity: "Filter und Kurssortierung nach Name oder Weiterempfehlung ergänzt; mobile Navigation, Einführung und Panel-Bedienung überarbeitet. UI und UX iterativ verfeinert und zugehörige Tests erweitert."),
 )
 
 #let journal-table(entries: journal-entries) = {
@@ -35,7 +37,7 @@
     columns: (2.7cm, 1.5cm, 1fr),
     align: (left + horizon, right + horizon, left + horizon),
     stroke: 0.5pt + border-color,
-    inset: 7pt,
+    inset: (x: 7pt, y: 5pt),
     table.header([*Datum*], [*Dauer*], [*Tätigkeit*]),
     ..rows,
     table.cell(colspan: 2)[*Total*],
