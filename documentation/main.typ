@@ -136,7 +136,6 @@ Die Bewertung konzentriert sich auf die Nutzung durch Menschen. Agentic Browsing
 
 *Für ein nächstes Projekt:* Die isolierte Worker-/D1-Testumgebung sollte früher verfügbar sein. Damit können Persistenz, Authentifizierung und Fehlerzustände bereits während der Oberflächenentwicklung gemeinsam geprüft werden. Kurze Layout-Iterationen mit realen Kursdaten helfen, unnötige Detailfülle früh zu erkennen.
 
-Grundlage: #link("https://github.com/web-programming-lab/web-programming-lab-projekt")[WEBLAB-Projektanforderungen und Dokumentationshinweise].
 
 #pagebreak()
 = 10. Arbeitsjournal

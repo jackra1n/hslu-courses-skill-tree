@@ -34,7 +34,7 @@
     rows.push([#entry.activity])
   }
   table(
-    columns: (2.7cm, 1.5cm, 1fr),
+    columns: (2.7cm, auto, 1fr),
     align: (left + horizon, right + horizon, left + horizon),
     stroke: 0.5pt + border-color,
     inset: (x: 7pt, y: 5pt),
