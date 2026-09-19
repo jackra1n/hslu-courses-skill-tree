@@ -10,6 +10,7 @@ const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
 
 // Built per run so the popovers pick up the active locale.
 function buildSteps(): DriveStep[] {
+	const mobileNavigation = !window.matchMedia('(min-width: 1024px)').matches;
 	return [
 		{
 			popover: {
@@ -61,10 +62,14 @@ function buildSteps(): DriveStep[] {
 			},
 		},
 		{
-			element: '[data-tour="program"]',
+			element: mobileNavigation
+				? '[data-tour="navigation"]'
+				: '[data-tour="program"]',
 			popover: {
 				title: m.tutorial_program_title(),
-				description: m.tutorial_program_description(),
+				description: mobileNavigation
+					? m.tutorial_program_mobile()
+					: m.tutorial_program_description(),
 			},
 		},
 		{
@@ -75,10 +80,14 @@ function buildSteps(): DriveStep[] {
 			},
 		},
 		{
-			element: '[data-tour="account"]',
+			element: mobileNavigation
+				? '[data-tour="navigation"]'
+				: '[data-tour="account"]',
 			popover: {
 				title: m.tutorial_sync_title(),
-				description: m.tutorial_sync_description(),
+				description: mobileNavigation
+					? m.tutorial_sync_mobile()
+					: m.tutorial_sync_description(),
 			},
 		},
 		{

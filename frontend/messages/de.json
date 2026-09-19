@@ -13,6 +13,7 @@
 	"header_title": "HSLU Courses Skill Tree",
 	"header_subtitle": "Verfolge deinen Fortschritt durch die Module",
 	"header_study_plan": "Studienplan",
+	"header_menu": "Menü",
 	"header_open_progress_analytics": "Fortschrittsanalyse öffnen",
 	"header_settings_help": "Einstellungen & Hilfe",
 	"header_ects_tooltip": "{passed} ECTS bestanden\n{planned} ECTS im Plan\n{attended} ECTS besucht (nicht bestanden)",
@@ -312,10 +313,12 @@
 	"tutorial_course_description": "Wähle ein Modul aus, um Details und Voraussetzungen zu sehen. Im Detailpanel kannst du es als besucht oder abgeschlossen markieren, um deinen Status zu tracken.",
 	"tutorial_program_title": "Studiengang wechseln",
 	"tutorial_program_description": "Wähle deinen Studiengang, dein Studienmodell, dein Startjahr und dein Startsemester und lade den passenden Studienplan.",
+	"tutorial_program_mobile": "Öffne Menü und dann Studienplan, um Studiengang, Studienmodell, Startjahr und Startsemester auszuwählen.",
 	"tutorial_progress_title": "Fortschritt überprüfen",
 	"tutorial_progress_description": "Öffne die ECTS-Übersicht, um bestandene, geplante und nicht bestandene Credits insgesamt und nach Modultyp zu sehen.",
 	"tutorial_sync_title": "Geräteübergreifend synchronisieren",
 	"tutorial_sync_description": "Melde dich mit GitHub an, um deinen Fortschritt und Studienplan zwischen Geräten zu synchronisieren. Bereits angemeldet? Überprüfe den Sync-Status und melde dich in diesem Menü ab.",
+	"tutorial_sync_mobile": "Öffne Menü und dann Anmelden, um deinen Fortschritt mit GitHub zu synchronisieren. Wenn du bereits angemeldet bist, findest du unter Konto den Sync-Status und kannst dich abmelden.",
 	"tutorial_open_source_title": "Open Source",
 	"tutorial_open_source_description": "Dieses Projekt ist Open Source. <a class=\"hslu-github-link\" href=\"https://github.com/jackra1n/hslu-courses-skill-tree\" target=\"_blank\" rel=\"noreferrer\"><span class=\"i-lucide-github h-4 w-4\" aria-hidden=\"true\"></span>jackra1n/hslu-courses-skill-tree</a> Die Studienpläne werden von Hand gepflegt, darum prüfe wichtige Angaben gegen die offiziellen HSLU-Quellen, und <a href=\"https://github.com/jackra1n/hslu-courses-skill-tree/issues\" target=\"_blank\" rel=\"noreferrer\">öffne ein Issue</a>, falls etwas falsch aussieht."
 }

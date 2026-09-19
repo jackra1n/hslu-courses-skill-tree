@@ -60,6 +60,7 @@ test('starting and completing the tour does not open follow-up notices', async (
 
 test('existing visitors stay uninterrupted and can find context and replay in settings', async ({
 	page,
+	isMobile,
 }) => {
 	await page.addInitScript(() =>
 		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'),
@@ -70,6 +71,8 @@ test('existing visitors stay uninterrupted and can find context and replay in se
 	await expect(
 		page.getByText(disclaimer, { exact: true }),
 	).not.toBeInViewport();
+	if (isMobile)
+		await page.getByRole('button', { name: 'Menu', exact: true }).click();
 	await page
 		.getByRole('button', { name: 'Settings & help', exact: true })
 		.click();

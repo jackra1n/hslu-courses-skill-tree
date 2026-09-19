@@ -1,17 +1,38 @@
 <script lang="ts">
-import { onMount } from 'svelte';
+import { onMount, tick } from 'svelte';
 import { getEctsRequirements } from '$lib/data/ects-requirements';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { measureHeaderHeight } from '$lib/utils/header-height';
 import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
-import Tooltip from '../ui/Tooltip.svelte';
 import AccountMenu from './AccountMenu.svelte';
 import ProgressAnalytics from './ProgressAnalytics.svelte';
 import TemplateSelector from './TemplateSelector.svelte';
 
 let programDropdownOpen = $state(false);
 let activeSidebar = $state<'settings' | 'analytics' | null>(null);
+let mobileMenuOpen = $state(false);
+let accountMenuOpen = $state(false);
+let menuButton: HTMLButtonElement;
+let navigation: HTMLElement;
+const navigationId = $props.id();
+
+function closeMobileMenu() {
+	mobileMenuOpen = false;
+	programDropdownOpen = false;
+	accountMenuOpen = false;
+}
+
+async function toggleMobileMenu() {
+	if (mobileMenuOpen) {
+		closeMobileMenu();
+		return;
+	}
+	activeSidebar = null;
+	mobileMenuOpen = true;
+	await tick();
+	navigation.querySelector<HTMLElement>('a, button')?.focus();
+}
 
 const courseStore = getCourseStore();
 
@@ -32,27 +53,53 @@ onMount(() => {
 		) {
 			programDropdownOpen = false;
 		}
+		if (mobileMenuOpen && !eventPathIncludesClass(event, 'header-navigation'))
+			closeMobileMenu();
 	};
 	document.addEventListener('click', handleClickOutside);
+	const handleKeydown = (event: KeyboardEvent) => {
+		if (event.key === 'Escape' && mobileMenuOpen) {
+			closeMobileMenu();
+			menuButton.focus();
+		}
+	};
+	const handleFocus = (event: FocusEvent) => {
+		if (
+			mobileMenuOpen &&
+			event.target instanceof Node &&
+			!navigation.contains(event.target) &&
+			event.target !== menuButton
+		)
+			closeMobileMenu();
+	};
+	const desktop = window.matchMedia('(min-width: 1024px)');
+	const handleBreakpoint = () => closeMobileMenu();
+	desktop.addEventListener('change', handleBreakpoint);
+	document.addEventListener('keydown', handleKeydown);
+	document.addEventListener('focusin', handleFocus);
 
 	return () => {
 		document.removeEventListener('click', handleClickOutside);
+		document.removeEventListener('keydown', handleKeydown);
+		document.removeEventListener('focusin', handleFocus);
+		desktop.removeEventListener('change', handleBreakpoint);
 	};
 });
 
 function toggleProgramDropdown() {
 	programDropdownOpen = !programDropdownOpen;
+	accountMenuOpen = false;
 	if (programDropdownOpen) activeSidebar = null;
 }
 
 function toggleSettings() {
+	closeMobileMenu();
 	activeSidebar = activeSidebar === 'settings' ? null : 'settings';
-	if (activeSidebar === 'settings') programDropdownOpen = false;
 }
 
 function toggleAnalytics() {
+	closeMobileMenu();
 	activeSidebar = activeSidebar === 'analytics' ? null : 'analytics';
-	if (activeSidebar === 'analytics') programDropdownOpen = false;
 }
 
 const plannedCredits = $derived(courseStore.totalCredits);
@@ -70,80 +117,60 @@ const ectsTooltip = $derived(
 );
 </script>
 
-<header {@attach measureHeaderHeight} class="relative z-[60] flex items-center justify-between gap-2 border-b border-border-primary bg-bg-primary px-3 py-2 sm:gap-4 sm:px-4 sm:py-3">
-  <div class="flex min-w-0 items-center gap-3">
-    <div class="leading-tight">
-      <h1 class="text-lg font-semibold text-text-primary lg:hidden">{m.header_title_short()}</h1>
-      <h1 class="hidden text-lg font-semibold text-text-primary lg:block">{m.header_title()}</h1>
-      <p class="hidden text-xs text-text-secondary lg:block">{m.header_subtitle()}</p>
-    </div>
+<header {@attach measureHeaderHeight} class="relative z-[60] flex items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 lg:gap-4 lg:py-3">
+  <div class="min-w-0 leading-tight">
+    <h1 class="text-lg font-semibold text-text-primary lg:hidden">{m.header_title_short()}</h1>
+    <h1 class="hidden text-lg font-semibold text-text-primary lg:block">{m.header_title()}</h1>
+    <p class="hidden text-xs text-text-secondary lg:block">{m.header_subtitle()}</p>
   </div>
 
-
-  <div class="flex flex-1 items-center justify-end gap-1 sm:gap-2">
-    <a href="/courses" aria-label={m.browser_title()} title={m.browser_title()} class="flex h-11 w-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-border-primary text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-blue-500 lg:h-9 lg:w-auto lg:px-3">
-      <span class="i-lucide-library h-4 w-4 shrink-0" aria-hidden="true"></span>
-      <span class="hidden lg:inline">{m.browser_title()}</span>
-      <span class="i-lucide-arrow-right hidden h-4 w-4 shrink-0 lg:block" aria-hidden="true"></span>
-    </a>
-
-    <div class="relative program-dropdown">
-      <button 
-        data-tour="program"
-        onclick={toggleProgramDropdown}
-        aria-label={m.header_study_plan()}
-        aria-expanded={programDropdownOpen}
-        class="flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-border-primary bg-transparent px-2 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all sm:px-3"
-        >
-        <div class="i-lucide-graduation-cap h-4 w-4 text-text-primary"></div>
-        <span class="hidden sm:inline text-sm font-medium text-text-primary">{m.header_study_plan()}</span>
-      </button>
-      
-      {#if programDropdownOpen}
-        <div
-          class="fixed inset-x-4 top-[var(--app-header-height)] z-50 rounded-lg border border-border-primary bg-bg-primary p-3 shadow-2xl overflow-visible
-                 sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:mt-1 sm:w-80 sm:shadow-lg sm:max-h-[70vh] sm:overflow-visible"
-        >
-          <div class="text-xs font-medium text-text-secondary mb-2">{m.header_study_plan()}</div>
-          <div class="border-b border-border-primary mb-3"></div>
-          <div class="space-y-4">
-            <TemplateSelector />
-          </div>
-        </div>
-      {/if}
-    </div>
-
-    <!-- ECTS progress badge -->
-    <button
-      data-tour="progress"
-      onclick={toggleAnalytics}
-      class="flex h-9 items-center gap-1.5 rounded-lg border border-border-primary bg-bg-secondary px-2 py-2 cursor-pointer hover:bg-bg-secondary/80 hover:shadow-sm transition-all sm:px-3"
-      title={ectsTooltip}
-      aria-label={m.header_open_progress_analytics()}
-    >
-      <span class="whitespace-nowrap text-xs font-bold text-text-primary">{requiredEcts > 0 ? `${passedEcts} / ${requiredEcts}` : passedEcts}<span class="hidden sm:inline"> ECTS</span></span>
+  <div class="flex flex-1 items-center justify-end gap-2">
+    <button data-tour="progress" onclick={toggleAnalytics}
+      class="flex h-11 shrink-0 items-center rounded-lg border border-border-primary bg-bg-secondary px-3 text-xs font-bold text-text-primary hover:bg-bg-secondary/80 focus-visible:outline-blue-500 lg:order-1 lg:h-9"
+      title={ectsTooltip} aria-label={m.header_open_progress_analytics()}>
+      {requiredEcts > 0 ? `${passedEcts} / ${requiredEcts} ECTS` : `${passedEcts} ECTS`}
     </button>
 
+    <button bind:this={menuButton} type="button" data-tour="navigation" onclick={toggleMobileMenu}
+      aria-label={m.header_menu()} aria-expanded={mobileMenuOpen} aria-controls={navigationId}
+      class="header-navigation flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border-primary text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:hidden">
+      <span class={`${mobileMenuOpen ? 'i-lucide-x' : 'i-lucide-menu'} h-5 w-5`} aria-hidden="true"></span>
+    </button>
 
-    <!-- cloud sync account -->
-    <AccountMenu onInteract={() => {
-      activeSidebar = null;
-      programDropdownOpen = false;
-    }} />
+    <nav bind:this={navigation} id={navigationId} aria-label={m.header_menu()}
+      class={`header-navigation ${mobileMenuOpen ? 'flex' : 'hidden'} fixed inset-x-3 top-[var(--app-header-height)] z-50 max-h-[calc(100dvh-var(--app-header-height)-12px)] flex-col gap-1 overflow-y-auto rounded-lg border border-border-primary bg-bg-primary p-2 shadow-xl lg:contents`}>
+      <a href="/courses" onclick={closeMobileMenu}
+        class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:min-h-9 lg:gap-2 lg:border lg:border-border-primary">
+        <span class="i-lucide-library h-4 w-4 shrink-0" aria-hidden="true"></span>
+        {m.browser_title()}
+      </a>
 
-    <!-- settings button -->
-    <Tooltip text={m.header_settings_help()} align="end">
-      <button
-        onclick={(event) => {
-          toggleSettings();
-          event.currentTarget.blur();
-        }}
-        class="flex cursor-pointer items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary hover:shadow-sm transition-all text-text-primary"
-        aria-label={m.header_settings_help()}
-      >
-        <div class="i-lucide-settings h-4 w-4 text-text-primary"></div>
+      <div class="relative program-dropdown">
+        <button data-tour="program" onclick={toggleProgramDropdown} aria-label={m.header_study_plan()} aria-expanded={programDropdownOpen}
+          class="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:min-h-9 lg:gap-2 lg:border lg:border-border-primary">
+          <span class="i-lucide-graduation-cap h-4 w-4 shrink-0" aria-hidden="true"></span>
+          {m.header_study_plan()}
+        </button>
+        {#if programDropdownOpen}
+          <div class="rounded-lg border border-border-primary bg-bg-primary p-3 lg:absolute lg:right-0 lg:top-full lg:mt-1 lg:w-80 lg:shadow-lg">
+            <div class="space-y-4"><TemplateSelector /></div>
+          </div>
+        {/if}
+      </div>
+
+      <div class="lg:order-2">
+        <AccountMenu navigationMenu bind:accountMenuOpen onInteract={() => {
+          activeSidebar = null;
+          programDropdownOpen = false;
+        }} />
+      </div>
+
+      <button onclick={toggleSettings} aria-label={m.header_settings_help()} title={m.header_settings_help()}
+        class="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:order-3 lg:min-h-9 lg:w-9 lg:justify-center lg:px-0">
+        <span class="i-lucide-settings h-4 w-4 shrink-0" aria-hidden="true"></span>
+        <span class="lg:hidden">{m.header_settings_help()}</span>
       </button>
-    </Tooltip>
+    </nav>
   </div>
 </header>
 

@@ -13,6 +13,7 @@
 	"header_title": "HSLU Courses Skill Tree",
 	"header_subtitle": "Track your progress through courses",
 	"header_study_plan": "Study plan",
+	"header_menu": "Menu",
 	"header_open_progress_analytics": "Open progress analytics",
 	"header_settings_help": "Settings & help",
 	"header_ects_tooltip": "{passed} ECTS completed\n{planned} ECTS in plan\n{attended} ECTS attended (failed)",
@@ -313,10 +314,12 @@
 	"tutorial_course_description": "Select any course to view its details and prerequisites. In the details panel, mark it as attended or completed to track your status.",
 	"tutorial_program_title": "Change your program",
 	"tutorial_program_description": "Choose your degree program, study model, start year, and semester, then load the matching curriculum.",
+	"tutorial_program_mobile": "Open Menu, then Study plan to choose your degree program, study model, start year, and semester.",
 	"tutorial_progress_title": "Review your progress",
 	"tutorial_progress_description": "Open the ECTS summary to see passed, completed, and failed credits overall and by module type.",
 	"tutorial_sync_title": "Sync across devices",
 	"tutorial_sync_description": "Sign in with GitHub to sync your progress and study plan between devices. Already signed in? Review the sync status and sign out from this menu.",
+	"tutorial_sync_mobile": "Open Menu, then Sign in to sync your progress with GitHub. If you are already signed in, open Account to review sync status or sign out.",
 	"tutorial_open_source_title": "Open source",
 	"tutorial_open_source_description": "This project is open source. <a class=\"hslu-github-link\" href=\"https://github.com/jackra1n/hslu-courses-skill-tree\" target=\"_blank\" rel=\"noreferrer\"><span class=\"i-lucide-github h-4 w-4\" aria-hidden=\"true\"></span>jackra1n/hslu-courses-skill-tree</a> Curricula are maintained by hand, so double-check anything important against official HSLU sources, and please <a href=\"https://github.com/jackra1n/hslu-courses-skill-tree/issues\" target=\"_blank\" rel=\"noreferrer\">open an issue</a> if something looks wrong."
 }
