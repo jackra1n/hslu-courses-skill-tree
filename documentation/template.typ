@@ -11,6 +11,7 @@
   v(0.6em)
   block(
     width: 100%,
+    breakable: false,
     stroke: 1pt + border-color,
     radius: 4pt,
     inset: 12pt,
@@ -72,7 +73,6 @@
 #let weblab-doc(
   title: "HSLU Courses Skill Tree - Course Browser",
   subtitle: "WEBLAB Architektur-Dokumentation (arc42) & Modulbericht",
-  author: "jackra1n",
   course: "WEBLAB - Web Programming Lab",
   institution: "Hochschule Luzern - Departement Informatik",
   semester: "Herbstsemester 2026",
@@ -80,7 +80,7 @@
   abstract: none,
   doc
 ) = {
-  set document(title: title, author: author)
+  set document(title: title)
 
   set page(
     paper: "a4",
@@ -104,7 +104,7 @@
         #grid(
           columns: (1fr, auto),
           align: (left, right),
-          text(size: 8.5pt, fill: muted-color)[#author - #institution],
+          text(size: 8.5pt, fill: muted-color)[#institution],
           text(size: 8.5pt, fill: muted-color)[Seite #counter(page).display("1")]
         )
       ]
@@ -130,35 +130,30 @@
     #v(0.4em)
   ]
 
-  show heading.where(level: 1): it => [
-    #v(1.2em)
+  show heading.where(level: 1): it => block(above: 1.2em, below: 0.6em, sticky: true)[
     #text(size: 1.5em, weight: "bold", fill: primary-color)[#it.body]
     #v(0.6em)
     #line(length: 100%, stroke: 1.5pt + secondary-color)
-    #v(0.6em)
   ]
 
-  show heading.where(level: 2): it => [
-    #v(1.0em)
+  show heading.where(level: 2): it => block(above: 1em, below: 0.4em, sticky: true)[
     #text(size: 1.25em, weight: "bold", fill: primary-color)[#it.body]
-    #v(0.4em)
   ]
 
-  show heading.where(level: 3): it => [
-    #v(0.8em)
+  show heading.where(level: 3): it => block(above: 0.8em, below: 0.3em, sticky: true)[
     #text(size: 1.08em, weight: "bold", fill: secondary-color)[#it.body]
-    #v(0.3em)
   ]
 
   show link: set text(fill: secondary-color)
 
   // Titelseite
   align(center + horizon)[
+    #set par(justify: false, linebreaks: "optimized")
     #text(size: 1.1em, fill: muted-color, weight: "medium")[#institution]
     #v(0.5em)
     #text(size: 1.2em, fill: secondary-color, weight: "bold")[#course]
     #v(1.5em)
-    #text(size: 2.2em, weight: "bold", fill: primary-color)[#title]
+    #text(size: 2.2em, weight: "bold", fill: primary-color, hyphenate: false)[#title]
     #v(0.8em)
     #text(size: 1.25em, fill: muted-color)[#subtitle]
     #v(2.5em)
@@ -168,7 +163,6 @@
       columns: (auto, auto),
       gutter: 1.2em,
       align: (right, left),
-      [*Autor:*], [#author],
       [*Semester:*], [#semester],
       [*Datum:*], [#date],
     )

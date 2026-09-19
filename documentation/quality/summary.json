@@ -1,0 +1,134 @@
+{
+  "date": "2026-09-19",
+  "productRepository": "https://github.com/jackra1n/hslu-courses-skill-tree",
+  "productRevision": "ba7b5a5",
+  "lighthouseVersion": "13.5.0",
+  "environment": {
+    "os": "Fedora 44 x86_64",
+    "cpu": "AMD Ryzen 5 7600X",
+    "browser": "Chrome for Testing 153.0.8010.12",
+    "serving": "Production frontend build served by Wrangler test harness with the real API Worker and isolated migrated D1 storage; Node.js server runtime.",
+    "navigation": "Unauthenticated cold navigation with Lighthouse storage reset. Four runs executed sequentially; the summary reports the four selected categories.",
+    "scope": "Local laboratory measurements, not deployed production or real-user field data.",
+    "tutorial": "Unmodified Driver.js 1.8.0; automatic first-visit tutorial retained. The desktop Skill Tree audit reports the upstream invalid aria-expanded attribute on its dummy highlight element."
+  },
+  "averageDefinition": "Arithmetic mean of performance, accessibility, best-practices and seo. Agentic Browsing is excluded; the assessment focuses on human use.",
+  "runs": [
+    {
+      "name": "courses-mobile",
+      "label": "Course Browser",
+      "profile": "Mobil",
+      "route": "/courses",
+      "fetchTime": "2026-09-19T11:17:56.022Z",
+      "scores": {
+        "performance": 90,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "average": 97.5,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "metrics": {
+        "fcpMs": 1963.08,
+        "lcpMs": 2968.6515,
+        "tbtMs": 184,
+        "cls": 0
+      },
+      "command": "bunx lighthouse@13.5.0 http://127.0.0.1:43691/courses --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=courses-mobile.json --disable-full-page-screenshot --no-enable-error-reporting --quiet"
+    },
+    {
+      "name": "courses-desktop",
+      "label": "Course Browser",
+      "profile": "Desktop",
+      "route": "/courses",
+      "fetchTime": "2026-09-19T11:18:06.990Z",
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "average": 100,
+      "throttling": {
+        "rttMs": 40,
+        "throughputKbps": 10240,
+        "requestLatencyMs": 0,
+        "downloadThroughputKbps": 0,
+        "uploadThroughputKbps": 0,
+        "cpuSlowdownMultiplier": 1
+      },
+      "metrics": {
+        "fcpMs": 456.2568,
+        "lcpMs": 712.4775999999999,
+        "tbtMs": 0,
+        "cls": 0
+      },
+      "command": "bunx lighthouse@13.5.0 http://127.0.0.1:43691/courses --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=courses-desktop.json --disable-full-page-screenshot --no-enable-error-reporting --quiet --preset=desktop"
+    },
+    {
+      "name": "skill-tree-mobile",
+      "label": "Skill Tree",
+      "profile": "Mobil",
+      "route": "/",
+      "fetchTime": "2026-09-19T11:18:17.974Z",
+      "scores": {
+        "performance": 96,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "average": 99,
+      "throttling": {
+        "rttMs": 150,
+        "throughputKbps": 1638.4,
+        "requestLatencyMs": 562.5,
+        "downloadThroughputKbps": 1474.5600000000002,
+        "uploadThroughputKbps": 675,
+        "cpuSlowdownMultiplier": 4
+      },
+      "metrics": {
+        "fcpMs": 2111.80665,
+        "lcpMs": 2419.67775,
+        "tbtMs": 48,
+        "cls": 0.001248120705764205
+      },
+      "command": "bunx lighthouse@13.5.0 http://127.0.0.1:43691/ --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=skill-tree-mobile.json --disable-full-page-screenshot --no-enable-error-reporting --quiet"
+    },
+    {
+      "name": "skill-tree-desktop",
+      "label": "Skill Tree",
+      "profile": "Desktop",
+      "route": "/",
+      "fetchTime": "2026-09-19T11:18:28.355Z",
+      "scores": {
+        "performance": 100,
+        "accessibility": 94,
+        "best-practices": 100,
+        "seo": 100
+      },
+      "average": 98.5,
+      "throttling": {
+        "rttMs": 40,
+        "throughputKbps": 10240,
+        "requestLatencyMs": 0,
+        "downloadThroughputKbps": 0,
+        "uploadThroughputKbps": 0,
+        "cpuSlowdownMultiplier": 1
+      },
+      "metrics": {
+        "fcpMs": 458.4208,
+        "lcpMs": 709.5486000000001,
+        "tbtMs": 0,
+        "cls": 0
+      },
+      "command": "bunx lighthouse@13.5.0 http://127.0.0.1:43691/ --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=skill-tree-desktop.json --disable-full-page-screenshot --no-enable-error-reporting --quiet --preset=desktop"
+    }
+  ]
+}

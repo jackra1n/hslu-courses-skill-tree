@@ -1,296 +1,140 @@
-#import "template.typ": weblab-doc, adr, callout, primary-color, secondary-color, border-color, muted-color
-#import "arbeitsjournal.typ": journal-table, journal-summary, journal-entries
+#import "template.typ": weblab-doc
+#import "arbeitsjournal.typ": journal-table
 
 #show: doc => weblab-doc(
   title: "HSLU Courses Skill Tree - Course Browser",
-  subtitle: "WEBLAB Architektur-Dokumentation (arc42) & Modulbericht",
-  author: "jackra1n",
-  course: "WEBLAB - Web Programming Lab",
-  institution: "Hochschule Luzern - Departement Informatik",
-  semester: "Herbstsemester 2026",
+  subtitle: "WEBLAB Architektur-Dokumentation & Reflexion",
   doc
 )
 
-= 1. Einführung & Ziele
+= 1. Projektumfang und Ausgangslage
 
-== 1.1 Kontext & Hintergrund
-Die vorliegende Dokumentation begleitet das Semesterprojekt im Modul *WEBLAB (Web Programming Lab)* an der *Hochschule Luzern (HSLU)*.
+Der *Course Browser* erweitert den HSLU Courses Skill Tree um eine such- und filterbare Katalogansicht mit Kursdetails und persistenten Rezensionen. Die Dokumentation konzentriert sich auf diese WEBLAB-Erweiterung; die Architekturabschnitte orientieren sich an arc42.
 
-Das Vorhaben baut auf einem bereits existierenden Projekt auf, dem *HSLU Courses Skill Tree*, welches im Haupt-Repository gepflegt wird. Die Modulleitung hat die Weiternutzung und Erweiterung dieser bestehenden Codebasis explizit genehmigt, unter der zentralen Auflage, dass alle im Rahmen von WEBLAB erbrachten Leistungen eindeutig vom Vorzustand abgrenzbar und nachvollziehbar sind.
+*Bereits vorhanden:* Der graphische Skill Tree, die Aufbereitung der HSLU-Katalogdaten, Studienplan und Fortschritt, GitHub-Anmeldung über Better Auth sowie das Hosting mit GitHub Pages, Cloudflare Workers und D1. Der Git-Tag `pre-weblab` markiert diesen Ausgangszustand.
 
-#callout(title: "Arbeitsentwurf, kein Implementierungsnachweis", fill-color: rgb("#eff6ff"), stroke-color: secondary-color)[
-  Dieses Dokument enthält neben bestehenden Bausteinen auch die geplante Zielarchitektur. Review-Schema, Review-API und Review-Oberfläche sind implementiert; Playwright-E2E-Tests fehlen noch. Die Review-Abläufe wurden lokal im Browser gegen Worker und D1 mit synthetischen Benutzersitzungen geprüft. Der vollständige GitHub-OAuth-Ablauf wurde dabei nicht durchlaufen. Performance- und Barrierefreiheitsangaben sind Ziele, keine Messresultate oder Konformitätsnachweise. Die vollständige Überarbeitung und Reflexion erfolgen nach Abschluss der Implementierung.
-]
+*Im Rahmen von WEBLAB ergänzt:*
+- Course Browser unter `/courses` mit deutsch-englischer Suche nach Modul-ID und Titel.
+- Kombinierbare Filter für Semester, Modultyp, Prüfungsform, ECTS und als Nächstes belegbare Module.
+- Responsive Kursdetails mit Navigation zu Voraussetzungen, ohne aktive Filter zu verlieren.
+- Rezensionen mit vier Bewertungsdimensionen, optionalem Text und vollständigem CRUD für die eigene Rezension.
+- Zugehörige Katalogerweiterungen, UI-Anpassungen sowie Unit-, Integrations- und E2E-Tests.
 
-Der Git-Tag:
-#align(center)[
-  #box(
-    fill: rgb("#f1f5f9"),
-    stroke: 1pt + border-color,
-    radius: 4pt,
-    inset: (x: 12pt, y: 6pt),
-    text(font: "Liberation Mono", weight: "bold", size: 1.05em, fill: primary-color)[pre-weblab]
-  )
-]
-markiert den verbindlichen Ausgangszustand vor Beginn der WEBLAB-Arbeiten. Sämtliche für die Leistungsbeurteilung relevanten Änderungen lassen sich als Differenz zwischen `pre-weblab` und dem finalen Abgabestand ableiten.
+Skill Tree und Course Browser zeigen denselben Katalog in zwei unterschiedlichen Formen: als Abhängigkeitsgraph für die Studienplanung und als Liste für die Kurssuche.
 
-== 1.2 Kernziele & Projektumfang
-Der funktionale Kern der WEBLAB-Erweiterung ist ein neuer, interaktiver *Course Browser*, der als entdeckungsorientierte Alternative zur bestehenden graphischen Skill-Tree-Ansicht fungiert.
+= 2. Lösungsstrategie
 
-Der geplante Projektumfang umfasst folgende Schwerpunkte:
-- *Dedizierte Course-Browser-Ansicht (`/courses`):* Eine performante, filterbare Katalogansicht zum schnellen Auffinden und Vergleichen von HSLU-Modulen.
-- *Mehrkriterien-Filterung & Volltextsuche:* Kombinierbare Filter nach Studiengang bzw. Major, Semestertyp (Herbstsemester / Frühlingssemester), Modulkategorie, ECTS-Umfang sowie Schlagwortsuche.
-- *Zwei substanziell unterschiedliche Datendarstellungen:*
-  + *Skill Tree:* Graphische, abhängigkeitsorientierte Visualisierung mit Fokus auf Studienverlauf, Semesterzuteilung und Modulvoraussetzungen.
-  + *Course Browser:* Listen- bzw. kartenbasierte Katalogdarstellung, optimiert für exploratives Suchen, Filtern und Sortieren.
-- *Kursbewertungen als vollständige CRUD-Ressource:* Authentifizierte Studierende können eigene Rezensionen und Bewertungen für Module erfassen (*Create*), ansehen (*Read*), bearbeiten (*Update*) und löschen (*Delete*).
-- *Persistente Datenspeicherung:* Persistierung aller dynamischen Daten (Benutzerkonten, Sitzungen, Kursbewertungen) in Cloudflare D1.
-- *Responsives Design & Barrierefreiheit:* Ergonomische Bedienbarkeit auf Desktop, Tablet und Smartphones bei durchgehend hohen Lighthouse-Werten ($>= 90$ Punkte in allen Kategorien).
+Statische Katalogdaten und dynamische Rezensionen bleiben getrennt. Der Course Browser filtert den bereits geladenen Katalog lokal; eine Filteränderung benötigt keine Serveranfrage. Der Belegbarkeitsfilter verwendet den bestehenden Studienfortschritt und die Modulvoraussetzungen.
 
-= 4. Lösungsstrategie
+Rezensionen werden über den bestehenden API-Worker in D1 gespeichert. Die vorhandene Better-Auth-Sitzung identifiziert den Benutzer. Lesen ist öffentlich; Erstellen, Bearbeiten und Löschen erfordern eine Anmeldung. Damit benötigt die Erweiterung weder einen zusätzlichen Backend-Dienst noch eine zweite Anmeldung.
 
-Die Systemarchitektur verbindet maximale Reaktionsgeschwindigkeit für Endanwender mit geringer Betriebskomplexität durch den Einsatz moderner Edge-Infrastruktur:
+= 3. Bausteinsicht
 
-1. *Client-seitiger Katalog & lokale Filterung:* Der Modulkatalog wird während der Datenaufbereitung in ein statisches JSON-Bündel transformiert. Such- und Filteroperationen laufen reaktiv im Browser, ohne pro Filteränderung eine Netzwerkanfrage auszulösen.
-2. *Edge-API & persistente Datenspeicherung:* Dynamische Anforderungen (Authentifizierung, Rezensionen, Synchronisation) werden über eine leichtgewichtige Cloudflare-Worker-API verarbeitet. Als persistente Datenbank dient Cloudflare D1 (serverloses SQLite am Edge), was weltweite Verfügbarkeit mit minimalen Latenzen und voller ACID-Integrität verbindet.
-3. *Authentifizierung via Better Auth:* Die Benutzerverwaltung basiert auf Better Auth innerhalb des Cloudflare Workers. Unterstützt werden GitHub OAuth sowie abgesicherte, HTTP-only Session-Cookies.
-4. *Progressive Enhancement:* Modulsuche, Filter und der Skill Tree stehen anonymen Nutzern ohne Anmeldung uneingeschränkt zur Verfügung. Eine Authentifizierung ist ausschliesslich für schreibende Operationen erforderlich (Erstellen/Bearbeiten von Bewertungen, Cloud-Synchronisation des Studienplans).
-
-= 5. Bausteinsicht
-
-== 5.1 Level 1: Whitebox Gesamtsystem
-
-#align(center)[
-  #block(
-    width: 90%,
-    stroke: 1pt + border-color,
-    radius: 4pt,
-    inset: 12pt,
-    fill: rgb("#f8fafc"),
-    [
-      #grid(
-        columns: (1fr, 1fr, 1fr),
-        gutter: 1em,
-        align: center + horizon,
-        [
-          #box(fill: rgb("#e0f2fe"), stroke: 1pt + secondary-color, radius: 4pt, inset: 10pt, width: 100%)[
-            *Frontend SPA* \
-            #text(size: 0.85em, fill: muted-color)[SvelteKit, Vite, UnoCSS \ Desktop & Mobile UI]
-          ]
-        ],
-        [
-          #text(size: 1.5em)[$arrow.r.l$] \
-          #text(size: 0.8em, fill: muted-color)[HTTPS / JSON]
-        ],
-        [
-          #box(fill: rgb("#fef3c7"), stroke: 1pt + rgb("#d97706"), radius: 4pt, inset: 10pt, width: 100%)[
-            *Cloudflare Worker* \
-            #text(size: 0.85em, fill: muted-color)[Fetch-Handler \ Auth-, Progress- & Review-API]
-          ]
-        ]
-      )
-      #v(0.8em)
-      #grid(
-        columns: (1fr, 1fr, 1fr),
-        gutter: 1em,
-        align: center + horizon,
-        [],
-        [
-          #text(size: 1.5em)[$arrow.t.b$] \
-          #text(size: 0.8em, fill: muted-color)[D1-Binding]
-        ],
-        []
-      )
-      #v(0.4em)
-      #box(fill: rgb("#dcfce7"), stroke: 1pt + rgb("#16a34a"), radius: 4pt, inset: 10pt, width: 60%)[
-        *Cloudflare D1 (SQLite)* \
-        #text(size: 0.85em, fill: muted-color)[Bestand: `user`, `session`, `account`, `verification`, `user_data` \ Erweiterung: `reviews`]
-      ]
-    ]
+#block(breakable: false)[
+  #set par(justify: false)
+  #table(
+    columns: (3.4cm, 1fr),
+    table.header([*Baustein*], [*Verantwortung und Herkunft*]),
+    [Course Browser\ *Neu*], [SvelteKit-Route `/courses`: verbindet Suche, Filter, Trefferliste und ausgewähltes Modul. Lokale Svelte-Runes halten den Ansichtsstatus; reine Filterfunktionen berechnen die Treffer.],
+    [Kursdetails und Reviews\ *Neu*], [Zeigen Voraussetzungen und Rezensionen. Das Formular unterstützt Erstellen, Bearbeiten und bestätigtes Löschen. Bei Speicherfehlern bleibt der Entwurf erhalten.],
+    [Katalog und Fortschritt\ *Bestand, erweitert*], [Gemeinsame Datenbasis beider Ansichten. WEBLAB ergänzt insbesondere normalisierte Prüfungsformen und die Verwendung des Fortschritts im Belegbarkeitsfilter.],
+    [API-Worker und Auth\ *Bestand, erweitert*], [Better Auth verwaltet GitHub-Anmeldung und Sitzungen. Das neue Review-Modul validiert Anfragen und setzt Besitzrechte durch.],
+    [Cloudflare D1\ *Bestand, erweitert*], [Bestehende Benutzer-, Sitzungs- und Fortschrittsdaten; neue Tabelle `reviews` mit Migration und Integritätsregeln.],
   )
 ]
 
-== 5.2 Level 2: Frontend-Bausteine
-Die Frontend-Architektur gliedert sich in folgende Hauptkomponenten:
-- *Course-Browser-Ansicht (`/courses`):* Durchsuchbare Modulliste mit integrierter Mehrkriterien-Filterleiste (Semester, Studiengang, Modultyp, ECTS) und responsivem Kartenraster.
-- *Skill-Tree-Ansicht (`/`):* Interaktiver Abhängigkeitsgraph, der Modulabfolgen und Semesterplanungen visualisiert.
-- *Modul-Detailansicht (Panel / Dialog):* Präsentiert vertiefte Modulbeschreibungen, ECTS-Angaben, Vorbedingungen sowie die Liste der Rezensionen.
-- *Bewertungs-Komponenten (Review UI):* Formular zur Erfassung und Bearbeitung mit vier Pflichtskalen und optionalem Text. Weiterempfehlung und Inhaltsinteresse verwenden Sterne, auch für die Durchschnittswerte; Schwierigkeit und Aufwand bleiben beschriftete Zahlenskalen. Die öffentliche Rezensionenliste zeigt keine Namen. Einzelwertungen sind über ein Info-Symbol per Hover, Tastatur oder Tippen abrufbar. Das Formular erklärt die interne Kontozuordnung für Bearbeitung und Löschung trotz namenloser Anzeige. Ein nativer Dialog bestätigt Löschungen. Fehlgeschlagene Speicherungen behalten den Entwurf; Modul- und Benutzerwechsel setzen ihn zurück.
-- *Zustandsverwaltung (Svelte Stores):* Reaktive Stores für Filterzustände, gecachten Modulkatalog, aktive Benutzersitzung und Synchronisationsstatus.
-- *API-Client:* Typsicherer Fetch-Client für die Kommunikation mit den Endpunkten des Workers (`/api/reviews`, `/api/auth`).
+== Review-Ressource und Schnittstellen
 
-== 5.3 Level 2: Backend-Bausteine
-Das Backend wird durch einen einzelnen Cloudflare Worker bereitgestellt, welcher modulare Controller umfasst:
-- *Authentifizierungs-Middleware:* Prüft Session-Tokens auf geschützten Routen mittels Better Auth.
-- *Review-Controller:* Stellt folgende CRUD-Endpunkte bereit:
-  - `GET /api/courses/:courseId/reviews`: Liefert alle Bewertungen sowie die berechneten Durchschnittswerte je Bewertungsdimension eines Moduls. Review-Antworten enthalten weder Namen noch Benutzer-IDs. Das sitzungsabhängige Feld `ownReviewId` bezeichnet nur die eigene Bewertung oder ist `null`; der Lesezugriff bleibt öffentlich.
-  - `POST /api/courses/:courseId/reviews`: Erstellt eine neue Bewertung (Authentifizierung vorausgesetzt, maximal eine Rezension pro Benutzer und Modul).
-  - `PUT /api/reviews/:id`: Aktualisiert eine bestehende Bewertung (nur durch den Autor).
-  - `DELETE /api/reviews/:id`: Entfernt eine Bewertung unwiderruflich (nur durch den Autor).
-- *Datenbankschema (D1):* Relationale Tabellen mit Fremdschlüsseln und Integritätsregeln:
-  - `user` / `session`: Durch Better Auth verwaltete Identitäten und Sitzungen.
-  - `reviews`: Enthält `id`, `course_id`, `user_id`, `recommendation`, `content_interest`, `difficulty`, `workload`, `text`, `created_at` und `updated_at`. Text ist optional und wird bei reinen Bewertungen als leerer String gespeichert. Alle vier Skalen verwenden Ganzzahlen von 1 bis 5. Schwierigkeit und Aufwand sind beschreibend, nicht positiv oder negativ zu werten; es gibt keinen Gesamtdurchschnitt über alle Dimensionen. Ein Unique-Constraint auf `(course_id, user_id)` begrenzt die Anzahl auf eine Rezension pro Nutzer und Modul.
+Eine Rezension enthält Kurs- und Benutzerzuordnung, vier Ganzzahlbewertungen von 1 bis 5, optionalen Text sowie Erstellungs- und Änderungszeitpunkt. *Weiterempfehlung* und *Inhaltsinteresse* sind Wertungen; *Schwierigkeit* und *Aufwand* sind beschreibende Skalen. Durchschnittswerte werden pro Dimension berechnet, nicht zu einem Gesamtscore vermischt.
 
-= 6. Laufzeitsicht
-
-== 6.1 Szenario 1: Kurse durchsuchen und filtern
-1. Der Benutzer navigiert zur Route `/courses`.
-2. Das Frontend lädt das statische Katalog-Bündel (gecacht über HTTP-Header).
-3. Der Benutzer verändert Filterkriterien (z. B. Studiengang = "Information & Cyber Security", Semester = "Herbstsemester", Kategorie = "Kernfach"):
-   - Der Svelte-Store aktualisiert die aktiven Kriterien.
-   - Die Filterung wird synchron im Browser-Speicher ausgeführt.
-   - Das DOM aktualisiert die Modulkarten flüssig ohne jegliche Netzwerkanfrage.
-
-== 6.2 Szenario: Kursbewertung erfassen (CRUD - Create)
-1. Ein angemeldeter Benutzer öffnet die Detailansicht eines Moduls.
-2. Der Client ruft `GET /api/courses/:courseId/reviews` ab, um existierende Rezensionen darzustellen.
-3. Der Benutzer bewertet Weiterempfehlung und Inhaltsinteresse mit je 1–5 Sternen sowie Schwierigkeit (sehr leicht bis sehr schwer) und Aufwand (sehr niedrig bis sehr hoch) auf getrennten Skalen von 1–5. Optional verfasst er einen Kommentar.
-4. Der Client sendet einen `POST /api/courses/:courseId/reviews`-Request inklusive Authentifizierungs-Cookie.
-5. Der Worker validiert die Sitzung, prüft das Payload-Schema und kontrolliert, ob für dieses Modul bereits ein Eintrag des Benutzers vorliegt.
-6. Der Worker fügt die Rezension in Cloudflare D1 ein und antwortet mit dem Status `201 Created`.
-7. Der Client zeigt die neue Rezension und die aktualisierten Durchschnittswerte je Bewertungsdimension an.
-
-== 6.3 Szenario: Bewertung anpassen und löschen (CRUD - Update & Delete)
-1. Der Benutzer betrachtet seine eigene Rezension in der Modulansicht.
-2. Der Worker ermittelt anhand der Sitzung die eigene Bewertung und liefert deren ID als `ownReviewId`. Die Oberfläche vergleicht diese mit `review.id` und bietet Bearbeitung und Löschung der eigenen Bewertung an.
-3. *Bearbeitung (Update):* Der Benutzer passt den Text oder die Bewertung an. Ein `PUT /api/reviews/:id`-Request wird ausgelöst. Der Worker verifiziert die Autorenschaft und aktualisiert den Datensatz in D1.
-4. *Löschung (Delete):* Der Benutzer klickt auf "Löschen" und bestätigt den Dialog. Ein `DELETE /api/reviews/:id`-Request wird an den Worker gesendet. Nach erfolgreicher Autorisierungsprüfung entfernt D1 die Zeile und gibt `204 No Content` zurück.
-
-= 7. Verteilungssicht
-
-== 7.1 Infrastruktur-Komponenten
-- *Statische Assets & Frontend-Hosting:* Auslieferung des statischen SvelteKit-Builds über GitHub Pages.
-- *Serverlose Ausführung:* Cloudflare Workers führen die API-Logik unmittelbar an weltweiten Edge-Knoten mit minimaler Kaltstartzeit aus.
-- *Relationaler Speicher:* Cloudflare D1 stellt eine verteilte SQLite-Instanz am Edge bereit.
-- *Identitätsanbieter:* GitHub OAuth zur Authentifizierung von Studierenden und Entwicklern.
-
-== 7.2 Continuous Integration & Continuous Deployment (CI/CD)
-- GitHub Actions führt bei Pushes auf `master` und bei Pull Requests automatische Prüfschritte durch:
-  1. *Übersetzungen, Linting & Typen:* Prüfung der Sprachkataloge, Biome, Svelte Check und TypeScript für den Worker.
-  2. *Automatisierte Unit- & Integrationstests:* `bun run web:test` führt alle Frontend-Tests aus; `bun run worker:test` führt Vitest-Integrationstests in der lokalen Workers-/D1-Laufzeit aus.
-  3. *Build:* Erstellung des Produktionsbundles.
-- *Deployment:* Nach erfolgreicher CI auf `master` oder manueller Auslösung werden das Frontend auf GitHub Pages sowie D1-Migrationen und der API-Worker auf Cloudflare veröffentlicht. Automatische Preview-Deployments sind nicht eingerichtet.
-- *End-to-End-Tests:* Playwright ist geplant und noch nicht in CI integriert.
-
-= 8. Querschnittliche Konzepte
-
-== 8.1 Authentifizierung und Autorisierung
-Die Authentifizierung erfolgt über Better Auth mit D1-Backend. Sitzungstokens werden ausschliesslich in geschützten `HttpOnly`-, `SameSite=Lax`-Cookies übertragen. Autorisierungen folgen einem strikten Besitzmodell: Alle Besucher dürfen Bewertungen lesen; authentifizierte Nutzer dürfen maximal eine Bewertung pro Modul erstellen. Eine Bearbeitung oder Löschung ist ausschliesslich dem ursprünglichen Verfasser gestattet.
-
-== 8.2 Persistenz und relationale Datenintegrität
-Zur Gewährleistung der Konsistenz gelten folgende Massnahmen:
-- Fremdschlüssel verknüpfen Bewertungen zwingend mit gültigen Benutzereinträgen (`ON DELETE CASCADE`).
-- Ein zusammengesetzter Unique-Index `UNIQUE(course_id, user_id)` verhindert auf Datenbankebene zuverlässig doppelte Bewertungen.
-- Parametrisierte Abfragen (Prepared Statements) in Cloudflare D1 schliessen SQL-Injection-Angriffe systematisch aus.
-
-== 8.3 Responsives Design und Barrierefreiheit
-- *Fluid Layout:* Responsive Breakpoints differenzieren zwischen Mobile (\<640px), Tablet (640px–1024px) und Desktop (>1024px).
-- *Mobile Ergonomie:* Der Course Browser verwendet einklappbare Filter. Kursdetails erscheinen auf kleineren Bildschirmen als Overlay.
-- *Barrierefreiheit:* Tastaturbedienbarkeit, Fokusführung und semantische Beschriftungen sind Entwicklungsziele. Eine vollständige WCAG-Konformitätsprüfung liegt noch nicht vor.
-
-== 8.4 Teststrategie
-- *Unit-Tests (Bun):* Prüfen Katalogaufbereitung, Katalogzugriff, kombinierte Filter und die Belegbarkeit von Kursen.
-- *Integrationstests (Vitest + Cloudflare Workers Pool):* Prüfen Authentifizierung, Migrationen, die Progress-API und Review-CRUD mit einer lokalen D1-Instanz. Review-Tests verwenden echte Better-Auth-Sitzungen und prüfen unter anderem Besitzrechte, Origin-Prüfung, Eingabevalidierung und konkurrierende doppelte Bewertungen.
-- *End-to-End-Tests (Playwright, geplant):* Sollen Katalogsuche, Filterkombinationen, Rezensions-CRUD und mobile Ansichten abdecken.
-
-= 9. Architekturentscheidungen (ADRs)
-
-#adr(
-  id: "ADR-01",
-  title: "Integration des Course Browsers in bestehendes Projekt",
-  status: "Akzeptiert",
-  ctx: [
-    Die Aufgabenstellung verlangt ein substanzielles neues Feature sowie zwei unterschiedliche Datendarstellungen. Es musste entschieden werden, ob hierfür eine komplett neue Web-Applikation aufgesetzt oder das existierende HSLU-Skill-Tree-Projekt erweitert wird.
-  ],
-  decision: [
-    Erweiterung des bestehenden Projekts um die neue Route `/courses` unter Wiederverwendung der gemeinsamen Infrastruktur (Authentifizierung, Datenmodelle, UI-Basiskomponenten).
-  ],
-  consequences: [
-    Vermeidet redundanten Aufwand für Deployment, Scraper-Pipelines und Styling. Ergibt ein geschlossenes, praxisnahes Gesamtprodukt, in welchem Module direkt aus dem Browser in den persönlichen Studienplan übernommen werden können.
-  ]
-)
-
-#adr(
-  id: "ADR-02",
-  title: "Cloudflare D1 als persistente relationale Datenbank",
-  status: "Akzeptiert",
-  ctx: [
-    Für dynamische Anwendungsdaten (Bewertungen, Notenschnitte) wird eine persistente relationale Datenbank gefordert. Das Projekt nutzt bereits Cloudflare Workers.
-  ],
-  decision: [
-    Einsatz von Cloudflare D1 (serverloses SQLite am Edge) zur Speicherung aller dynamischen Daten.
-  ],
-  consequences: [
-    Nahtlose Integration in Cloudflare Workers ohne Netzwerk-Overhead. Vollwertige SQL-Unterstützung mit Foreign Keys und Unique-Constraints. Das Free-Tier deckt alle Anforderungen vollständig ab.
-  ]
-)
-
-#adr(
-  id: "ADR-03",
-  title: "Client-seitiges Mehrkriterien-Filtern über statischen Katalog",
-  status: "Akzeptiert",
-  ctx: [
-    Die HSLU-Moduldaten ändern sich pro Semester nur punktuell (~500 Module). Filterabfragen könnten via Backend-SQL oder client-seitig im Speicher gelöst werden.
-  ],
-  decision: [
-    Bündelung des normalisierten Kurskatalogs als statische JSON-Datei (~120 KB gzip) und Ausführung aller Filter-, Sortier- und Suchoperationen direkt im Browser.
-  ],
-  consequences: [
-    Unmittelbare Filterergebnisse ohne Server-Latenz (0 ms Netzwerkzeit). Massive Entlastung des Backends. Offline-Fähigkeit für das Durchsuchen des Modulkatalogs.
-  ]
-)
-
-#adr(
-  id: "ADR-04",
-  title: "Einzelne Rezension pro Benutzer-Kurs-Paar",
-  status: "Akzeptiert",
-  ctx: [
-    Kursbewertungen sollen studentische Erfahrungen abbilden. Mehrfachabgaben desselben Nutzers könnten Notenschnitte verzerren.
-  ],
-  decision: [
-    Durchsetzung von maximal einer Bewertung pro Benutzer und Kurs über einen datenbankseitigen `UNIQUE(course_id, user_id)`-Constraint. Nutzer können ihren Eintrag jederzeit anpassen oder löschen.
-  ],
-  consequences: [
-    Verhindert Duplikate, vereinfacht die Aggregation von Notenschnitten und sorgt für eine intuitive Benutzeroberfläche: Ein Nutzer sieht entweder den Button "Bewertung abgeben" oder seine eigene bestehende Rezension mit Optionen zum Bearbeiten und Löschen.
-  ]
-)
-
-= 10. Qualitätsanforderungen
-
-#table(
-  columns: (2.8cm, 3.5cm, 1fr),
-  align: (center + horizon, left + horizon, left + horizon),
-  table.header([*Qualitätsziel*], [*Metrik / Anforderung*], [*Architektonische Massnahme*]),
-  [Performance], [Lighthouse-Score $>= 90$ auf Desktop & Mobile], [Client-seitiges Filtern, statisches Asset-Caching, schlanke Bundle-Grösse, Vermeidung unnötiger Re-Renders.],
-  [Usability], [Responsiv & touch-optimiert], [Touch-Ziele mit mindestens 48px, responsives Grid, ausklappbare Filterleiste auf mobilen Bildschirmen.],
-  [Zuverlässigkeit], [Fehlerfreie Datenpersistenz], [Strikte TypeScript-Typisierung, Schemavalidierung auf Worker-Endpunkten, relationale D1-Constraints.],
-  [Wartbarkeit], [Hohe Testabdeckung & Code-Qualität], [Biome-Linter, automatisierte Unit-Tests, Worker-Integrationstests und Playwright-E2E-Suiten.]
-)
-
-= Reflexion & Fazit
-
-#callout(title: "Status: In Bearbeitung", fill-color: rgb("#eff6ff"), stroke-color: secondary-color)[
-  Dieser Abschnitt wird gegen Ende des Projekts auf Basis der realen Entwicklungserfahrungen und Erkenntnisse finalisiert und ergänzt.
+#block(breakable: false)[
+  #set par(justify: false)
+  #table(
+    columns: (auto, 1fr),
+    table.header([*Route*], [*Vertrag*]),
+    [`GET /api/courses/:courseId/reviews`], [Öffentliche Rezensionen und getrennte Durchschnittswerte; `ownReviewId` kennzeichnet die eigene Rezension bei angemeldeten Benutzern.],
+    [`POST /api/courses/:courseId/reviews`], [Erstellt eine Rezension für den angemeldeten Benutzer.],
+    [`PUT /api/reviews/:id`], [Bearbeitet ausschliesslich die eigene Rezension.],
+    [`DELETE /api/reviews/:id`], [Löscht ausschliesslich die eigene Rezension.],
+  )
 ]
 
-== Was lief gut?
-- *Infrastruktur-Wiederverwendung:* Die Weiternutzung von Cloudflare Workers und D1 verhinderte Doppelspurigkeiten und ermöglichte eine unmittelbare Konzentration auf den fachlichen Mehrwert.
-- *Filter-Performance:* Das client-seitige Durchsuchen des vorab generierten Katalogs liefert spürbar verzögerungsfreie Interaktionen im Browser.
+Die öffentliche Ausgabe enthält keine Namen oder Benutzer-IDs. Intern bleibt die Kontozuordnung für Besitzprüfungen erhalten; namenlose Anzeige bedeutet keine anonyme Speicherung.
 
-== Was waren die grössten Herausforderungen?
-- *Saubere Projekt-Abgrenzung:* Klare Trennung zwischen den vorbestehenden Funktionen (markiert durch den Git-Tag `pre-weblab`) und den neu entwickelten WEBLAB-Features.
-- *Responsives Layout-Konzept:* Harmonische Integration einer dichten Katalogansicht neben dem komplexen Skill-Tree-Graphen unter Wahrung hoher Usability auf Mobilgeräten.
+= 4. Laufzeitsicht
 
-== Was würde ich das nächste Mal anders machen?
-- *Frühzeitige API-Mocks:* Noch früheres Bereitstellen lokaler D1-Mocks, um Frontend-Entwicklung und Datenbankmigrationen noch unabhängiger parallelisieren zu können.
+== Kurse finden und Voraussetzungen öffnen
+
+1. `/courses` lädt den statischen Katalog.
+2. Suche und Filter werden lokal ausgewertet: verschiedene Filtergruppen mit UND, mehrere Werte derselben Gruppe mit ODER.
+3. Eine Kursauswahl öffnet die Details neben der Liste oder auf kleinen Bildschirmen als Dialog.
+4. Ein Klick auf eine Voraussetzung wechselt zum referenzierten Modul, auch ausserhalb der aktuellen Treffer. Filter bleiben erhalten; beim Schliessen kehrt der Fokus zur ursprünglichen Kurszeile zurück.
+
+== Rezension erstellen, bearbeiten und löschen
+
+1. Die Detailansicht lädt Rezensionen und gegebenenfalls `ownReviewId`.
+2. Der angemeldete Benutzer übermittelt vier Bewertungen und optionalen Text. Die Sitzung wird über das bestehende Cookie mitgesendet.
+3. Der Worker prüft Origin, Sitzung, Kurs-ID und Eingaben. Text ist auf 5'000 Zeichen begrenzt; Bewertungen müssen Ganzzahlen von 1 bis 5 sein.
+4. D1 speichert die Rezension. Ein Unique-Constraint verhindert eine zweite Rezension desselben Benutzers zum selben Kurs, auch bei konkurrierenden Anfragen.
+5. Bearbeitung und Löschung prüfen erneut den Besitzer. Erfolgreiches Erstellen liefert `201`, Löschen `204`. Die Oberfläche aktualisiert Rezensionen und Durchschnittswerte; fehlgeschlagene Speicherung erhält den Entwurf.
+
+= 5. Verteilungssicht
+
+Die Anwendung nutzt die bestehende Hosting-Architektur: GitHub Pages liefert den statischen SvelteKit-Build aus. Anfragen an `hsluskilltree.com/api/*` verarbeitet der Cloudflare Worker. Dieser greift über ein Binding auf D1 zu; der Browser hat keinen direkten Datenbankzugang. GitHub ist zugleich der externe OAuth-Anbieter.
+
+GitHub Actions prüft Übersetzungen, Typen, Linting und alle drei Testebenen. Das Deployment veröffentlicht Frontend und Worker und führt die versionierten D1-Migrationen aus. WEBLAB ergänzt diese Pipeline um die Browserprüfungen, statt eine separate Deployment-Infrastruktur einzuführen.
+
+= 6. Querschnittliche Konzepte
+
+*Zugriffsschutz:* Die bestehende Authentifizierung verwendet geschützte `HttpOnly`- und `SameSite=Lax`-Sitzungscookies. Der neue Review-Code übernimmt die Benutzer-ID ausschliesslich aus der Sitzung und prüft bei Schreibzugriffen zusätzlich den Origin und die Besitzrechte.
+
+*Datenintegrität:* Parametrisierte SQL-Anweisungen, Fremdschlüssel mit `ON DELETE CASCADE`, Wertebereichsprüfungen und `UNIQUE(course_id, user_id)` sichern die Review-Ressource serverseitig ab.
+
+*Responsive Bedienung:* Mobile Filter sind einklappbar. Der Kursdetaildialog begrenzt den Tastaturfokus, unterstützt Escape und stellt den ursprünglichen Fokus wieder her. Suche und Fachtexte sind deutsch und englisch verfügbar.
+
+*Tests:* 41 Frontend-Tests prüfen unter anderem Katalog und Filterlogik; 36 Worker-Integrationstests decken bestehende APIs und die neue Review-Ressource ab. 14 Playwright-Fälle prüfen sieben Abläufe auf Desktop und Mobil: kombinierte Filter, Voraussetzungennavigation, Tastaturauswahl, Fokus bei geschlossenen Einstellungen, persistentes Review-CRUD, Gast-/Fremdkonto-Zugriff und Wiederholung nach Speicherfehlern.
+
+Die E2E-Tests verwenden das Produktionsbundle, den echten Worker, isolierte migrierte D1-Datenbanken und echte Testsitzungen. Der externe GitHub-OAuth-Ablauf ist nicht automatisiert. Ausführung unter `frontend/`: `bun run web:test`, `bun run worker:test` und `bun run e2e:test`; Playwright benötigt einmalig `bunx playwright install chromium`.
+
+= 7. Architekturentscheidungen
+
+- *Erweiterung statt zweiter Anwendung:* Gemeinsamer Katalog, Anmeldung und Fortschritt verbinden die beiden Ansichten. Eine separate Anwendung würde Daten und Infrastruktur duplizieren.
+- *Lokale statt serverseitiger Filterung:* Der semesterweise aktualisierte Katalog ist kompakt genug für den Browser. Das vermeidet Netzwerkanfragen beim Filtern; Katalogänderungen benötigen dafür einen neuen Build.
+- *Bestehendes D1 statt zusätzlicher Datenbank:* Relationale Constraints passen zur Besitzerzuordnung und Eindeutigkeit von Rezensionen. Die Erweiterung bleibt damit an die vorhandene Cloudflare-Infrastruktur gebunden.
+- *Eine Rezension pro Benutzer und Kurs:* Aktualisieren statt mehrfach bewerten verhindert verzerrte Durchschnittswerte. Die vier Dimensionen bleiben fachlich getrennt.
+
+= 8. Qualitätsnachweis
+
+#let quality = json("quality/summary.json")
+#let category-keys = ("performance", "accessibility", "best-practices", "seo")
+
+Lighthouse #quality.lighthouseVersion, gemessen am 19. September 2026 am lokal ausgelieferten Produktionsbundle, Produktstand #raw(quality.productRevision). Je Ansicht wurde ein mobiler und ein Desktop-Erstaufruf ohne gespeicherte Einstellungen gemessen. Umgebung und Befehle stehen in `quality/summary.json`.
+
+#block(breakable: false, table(
+  columns: (2.9cm, 1fr, 1fr, 1fr, 1fr, 1fr),
+  align: (left + horizon, center + horizon, center + horizon, center + horizon, center + horizon, center + horizon),
+  table.header([*Ansicht / Profil*], [*Perf.*], [*A11y*], [*Best Pr.*], [*SEO*], [*Ø*]),
+  ..quality.runs.map(run => (
+    [#text(hyphenate: false)[#run.label] \ #run.profile],
+    ..category-keys.map(key => [#str(run.scores.at(key))]),
+    [*#str(run.average)*],
+  )).flatten(),
+))
+
+Die Bewertung konzentriert sich auf die Nutzung durch Menschen. Agentic Browsing wird nicht einbezogen. Der Mittelwert der vier ausgewerteten Kategorien liegt auf Desktop und Mobil jeweils über 90.
+
+*Grenzen:* Der mobile Course Browser erreicht einen LCP von 2.97 s und liegt damit über dem guten Bereich von höchstens 2.5 s. Das bestehende Skill-Tree-Tutorial verursacht durch ein ungültiges ARIA-Attribut in Driver.js eine Accessibility-Wertung von 94 auf Desktop. Die Messungen sind lokale Labordaten, keine Felddaten oder vollständige WCAG-Prüfung. Automatisierte Browserprüfungen verwenden Chromium, keine physischen Mobilgeräte.
+
+= 9. Reflexion und Fazit
+
+*Gut gelungen:* Die Wiederverwendung von Katalog, Anmeldung und D1 ermöglicht eine zusammenhängende Erweiterung statt einer zweiten Anwendung. Die reine Filterlogik und die Review-Constraints lassen sich unabhängig von der Oberfläche prüfen; E2E-Tests ergänzen die tatsächlichen Benutzerabläufe.
+
+*Herausforderungen:* Kursdetails mussten auf kleinen Bildschirmen kompakt bleiben. Besonders die Navigation zu Voraussetzungen ausserhalb der Trefferliste erforderte getrennte Zustände für Filter, Auswahl und Fokus. Bei Rezensionen mussten die namenlose öffentliche Anzeige und die notwendige interne Besitzerzuordnung klar unterschieden werden.
+
+*Für ein nächstes Projekt:* Die isolierte Worker-/D1-Testumgebung sollte früher verfügbar sein. Damit können Persistenz, Authentifizierung und Fehlerzustände bereits während der Oberflächenentwicklung gemeinsam geprüft werden. Kurze Layout-Iterationen mit realen Kursdaten helfen, unnötige Detailfülle früh zu erkennen.
+
+Grundlage: #link("https://github.com/web-programming-lab/web-programming-lab-projekt")[WEBLAB-Projektanforderungen und Dokumentationshinweise].
 
 #pagebreak()
-
-= Anhang: Arbeitsjournal (Work Journal)
-
-Das folgende Arbeitsjournal dokumentiert sämtliche geleisteten Arbeitsstunden für die Konzeption, Implementierung, Tests und Dokumentation des WEBLAB-Projekts. Der Richtwert für den Gesamtaufwand beträgt rund 60 Stunden.
-
-#v(1em)
-#journal-summary()
-#v(1.2em)
+= 10. Arbeitsjournal
 #journal-table()
