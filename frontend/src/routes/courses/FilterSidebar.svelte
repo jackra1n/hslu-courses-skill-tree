@@ -1,4 +1,5 @@
 <script lang="ts">
+import Dropdown from '$lib/components/ui/Dropdown.svelte';
 import { assessmentModeLabel } from '$lib/data/assessment-mode';
 import type { AssessmentMode, ModuleType } from '$lib/data/catalog-types';
 import type { EctsRange } from '$lib/data/course-filters';
@@ -21,6 +22,13 @@ let {
 	nextOnly: boolean;
 	ectsSteps: number[];
 } = $props();
+
+const id = $props.id();
+const seasonOptions = $derived([
+	{ value: 'all' as const, label: m.browser_all_seasons() },
+	{ value: 'HS' as const, label: seasonLabel('HS') },
+	{ value: 'FS' as const, label: seasonLabel('FS') },
+]);
 
 const moduleTypeOptions: ModuleType[] = [
 	'Kernmodul',
@@ -140,24 +148,16 @@ function setMax(input: HTMLInputElement): void {
 			</div>
 		{/if}
 	</div>
-	<label
-		class="flex h-11 cursor-pointer items-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm transition-colors focus-within:border-blue-500"
-	>
-		<span class="shrink-0 text-text-tertiary">{m.browser_filter_season()}</span>
-		<select
-			bind:value={season}
-			aria-label={m.browser_filter_season()}
-			class="h-full min-w-0 flex-1 cursor-pointer appearance-none truncate bg-transparent pr-6 font-medium text-text-primary focus:outline-none"
-		>
-			<option value="all">{m.browser_all_seasons()}</option>
-			<option value="HS">{seasonLabel('HS')}</option>
-			<option value="FS">{seasonLabel('FS')}</option>
-		</select>
-		<span
-			class="i-lucide-chevron-down pointer-events-none -ml-6 h-4 w-4 shrink-0 text-text-tertiary"
-			aria-hidden="true"
-		></span>
-	</label>
+	<div class="space-y-1.5">
+		<label for={`${id}-season`} class="text-sm font-medium text-text-secondary">{m.browser_filter_season()}</label>
+		<Dropdown
+			id={`${id}-season`}
+			label={m.browser_filter_season()}
+			options={seasonOptions}
+			selected={season}
+			onSelect={(value) => { season = value; }}
+		/>
+	</div>
 	<fieldset class="rounded-lg border border-border-primary bg-bg-secondary px-3 pb-2">
 		<legend class="px-1 text-sm font-semibold text-text-primary">{m.browser_filter_type()}</legend>
 		{#each moduleTypeOptions as option}

@@ -176,54 +176,60 @@ function confirmTemplateSwitch() {
 function cancelTemplateSwitch() {
 	showWarningDialog = false;
 }
+
+const id = $props.id();
 </script>
 
 <div class="space-y-3">
   <div class="space-y-1.5">
-    <label for="program-select" class="text-xs font-medium text-text-secondary"
+    <label for={`${id}-program`} class="text-xs font-medium text-text-secondary"
       >{m.template_program()}</label
     >
     <Dropdown
       options={programOptions}
       selected={program}
       onSelect={handleProgramChange}
-      minWidth="100%"
+      id={`${id}-program`}
+      label={m.template_program()}
     />
   </div>
 
   <div class="space-y-1.5">
-    <label for="model-select" class="text-xs font-medium text-text-secondary"
+    <label for={`${id}-model`} class="text-xs font-medium text-text-secondary"
       >{m.template_study_model()}</label
     >
     <Dropdown
       options={modelOptions}
       selected={model}
       onSelect={handleModelChange}
-      minWidth="100%"
+      id={`${id}-model`}
+      label={m.template_study_model()}
     />
   </div>
 
   <div class="grid grid-cols-2 gap-2">
     <div class="space-y-1.5">
-      <label for="start-year-select" class="text-xs font-medium text-text-secondary"
+      <label for={`${id}-year`} class="text-xs font-medium text-text-secondary"
         >{m.template_start_year()}</label
       >
       <Dropdown
         options={yearOptions}
         selected={String(year)}
         onSelect={handleYearChange}
-        minWidth="100%"
+        id={`${id}-year`}
+        label={m.template_start_year()}
       />
     </div>
     <div class="space-y-1.5">
-      <label for="start-season-select" class="text-xs font-medium text-text-secondary"
+      <label for={`${id}-season`} class="text-xs font-medium text-text-secondary"
         >{m.template_start_season()}</label
       >
       <Dropdown
         options={seasonOptions}
         selected={season}
         onSelect={handleSeasonChange}
-        minWidth="100%"
+        id={`${id}-season`}
+        label={m.template_start_season()}
       />
     </div>
   </div>

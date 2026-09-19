@@ -271,11 +271,8 @@
 	"slot_course": "Course",
 
 	"dropdown_placeholder": "Select option",
-	"combobox_select": "Select option",
-	"combobox_options": "Options",
-	"combobox_search": "Search...",
-	"combobox_search_options": "Search options",
-	"combobox_no_results": "No results found",
+	"dropdown_search": "Search...",
+	"dropdown_no_results": "No results found",
 
 	"addnode_aria": "Add course to semester {semester}",
 	"remove_course_aria": "Remove {label}",

@@ -1,4 +1,5 @@
 <script lang="ts">
+import * as m from '$lib/paraglide/messages';
 import type { Locale } from '$lib/paraglide/runtime';
 import { locale, localeStore } from '$lib/stores/locale.svelte';
 import Dropdown from './Dropdown.svelte';
@@ -12,5 +13,7 @@ const localeOptions = [
 <Dropdown
 	options={localeOptions}
 	selected={locale()}
-	onSelect={(value) => localeStore.set(value as Locale)}
+	onSelect={(value) => localeStore.set(value)}
+	label={m.settings_language()}
+	width="9rem"
 />

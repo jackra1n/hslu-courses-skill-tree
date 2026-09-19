@@ -67,6 +67,10 @@ bun run dev --open
 
 From `frontend/`, run `bun run web:test` for all frontend tests in `test/`, including catalog, filtering, and course-readiness behavior. Run `bun run worker:test` for Worker/D1 integration tests. CI runs both suites.
 
+### Selection controls
+
+Use `frontend/src/lib/components/ui/Dropdown.svelte` for value selections; enable `searchable` for elective-course search. Supply a localized `label` and connect visible labels through `id`. Controls fill their container by default; `width` sets a fixed size, with settings selectors using `9rem`. Menus use the native Popover API to avoid clipping inside scrollable panels. Action menus and informational popovers remain separate components.
+
 ### Course review API
 
 Migration `0004_course_reviews.sql` adds one review per user/course to D1. All four dimensions are required integers from 1 to 5: `recommendation` and `content_interest` are star ratings; `difficulty` ranges from very easy to very hard, and `workload` from very low to very high. Keep averages separate: high difficulty or workload does not imply poor quality.

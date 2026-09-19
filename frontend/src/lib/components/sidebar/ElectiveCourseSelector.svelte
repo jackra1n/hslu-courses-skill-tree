@@ -2,7 +2,7 @@
 import ActionButtons from '$lib/components/sidebar/ActionButtons.svelte';
 import PrerequisiteList from '$lib/components/sidebar/PrerequisiteList.svelte';
 import AssessmentModeBadges from '$lib/components/ui/AssessmentModeBadges.svelte';
-import Combobox from '$lib/components/ui/Combobox.svelte';
+import Dropdown from '$lib/components/ui/Dropdown.svelte';
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { courseLabel } from '$lib/data/course-label';
 import { COURSES, type Course, getCourseById } from '$lib/data/courses';
@@ -16,6 +16,7 @@ import {
 } from '$lib/utils/status';
 
 let { slotId }: { slotId: string } = $props();
+const id = $props.id();
 
 const courseStore = getCourseStore();
 
@@ -67,7 +68,7 @@ function isOfferedIn(course: Course, season: Season): boolean {
 	);
 }
 
-const comboboxOptions = $derived.by(() => {
+const courseOptions = $derived.by(() => {
 	const options = availableCourses.map((course) => {
 		const outOfSeason = slotSeason !== null && !isOfferedIn(course, slotSeason);
 		return {
@@ -121,7 +122,7 @@ function clearSelection() {
   <div class="space-y-3">
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label for="elective-course-select" class="text-sm font-medium text-text-primary">
+        <label for={id} class="text-sm font-medium text-text-primary">
           {m.elective_choose()}
         </label>
         {#if selectedCourseId}
@@ -133,14 +134,16 @@ function clearSelection() {
           </button>
         {/if}
       </div>
-      <Combobox
-        options={comboboxOptions}
+      <Dropdown
+        options={courseOptions}
         selected={selectedCourseId || ''}
         onSelect={handleCourseSelect}
         placeholder={m.elective_placeholder()}
         searchPlaceholder={m.elective_search()}
         noResultsText={m.elective_no_results()}
-        minWidth="100%"
+        {id}
+        label={m.elective_choose()}
+        searchable
       />
     </div>
   </div>

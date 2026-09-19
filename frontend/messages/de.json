@@ -270,11 +270,8 @@
 	"slot_course": "Modul",
 
 	"dropdown_placeholder": "Option auswählen",
-	"combobox_select": "Option auswählen",
-	"combobox_options": "Optionen",
-	"combobox_search": "Suchen…",
-	"combobox_search_options": "Optionen durchsuchen",
-	"combobox_no_results": "Keine Ergebnisse gefunden",
+	"dropdown_search": "Suchen…",
+	"dropdown_no_results": "Keine Ergebnisse gefunden",
 
 	"addnode_aria": "Modul zu Semester {semester} hinzufügen",
 	"remove_course_aria": "{label} entfernen",

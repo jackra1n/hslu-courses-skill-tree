@@ -21,8 +21,8 @@ const themeOptions = $derived([
 	},
 ]);
 
-function selectTheme(selectedTheme: string) {
-	themeStore.set(selectedTheme as Theme);
+function selectTheme(selectedTheme: Theme) {
+	themeStore.set(selectedTheme);
 }
 </script>
 
@@ -30,4 +30,6 @@ function selectTheme(selectedTheme: string) {
   options={themeOptions}
   selected={theme()}
   onSelect={selectTheme}
+  label={m.settings_theme()}
+  width="9rem"
 />
