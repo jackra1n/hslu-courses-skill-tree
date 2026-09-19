@@ -44,7 +44,6 @@
 	"browser_sort_rating_desc": "Bewertung: höchste zuerst",
 	"browser_sort_rating_asc": "Bewertung: niedrigste zuerst",
 	"browser_scores_loading": "Bewertungen werden geladen…",
-	"browser_scores_error": "Bewertungen konnten nicht geladen werden. Die Sortierung nach Modulname ist weiterhin verfügbar.",
 	"browser_next_courses": "Nur als Nächstes belegbare Module",
 	"browser_next_courses_help": "Basierend auf Voraussetzungen und deinem Fortschritt.",
 	"browser_details_close": "Moduldetails schliessen",

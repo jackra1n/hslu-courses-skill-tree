@@ -59,7 +59,6 @@ let sort = $state<CourseSort>('name-asc');
 let reviewScores = $state<Record<string, number | null>>({});
 let scoresLoaded = $state(false);
 let scoresLoading = $state(false);
-let scoresFailed = $state(false);
 const scoresController = new AbortController();
 const sortOptions = $derived<
 	{ value: CourseSort; label: string; disabled?: boolean }[]
@@ -175,7 +174,6 @@ async function closeCourseDetails(): Promise<void> {
 async function loadReviewScores(): Promise<void> {
 	if (scoresLoading) return;
 	scoresLoading = true;
-	scoresFailed = false;
 	try {
 		const scores = await fetchCourseReviewScores(scoresController.signal);
 		if (scoresController.signal.aborted) return;
@@ -189,7 +187,7 @@ async function loadReviewScores(): Promise<void> {
 		};
 		scoresLoaded = true;
 	} catch {
-		if (!scoresController.signal.aborted) scoresFailed = true;
+		// scores are optional; leave score sorting disabled without a notice.
 	} finally {
 		if (!scoresController.signal.aborted) scoresLoading = false;
 	}
@@ -350,11 +348,6 @@ onMount(() => {
 					</div>
 					{#if scoresLoading}
 						<p role="status" class="mt-2 text-xs text-text-secondary">{m.browser_scores_loading()}</p>
-					{:else if scoresFailed}
-						<p role="status" class="mt-2 text-xs text-text-secondary">
-							{m.browser_scores_error()}
-							<button type="button" onclick={loadReviewScores} class="ml-1 min-h-11 underline focus-visible:outline-blue-500">{m.common_retry()}</button>
-						</p>
 					{/if}
 				</div>
 				<div class="{sidebarOpen ? 'block' : 'hidden'} mt-3 max-h-[45dvh] shrink-0 overflow-y-auto lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:mt-0 lg:block lg:min-h-0 lg:max-h-none lg:h-full">

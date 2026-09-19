@@ -111,7 +111,7 @@ The Course Browser's “Sort by” control orders courses by name A–Z (default
 
 Encode course IDs with `encodeURIComponent`. Reviews are returned newest first. GET, POST, and PUT review responses do not expose author names, user IDs, email, or session data. GET includes `ownReviewId` for the requesting user's review, or `null` for anonymous visitors and users without a review for that course. Ownership remains enforced server-side. `summary` contains `count` and separate averages for `recommendation`, `contentInterest`, `difficulty`, and `workload`; averages are `null` when no reviews exist. All responses use `Cache-Control: no-store`.
 
-The score endpoint aggregates all reviews in one grouped query and omits unrated courses. If scores cannot be loaded, course-name sorting remains available and score sorting offers a retry.
+The score endpoint aggregates all reviews in one grouped query and omits unrated courses. If scores cannot be loaded, course-name sorting remains available and score sorting stays disabled without an error notice.
 
 POST and PUT accept exactly this JSON shape; only `text` may be omitted:
 
