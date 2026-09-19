@@ -1,24 +1,18 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
 import CourseDetailContent from '$lib/components/course/CourseDetailContent.svelte';
-import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
 import { getCourseById } from '$lib/data/courses';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import {
 	hasSelection,
 	isElectiveSlot,
+	selectedSlotId,
 	selection,
 	uiStore,
 } from '$lib/stores/uiStore.svelte';
-import { hasPlanPrereqConflict } from '$lib/utils/prerequisite';
-import {
-	hasAssessmentStageViolation,
-	hasMissingPrerequisites,
-} from '$lib/utils/status';
 import ActionButtons from './ActionButtons.svelte';
 import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
-import PrerequisiteList from './PrerequisiteList.svelte';
 import StatusLegend from './StatusLegend.svelte';
 
 const TITLE_ID = 'skill-tree-course-detail-title';
@@ -51,6 +45,8 @@ const activePlanNode = $derived.by(() => {
 	const sel = selection();
 	if (!sel) return null;
 	const plan = courseStore.studyPlan;
+	const explicitSlot = selectedSlotId();
+	if (explicitSlot && plan.nodes[explicitSlot]) return plan.nodes[explicitSlot];
 	const slotMatch = plan.nodes[sel.id];
 	if (slotMatch) return slotMatch;
 	return (
@@ -58,39 +54,12 @@ const activePlanNode = $derived.by(() => {
 	);
 });
 
-const warningType = $derived.by(() => {
-	if (!displayCourse || !activePlanNode) return null;
-
-	const plan = courseStore.studyPlan;
-
-	if (
-		hasPlanPrereqConflict(plan, activePlanNode.id, {
-			considerSameSemester: false,
-		})
-	) {
-		return 'later-prerequisites';
-	}
-
-	if (hasMissingPrerequisites(plan, activePlanNode.id)) {
-		return 'missing-prerequisites';
-	}
-
-	if (hasAssessmentStageViolation(plan, activePlanNode.id)) {
-		return 'assessment-stage';
-	}
-
-	return null;
-});
-
-const prerequisiteNote = $derived.by(
-	() => displayCourse?.prerequisiteNote?.trim() ?? '',
-);
 const isDrawerOpen = $derived(hasSelection());
 
 function focusableElements(): HTMLElement[] {
 	return Array.from(
 		panel.querySelectorAll<HTMLElement>(
-			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])',
 		),
 	).filter(
 		(element) => element.tabIndex >= 0 && element.getClientRects().length > 0,
@@ -99,6 +68,18 @@ function focusableElements(): HTMLElement[] {
 
 function closeDetails(): void {
 	uiStore.deselectCourse();
+}
+
+async function navigateToPrerequisite(courseId: string): Promise<void> {
+	const course = getCourseById(courseId);
+	if (!course) return;
+	const node = Object.values(courseStore.studyPlan.nodes).find(
+		(node) => node.courseId === courseId,
+	);
+	uiStore.selectCourse(course, node?.id);
+	await tick();
+	panel.scrollTop = 0;
+	closeButton?.focus({ preventScroll: true });
 }
 
 function handleKeydown(event: KeyboardEvent): void {
@@ -182,7 +163,7 @@ $effect(() => {
         <ElectiveCourseSelector slotId={selection()?.id || ''} />
       {/snippet}
       {#key `${selection()?.id}:${displayCourse.id}`}
-      <CourseDetailContent course={displayCourse} moduleType={displayCourse.type} titleId={TITLE_ID} semester={activePlanNode?.semester} targetNodeId={activePlanNode?.id} elective={isElectiveSlot() && !activePlanNode?.courseId} selector={isElectiveSlot() ? electiveSelector : undefined}>
+      <CourseDetailContent course={displayCourse} moduleType={displayCourse.type} titleId={TITLE_ID} semester={activePlanNode?.semester} targetNodeId={activePlanNode?.id} elective={isElectiveSlot() && !activePlanNode?.courseId} selector={isElectiveSlot() ? electiveSelector : undefined} onNavigate={navigateToPrerequisite}>
         {#snippet close()}
           <button
             bind:this={closeButton}
@@ -194,18 +175,6 @@ $effect(() => {
           >
             <span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
           </button>
-        {/snippet}
-        {#snippet prerequisites()}
-        {#if warningType}
-          <PrerequisiteWarning type={warningType} />
-        {/if}
-        <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} assessmentLevelPassed={displayCourse?.assessmentLevelPassed} separated={false} />
-        {#if prerequisiteNote}
-          <section class="border-t border-border-primary pt-3" aria-labelledby="skill-tree-detail-note">
-            <h3 id="skill-tree-detail-note" class="text-sm font-semibold text-text-primary">{m.course_details_note()}</h3>
-            <p class="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary">{prerequisiteNote}</p>
-          </section>
-        {/if}
         {/snippet}
         {#snippet actions()}
           {#if !isElectiveSlot() || activePlanNode?.courseId}

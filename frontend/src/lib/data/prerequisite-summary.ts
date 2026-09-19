@@ -79,6 +79,7 @@ export function summarizePrerequisites(
 	plan: StudyPlan | null,
 	slotStatus: Map<string, 'attended' | 'completed'>,
 	targetNodeId?: string,
+	options?: { includeAlternatives?: boolean },
 ): PrerequisiteRuleSummary[] {
 	const coursesInPlan = new Map<string, CourseProgress>();
 	if (plan) {
@@ -141,7 +142,7 @@ export function summarizePrerequisites(
 		});
 		const satisfied = evaluatePrerequisiteRule(rule, slotStatus, plan);
 		const isAlternative = rule.moduleLinkType === 'oder';
-		if (isAlternative) {
+		if (isAlternative && !options?.includeAlternatives) {
 			const candidates = courses.filter((course) =>
 				satisfied
 					? course.state === 'completed' || course.state === 'attended'

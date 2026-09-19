@@ -1,7 +1,12 @@
 import { describe, expect, test } from 'bun:test';
 import type { PrerequisiteRule } from '../src/lib/data/catalog-types';
+import {
+	buildPrerequisiteExpression,
+	type PrerequisiteExpression,
+} from '../src/lib/data/prerequisite-expression';
 import { summarizePrerequisites } from '../src/lib/data/prerequisite-summary';
 import type { PlanNode, StudyPlan } from '../src/lib/data/study-plan';
+import { evaluatePrerequisites } from '../src/lib/utils/prerequisite';
 
 function node(id: string, courseId: string | null, semester = 1): PlanNode {
 	return {
@@ -62,6 +67,85 @@ describe('summarizePrerequisites', () => {
 					{ courseId: 'B', state: 'completed', semesters: [1] },
 				],
 			},
+		]);
+	});
+
+	test('full mode retains unused courses in satisfied and irrelevant OR groups', () => {
+		const rules = [
+			rule(['A', 'B'], {
+				moduleLinkType: 'oder',
+				prerequisiteLinkType: 'oder',
+			}),
+			rule(['C', 'D'], { moduleLinkType: 'oder' }),
+		];
+		const studyPlan = plan(node('a', 'A'), node('c', 'C'));
+		const progress = new Map<string, 'attended' | 'completed'>([
+			['a', 'completed'],
+		]);
+		const compact = summarizePrerequisites(rules, studyPlan, progress);
+		const full = summarizePrerequisites(rules, studyPlan, progress, undefined, {
+			includeAlternatives: true,
+		});
+
+		expect(
+			compact.map((group) => group.courses.map((course) => course.courseId)),
+		).toEqual([['A'], ['C']]);
+		expect(full).toEqual([
+			{
+				ruleIndex: 0,
+				state: 'satisfied',
+				relevant: true,
+				courses: [
+					{ courseId: 'A', state: 'completed', semesters: [1] },
+					{ courseId: 'B', state: 'missing', semesters: [] },
+				],
+			},
+			{
+				ruleIndex: 1,
+				state: 'planned',
+				relevant: false,
+				courses: [
+					{ courseId: 'C', state: 'planned', semesters: [1] },
+					{ courseId: 'D', state: 'missing', semesters: [] },
+				],
+			},
+		]);
+		expect(full.map(({ state, relevant }) => ({ state, relevant }))).toEqual(
+			compact.map(({ state, relevant }) => ({ state, relevant })),
+		);
+	});
+
+	test('full mode preserves incomplete and later group states despite missing alternatives', () => {
+		const rules = [
+			rule(['A', 'B'], { mustBePassed: true }),
+			rule(['C', 'D'], { moduleLinkType: 'oder', mustBePassed: true }),
+			rule(['E', 'F'], { moduleLinkType: 'oder' }),
+		];
+		const studyPlan = plan(
+			node('a', 'A'),
+			node('c', 'C'),
+			node('target', 'TARGET'),
+			node('e', 'E', 2),
+		);
+		const result = summarizePrerequisites(
+			rules,
+			studyPlan,
+			new Map([['c', 'attended']]),
+			'target',
+			{ includeAlternatives: true },
+		);
+
+		expect(result.map((group) => group.state)).toEqual([
+			'missing',
+			'incomplete',
+			'later',
+		]);
+		expect(
+			result.map((group) => group.courses.map((course) => course.state)),
+		).toEqual([
+			['planned', 'missing'],
+			['incomplete', 'missing'],
+			['later', 'missing'],
 		]);
 	});
 
@@ -381,4 +465,69 @@ describe('summarizePrerequisites', () => {
 		).toEqual([3]);
 		expect(result[3].state).toBe('planned');
 	});
+});
+
+function evaluateExpression(
+	expression: PrerequisiteExpression | null,
+	values: boolean[],
+): boolean {
+	if (!expression) return true;
+	if ('ruleIndex' in expression) return values[expression.ruleIndex];
+	return expression.operator === 'or'
+		? expression.children.some((child) => evaluateExpression(child, values))
+		: expression.children.every((child) => evaluateExpression(child, values));
+}
+
+describe('buildPrerequisiteExpression', () => {
+	test('empty requirements have no expression and a lone rule needs no operator', () => {
+		expect(buildPrerequisiteExpression([])).toBeNull();
+		const expression = buildPrerequisiteExpression([rule(['A'])]);
+		expect(evaluateExpression(expression, [false])).toBe(false);
+		expect(evaluateExpression(expression, [true])).toBe(true);
+		expect(expression).toEqual({ ruleIndex: 0 });
+	});
+
+	test('every mixed-link truth assignment matches the left-to-right evaluator', () => {
+		const courseIds = ['A', 'B', 'C', 'D'];
+		const studyPlan = plan(...courseIds.map((id) => node(id, id)));
+		const links = ['und', 'oder', undefined] as const;
+		for (const first of links) {
+			for (const second of links) {
+				for (const third of links) {
+					const rules = [
+						rule(['A'], { prerequisiteLinkType: first }),
+						rule(['B'], { prerequisiteLinkType: second }),
+						rule(['C'], { prerequisiteLinkType: third }),
+						rule(['D']),
+					];
+					const expression = buildPrerequisiteExpression(rules);
+					for (let mask = 0; mask < 16; mask++) {
+						const values = courseIds.map((_, index) =>
+							Boolean(mask & (1 << index)),
+						);
+						const progress = new Map<string, 'attended' | 'completed'>();
+						for (let index = 0; index < courseIds.length; index++) {
+							if (values[index]) progress.set(courseIds[index], 'completed');
+						}
+						expect(evaluateExpression(expression, values)).toBe(
+							evaluatePrerequisites(rules, progress, studyPlan),
+						);
+					}
+				}
+			}
+		}
+	});
+
+	test.each(['und', 'oder'] as const)(
+		'consecutive %s links form one flat group in rule order',
+		(prerequisiteLinkType) => {
+			const expression = buildPrerequisiteExpression(
+				['A', 'B', 'C', 'D'].map((id) => rule([id], { prerequisiteLinkType })),
+			);
+			expect(expression).toEqual({
+				operator: prerequisiteLinkType === 'oder' ? 'or' : 'and',
+				children: [0, 1, 2, 3].map((ruleIndex) => ({ ruleIndex })),
+			});
+		},
+	);
 });

@@ -8,6 +8,7 @@ import { seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { locale } from '$lib/stores/locale.svelte';
+import CoursePrerequisites from './CoursePrerequisites.svelte';
 import CourseReviews from './CourseReviews.svelte';
 import PrerequisiteSummary from './PrerequisiteSummary.svelte';
 
@@ -18,7 +19,7 @@ let {
 	semester,
 	targetNodeId,
 	close,
-	prerequisites,
+	onNavigate,
 	actions,
 	selector,
 	elective = false,
@@ -29,7 +30,7 @@ let {
 	semester?: number;
 	targetNodeId?: string;
 	close: Snippet;
-	prerequisites: Snippet;
+	onNavigate: (courseId: string) => void;
 	actions?: Snippet;
 	selector?: Snippet;
 	elective?: boolean;
@@ -139,7 +140,7 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 	</section>
 </div>
 <div id={`${id}-panel-prerequisites`} role="tabpanel" aria-labelledby={`${id}-tab-prerequisites`} hidden={activeTab !== 'prerequisites'} tabindex="0" class="p-5 space-y-4 focus-visible:outline-blue-500">
-	{@render prerequisites()}
+	<CoursePrerequisites {course} {targetNodeId} {onNavigate} />
 </div>
 <div id={`${id}-panel-reviews`} role="tabpanel" aria-labelledby={`${id}-tab-reviews`} hidden={activeTab !== 'reviews'} tabindex="0" class="p-5 focus-visible:outline-blue-500">
 	{#if reviewsVisited}

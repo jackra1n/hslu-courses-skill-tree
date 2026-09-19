@@ -1,10 +1,8 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
 import CourseDetailContent from '$lib/components/course/CourseDetailContent.svelte';
-import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import type { CatalogCourse } from '$lib/data/catalog-types';
 import { courseModuleType } from '$lib/data/course-filters';
-import { courseLabel } from '$lib/data/course-label';
 import * as m from '$lib/paraglide/messages';
 
 let {
@@ -27,12 +25,11 @@ let closeButton = $state<HTMLButtonElement>();
 let isOverlay = $state(false);
 
 const moduleType = $derived(course ? courseModuleType(course) : undefined);
-const prerequisiteNote = $derived(course?.prerequisiteNote?.trim() ?? '');
 
 function focusableElements(): HTMLElement[] {
 	return Array.from(
 		panel.querySelectorAll<HTMLElement>(
-			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])',
 		),
 	).filter(
 		(element) =>
@@ -81,9 +78,9 @@ $effect(() => {
 	void tick().then(() => closeButton?.focus());
 });
 
-async function navigateToPrerequisite(
-	prerequisite: CatalogCourse,
-): Promise<void> {
+async function navigateToPrerequisite(courseId: string): Promise<void> {
+	const prerequisite = courseById.get(courseId);
+	if (!prerequisite) return;
 	onNavigate(prerequisite);
 	await tick();
 	if (content) content.scrollTop = 0;
@@ -116,7 +113,7 @@ async function navigateToPrerequisite(
 	{#if course}
 		<div bind:this={content} class="min-h-0 flex-1 overflow-y-auto">
 			{#key course.id}
-			<CourseDetailContent {course} {moduleType} titleId={TITLE_ID}>
+			<CourseDetailContent {course} {moduleType} titleId={TITLE_ID} onNavigate={navigateToPrerequisite}>
 				{#snippet close()}
 				<button
 					bind:this={closeButton}
@@ -127,85 +124,6 @@ async function navigateToPrerequisite(
 				>
 					<span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
 				</button>
-				{/snippet}
-				{#snippet prerequisites()}
-
-			<section aria-labelledby="course-detail-prerequisites">
-				<h3 id="course-detail-prerequisites" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
-					<span class="i-lucide-git-branch h-4 w-4 text-text-secondary" aria-hidden="true"></span>
-					{m.prereq_title()}
-				</h3>
-
-				{#if course.assessmentLevelPassed}
-					<div class="mt-2 flex items-start gap-2 text-sm text-text-secondary">
-						<span class="i-lucide-badge-check mt-0.5 h-4 w-4 shrink-0" aria-hidden="true"></span>
-						<span>{m.prereq_assessment_passed()}</span>
-					</div>
-				{/if}
-
-				{#if course.prerequisites.length > 0}
-					<ul class="mt-3 space-y-3">
-						{#each course.prerequisites as rule, index}
-							{#if index > 0 && course.prerequisites[index - 1]?.prerequisiteLinkType === 'oder'}
-								<li class="flex items-center gap-2" aria-hidden="true">
-									<span class="h-px flex-1 bg-border-primary"></span>
-									<span class="text-xs font-medium text-text-tertiary">{m.prereq_or()}</span>
-									<span class="h-px flex-1 bg-border-primary"></span>
-								</li>
-							{/if}
-							<li>
-								<p class="text-sm text-text-secondary">
-									<span class="font-semibold text-text-primary">
-										{rule.mustBePassed
-											? m.browser_details_requirement_complete()
-											: m.browser_details_requirement_attend()}
-									</span>
-									{rule.moduleLinkType === 'oder' ? m.prereq_one_of() : m.prereq_all_of()}
-								</p>
-								<ul class="mt-1.5 space-y-2">
-									{#each rule.modules as moduleId}
-										{@const prerequisite = courseById.get(moduleId)}
-										<li>
-											{#if prerequisite}
-												{@const prerequisiteType = courseModuleType(prerequisite)}
-												<button
-													type="button"
-													onclick={() => navigateToPrerequisite(prerequisite)}
-													class="block w-full cursor-pointer rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-left transition-colors hover:border-blue-500 hover:bg-blue-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-												>
-													<span class="flex items-center justify-between gap-2">
-														<span class="min-w-0 break-words font-mono text-xs text-text-secondary">{moduleId}</span>
-														{#if prerequisiteType}
-															<ModuleTypeBadge type={prerequisiteType} />
-														{/if}
-													</span>
-													<span class="block break-words text-sm font-medium text-text-primary">{courseLabel(prerequisite)}</span>
-												</button>
-											{:else}
-												<div class="rounded-lg border border-border-primary px-3 py-2 font-mono text-xs text-text-secondary">{moduleId}</div>
-											{/if}
-										</li>
-									{/each}
-								</ul>
-							</li>
-						{/each}
-					</ul>
-				{:else if !course.assessmentLevelPassed}
-					<p class="mt-2 text-sm text-text-secondary">{m.prereq_none()}</p>
-				{/if}
-			</section>
-
-			{#if prerequisiteNote}
-				<section class="border-t border-border-primary pt-3" aria-labelledby="course-detail-note">
-					<h3 id="course-detail-note" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
-						<span class="i-lucide-info h-4 w-4 text-text-secondary" aria-hidden="true"></span>
-						{m.course_details_note()}
-					</h3>
-					<p class="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary">
-						{prerequisiteNote}
-					</p>
-				</section>
-			{/if}
 				{/snippet}
 			</CourseDetailContent>
 			{/key}

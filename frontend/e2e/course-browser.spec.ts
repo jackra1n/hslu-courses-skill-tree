@@ -297,3 +297,32 @@ test('selected elective courses use the shared tabs and clearing returns to the 
 		}),
 	).toHaveCount(0);
 });
+
+test('full prerequisites retain unused alternatives after a requirement is met', async ({
+	page,
+}) => {
+	await page.addInitScript(() => {
+		localStorage.setItem('currentTemplate', 'aiml-fulltime-hs24');
+		localStorage.setItem('slotStatus', JSON.stringify({ oop: 'completed' }));
+	});
+	await page.goto('/courses?course=VSK_MM');
+	const panel = page.locator('#course-detail-panel');
+	await expect(
+		panel.getByRole('heading', { name: 'Prerequisites summary' }),
+	).toBeVisible();
+	await panel.getByRole('tab', { name: 'Prerequisites', exact: true }).click();
+	const group = panel.getByRole('region', {
+		name: 'Complete one of',
+		exact: true,
+	});
+	await expect(group.getByText('Met', { exact: true })).toBeVisible();
+	await expect(
+		group.getByRole('button', { name: /OOP.*Completed/ }),
+	).toBeVisible();
+	await expect(
+		group.getByRole('button', { name: /PLAB.*Not in plan/ }),
+	).toBeVisible();
+	await expect(group.getByText('Needs attention', { exact: true })).toHaveCount(
+		0,
+	);
+});
