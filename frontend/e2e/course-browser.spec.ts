@@ -293,6 +293,7 @@ test('selected elective courses use the shared tabs and clearing returns to the 
 }) => {
 	await page.addInitScript(() => {
 		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
+		localStorage.setItem('currentTemplate', 'aiml-fulltime-hs24');
 	});
 	await page.goto('/');
 	await page.locator('.svelte-flow__node[data-id="elective1-1"]').click();
