@@ -26,6 +26,7 @@
 	"browser_loading": "Kurse werden geladen…",
 	"browser_load_error": "Der Kurskatalog konnte nicht geladen werden.",
 	"browser_filters": "Filter",
+	"browser_reset_all": "Alles zurücksetzen",
 	"browser_filter_season": "Semester",
 	"browser_filter_type": "Modultyp",
 	"browser_filter_ects": "ECTS",

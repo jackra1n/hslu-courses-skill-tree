@@ -94,6 +94,47 @@ test('combines search, module type, assessment and semester, then recovers from 
 	await expect(semester).toHaveText('All semesters');
 });
 
+test('facet counts ignore their own selection and reset restores every filter', async ({
+	page,
+	isMobile,
+}) => {
+	await page.goto('/courses');
+	await expandFilters(page, isMobile);
+	const reset = page.getByRole('button', { name: 'Reset all', exact: true });
+	await expect(reset).toBeDisabled();
+	const search = page.getByRole('textbox', { name: 'Search courses' });
+	await search.fill('ENLAB_MM');
+	const major = page.getByRole('checkbox', {
+		name: 'Major/Minor module',
+		exact: true,
+	});
+	const core = page.getByRole('checkbox', { name: 'Core module', exact: true });
+	const oral = page.getByRole('checkbox', { name: 'Oral exam', exact: true });
+	await expect(major).toHaveAccessibleDescription('1');
+	await core.check();
+	// the alternative type remains discoverable, but assessment counts
+	// respect the selected module type.
+	await expect(major).toHaveAccessibleDescription('1');
+	await expect(oral).toHaveAccessibleDescription('0');
+	await major.check();
+	await expect(oral).toHaveAccessibleDescription('1');
+	await oral.check();
+	await expect(major).toHaveAccessibleDescription('1');
+	const next = page.getByRole('switch', {
+		name: 'Only courses I can take next',
+	});
+	await next.check();
+	await expect(major).toHaveAccessibleDescription('0');
+	await reset.click();
+	await expect(search).toHaveValue('');
+	await expect(core).not.toBeChecked();
+	await expect(major).not.toBeChecked();
+	await expect(oral).not.toBeChecked();
+	await expect(next).not.toBeChecked();
+	await expect(reset).toBeDisabled();
+	await expect(courseRow(page, 'ENLAB_MM')).toBeVisible();
+});
+
 test('follows a prerequisite outside the result set without losing filters or return focus', async ({
 	page,
 	isMobile,

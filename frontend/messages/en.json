@@ -26,6 +26,7 @@
 	"browser_loading": "Loading courses…",
 	"browser_load_error": "Could not load the course catalogue.",
 	"browser_filters": "Filters",
+	"browser_reset_all": "Reset all",
 	"browser_filter_season": "Semester",
 	"browser_filter_type": "Module type",
 	"browser_filter_ects": "ECTS",

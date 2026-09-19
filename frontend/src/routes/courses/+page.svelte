@@ -10,6 +10,7 @@ import type {
 	ModuleType,
 } from '$lib/data/catalog-types';
 import {
+	courseModuleType,
 	type EctsRange,
 	EMPTY_FILTERS,
 	filterCourses,
@@ -67,6 +68,34 @@ const filteredCourses = $derived(
 		? catalogFilteredCourses.filter((course) => nextCourseIdSet.has(course.id))
 		: catalogFilteredCourses,
 );
+// facet counts apply every other filter, but not their own selection.
+const countableCourses = $derived(
+	nextOnly
+		? courses.filter((course) => nextCourseIdSet.has(course.id))
+		: courses,
+);
+const moduleTypeCounts = $derived.by(() => {
+	const counts: Partial<Record<ModuleType, number>> = {};
+	for (const course of filterCourses(countableCourses, {
+		...filters,
+		moduleTypes: [],
+	})) {
+		const type = courseModuleType(course);
+		if (type) counts[type] = (counts[type] ?? 0) + 1;
+	}
+	return counts;
+});
+const assessmentModeCounts = $derived.by(() => {
+	const counts: Partial<Record<AssessmentMode, number>> = {};
+	for (const course of filterCourses(countableCourses, {
+		...filters,
+		assessmentModes: [],
+	})) {
+		for (const mode of course.assessmentModes)
+			counts[mode] = (counts[mode] ?? 0) + 1;
+	}
+	return counts;
+});
 const filtering = $derived(isFiltering(filters) || nextOnly);
 const activeFilterCount = $derived(
 	(query.trim() !== '' ? 1 : 0) +
@@ -250,9 +279,6 @@ onMount(() => {
 				</div>
 				<div class="{sidebarOpen ? 'block' : 'hidden'} mt-3 max-h-[45dvh] shrink-0 overflow-y-auto lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:mt-0 lg:block lg:min-h-0 lg:max-h-none lg:h-full">
 					<div>
-						<h2 class="mb-2 hidden text-sm font-semibold text-text-primary lg:block">
-							{m.browser_filters()}
-						</h2>
 						<FilterSidebar
 							bind:season
 							bind:moduleTypes
@@ -260,6 +286,10 @@ onMount(() => {
 							bind:ects
 							bind:nextOnly
 							{ectsSteps}
+							{moduleTypeCounts}
+							{assessmentModeCounts}
+							{filtering}
+							onReset={clearFilters}
 						/>
 					</div>
 				</div>
