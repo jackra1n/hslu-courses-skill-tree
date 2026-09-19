@@ -76,48 +76,42 @@ function moduleLabel(courseId: string) {
 }
 </script>
 
-<ul class="mt-3 space-y-4">
+<ul class="mt-3 space-y-2 text-sm leading-snug">
 	{#if course.assessmentLevelPassed}
-		<li class="flex items-start gap-2.5">
+		{@const assessmentStatus = assessmentPassed ? m.course_summary_passed() : hasPlan ? m.course_summary_not_passed() : m.course_summary_required()}
+		<li class="flex items-start gap-2" title={assessmentStatus}>
 			<span class={`mt-0.5 h-4 w-4 shrink-0 ${assessmentPassed ? 'i-lucide-circle-check text-green-700 dark:text-green-400' : hasPlan ? 'i-lucide-triangle-alert text-amber-700 dark:text-amber-400' : 'i-lucide-circle text-text-secondary'}`} aria-hidden="true"></span>
-			<div class="min-w-0 flex-1 text-sm">
-				<p class="font-medium text-text-primary">{m.course_summary_assessment()}</p>
-				<p class={`mt-0.5 ${assessmentPassed ? 'text-green-700 dark:text-green-400' : hasPlan ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}>{assessmentPassed ? m.course_summary_passed() : hasPlan ? m.course_summary_not_passed() : m.course_summary_required()}</p>
-			</div>
+			<span class="text-text-primary">{m.course_summary_assessment()}<span class="sr-only"> — {assessmentStatus}</span></span>
 		</li>
 	{/if}
 	{#each groups as group, index (group.ruleIndex)}
 		{@const rule = course.prerequisites[group.ruleIndex]}
 		<li>
 			{#if index > 0 && course.prerequisites[group.ruleIndex - 1].prerequisiteLinkType === 'oder'}
-				<p class="mb-2 text-xs font-medium text-text-secondary">{m.prereq_or()}</p>
+				<p class="mb-1 pl-6 text-xs text-text-secondary">{m.prereq_or()}</p>
 			{/if}
-			<p class="mb-1.5 text-xs text-text-secondary">
+			<span class="sr-only">
 				{rule.mustBePassed ? m.browser_details_requirement_complete() : m.browser_details_requirement_attend()}
-				{#if group.courses.length > 1}{rule.moduleLinkType === 'oder' ? m.prereq_one_of() : m.prereq_all_of()}{/if}
-			</p>
+				{rule.moduleLinkType === 'oder' ? m.prereq_one_of() : m.prereq_all_of()}
+			</span>
 			{#if rule.moduleLinkType === 'oder' && (group.state === 'missing' || group.state === 'required')}
-				<div class="flex items-start gap-2.5">
+				<div class="flex items-start gap-2" title={group.courses.map((candidate) => moduleLabel(candidate.courseId)).join(` ${m.course_summary_or()} `)}>
 					<span class={`mt-0.5 h-4 w-4 shrink-0 ${statusIcon(group.state)} ${statusColor(group.state)}`} aria-hidden="true"></span>
-					<div class="min-w-0 flex-1 text-sm leading-relaxed">
-						<p class="font-medium text-text-primary">{group.courses.map((candidate) => moduleLabel(candidate.courseId)).join(` ${m.course_summary_or()} `)}</p>
-						<p class={`mt-0.5 ${statusColor(group.state)}`}>{statusLabel(group.state)}</p>
-					</div>
+					<p class="min-w-0 text-text-primary">
+						{group.courses.map((candidate) => candidate.courseId).join(` ${m.course_summary_or()} `)}
+						<span class={group.state === 'missing' ? 'text-amber-700 dark:text-amber-400' : 'sr-only'}> — {statusLabel(group.state)}</span>
+					</p>
 				</div>
 			{:else}
-				<ul class="space-y-2.5">
-					{#each group.courses as candidate (candidate.courseId)}
-						<li class="flex items-start gap-2.5">
+				<ul class="space-y-2">
+					{#each group.courses as candidate, candidateIndex (candidate.courseId)}
+						<li class="flex items-start gap-2" title={`${moduleLabel(candidate.courseId)} — ${statusLabel(candidate.state)}`}>
 							<span class={`mt-0.5 h-4 w-4 shrink-0 ${statusIcon(candidate.state)} ${statusColor(candidate.state)}`} aria-hidden="true"></span>
-							<div class="min-w-0 flex-1 text-sm leading-relaxed">
-								<p class="font-medium text-text-primary">{moduleLabel(candidate.courseId)}</p>
-								<p class={`mt-0.5 ${statusColor(candidate.state)}`}>
-									{statusLabel(candidate.state)}
-									{#if (candidate.state === 'planned' || candidate.state === 'later') && candidate.semesters.length}
-										<span class="text-text-secondary"> · {candidate.semesters.map((number) => m.details_semester({ number })).join(', ')}</span>
-									{/if}
-								</p>
-							</div>
+							<p class="min-w-0 text-text-primary">
+								{#if candidateIndex > 0 && rule.moduleLinkType === 'oder'}<span class="text-text-secondary">{m.course_summary_or()} </span>{/if}
+								{moduleLabel(candidate.courseId)}
+								<span class={candidate.state === 'missing' || candidate.state === 'later' || candidate.state === 'incomplete' ? 'text-amber-700 dark:text-amber-400' : 'sr-only'}> — {statusLabel(candidate.state)}</span>
+							</p>
 						</li>
 					{/each}
 				</ul>

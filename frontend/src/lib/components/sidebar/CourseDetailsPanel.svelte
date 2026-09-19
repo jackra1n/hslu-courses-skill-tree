@@ -197,7 +197,7 @@ $effect(() => {
         {#if warningType}
           <PrerequisiteWarning type={warningType} />
         {/if}
-        <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} assessmentLevelPassed={displayCourse?.assessmentLevelPassed} />
+        <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} assessmentLevelPassed={displayCourse?.assessmentLevelPassed} separated={false} />
         {/if}
         {#if prerequisiteNote}
           <section class="border-t border-border-primary pt-3" aria-labelledby="skill-tree-detail-note">

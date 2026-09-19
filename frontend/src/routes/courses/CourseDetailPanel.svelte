@@ -130,7 +130,7 @@ async function navigateToPrerequisite(
 				{/snippet}
 				{#snippet prerequisites()}
 
-			<section class="border-t border-border-primary pt-3" aria-labelledby="course-detail-prerequisites">
+			<section aria-labelledby="course-detail-prerequisites">
 				<h3 id="course-detail-prerequisites" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
 					<span class="i-lucide-git-branch h-4 w-4 text-text-secondary" aria-hidden="true"></span>
 					{m.prereq_title()}

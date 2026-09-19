@@ -205,7 +205,7 @@ async function reload(): Promise<void> {
 }
 </script>
 
-<section class="border-t border-border-primary pt-4" aria-labelledby={`${id}-title`}>
+<section aria-labelledby={`${id}-title`}>
 	<div class="flex flex-wrap items-baseline justify-between gap-2">
 		<h3 bind:this={heading} id={`${id}-title`} tabindex="-1" class="text-sm font-semibold text-text-primary focus:outline-none">{m.reviews_title()}</h3>
 		{#if data}<span class="text-xs text-text-secondary">{m.reviews_count({ count: data.summary.count })}</span>{/if}
