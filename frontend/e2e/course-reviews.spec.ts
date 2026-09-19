@@ -85,6 +85,7 @@ test('a reviewer can publish, edit and cancel or confirm deletion with persisten
 }) => {
 	await login();
 	await page.goto(courseUrl);
+	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	const reviews = page.getByRole('region', {
 		name: 'Student reviews',
 		exact: true,
@@ -111,6 +112,7 @@ test('a reviewer can publish, edit and cancel or confirm deletion with persisten
 	await expect(reviews.getByRole('article')).toContainText(originalText);
 
 	await page.reload();
+	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	const article = reviews.getByRole('article');
 	await expect(article).toHaveCount(1);
 	await expect(article).toContainText(originalText);
@@ -138,6 +140,7 @@ test('a reviewer can publish, edit and cancel or confirm deletion with persisten
 	await expect(article).not.toContainText(originalText);
 
 	await page.reload();
+	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	await expect(article).toHaveCount(1);
 	await expect(article).toContainText(updatedText);
 	await expectPublishedRatings(article, updatedRatings);
@@ -156,6 +159,7 @@ test('a reviewer can publish, edit and cancel or confirm deletion with persisten
 	await expect(confirmation).toBeHidden();
 	await expect(article).toContainText(updatedText);
 	await page.reload();
+	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	await expect(article).toContainText(updatedText);
 
 	await reviews
@@ -170,6 +174,7 @@ test('a reviewer can publish, edit and cancel or confirm deletion with persisten
 		reviews.getByRole('button', { name: 'Write a review', exact: true }),
 	).toBeVisible();
 	await page.reload();
+	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	await expect(
 		reviews.getByRole('button', { name: 'Write a review', exact: true }),
 	).toBeVisible();
@@ -192,6 +197,7 @@ test('guests and another account can read an anonymous review but cannot edit or
 	const text = 'The weekly exercises are useful preparation for the project.';
 	await login(author);
 	await page.goto(courseUrl);
+	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	const reviews = page.getByRole('region', {
 		name: 'Student reviews',
 		exact: true,
@@ -215,6 +221,7 @@ test('guests and another account can read an anonymous review but cannot edit or
 
 	await context.clearCookies();
 	await page.reload();
+	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	await expect(
 		reviews.getByRole('button', { name: 'Continue with GitHub', exact: true }),
 	).toBeVisible();
@@ -237,6 +244,7 @@ test('guests and another account can read an anonymous review but cannot edit or
 
 	await login(reader);
 	await page.reload();
+	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	await expect(
 		reviews.getByRole('button', { name: 'Write a review', exact: true }),
 	).toBeVisible();
@@ -270,6 +278,7 @@ test('a failed write keeps every draft field and a real retry persists exactly o
 }) => {
 	await login();
 	await page.goto(courseUrl);
+	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	const reviews = page.getByRole('region', {
 		name: 'Student reviews',
 		exact: true,
@@ -313,6 +322,7 @@ test('a failed write keeps every draft field and a real retry persists exactly o
 	await expect(reviews.getByRole('article')).toHaveCount(1);
 	await expect(reviews.getByRole('article')).toContainText(text);
 	await page.reload();
+	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	await expect(
 		reviews.getByRole('button', { name: 'Edit review', exact: true }),
 	).toBeVisible();

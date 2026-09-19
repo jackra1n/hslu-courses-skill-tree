@@ -1,11 +1,8 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
-import AssessmentModeBadges from '$lib/components/ui/AssessmentModeBadges.svelte';
-import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
+import CourseDetailContent from '$lib/components/course/CourseDetailContent.svelte';
 import PrerequisiteWarning from '$lib/components/ui/PrerequisiteWarning.svelte';
-import { courseLabel } from '$lib/data/course-label';
 import { getCourseById } from '$lib/data/courses';
-import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import {
@@ -89,32 +86,15 @@ const prerequisiteNote = $derived.by(
 	() => displayCourse?.prerequisiteNote?.trim() ?? '',
 );
 const isDrawerOpen = $derived(hasSelection());
-const alternateLabel = $derived.by(() => {
-	if (!displayCourse) return null;
-	const displayed = courseLabel(displayCourse);
-	if (displayed === displayCourse.label) {
-		return displayCourse.labelEn &&
-			displayCourse.labelEn !== displayCourse.label
-			? displayCourse.labelEn
-			: null;
-	}
-	return displayCourse.label;
-});
-const offeredSeasons = $derived.by(() => {
-	const seasons = displayCourse?.seasons;
-	if (!seasons || seasons.length === 0) return null;
-	return (['HS', 'FS'] as Season[])
-		.filter((season) => seasons.includes(season))
-		.map((season) => seasonLabel(season))
-		.join(' · ');
-});
 
 function focusableElements(): HTMLElement[] {
 	return Array.from(
 		panel.querySelectorAll<HTMLElement>(
 			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
 		),
-	).filter((element) => !element.hasAttribute('hidden'));
+	).filter(
+		(element) => element.tabIndex >= 0 && element.getClientRects().length > 0,
+	);
 }
 
 function closeDetails(): void {
@@ -197,22 +177,10 @@ $effect(() => {
   onkeydown={handleKeydown}
 >
   {#if hasSelection()}
-    <div class="p-4 space-y-4">
-      <header>
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            {#if displayCourse}
-              <p class="font-mono text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
-                {displayCourse.id}
-              </p>
-              <h2 id={TITLE_ID} class="mt-1 text-lg font-semibold leading-snug text-text-primary">
-                {courseLabel(displayCourse)}
-              </h2>
-              {#if alternateLabel}
-                <p class="mt-1 text-xs text-text-secondary">{alternateLabel}</p>
-              {/if}
-            {/if}
-          </div>
+    {#if displayCourse}
+      {#key `${selection()?.id}:${displayCourse.id}`}
+      <CourseDetailContent course={displayCourse} moduleType={displayCourse.type} titleId={TITLE_ID} semester={activePlanNode?.semester} elective={isElectiveSlot()}>
+        {#snippet close()}
           <button
             bind:this={closeButton}
             type="button"
@@ -223,72 +191,32 @@ $effect(() => {
           >
             <span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
           </button>
-        </div>
-      </header>
-
-      {#if displayCourse}
-        <dl class="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-text-secondary">
-          <div>
-            <dt class="sr-only">{m.course_details_ects()}</dt>
-            <dd class="font-semibold text-text-primary">{displayCourse.ects} ECTS</dd>
-          </div>
-          <div>
-            <dt class="sr-only">{m.course_details_type()}</dt>
-            <dd>
-              {#if displayCourse.type}
-                <ModuleTypeBadge type={displayCourse.type} />
-              {:else}
-                {m.course_details_unknown()}
-              {/if}
-            </dd>
-          </div>
-          <div>
-            <dt class="sr-only">{m.course_details_plan_semester()}</dt>
-            <dd>{m.details_semester({ number: activePlanNode?.semester ?? '?' })}</dd>
-          </div>
-          <div class="w-full flex flex-wrap gap-x-2 text-xs">
-            <dt class="font-semibold text-text-primary">{m.course_details_seasons()}:</dt>
-            <dd>{offeredSeasons ?? m.course_details_unknown()}</dd>
-          </div>
-        </dl>
-      {/if}
-
-      {#if isElectiveSlot()}
-        <ElectiveCourseSelector slotId={selection()?.id || ''} />
-      {:else}
-        {#if displayCourse && displayCourse.assessmentModes.length > 0}
-          <section class="border-t border-border-primary pt-3" aria-labelledby="skill-tree-detail-assessment">
-            <h3 id="skill-tree-detail-assessment" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
-              <span class="i-lucide-clipboard-check h-4 w-4 text-text-secondary" aria-hidden="true"></span>
-              {m.assessment_methods()}
-            </h3>
-            <div class="mt-2">
-              <AssessmentModeBadges modes={displayCourse.assessmentModes} />
-            </div>
-          </section>
-        {/if}
+        {/snippet}
+        {#snippet prerequisites()}
+        {#if !isElectiveSlot()}
         {#if warningType}
           <PrerequisiteWarning type={warningType} />
         {/if}
         <PrerequisiteList prerequisites={displayCourse?.prerequisites || []} assessmentLevelPassed={displayCourse?.assessmentLevelPassed} />
-      {/if}
+        {/if}
+        {#if prerequisiteNote}
+          <section class="border-t border-border-primary pt-3" aria-labelledby="skill-tree-detail-note">
+            <h3 id="skill-tree-detail-note" class="text-sm font-semibold text-text-primary">{m.course_details_note()}</h3>
+            <p class="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary">{prerequisiteNote}</p>
+          </section>
+        {/if}
+        {/snippet}
+        {#snippet actions()}
+          {#if isElectiveSlot()}
+            <ElectiveCourseSelector slotId={selection()?.id || ''} />
+          {:else}
+            <ActionButtons courseId={displayCourse.id} />
+          {/if}
+        {/snippet}
+      </CourseDetailContent>
+      {/key}
+    {/if}
 
-      {#if prerequisiteNote}
-        <section class="border-t border-border-primary pt-3" aria-labelledby="skill-tree-detail-note">
-          <h3 id="skill-tree-detail-note" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
-            <span class="i-lucide-info h-4 w-4 text-text-secondary" aria-hidden="true"></span>
-            {m.course_details_note()}
-          </h3>
-          <p class="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary">
-            {prerequisiteNote}
-          </p>
-        </section>
-      {/if}
-
-      {#if !isElectiveSlot()}
-        <ActionButtons courseId={displayCourse?.id || ''} />
-      {/if}
-    </div>
   {:else}
     <div class="p-6 space-y-6">
       <div class="text-center py-8">

@@ -1,14 +1,11 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
-import AssessmentModeBadges from '$lib/components/ui/AssessmentModeBadges.svelte';
+import CourseDetailContent from '$lib/components/course/CourseDetailContent.svelte';
 import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import type { CatalogCourse } from '$lib/data/catalog-types';
 import { courseModuleType } from '$lib/data/course-filters';
 import { courseLabel } from '$lib/data/course-label';
-import { seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
-import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
-import CourseReviews from './CourseReviews.svelte';
 
 let {
 	course,
@@ -30,18 +27,7 @@ let closeButton = $state<HTMLButtonElement>();
 let isOverlay = $state(false);
 
 const moduleType = $derived(course ? courseModuleType(course) : undefined);
-const seasons = $derived(course?.seasons ?? []);
 const prerequisiteNote = $derived(course?.prerequisiteNote?.trim() ?? '');
-const alternateLabel = $derived.by(() => {
-	if (!course) return null;
-	const displayed = courseLabel(course);
-	if (displayed === course.label) {
-		return course.labelEn && course.labelEn !== course.label
-			? course.labelEn
-			: null;
-	}
-	return course.label;
-});
 
 function focusableElements(): HTMLElement[] {
 	return Array.from(
@@ -50,7 +36,9 @@ function focusableElements(): HTMLElement[] {
 		),
 	).filter(
 		(element) =>
-			!element.matches(':disabled') && element.getClientRects().length > 0,
+			element.tabIndex >= 0 &&
+			!element.matches(':disabled') &&
+			element.getClientRects().length > 0,
 	);
 }
 
@@ -126,19 +114,10 @@ async function navigateToPrerequisite(
 	onkeydown={handleKeydown}
 >
 	{#if course}
-		<div bind:this={content} class="min-h-0 flex-1 overflow-y-auto p-4 space-y-4">
-			<header class="flex items-start justify-between gap-3">
-				<div class="min-w-0">
-				<p class="font-mono text-xs font-semibold uppercase tracking-wide text-blue-600 dark:text-blue-400">
-					{course.id}
-				</p>
-				<h2 id={TITLE_ID} class="mt-1 text-lg font-semibold leading-snug text-text-primary">
-					{courseLabel(course)}
-				</h2>
-				{#if alternateLabel}
-					<p class="mt-1 text-xs text-text-secondary">{alternateLabel}</p>
-				{/if}
-				</div>
+		<div bind:this={content} class="min-h-0 flex-1 overflow-y-auto">
+			{#key course.id}
+			<CourseDetailContent {course} {moduleType} titleId={TITLE_ID}>
+				{#snippet close()}
 				<button
 					bind:this={closeButton}
 					type="button"
@@ -148,44 +127,8 @@ async function navigateToPrerequisite(
 				>
 					<span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
 				</button>
-			</header>
-
-			<dl class="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm text-text-secondary">
-				<div>
-					<dt class="sr-only">{m.course_details_ects()}</dt>
-					<dd class="font-semibold text-text-primary">{course.ects} ECTS</dd>
-				</div>
-				<div>
-					<dt class="sr-only">{m.course_details_type()}</dt>
-					<dd>
-						{#if moduleType}
-							<ModuleTypeBadge type={moduleType} />
-						{:else}
-							{m.course_details_unknown()}
-						{/if}
-					</dd>
-				</div>
-				<div class="w-full flex flex-wrap gap-x-2 text-xs">
-					<dt class="font-semibold text-text-primary">{m.course_details_seasons()}:</dt>
-					<dd>
-						{seasons.length > 0
-							? seasons.map((season) => seasonLabel(season)).join(' · ')
-							: m.course_details_unknown()}
-					</dd>
-				</div>
-			</dl>
-
-			{#if course.assessmentModes.length > 0}
-				<section class="border-t border-border-primary pt-3" aria-labelledby="course-detail-assessment">
-					<h3 id="course-detail-assessment" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
-						<span class="i-lucide-clipboard-check h-4 w-4 text-text-secondary" aria-hidden="true"></span>
-						{m.assessment_methods()}
-					</h3>
-					<div class="mt-2">
-						<AssessmentModeBadges modes={course.assessmentModes} />
-					</div>
-				</section>
-			{/if}
+				{/snippet}
+				{#snippet prerequisites()}
 
 			<section class="border-t border-border-primary pt-3" aria-labelledby="course-detail-prerequisites">
 				<h3 id="course-detail-prerequisites" class="flex items-center gap-2 text-sm font-semibold text-text-primary">
@@ -263,8 +206,8 @@ async function navigateToPrerequisite(
 					</p>
 				</section>
 			{/if}
-			{#key `${course.id}:${cloudSyncStore.user?.id ?? ''}`}
-				<CourseReviews courseId={course.id} />
+				{/snippet}
+			</CourseDetailContent>
 			{/key}
 		</div>
 	{:else}

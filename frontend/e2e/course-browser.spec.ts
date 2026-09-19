@@ -138,6 +138,9 @@ test('follows a prerequisite outside the result set without losing filters or re
 	}
 
 	await enterprise
+		.getByRole('tab', { name: 'Prerequisites', exact: true })
+		.click();
+	await enterprise
 		.getByRole('button', {
 			name: /Database Systems/,
 		})
