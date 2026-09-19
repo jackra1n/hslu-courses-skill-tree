@@ -26,6 +26,7 @@ function createFixture(): string {
 			{
 				Name: 'Alpha alt',
 				NameEnglish: 'Alpha old',
+				Language: 'D',
 				ShortName: 'A',
 				Ects: 2,
 				ModeOfAssessments: [
@@ -45,6 +46,7 @@ function createFixture(): string {
 			{
 				Name: 'Beta',
 				NameEnglish: '',
+				Language: 'D',
 				ShortName: 'B',
 				Ects: 3,
 				ModeOfAssessments: [
@@ -73,6 +75,7 @@ function createFixture(): string {
 			{
 				Name: 'Alpha neu',
 				NameEnglish: 'Alpha new',
+				Language: 'E',
 				ShortName: 'A',
 				Ects: 4,
 				ModeOfAssessments: [
@@ -193,6 +196,7 @@ describe('catalog normalization', () => {
 			id: 'A',
 			label: 'Alpha neu',
 			labelEn: 'Alpha new',
+			languages: ['en'],
 			ects: 4,
 			prerequisites: [
 				{
@@ -220,6 +224,7 @@ describe('catalog normalization', () => {
 			seasons: ['FS', 'HS'],
 		});
 		expect(catalog.courses[1]?.label).toBe('Beta');
+		expect(catalog.courses[1]?.languages).toEqual(['de']);
 		expect(catalog.courses[1]?.assessmentModes).toEqual([
 			'coursework',
 			'written_exam',
@@ -237,6 +242,40 @@ describe('catalog normalization', () => {
 			FS: 'Zusatzmodul',
 			default: 'Zusatzmodul',
 		});
+	});
+
+	test('keeps unknown latest languages unknown instead of inferring or backfilling', () => {
+		const root = createFixture();
+		writeJson(root, 'hslu_data/modules/F25_modules.json', {
+			data: [
+				{
+					ShortName: 'A',
+					Name: 'Alpha',
+					NameEnglish: 'Alpha English',
+					Ects: 4,
+					Language: 'D/unknown',
+				},
+				{
+					ShortName: 'B',
+					Name: 'Bilingual',
+					Ects: 3,
+					Language: ' D/E ',
+				},
+				{
+					ShortName: 'C',
+					Name: 'Malformed',
+					Ects: 1,
+					Language: ['D', 'E'],
+				},
+			],
+		});
+		const byId = new Map(
+			buildCatalog(root).courses.map((course) => [course.id, course]),
+		);
+		expect(byId.get('A')?.languages).toBeUndefined();
+		expect(byId.get('B')?.languages).toEqual(['de', 'en']);
+		expect(byId.get('C')?.languages).toBeUndefined();
+		expect(byId.get('D')?.languages).toBeUndefined();
 	});
 
 	test('normalizes and sorts programmes, templates, and ECTS', () => {

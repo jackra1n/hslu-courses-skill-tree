@@ -26,6 +26,8 @@ export type Course = {
 	id: string;
 	label: string;
 	labelEn?: string;
+	// source-backed teaching language codes; empty/undefined means unknown.
+	languages?: string[];
 	ects: number;
 	prerequisites: PrerequisiteRule[];
 	prerequisiteNote?: string;

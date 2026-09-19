@@ -62,6 +62,7 @@ type RawModulePrerequisite = {
 type RawModule = {
 	Name: string;
 	NameEnglish?: string | null;
+	Language?: string | null;
 	ShortName: string;
 	Ects: number;
 	ModuleOffers?: RawModuleOffer[];
@@ -237,6 +238,21 @@ function normaliseAssessmentModes(
 	});
 }
 
+function normaliseLanguages(
+	value: string | null | undefined,
+): string[] | undefined {
+	switch (value?.trim()) {
+		case 'D':
+			return ['de'];
+		case 'E':
+			return ['en'];
+		case 'D/E':
+			return ['de', 'en'];
+		default:
+			return undefined;
+	}
+}
+
 function readModuleEntry(value: unknown, path: string): RawModule {
 	const scope = `${path}: module entry`;
 	if (typeof value !== 'object' || value === null) {
@@ -268,6 +284,7 @@ function readModuleEntry(value: unknown, path: string): RawModule {
 	}
 
 	const nameEnglish = 'NameEnglish' in value ? value.NameEnglish : null;
+	const language = 'Language' in value ? value.Language : undefined;
 	const moduleOffers = 'ModuleOffers' in value ? value.ModuleOffers : undefined;
 	const prerequisites =
 		'Prerequisites' in value ? value.Prerequisites : undefined;
@@ -283,6 +300,7 @@ function readModuleEntry(value: unknown, path: string): RawModule {
 		Name: name,
 		Ects: ects,
 		NameEnglish: typeof nameEnglish === 'string' ? nameEnglish : null,
+		Language: typeof language === 'string' ? language : null,
 		// Offer/prerequisite shapes are read tolerantly: absent fields behave
 		// exactly like the legacy runtime, which consumed the JSON unvalidated.
 		ModuleOffers: Array.isArray(moduleOffers)
@@ -369,6 +387,7 @@ function loadCourses(dataRoot: string): CatalogCourse[] {
 			id: module.ShortName,
 			label: module.Name.trim(),
 			labelEn: module.NameEnglish?.trim() || undefined,
+			languages: normaliseLanguages(module.Language),
 			ects: module.Ects,
 			prerequisites: mapPrerequisites(module.Prerequisites ?? []),
 			prerequisiteNote: module.PrerequisiteNote || undefined,
