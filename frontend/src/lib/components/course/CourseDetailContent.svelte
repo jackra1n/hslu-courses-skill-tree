@@ -83,8 +83,10 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 <header class="px-5 pt-5 pb-4">
 	<div class="flex items-start justify-between gap-2">
 		<div class="min-w-0">
-			<p class="font-mono text-xs font-semibold tracking-wide text-blue-600 dark:text-blue-400">{course.id}</p>
-			<h2 id={titleId} class="mt-2 text-xl font-semibold leading-snug text-text-primary break-words">{courseLabel(course)}</h2>
+			{#if !elective}
+				<p class="font-mono text-xs font-semibold tracking-wide text-blue-600 dark:text-blue-400">{course.id}</p>
+			{/if}
+			<h2 id={titleId} class="text-xl font-semibold leading-snug text-text-primary break-words" class:mt-2={!elective}>{courseLabel(course)}</h2>
 			{#if alternateLabel}<p class="mt-1 text-sm leading-relaxed text-text-secondary">{alternateLabel}</p>{/if}
 		</div>
 		{@render close()}
