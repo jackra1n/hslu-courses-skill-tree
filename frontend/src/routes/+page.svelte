@@ -1,6 +1,8 @@
 <script lang="ts">
 import { SvelteFlowProvider } from '@xyflow/svelte';
 import { onMount } from 'svelte';
+import { MediaQuery } from 'svelte/reactivity';
+import { slide } from 'svelte/transition';
 import SkillTreeCanvas from '$lib/components/canvas/SkillTreeCanvas.svelte';
 import Header from '$lib/components/header/Header.svelte';
 import CourseDetailsPanel from '$lib/components/sidebar/CourseDetailsPanel.svelte';
@@ -22,6 +24,7 @@ import { hasSelection, uiStore } from '$lib/stores/uiStore.svelte';
 type StartupPhase = 'catalog' | 'progress' | 'ready' | 'catalog-error';
 
 let legendOpen = $state(false);
+const reducedMotion = new MediaQuery('(prefers-reduced-motion: reduce)');
 let phase = $state<StartupPhase>('catalog');
 
 async function startFromCatalog(): Promise<void> {
@@ -123,11 +126,13 @@ $effect(() => {
             <div class="i-lucide-chevron-up h-4 w-4 text-text-secondary"></div>
           {/if}
         </button>
-        <div id="mobile-status-legend" hidden={!legendOpen} class="max-h-80 overflow-y-auto px-4 pb-4 pt-3 border-b border-border-primary">
+        {#if legendOpen}
+        <div id="mobile-status-legend" transition:slide={{ duration: reducedMotion.current ? 0 : 200 }} class="max-h-80 overflow-y-auto px-4 pb-4 pt-3 border-b border-border-primary">
           <div class="[&>div:first-child]:border-t-0 [&>div:first-child]:pt-0">
             <StatusLegend />
           </div>
         </div>
+        {/if}
       </div>
 
     </div>
