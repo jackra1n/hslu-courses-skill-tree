@@ -1,16 +1,25 @@
 {
-  "date": "2026-09-19",
+  "date": "2026-09-20",
+  "timeZone": "Europe/Zurich",
   "productRepository": "https://github.com/jackra1n/hslu-courses-skill-tree",
-  "productRevision": "ba7b5a5",
+  "productRevision": "1cc856d",
   "lighthouseVersion": "13.5.0",
+  "deployment": {
+    "revision": "1cc856d1a0225f9a390eabe8f7b2c0564d1fa087",
+    "url": "https://hsluskilltree.com",
+    "workflow": "https://github.com/jackra1n/hslu-courses-skill-tree/actions/runs/35475887113",
+    "conclusion": "success",
+    "ci": "https://github.com/jackra1n/hslu-courses-skill-tree/actions/runs/35475729161"
+  },
   "environment": {
     "os": "Fedora 44 x86_64",
     "cpu": "AMD Ryzen 5 7600X",
     "browser": "Chrome for Testing 153.0.8010.12",
-    "serving": "Production frontend build served by Wrangler test harness with the real API Worker and isolated migrated D1 storage; Node.js server runtime.",
-    "navigation": "Unauthenticated cold navigation with Lighthouse storage reset. Four runs executed sequentially; the summary reports the four selected categories.",
-    "scope": "Local laboratory measurements, not deployed production or real-user field data.",
-    "tutorial": "Unmodified Driver.js 1.8.0; automatic first-visit tutorial retained. The desktop Skill Tree audit reports the upstream invalid aria-expanded attribute on its dummy highlight element."
+    "chromePath": "/home/jackra1n/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome",
+    "serving": "Deployed HTTPS application: GitHub Pages frontend, Cloudflare Worker API and production D1.",
+    "navigation": "Unauthenticated cold navigation with Lighthouse storage reset. One run per route/profile, executed sequentially. Default simulated throttling; mobile defaults and desktop preset.",
+    "scope": "Laboratory measurements of production, not real-user field data. Not directly comparable with the previous localhost measurements.",
+    "tutorial": "First-visit welcome retained without dismissal or starting the guided tour. Driver.js 1.8.0 remains unmodified; both Skill Tree profiles report invalid aria-expanded on the dummy highlight element."
   },
   "averageDefinition": "Arithmetic mean of performance, accessibility, best-practices and seo. Agentic Browsing is excluded; the assessment focuses on human use.",
   "runs": [
@@ -19,14 +28,16 @@
       "label": "Course Browser",
       "profile": "Mobil",
       "route": "/courses",
-      "fetchTime": "2026-09-19T11:17:56.022Z",
+      "url": "https://hsluskilltree.com/courses",
+      "fetchTime": "2026-09-19T23:22:24.585Z",
       "scores": {
-        "performance": 90,
+        "performance": 89,
         "accessibility": 100,
         "best-practices": 100,
         "seo": 100
       },
-      "average": 97.5,
+      "average": 97.25,
+      "throttlingMethod": "simulate",
       "throttling": {
         "rttMs": 150,
         "throughputKbps": 1638.4,
@@ -36,19 +47,22 @@
         "cpuSlowdownMultiplier": 4
       },
       "metrics": {
-        "fcpMs": 1963.08,
-        "lcpMs": 2968.6515,
-        "tbtMs": 184,
+        "fcpMs": 2310.8424999999997,
+        "lcpMs": 3173.7374999999997,
+        "tbtMs": 154,
         "cls": 0
       },
-      "command": "bunx lighthouse@13.5.0 http://127.0.0.1:43691/courses --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=courses-mobile.json --disable-full-page-screenshot --no-enable-error-reporting --quiet"
+      "accessibilityFindings": [],
+      "warnings": [],
+      "command": "CHROME_PATH=\"/home/jackra1n/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome\" bunx lighthouse@13.5.0 https://hsluskilltree.com/courses --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=courses-mobile.json --disable-full-page-screenshot --no-enable-error-reporting --quiet"
     },
     {
       "name": "courses-desktop",
       "label": "Course Browser",
       "profile": "Desktop",
       "route": "/courses",
-      "fetchTime": "2026-09-19T11:18:06.990Z",
+      "url": "https://hsluskilltree.com/courses",
+      "fetchTime": "2026-09-19T23:22:35.718Z",
       "scores": {
         "performance": 100,
         "accessibility": 100,
@@ -56,6 +70,7 @@
         "seo": 100
       },
       "average": 100,
+      "throttlingMethod": "simulate",
       "throttling": {
         "rttMs": 40,
         "throughputKbps": 10240,
@@ -65,26 +80,30 @@
         "cpuSlowdownMultiplier": 1
       },
       "metrics": {
-        "fcpMs": 456.2568,
-        "lcpMs": 712.4775999999999,
+        "fcpMs": 534.8215,
+        "lcpMs": 768.5615,
         "tbtMs": 0,
-        "cls": 0
+        "cls": 0.00001533082333712751
       },
-      "command": "bunx lighthouse@13.5.0 http://127.0.0.1:43691/courses --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=courses-desktop.json --disable-full-page-screenshot --no-enable-error-reporting --quiet --preset=desktop"
+      "accessibilityFindings": [],
+      "warnings": [],
+      "command": "CHROME_PATH=\"/home/jackra1n/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome\" bunx lighthouse@13.5.0 https://hsluskilltree.com/courses --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=courses-desktop.json --disable-full-page-screenshot --no-enable-error-reporting --quiet --preset=desktop"
     },
     {
       "name": "skill-tree-mobile",
       "label": "Skill Tree",
       "profile": "Mobil",
       "route": "/",
-      "fetchTime": "2026-09-19T11:18:17.974Z",
+      "url": "https://hsluskilltree.com/",
+      "fetchTime": "2026-09-19T23:22:46.802Z",
       "scores": {
-        "performance": 96,
-        "accessibility": 100,
+        "performance": 95,
+        "accessibility": 94,
         "best-practices": 100,
         "seo": 100
       },
-      "average": 99,
+      "average": 97.25,
+      "throttlingMethod": "simulate",
       "throttling": {
         "rttMs": 150,
         "throughputKbps": 1638.4,
@@ -94,26 +113,42 @@
         "cpuSlowdownMultiplier": 4
       },
       "metrics": {
-        "fcpMs": 2111.80665,
-        "lcpMs": 2419.67775,
-        "tbtMs": 48,
-        "cls": 0.001248120705764205
+        "fcpMs": 2426.728,
+        "lcpMs": 2436.728,
+        "tbtMs": 49,
+        "cls": 0.00007985392422408711
       },
-      "command": "bunx lighthouse@13.5.0 http://127.0.0.1:43691/ --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=skill-tree-mobile.json --disable-full-page-screenshot --no-enable-error-reporting --quiet"
+      "accessibilityFindings": [
+        {
+          "id": "aria-allowed-attr",
+          "title": "`[aria-*]` attributes do not match their roles",
+          "elements": [
+            {
+              "selector": "body.driver-active > div#driver-dummy-element",
+              "label": "body.driver-active > div#driver-dummy-element",
+              "explanation": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"true\""
+            }
+          ]
+        }
+      ],
+      "warnings": [],
+      "command": "CHROME_PATH=\"/home/jackra1n/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome\" bunx lighthouse@13.5.0 https://hsluskilltree.com/ --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=skill-tree-mobile.json --disable-full-page-screenshot --no-enable-error-reporting --quiet"
     },
     {
       "name": "skill-tree-desktop",
       "label": "Skill Tree",
       "profile": "Desktop",
       "route": "/",
-      "fetchTime": "2026-09-19T11:18:28.355Z",
+      "url": "https://hsluskilltree.com/",
+      "fetchTime": "2026-09-19T23:22:57.309Z",
       "scores": {
         "performance": 100,
-        "accessibility": 94,
+        "accessibility": 92,
         "best-practices": 100,
         "seo": 100
       },
-      "average": 98.5,
+      "average": 98,
+      "throttlingMethod": "simulate",
       "throttling": {
         "rttMs": 40,
         "throughputKbps": 10240,
@@ -123,12 +158,37 @@
         "cpuSlowdownMultiplier": 1
       },
       "metrics": {
-        "fcpMs": 458.4208,
-        "lcpMs": 709.5486000000001,
+        "fcpMs": 535.8280000000001,
+        "lcpMs": 805.98,
         "tbtMs": 0,
-        "cls": 0
+        "cls": 0.00001316872427983539
       },
-      "command": "bunx lighthouse@13.5.0 http://127.0.0.1:43691/ --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=skill-tree-desktop.json --disable-full-page-screenshot --no-enable-error-reporting --quiet --preset=desktop"
+      "accessibilityFindings": [
+        {
+          "id": "aria-allowed-attr",
+          "title": "`[aria-*]` attributes do not match their roles",
+          "elements": [
+            {
+              "selector": "body.driver-active > div#driver-dummy-element",
+              "label": "body.driver-active > div#driver-dummy-element",
+              "explanation": "Fix all of the following:\n  ARIA attribute is not allowed: aria-expanded=\"true\""
+            }
+          ]
+        },
+        {
+          "id": "heading-order",
+          "title": "Heading elements are not in a sequentially-descending order",
+          "elements": [
+            {
+              "selector": "div.p-6 > div.hidden > div.border-t > h3.text-sm",
+              "label": "Status Legend",
+              "explanation": "Fix any of the following:\n  Heading order invalid"
+            }
+          ]
+        }
+      ],
+      "warnings": [],
+      "command": "CHROME_PATH=\"/home/jackra1n/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome\" bunx lighthouse@13.5.0 https://hsluskilltree.com/ --chrome-flags=\"--headless --no-sandbox\" --output=json --output-path=skill-tree-desktop.json --disable-full-page-screenshot --no-enable-error-reporting --quiet --preset=desktop"
     }
   ]
 }

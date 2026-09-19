@@ -83,7 +83,7 @@ Die öffentliche Ausgabe enthält keine Namen oder Benutzer-IDs. Intern bleibt d
 
 = 5. Verteilungssicht
 
-Die Anwendung nutzt die bestehende Hosting-Architektur: GitHub Pages liefert den statischen SvelteKit-Build aus. Anfragen an `hsluskilltree.com/api/*` verarbeitet der Cloudflare Worker. Dieser greift über ein Binding auf D1 zu; der Browser hat keinen direkten Datenbankzugang. GitHub ist zugleich der externe OAuth-Anbieter.
+Die Anwendung ist unter #link("https://hsluskilltree.com")[hsluskilltree.com] veröffentlicht; der Course Browser ist über #link("https://hsluskilltree.com/courses")[/courses] erreichbar. GitHub Pages liefert den statischen SvelteKit-Build aus. Anfragen an `hsluskilltree.com/api/*` verarbeitet der Cloudflare Worker. Dieser greift über ein Binding auf D1 zu; der Browser hat keinen direkten Datenbankzugang. GitHub ist zugleich der externe OAuth-Anbieter.
 
 GitHub Actions prüft Übersetzungen, Typen, Linting und alle drei Testebenen. Das Deployment veröffentlicht Frontend und Worker und führt die versionierten D1-Migrationen aus. WEBLAB ergänzt diese Pipeline um die Browserprüfungen, statt eine separate Deployment-Infrastruktur einzuführen.
 
@@ -111,7 +111,7 @@ Die E2E-Tests verwenden das Produktionsbundle, den echten Worker, isolierte migr
 #let quality = json("quality/summary.json")
 #let category-keys = ("performance", "accessibility", "best-practices", "seo")
 
-Lighthouse #quality.lighthouseVersion, gemessen am 19. September 2026 am lokal ausgelieferten Produktionsbundle, Produktstand #raw(quality.productRevision). Die Messung liegt vor der anschliessenden UI-/UX-Überarbeitung. Je Ansicht wurde ein mobiler und ein Desktop-Erstaufruf ohne gespeicherte Einstellungen gemessen. Umgebung und Befehle stehen in `quality/summary.json`.
+Lighthouse #quality.lighthouseVersion, gemessen am 20. September 2026 an der veröffentlichten Anwendung auf #link(quality.deployment.url)[hsluskilltree.com], Produktstand #raw(quality.productRevision). Nach erfolgreichem Deployment wurde je Ansicht ein mobiler und ein Desktop-Erstaufruf ohne gespeicherte Einstellungen gemessen, nacheinander und mit den jeweiligen Lighthouse-Standardprofilen. Umgebung, Deployment-Nachweis und Befehle stehen in `quality/summary.json`.
 
 #block(breakable: false, table(
   columns: (2.9cm, 1fr, 1fr, 1fr, 1fr, 1fr),
@@ -126,7 +126,7 @@ Lighthouse #quality.lighthouseVersion, gemessen am 19. September 2026 am lokal a
 
 Die Bewertung konzentriert sich auf die Nutzung durch Menschen. Agentic Browsing wird nicht einbezogen. Der Mittelwert der vier ausgewerteten Kategorien liegt auf Desktop und Mobil jeweils über 90.
 
-*Grenzen:* Im gemessenen Stand erreichte der mobile Course Browser einen LCP von 2.97 s und lag damit über dem guten Bereich von höchstens 2.5 s. Ein ungültiges ARIA-Attribut im Driver.js-Tutorial führte beim Skill Tree zu einer Accessibility-Wertung von 94 auf Desktop. Die Messungen sind lokale Labordaten, keine Felddaten oder vollständige WCAG-Prüfung. Automatisierte Browserprüfungen verwenden Chromium, keine physischen Mobilgeräte.
+*Grenzen:* Der mobile Course Browser erreicht 89 Performance-Punkte bei einem LCP von 3.17 s und 154 ms Total Blocking Time. Beim Skill Tree meldet Lighthouse ein ungültiges ARIA-Attribut im Driver.js-Willkommensdialog sowie auf Desktop zusätzlich eine übersprungene Überschriftenebene bei der Statuslegende; die Accessibility-Werte betragen 94 mobil und 92 auf Desktop. Die Einzelmessungen erfassen den Erstaufruf, nicht alle Dialoge oder Tutorial-Schritte. Es sind Labordaten der produktiven Website, keine Felddaten oder vollständige WCAG-Prüfung. Sie sind wegen der anderen Auslieferungsumgebung nicht direkt mit den früheren lokalen Messungen vergleichbar.
 
 = 9. Reflexion und Fazit
 
