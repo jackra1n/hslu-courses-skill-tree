@@ -226,7 +226,8 @@ function normaliseAssessmentModes(
 	if (!Array.isArray(value)) {
 		fail(scope, 'ModeOfAssessments must be an array');
 	}
-	return value.map((rawMode, index) => {
+	const modes = new Set<AssessmentMode>();
+	for (const [index, rawMode] of value.entries()) {
 		if (typeof rawMode !== 'string') {
 			fail(scope, `ModeOfAssessments[${index}] must be a string`);
 		}
@@ -234,8 +235,9 @@ function normaliseAssessmentModes(
 		if (!mode) {
 			fail(scope, `unknown assessment mode "${rawMode}"`);
 		}
-		return mode;
-	});
+		modes.add(mode);
+	}
+	return [...modes];
 }
 
 function normaliseLanguages(

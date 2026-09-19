@@ -210,11 +210,9 @@ describe('catalog normalization', () => {
 			assessmentLevelPassed: false,
 			assessmentModes: [
 				'coursework',
-				'coursework',
 				'written_exam',
 				'oral_exam',
 				'electronic_exam',
-				'written_exam',
 			],
 			typeByPlanSeason: {
 				HS: 'Erweiterungsmodul',
