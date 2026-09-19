@@ -1,6 +1,6 @@
 <script lang="ts">
 import { type Driver, type DriveStep, driver } from 'driver.js';
-import { onDestroy, onMount, tick } from 'svelte';
+import { flushSync, onDestroy, onMount, tick } from 'svelte';
 import 'driver.js/dist/driver.css';
 import * as m from '$lib/paraglide/messages';
 import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
@@ -10,7 +10,6 @@ const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
 
 // Built per run so the popovers pick up the active locale.
 function buildSteps(): DriveStep[] {
-	const mobileNavigation = !window.matchMedia('(min-width: 1024px)').matches;
 	return [
 		{
 			popover: {
@@ -76,14 +75,17 @@ function buildSteps(): DriveStep[] {
 			},
 		},
 		{
-			element: mobileNavigation
-				? '[data-tour="navigation"]'
-				: '[data-tour="account"]',
+			element: '[data-tour="course-browser"]',
+			popover: {
+				title: m.tutorial_browser_title(),
+				description: m.tutorial_browser_description(),
+			},
+		},
+		{
+			element: '[data-tour="account"]',
 			popover: {
 				title: m.tutorial_sync_title(),
-				description: mobileNavigation
-					? m.tutorial_sync_mobile()
-					: m.tutorial_sync_description(),
+				description: m.tutorial_sync_description(),
 			},
 		},
 		{
@@ -125,6 +127,7 @@ function waitForNode(selector: string, timeout: number): Promise<void> {
 }
 
 function finishTutorial() {
+	uiStore.setTutorialNavigationOpen(false);
 	// onDestroyed can be skipped before the first step animation settles.
 	driverInstance?.destroy();
 	driverInstance = null;
@@ -166,6 +169,15 @@ async function runTutorial() {
 			stageRadius: 8,
 			popoverClass: 'hslu-tutorial-popover',
 			steps: buildSteps(),
+			onHighlightStarted: (_element, step) => {
+				// reveal menu targets before driver.js measures their highlight.
+				flushSync(() =>
+					uiStore.setTutorialNavigationOpen(
+						step.element === '[data-tour="course-browser"]' ||
+							step.element === '[data-tour="account"]',
+					),
+				);
+			},
 			onDestroyStarted: finishTutorial,
 		});
 

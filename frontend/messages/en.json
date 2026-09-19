@@ -319,7 +319,8 @@
 	"tutorial_progress_description": "Open the ECTS summary to see passed, completed, and failed credits overall and by module type.",
 	"tutorial_sync_title": "Sync across devices",
 	"tutorial_sync_description": "Sign in with GitHub to sync your progress and study plan between devices. Already signed in? Review the sync status and sign out from this menu.",
-	"tutorial_sync_mobile": "Open Menu, then Sign in to sync your progress with GitHub. If you are already signed in, open Account to review sync status or sign out.",
+	"tutorial_browser_title": "Find courses",
+	"tutorial_browser_description": "Browse courses beyond your current study plan. Search and filter the catalog, then open a course to review its details and prerequisites.",
 	"tutorial_open_source_title": "Open source",
 	"tutorial_open_source_description": "This project is open source. <a class=\"hslu-github-link\" href=\"https://github.com/jackra1n/hslu-courses-skill-tree\" target=\"_blank\" rel=\"noreferrer\"><span class=\"i-lucide-github h-4 w-4\" aria-hidden=\"true\"></span>jackra1n/hslu-courses-skill-tree</a> Curricula are maintained by hand, so double-check anything important against official HSLU sources, and please <a href=\"https://github.com/jackra1n/hslu-courses-skill-tree/issues\" target=\"_blank\" rel=\"noreferrer\">open an issue</a> if something looks wrong."
 }

@@ -3,6 +3,7 @@ import { onMount, tick } from 'svelte';
 import { getEctsRequirements } from '$lib/data/ects-requirements';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
+import { tutorialNavigationOpen } from '$lib/stores/uiStore.svelte';
 import { measureHeaderHeight } from '$lib/utils/header-height';
 import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
 import AccountMenu from './AccountMenu.svelte';
@@ -12,6 +13,7 @@ import TemplateSelector from './TemplateSelector.svelte';
 let programDropdownOpen = $state(false);
 let activeSidebar = $state<'settings' | 'analytics' | null>(null);
 let mobileMenuOpen = $state(false);
+const navigationOpen = $derived(mobileMenuOpen || tutorialNavigationOpen());
 let accountMenuOpen = $state(false);
 let menuButton: HTMLButtonElement;
 let programButton: HTMLButtonElement;
@@ -156,14 +158,14 @@ const ectsTooltip = $derived(
     </button>
 
     <button bind:this={menuButton} type="button" data-tour="navigation" onclick={toggleMobileMenu}
-      aria-label={activeSidebar || programDropdownOpen ? m.common_close() : m.header_menu()} aria-expanded={mobileMenuOpen || activeSidebar !== null || programDropdownOpen} aria-controls={mobileMenuOpen ? navigationId : undefined}
+      aria-label={activeSidebar || programDropdownOpen ? m.common_close() : m.header_menu()} aria-expanded={navigationOpen || activeSidebar !== null || programDropdownOpen} aria-controls={navigationOpen ? navigationId : undefined}
       class="header-navigation program-dropdown flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border-primary text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:hidden">
-      <span class={`${mobileMenuOpen || activeSidebar || programDropdownOpen ? 'i-lucide-x' : 'i-lucide-menu'} h-5 w-5`} aria-hidden="true"></span>
+      <span class={`${navigationOpen || activeSidebar || programDropdownOpen ? 'i-lucide-x' : 'i-lucide-menu'} h-5 w-5`} aria-hidden="true"></span>
     </button>
 
     <nav bind:this={navigation} id={navigationId} aria-label={m.header_menu()}
-      class={`header-navigation ${mobileMenuOpen ? 'flex' : 'hidden'} fixed inset-x-3 top-[var(--app-header-height)] z-50 max-h-[calc(100dvh-var(--app-header-height)-12px)] flex-col gap-1 overflow-y-auto rounded-lg border border-border-primary bg-bg-primary p-2 shadow-xl lg:contents`}>
-      <a href="/courses" onclick={closeMobileMenu}
+      class={`header-navigation ${navigationOpen ? 'flex' : 'hidden'} fixed inset-x-3 top-[var(--app-header-height)] z-50 max-h-[calc(100dvh-var(--app-header-height)-12px)] flex-col gap-1 overflow-y-auto rounded-lg border border-border-primary bg-bg-primary p-2 shadow-xl lg:contents`}>
+      <a data-tour="course-browser" href="/courses" onclick={closeMobileMenu}
         class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:order-first lg:min-h-9 lg:gap-2 lg:border lg:border-border-primary">
         <span class="i-lucide-library h-4 w-4 shrink-0" aria-hidden="true"></span>
         {m.browser_title()}

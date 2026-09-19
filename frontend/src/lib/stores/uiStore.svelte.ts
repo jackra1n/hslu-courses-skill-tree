@@ -8,6 +8,7 @@ let _showMoreOptions = $state(false);
 let _showCourseTypeBadges = $state(false);
 let _showProgramSelector = $state(false);
 let _tutorialRequested = $state(false);
+let _tutorialNavigationOpen = $state(false);
 
 const _hasSelection = $derived(_selection !== null);
 const _isElectiveSlot = $derived(
@@ -37,6 +38,9 @@ export function showProgramSelector() {
 }
 export function tutorialRequested() {
 	return _tutorialRequested;
+}
+export function tutorialNavigationOpen() {
+	return _tutorialNavigationOpen;
 }
 export function hasSelection() {
 	return _hasSelection;
@@ -88,6 +92,10 @@ export const uiStore = {
 
 	consumeTutorialRequest() {
 		_tutorialRequested = false;
+	},
+
+	setTutorialNavigationOpen(value: boolean) {
+		_tutorialNavigationOpen = value;
 	},
 
 	init() {
