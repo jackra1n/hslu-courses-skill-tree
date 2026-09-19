@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"lib": ["ESNext", "DOM"],
+		"types": ["node"],
+		"strict": true,
+		"skipLibCheck": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true
+	},
+	"include": ["playwright.config.ts", "e2e/**/*.ts", "worker/env.d.ts"]
+}

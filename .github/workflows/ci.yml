@@ -44,8 +44,25 @@ jobs:
       - name: Check Worker types
         run: bun run worker:check
 
+      - name: Check end-to-end test types
+        run: bun run e2e:check
+
       - name: Test Worker
         run: bun run worker:test
 
-      - name: Build
-        run: bun run build
+      - name: Install Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Build and test browser flows
+        run: bun run e2e:test
+
+      - name: Upload browser test reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 14
+          if-no-files-found: ignore

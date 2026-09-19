@@ -51,7 +51,7 @@ An interactive skill tree visualization tool for university courses. Track your 
 
 ## Development
 
-Install dependencies:
+From `frontend/`, install dependencies:
 
 ```sh
 bun install
@@ -65,7 +65,20 @@ bun run dev --open
 
 ### Tests
 
-From `frontend/`, run `bun run web:test` for all frontend tests in `test/`, including catalog, filtering, and course-readiness behavior. Run `bun run worker:test` for Worker/D1 integration tests. CI runs both suites.
+Run `bun run web:test` for the frontend unit tests in `test/` and `bun run worker:test` for Worker/D1 integration tests.
+
+For browser tests, install Chromium once, then run the Playwright suite:
+
+```sh
+bunx playwright install chromium
+bun run e2e:test
+```
+
+`e2e:test` builds the production frontend and runs the same user flows on desktop and mobile Chromium. Each test gets a fresh browser context and isolated local D1 storage using Wrangler's test harness, the real Worker, and the real database migrations. No running development server, production credentials, or existing development database is needed. The test-only frontend Worker serves the compiled assets and translates its ephemeral loopback origin to the API's existing development origin; production origin checks stay unchanged.
+
+The suite covers combined filters, prerequisite navigation and focus, keyboard dropdown selection, review CRUD across reloads, guest/other-user controls, and preserving a draft after a failed write. Authenticated cases provision real Better Auth sessions with test users and signed cookies. They do not automate GitHub OAuth; the external login round trip still needs a release smoke check.
+
+Run `bun run e2e:check` to type-check the browser tests. After changing test Worker bindings, regenerate their types with `bun run e2e:types`. CI runs all three test suites and uploads the Playwright HTML report; failed tests include screenshots, traces, and Worker logs. Local reports are in `frontend/playwright-report/` and `frontend/test-results/`.
 
 ### Selection controls
 

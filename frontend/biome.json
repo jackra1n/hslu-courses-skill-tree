@@ -10,6 +10,7 @@
 		"includes": [
 			"**",
 			"!**/worker/env.d.ts",
+			"!**/e2e/env.d.ts",
 			"!**/hslu_data",
 			"!**/templates",
 			"!src/lib/paraglide"
