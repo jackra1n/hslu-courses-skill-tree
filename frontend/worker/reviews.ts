@@ -1,5 +1,6 @@
 import { courses } from '../src/lib/data/catalog.generated.json';
 import type {
+	CourseReviewScore,
 	CourseReviewsResponse,
 	Review,
 	ReviewInput,
@@ -61,6 +62,16 @@ async function readReviewBody(
 const REVIEW_COLUMNS = `id, course_id AS courseId,
 	recommendation, content_interest AS contentInterest, difficulty, workload,
 	text, created_at AS createdAt, updated_at AS updatedAt`;
+
+export async function getCourseReviewScores(db: D1Database): Promise<Response> {
+	const { results: scores } = await db
+		.prepare(
+			`SELECT course_id AS courseId, AVG(recommendation) AS recommendation,
+				COUNT(*) AS count FROM reviews GROUP BY course_id`,
+		)
+		.all<CourseReviewScore>();
+	return json({ scores }, 200);
+}
 
 export async function getCourseReviews(
 	courseId: string,

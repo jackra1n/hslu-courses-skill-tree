@@ -2,6 +2,7 @@
 import { onMount, tick } from 'svelte';
 import AccountMenu from '$lib/components/header/AccountMenu.svelte';
 import SettingsSidebar from '$lib/components/sidebar/SettingsSidebar.svelte';
+import Dropdown from '$lib/components/ui/Dropdown.svelte';
 import Tooltip from '$lib/components/ui/Tooltip.svelte';
 import { loadCatalog } from '$lib/data/catalog-loader';
 import type {
@@ -16,11 +17,13 @@ import {
 	filterCourses,
 	isFiltering,
 } from '$lib/data/course-filters';
+import { courseLabel } from '$lib/data/course-label';
 import { nextCourseIds } from '$lib/data/course-readiness';
 import {
 	collectAppData,
 	hasMeaningfulStoredAppData,
 } from '$lib/data/persistence';
+import { fetchCourseReviewScores } from '$lib/data/review-client';
 import { type Season } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
@@ -51,11 +54,49 @@ let assessmentModes = $state<AssessmentMode[]>([]);
 let ects = $state<EctsRange>(EMPTY_FILTERS.ects);
 let nextOnly = $state(false);
 let sidebarOpen = $state(false);
+type CourseSort = 'name-asc' | 'name-desc' | 'rating-desc' | 'rating-asc';
+let sort = $state<CourseSort>('name-asc');
+let reviewScores = $state<Record<string, number | null>>({});
+let scoresLoaded = $state(false);
+let scoresLoading = $state(false);
+let scoresFailed = $state(false);
+const scoresController = new AbortController();
+const sortOptions = $derived<
+	{ value: CourseSort; label: string; disabled?: boolean }[]
+>([
+	{ value: 'name-asc', label: m.browser_sort_name_asc() },
+	{ value: 'name-desc', label: m.browser_sort_name_desc() },
+	{
+		value: 'rating-desc',
+		label: m.browser_sort_rating_desc(),
+		disabled: !scoresLoaded,
+	},
+	{
+		value: 'rating-asc',
+		label: m.browser_sort_rating_asc(),
+		disabled: !scoresLoaded,
+	},
+]);
 const filters = $derived({ query, season, moduleTypes, assessmentModes, ects });
 const courseById = $derived(
 	new Map(courses.map((course) => [course.id, course])),
 );
-const catalogFilteredCourses = $derived(filterCourses(courses, filters));
+const sortedCourses = $derived(
+	courses.toSorted((a, b) => {
+		if (sort === 'rating-desc' || sort === 'rating-asc') {
+			const aScore = reviewScores[a.id] ?? null;
+			const bScore = reviewScores[b.id] ?? null;
+			if (aScore !== bScore) {
+				if (aScore === null) return 1;
+				if (bScore === null) return -1;
+				return sort === 'rating-desc' ? bScore - aScore : aScore - bScore;
+			}
+		}
+		const byName = courseLabel(a).localeCompare(courseLabel(b));
+		return sort === 'name-desc' ? -byName : byName;
+	}),
+);
+const catalogFilteredCourses = $derived(filterCourses(sortedCourses, filters));
 const nextCourseIdSet = $derived.by(() => {
 	if (!courseStore) return new Set<string>();
 	const plan = courseStore.studyPlan;
@@ -131,6 +172,29 @@ async function closeCourseDetails(): Promise<void> {
 	selectedTrigger = null;
 }
 
+async function loadReviewScores(): Promise<void> {
+	if (scoresLoading) return;
+	scoresLoading = true;
+	scoresFailed = false;
+	try {
+		const scores = await fetchCourseReviewScores(scoresController.signal);
+		if (scoresController.signal.aborted) return;
+		// a detail-panel read may have returned a fresher summary while this
+		// initial aggregate request was in flight, including a deleted review.
+		reviewScores = {
+			...Object.fromEntries(
+				scores.map((score) => [score.courseId, score.recommendation]),
+			),
+			...reviewScores,
+		};
+		scoresLoaded = true;
+	} catch {
+		if (!scoresController.signal.aborted) scoresFailed = true;
+	} finally {
+		if (!scoresController.signal.aborted) scoresLoading = false;
+	}
+}
+
 async function load(): Promise<void> {
 	phase = 'loading';
 	try {
@@ -164,7 +228,9 @@ $effect(() => {
 });
 
 onMount(() => {
-	load();
+	void load();
+	void loadReviewScores();
+	return () => scoresController.abort();
 });
 </script>
 
@@ -276,6 +342,20 @@ onMount(() => {
 							aria-hidden="true"
 						></span>
 					</button>
+					<div class="mt-3 flex items-center gap-3">
+						<label for="course-sort" class="shrink-0 text-sm font-medium text-text-secondary">{m.browser_sort()}</label>
+						<div class="min-w-0 flex-1">
+							<Dropdown id="course-sort" label={m.browser_sort()} options={sortOptions} selected={sort} onSelect={(value) => { sort = value; }} />
+						</div>
+					</div>
+					{#if scoresLoading}
+						<p role="status" class="mt-2 text-xs text-text-secondary">{m.browser_scores_loading()}</p>
+					{:else if scoresFailed}
+						<p role="status" class="mt-2 text-xs text-text-secondary">
+							{m.browser_scores_error()}
+							<button type="button" onclick={loadReviewScores} class="ml-1 min-h-11 underline focus-visible:outline-blue-500">{m.common_retry()}</button>
+						</p>
+					{/if}
 				</div>
 				<div class="{sidebarOpen ? 'block' : 'hidden'} mt-3 max-h-[45dvh] shrink-0 overflow-y-auto lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:mt-0 lg:block lg:min-h-0 lg:max-h-none lg:h-full">
 					<div>
@@ -344,6 +424,7 @@ onMount(() => {
 					{courseById}
 					onClose={closeCourseDetails}
 					onNavigate={(course) => (selectedCourse = course)}
+					onReviewSummary={(courseId, summary) => { reviewScores[courseId] = summary.recommendation; }}
 				/>
 			</div>
 		</main>

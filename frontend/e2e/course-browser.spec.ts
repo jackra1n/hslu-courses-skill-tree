@@ -25,6 +25,186 @@ async function collapseFilters(page: Page, isMobile: boolean) {
 	await expect(page.getByRole('combobox', { name: 'Semester' })).toBeHidden();
 }
 
+async function seedReview(
+	page: Page,
+	origin: string,
+	courseId: string,
+	recommendation: number,
+) {
+	const response = await page.request.post(`/api/courses/${courseId}/reviews`, {
+		headers: { Origin: origin },
+		data: {
+			recommendation,
+			contentInterest: 6 - recommendation,
+			difficulty: 6 - recommendation,
+			workload: 3,
+			text: '',
+		},
+	});
+	expect(response.status()).toBe(201);
+}
+
+async function expectCourseOrder(page: Page, courseIds: string[]) {
+	await expect(page.getByRole('list').getByRole('button')).toContainText(
+		courseIds.map((id) => new RegExp(`\\b${id} ·`)),
+	);
+	await expect(page.getByRole('list').getByRole('button')).toHaveCount(
+		courseIds.length,
+	);
+}
+
+test('sorts courses by name or average recommendation, retaining order through search and filters', async ({
+	page,
+	login,
+	backend,
+	context,
+	isMobile,
+}) => {
+	await login('First reviewer');
+	await seedReview(page, backend.url.origin, 'CPLAB', 1);
+	await seedReview(page, backend.url.origin, 'ENLAB_MM', 4);
+	await seedReview(page, backend.url.origin, 'WEBLAB', 3);
+	await login('Second reviewer');
+	await seedReview(page, backend.url.origin, 'CPLAB', 5);
+	// browse anonymously: both reviewers must contribute to Cloud's mean of
+	// three, not its sum of six, latest score of five, or inverse dimensions.
+	await context.clearCookies();
+	await page.goto('/courses');
+	const search = page.getByRole('textbox', { name: 'Search courses' });
+	await search.fill('Programming Lab');
+	const sort = page.getByRole('combobox', { name: 'Sort by', exact: true });
+	await expect(sort).toHaveText('Course name: A–Z');
+	await expectCourseOrder(page, [
+		'CPLAB',
+		'ENLAB_MM',
+		'MOBLAB',
+		'PLAB',
+		'WEBLAB',
+	]);
+	await sort.click();
+	await page
+		.getByRole('option', { name: 'Course name: Z–A', exact: true })
+		.click();
+	await expectCourseOrder(page, [
+		'WEBLAB',
+		'PLAB',
+		'MOBLAB',
+		'ENLAB_MM',
+		'CPLAB',
+	]);
+	await sort.click();
+	await page
+		.getByRole('option', { name: 'Review score: highest first', exact: true })
+		.click();
+	await expectCourseOrder(page, [
+		'ENLAB_MM',
+		'CPLAB',
+		'WEBLAB',
+		'MOBLAB',
+		'PLAB',
+	]);
+	await sort.click();
+	await page
+		.getByRole('option', { name: 'Review score: lowest first', exact: true })
+		.click();
+	// cloud and Web tie alphabetically; the two unrated courses follow every
+	// rated course in alphabetical order in both score directions.
+	await expectCourseOrder(page, [
+		'CPLAB',
+		'WEBLAB',
+		'ENLAB_MM',
+		'MOBLAB',
+		'PLAB',
+	]);
+	await expandFilters(page, isMobile);
+	await page
+		.getByRole('checkbox', { name: 'Major/Minor module', exact: true })
+		.check();
+	await page.getByRole('combobox', { name: 'Semester' }).click();
+	await page.getByRole('option', { name: 'Autumn (HS)', exact: true }).click();
+	await collapseFilters(page, isMobile);
+	await expectCourseOrder(page, ['CPLAB', 'WEBLAB', 'MOBLAB']);
+	await search.fill('Web Programming Lab');
+	await expectCourseOrder(page, ['WEBLAB']);
+	await search.fill('Programming Lab');
+	await expectCourseOrder(page, ['CPLAB', 'WEBLAB', 'MOBLAB']);
+	await expect(sort).toHaveText('Review score: lowest first');
+});
+
+test('editing and deleting your review reorders courses without reloading the browser', async ({
+	page,
+	login,
+	backend,
+}) => {
+	await login();
+	await seedReview(page, backend.url.origin, 'CPLAB', 3);
+	await seedReview(page, backend.url.origin, 'WEBLAB', 1);
+	await page.goto('/courses');
+	await page
+		.getByRole('textbox', { name: 'Search courses' })
+		.fill('Programming Lab');
+	const sort = page.getByRole('combobox', { name: 'Sort by', exact: true });
+	await sort.click();
+	await page
+		.getByRole('option', { name: 'Review score: highest first', exact: true })
+		.click();
+	await expectCourseOrder(page, [
+		'CPLAB',
+		'WEBLAB',
+		'ENLAB_MM',
+		'MOBLAB',
+		'PLAB',
+	]);
+	await courseRow(page, 'WEBLAB').click();
+	const panel = page.locator('#course-detail-panel');
+	await panel.getByRole('tab', { name: 'Reviews', exact: true }).click();
+	await panel.getByRole('button', { name: 'Edit review', exact: true }).click();
+	const form = panel.getByRole('form', { name: 'Edit review', exact: true });
+	await form
+		.getByRole('group', { name: 'Recommendation', exact: true })
+		.getByRole('radio', { name: /^5(?:\D|$)/ })
+		.press('Space');
+	await form.getByRole('button', { name: 'Save changes', exact: true }).click();
+	await expect(form).toBeHidden();
+	await panel
+		.getByRole('button', { name: 'Close course details', exact: true })
+		.click();
+	await expectCourseOrder(page, [
+		'WEBLAB',
+		'CPLAB',
+		'ENLAB_MM',
+		'MOBLAB',
+		'PLAB',
+	]);
+	await courseRow(page, 'WEBLAB').click();
+	await panel.getByRole('tab', { name: 'Reviews', exact: true }).click();
+	await panel
+		.getByRole('button', { name: 'Delete review', exact: true })
+		.click();
+	const confirmation = page.getByRole('dialog', {
+		name: 'Delete your review?',
+		exact: true,
+	});
+	await confirmation
+		.getByRole('button', { name: 'Delete review', exact: true })
+		.click();
+	await expect(confirmation).toBeHidden();
+	await expect(
+		panel.getByRole('button', { name: 'Write a review', exact: true }),
+	).toBeVisible();
+	await panel
+		.getByRole('button', { name: 'Close course details', exact: true })
+		.click();
+	await expectCourseOrder(page, [
+		'CPLAB',
+		'ENLAB_MM',
+		'MOBLAB',
+		'PLAB',
+		'WEBLAB',
+	]);
+	await expect(sort).toHaveText('Review score: highest first');
+});
+
 test('combines search, module type, assessment and semester, then recovers from empty results', async ({
 	page,
 	isMobile,

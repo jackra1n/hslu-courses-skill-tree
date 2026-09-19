@@ -3,6 +3,7 @@ import { onMount, tick } from 'svelte';
 import CourseDetailContent from '$lib/components/course/CourseDetailContent.svelte';
 import type { CatalogCourse } from '$lib/data/catalog-types';
 import { courseModuleType } from '$lib/data/course-filters';
+import type { CourseReviewsResponse } from '$lib/data/review-types';
 import * as m from '$lib/paraglide/messages';
 
 let {
@@ -10,11 +11,16 @@ let {
 	courseById,
 	onClose,
 	onNavigate,
+	onReviewSummary,
 }: {
 	course: CatalogCourse | null;
 	courseById: ReadonlyMap<string, CatalogCourse>;
 	onClose: () => void;
 	onNavigate: (course: CatalogCourse) => void;
+	onReviewSummary?: (
+		courseId: string,
+		summary: CourseReviewsResponse['summary'],
+	) => void;
 } = $props();
 
 const TITLE_ID = 'course-browser-detail-title';
@@ -113,7 +119,7 @@ async function navigateToPrerequisite(courseId: string): Promise<void> {
 	{#if course}
 		<div bind:this={content} class="min-h-0 flex-1 overflow-y-auto">
 			{#key course.id}
-			<CourseDetailContent {course} {moduleType} titleId={TITLE_ID} onNavigate={navigateToPrerequisite}>
+			<CourseDetailContent {course} {moduleType} titleId={TITLE_ID} onNavigate={navigateToPrerequisite} {onReviewSummary}>
 				{#snippet close()}
 				<button
 					bind:this={closeButton}

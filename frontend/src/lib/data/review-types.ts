@@ -14,6 +14,12 @@ export type Review = ReviewInput & {
 	updatedAt: number;
 };
 
+export type CourseReviewScore = {
+	courseId: string;
+	recommendation: number;
+	count: number;
+};
+
 export type CourseReviewsResponse = {
 	reviews: Review[];
 	ownReviewId: string | null;

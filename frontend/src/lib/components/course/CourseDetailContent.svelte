@@ -4,6 +4,7 @@ import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import { assessmentModeLabel } from '$lib/data/assessment-mode';
 import type { Course, ModuleType } from '$lib/data/catalog-types';
 import { courseLabel } from '$lib/data/course-label';
+import type { CourseReviewsResponse } from '$lib/data/review-types';
 import { seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
@@ -20,6 +21,7 @@ let {
 	targetNodeId,
 	close,
 	onNavigate,
+	onReviewSummary,
 	actions,
 	selector,
 	elective = false,
@@ -31,6 +33,10 @@ let {
 	targetNodeId?: string;
 	close: Snippet;
 	onNavigate: (courseId: string) => void;
+	onReviewSummary?: (
+		courseId: string,
+		summary: CourseReviewsResponse['summary'],
+	) => void;
 	actions?: Snippet;
 	selector?: Snippet;
 	elective?: boolean;
@@ -144,7 +150,7 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 </div>
 <div id={`${id}-panel-reviews`} role="tabpanel" aria-labelledby={`${id}-tab-reviews`} hidden={activeTab !== 'reviews'} tabindex="0" class="p-5 focus-visible:outline-blue-500">
 	{#if reviewsVisited}
-		{#key `${course.id}:${cloudSyncStore.user?.id ?? ''}`}<CourseReviews courseId={course.id} />{/key}
+		{#key `${course.id}:${cloudSyncStore.user?.id ?? ''}`}<CourseReviews courseId={course.id} {onReviewSummary} />{/key}
 	{/if}
 </div>
 {/if}

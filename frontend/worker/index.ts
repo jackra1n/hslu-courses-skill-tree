@@ -4,6 +4,7 @@ import { handleProgressRequest } from './progress';
 import {
 	createCourseReview,
 	deleteReview,
+	getCourseReviewScores,
 	getCourseReviews,
 	updateReview,
 } from './reviews';
@@ -64,6 +65,18 @@ export default {
 				return await handleProgressRequest(request, session.user.id, env.DB);
 			} catch (error) {
 				logError('progress', request, error);
+				return json({ error: 'internal' }, 500);
+			}
+		}
+
+		if (url.pathname === '/api/course-review-scores') {
+			if (request.method !== 'GET') {
+				return json({ error: 'method not allowed' }, 405, { Allow: 'GET' });
+			}
+			try {
+				return await getCourseReviewScores(env.DB);
+			} catch (error) {
+				logError('reviews', request, error);
 				return json({ error: 'internal' }, 500);
 			}
 		}

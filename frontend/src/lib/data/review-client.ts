@@ -1,4 +1,5 @@
 import type {
+	CourseReviewScore,
 	CourseReviewsResponse,
 	Review,
 	ReviewInput,
@@ -14,6 +15,14 @@ async function request(path: string, init: RequestInit): Promise<Response> {
 	const response = await fetch(path, init);
 	if (!response.ok) throw new ReviewApiError(response.status);
 	return response;
+}
+
+export async function fetchCourseReviewScores(
+	signal?: AbortSignal,
+): Promise<CourseReviewScore[]> {
+	const response = await request('/api/course-review-scores', { signal });
+	const body: { scores: CourseReviewScore[] } = await response.json();
+	return body.scores;
 }
 
 export async function fetchCourseReviews(

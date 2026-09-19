@@ -1,6 +1,7 @@
 import { env } from 'cloudflare:workers';
 import { beforeEach, describe, expect, it } from 'vitest';
 import type {
+	CourseReviewScore,
 	CourseReviewsResponse,
 	Review,
 } from '../../src/lib/data/review-types';
@@ -72,6 +73,83 @@ beforeEach(async () => {
 	await resetTestData();
 	await seedUser('reviewer-1');
 	await seedUser('reviewer-2');
+});
+
+describe('public course review scores', () => {
+	it('averages recommendations per course without identity data and removes courses after their last review is deleted', async () => {
+		const empty = await worker.fetch(
+			request('GET', '/api/course-review-scores'),
+			env,
+		);
+		expect(empty.status).toBe(200);
+		expect(await empty.json()).toEqual({ scores: [] });
+
+		await env.DB.prepare(`INSERT INTO reviews
+			(id, course_id, user_id, recommendation, content_interest, difficulty, workload, created_at, updated_at)
+			VALUES
+			('first', 'WEBLAB', 'reviewer-1', 1, 5, 4, 3, 100, 100),
+			('second', 'WEBLAB', 'reviewer-2', 4, 2, 1, 5, 200, 200),
+			('other-course', 'AINF', 'reviewer-1', 5, 1, 3, 2, 300, 300)`).run();
+		const response = await worker.fetch(
+			request('GET', '/api/course-review-scores'),
+			env,
+		);
+		expect(response.status).toBe(200);
+		expect(response.headers.get('Cache-Control')).toBe('no-store');
+		const body = await response.json<{ scores: CourseReviewScore[] }>();
+		body.scores.sort((a, b) => a.courseId.localeCompare(b.courseId));
+		expect(body).toEqual({
+			scores: [
+				{ courseId: 'AINF', recommendation: 5, count: 1 },
+				{ courseId: 'WEBLAB', recommendation: 2.5, count: 2 },
+			],
+		});
+
+		const firstReviewer = await sessionCookie('reviewer-1');
+		expect(
+			(await writeReview('DELETE', '/api/reviews/other-course', firstReviewer))
+				.status,
+		).toBe(204);
+		expect(
+			(await writeReview('DELETE', '/api/reviews/first', firstReviewer)).status,
+		).toBe(204);
+		const afterDelete = await worker.fetch(
+			request('GET', '/api/course-review-scores'),
+			env,
+		);
+		expect(await afterDelete.json()).toEqual({
+			scores: [{ courseId: 'WEBLAB', recommendation: 4, count: 1 }],
+		});
+
+		const secondReviewer = await sessionCookie('reviewer-2');
+		expect(
+			(await writeReview('DELETE', '/api/reviews/second', secondReviewer))
+				.status,
+		).toBe(204);
+		const afterLastDelete = await worker.fetch(
+			request('GET', '/api/course-review-scores'),
+			env,
+		);
+		expect(await afterLastDelete.json()).toEqual({ scores: [] });
+	});
+
+	it('allows only GET without requiring authentication or a write origin', async () => {
+		for (const method of [
+			'POST',
+			'PUT',
+			'PATCH',
+			'DELETE',
+			'HEAD',
+			'OPTIONS',
+		]) {
+			const response = await worker.fetch(
+				request(method, '/api/course-review-scores'),
+				env,
+			);
+			expect(response.status).toBe(405);
+			expect(response.headers.get('Allow')).toBe('GET');
+		}
+	});
 });
 
 describe('public course reviews', () => {

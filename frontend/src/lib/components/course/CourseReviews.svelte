@@ -1,7 +1,6 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
 import ConfirmationDialog from '$lib/components/ui/ConfirmationDialog.svelte';
-import Dropdown from '$lib/components/ui/Dropdown.svelte';
 import {
 	deleteCourseReview,
 	fetchCourseReviews,
@@ -19,34 +18,21 @@ import ReviewForm from './ReviewForm.svelte';
 import ReviewRatingDetails from './ReviewRatingDetails.svelte';
 import ReviewStars from './ReviewStars.svelte';
 
-let { courseId }: { courseId: string } = $props();
+let {
+	courseId,
+	onReviewSummary,
+}: {
+	courseId: string;
+	onReviewSummary?: (
+		courseId: string,
+		summary: CourseReviewsResponse['summary'],
+	) => void;
+} = $props();
 const id = $props.id();
 // the parent keys this component by course and signed-in user. Old reads and
 // writes cannot update a newly selected course or another user's editor.
 const controller = new AbortController();
 let data = $state<CourseReviewsResponse | null>(null);
-type ReviewSort = 'rating-desc' | 'rating-asc' | 'newest' | 'oldest';
-let sort = $state<ReviewSort>('rating-desc');
-const sortOptions = $derived<{ value: ReviewSort; label: string }[]>([
-	{ value: 'rating-desc', label: m.reviews_sort_highest() },
-	{ value: 'rating-asc', label: m.reviews_sort_lowest() },
-	{ value: 'newest', label: m.reviews_sort_newest() },
-	{ value: 'oldest', label: m.reviews_sort_oldest() },
-]);
-const sortedReviews = $derived(
-	data?.reviews.toSorted((a, b) => {
-		const newest = b.createdAt - a.createdAt || b.id.localeCompare(a.id);
-		switch (sort) {
-			case 'rating-desc':
-				return b.recommendation - a.recommendation || newest;
-			case 'rating-asc':
-				return a.recommendation - b.recommendation || newest;
-			case 'oldest':
-				return a.createdAt - b.createdAt || b.id.localeCompare(a.id);
-		}
-		return newest;
-	}) ?? [],
-);
 let loading = $state(true);
 let loadFailed = $state(false);
 let editing = $state(false);
@@ -118,7 +104,10 @@ async function load(): Promise<void> {
 	loadFailed = false;
 	try {
 		const next = await fetchCourseReviews(courseId, controller.signal);
-		if (!controller.signal.aborted) data = next;
+		if (!controller.signal.aborted) {
+			data = next;
+			onReviewSummary?.(courseId, next.summary);
+		}
 	} catch {
 		if (!controller.signal.aborted) {
 			data = null;
@@ -294,15 +283,8 @@ async function reload(): Promise<void> {
 		</div>
 		{#if busy === 'deleting'}<p role="status" class="mt-2 text-sm text-text-secondary">{m.reviews_deleting()}</p>{/if}
 
-		{#if data.reviews.length > 1}
-			<div class="mt-4 space-y-1.5">
-				<label for={`${id}-sort`} class="text-xs font-medium text-text-secondary">{m.reviews_sort()}</label>
-				<Dropdown id={`${id}-sort`} label={m.reviews_sort()} options={sortOptions} selected={sort} onSelect={(value) => { sort = value; }} />
-			</div>
-		{/if}
-
 		<ul class="mt-4 space-y-3">
-			{#each sortedReviews as review (review.id)}
+			{#each data.reviews as review (review.id)}
 				<li>
 					<article class="rounded-lg border border-border-primary bg-bg-primary p-3">
 						<header class="flex items-center justify-between gap-2 text-xs">
