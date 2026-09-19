@@ -444,7 +444,9 @@ test('semester dropdown commits keyboard selection but Escape leaves the current
 	await expect(courseRow(page, 'MOBLAB')).toBeVisible();
 });
 
-test('closed settings stay out of keyboard navigation', async ({ page }) => {
+test('settings receive keyboard focus and restore it when closed', async ({
+	page,
+}) => {
 	await page.goto('/courses');
 	const settings = page.getByRole('button', {
 		name: 'Settings & help',
@@ -456,16 +458,88 @@ test('closed settings stay out of keyboard navigation', async ({ page }) => {
 	await page.keyboard.press('Tab');
 	await expect(search).toBeFocused();
 
-	await settings.click();
+	await settings.focus();
+	await page.keyboard.press('Enter');
+	await expect(
+		page.getByRole('button', { name: 'Close settings', exact: true }),
+	).toBeFocused();
 	const theme = page.getByRole('combobox', { name: 'Theme', exact: true });
 	await theme.focus();
 	await expect(theme).toBeFocused();
 	await theme.press('Escape');
 	await expect(theme).toBeHidden();
 
-	await settings.focus();
+	await expect(settings).toBeFocused();
 	await page.keyboard.press('Tab');
 	await expect(search).toBeFocused();
+});
+
+test('assessment information opens on the course browser without leaking into navigation', async ({
+	page,
+}) => {
+	await page.addInitScript(() =>
+		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'),
+	);
+	await page.goto('/courses');
+	await page
+		.getByRole('button', { name: 'Settings & help', exact: true })
+		.click();
+	await page
+		.getByRole('button', { name: 'Assessment Information', exact: true })
+		.click();
+	const assessment = page.getByRole('dialog', {
+		name: 'Assessment Stage Rules',
+	});
+	await expect(assessment).toBeVisible();
+	await assessment
+		.getByRole('button', { name: 'Close modal', exact: true })
+		.click();
+	await expect(assessment).toBeHidden();
+	await page.getByRole('link', { name: 'Skill Tree', exact: true }).click();
+	await expect(page).toHaveURL(/\/$/);
+	await expect(page.locator('.svelte-flow__node').first()).toBeVisible();
+	await expect(assessment).toBeHidden();
+});
+
+test('direct course browser visits resolve cloud conflicts and resume syncing', async ({
+	page,
+	login,
+}) => {
+	await page.addInitScript(() => {
+		if (localStorage.getItem('theme') === null) {
+			localStorage.setItem('theme', 'system');
+		}
+	});
+	await login();
+	await page.goto('/courses');
+	await expect(
+		page.getByRole('textbox', { name: 'Search courses' }),
+	).toBeVisible();
+	const original = await (await page.request.get('/api/progress')).json();
+	await page.evaluate(() => localStorage.setItem('theme', 'light'));
+	await page.reload();
+	const conflict = page.getByRole('dialog', {
+		name: 'Choose which progress to keep',
+	});
+	await expect(conflict).toBeVisible();
+	await conflict.getByRole('button', { name: 'Use cloud data' }).click();
+	await expect(conflict).toBeHidden();
+	await page
+		.getByRole('button', { name: 'Settings & help', exact: true })
+		.click();
+	const theme = page.getByRole('combobox', { name: 'Theme', exact: true });
+	await expect(theme).toHaveText('System');
+	await theme.click();
+	await page.getByRole('option', { name: 'Dark', exact: true }).click();
+	await expect
+		.poll(async () => {
+			const saved = await (await page.request.get('/api/progress')).json();
+			return (
+				saved.data.preferences.theme === 'dark' &&
+				saved.revision > original.revision
+			);
+		})
+		.toBe(true);
 });
 
 test('selected elective courses use the shared tabs and clearing returns to the picker', async ({

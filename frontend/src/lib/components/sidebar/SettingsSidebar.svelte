@@ -23,6 +23,25 @@ let {
 let showResetProgressDialog = $state(false);
 let showResetAllDataDialog = $state(false);
 let importError = $state<string | null>(null);
+let closeButton: HTMLButtonElement;
+
+$effect(() => {
+	if (!isOpen) return;
+	const opener = document.activeElement;
+	const sidebar = closeButton.closest('aside');
+	closeButton.focus({ preventScroll: true });
+	return () => {
+		if (
+			(document.activeElement === document.body ||
+				sidebar?.contains(document.activeElement)) &&
+			opener instanceof HTMLElement &&
+			opener.isConnected &&
+			opener.getClientRects().length
+		) {
+			opener.focus({ preventScroll: true });
+		}
+	};
+});
 
 const courseStore = getCourseStore();
 
@@ -85,7 +104,7 @@ function confirmResetAllData() {
   <div class="flex h-full flex-col">
       <div class="flex shrink-0 items-center justify-between gap-3 border-b border-border-primary px-6 py-3">
         <h2 class="text-lg font-semibold text-text-primary">{m.settings_title()}</h2>
-        <button type="button" onclick={onClose} aria-label={m.settings_close()} class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-blue-500">
+        <button bind:this={closeButton} type="button" onclick={onClose} aria-label={m.settings_close()} class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-blue-500">
           <span class="i-lucide-x h-5 w-5" aria-hidden="true"></span>
         </button>
       </div>

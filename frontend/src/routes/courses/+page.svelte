@@ -265,10 +265,7 @@ onMount(() => {
 					<AccountMenu onInteract={() => (settingsOpen = false)} />
 					<Tooltip text={m.header_settings_help()} align="end">
 						<button
-							onclick={(event) => {
-								settingsOpen = !settingsOpen;
-								event.currentTarget.blur();
-							}}
+							onclick={() => (settingsOpen = !settingsOpen)}
 							class="flex cursor-pointer items-center justify-center w-8 h-8 rounded-lg hover:bg-bg-secondary hover:shadow-sm transition-all text-text-primary"
 							aria-label={m.header_settings_help()}
 						>

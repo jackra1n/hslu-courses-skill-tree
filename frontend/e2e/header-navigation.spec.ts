@@ -108,7 +108,7 @@ test('mobile settings close directly and the collapsed legend hides its contents
 		name: 'Close settings',
 		exact: true,
 	});
-	await expect(closeSettings).toBeVisible();
+	await expect(closeSettings).toBeFocused();
 	await closeSettings.click();
 	await expect(closeSettings).toBeHidden();
 	await expect(menu).toBeFocused();

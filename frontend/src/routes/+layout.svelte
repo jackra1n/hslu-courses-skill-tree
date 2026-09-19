@@ -2,6 +2,8 @@
 import { onMount } from 'svelte';
 import 'virtual:uno.css';
 import '$lib/styles/theme.css';
+import AssessmentInfo from '$lib/components/ui/AssessmentInfo.svelte';
+import SyncConflictDialog from '$lib/components/ui/SyncConflictDialog.svelte';
 import * as m from '$lib/paraglide/messages';
 import { localeStore } from '$lib/stores/locale.svelte';
 import { themeStore } from '$lib/stores/theme.svelte';
@@ -22,3 +24,5 @@ onMount(() => {
 </svelte:head>
 
 {@render children?.()}
+<AssessmentInfo />
+<SyncConflictDialog />
