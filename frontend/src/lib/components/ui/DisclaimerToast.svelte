@@ -45,9 +45,9 @@ function dismissToast() {
         <div class="i-lucide-alert-triangle w-5 h-5 text-yellow-500"></div>
       </div>
       <div class="flex-1">
-        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
           {m.disclaimer_title()}
-        </h3>
+        </h2>
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
           {m.disclaimer_text()}
         </p>

@@ -85,6 +85,8 @@ const ectsTooltip = $derived(
       <button 
         data-tour="program"
         onclick={toggleProgramDropdown}
+        aria-label={m.header_study_plan()}
+        aria-expanded={programDropdownOpen}
         class="flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
         >
         <div class="i-lucide-graduation-cap h-4 w-4 text-text-primary"></div>

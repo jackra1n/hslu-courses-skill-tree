@@ -38,7 +38,6 @@
 	"browser_count_filtered": "{filtered} von {total} Kursen",
 	"browser_next_courses": "Nur als Nächstes belegbare Module",
 	"browser_next_courses_help": "Basierend auf Voraussetzungen und deinem Fortschritt.",
-	"browser_open_course": "Details für {course} öffnen",
 	"browser_details_close": "Moduldetails schliessen",
 	"browser_details_empty_title": "Modul auswählen",
 	"browser_details_empty_text": "Wähle ein Modul aus der Liste, um Modulinformationen und Voraussetzungen anzuzeigen.",

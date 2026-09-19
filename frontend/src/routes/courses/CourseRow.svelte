@@ -35,7 +35,6 @@ function seasonTitle(season: Season): string {
 	<button
 		type="button"
 		onclick={(event) => onSelect(course, event.currentTarget)}
-		aria-label={m.browser_open_course({ course: courseLabel(course) })}
 		aria-expanded={selected}
 		aria-controls="course-detail-panel"
 		class="group flex w-full cursor-pointer items-start gap-3 rounded-lg border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary sm:p-4 {selected

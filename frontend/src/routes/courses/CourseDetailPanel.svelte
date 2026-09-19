@@ -228,7 +228,6 @@ async function navigateToPrerequisite(
 												<button
 													type="button"
 													onclick={() => navigateToPrerequisite(prerequisite)}
-													aria-label={m.browser_open_course({ course: courseLabel(prerequisite) })}
 													class="block w-full cursor-pointer rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-left transition-colors hover:border-blue-500 hover:bg-blue-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
 												>
 													<span class="flex items-center justify-between gap-2">

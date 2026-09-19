@@ -2,8 +2,8 @@ import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 
 function courseRow(page: Page, moduleId: string) {
-	return page.getByRole('button', { name: /^Open details for / }).filter({
-		has: page.getByText(new RegExp(`^${moduleId} ·`)),
+	return page.getByRole('button', {
+		name: new RegExp(`\\b${moduleId} ·`),
 	});
 }
 
@@ -66,9 +66,7 @@ test('combines search, module type, assessment and semester, then recovers from 
 	await expect(
 		page.getByText('No courses found', { exact: true }),
 	).toBeVisible();
-	await expect(
-		page.getByRole('button', { name: /^Open details for / }),
-	).toHaveCount(0);
+	await expect(page.getByRole('list').getByRole('button')).toHaveCount(0);
 	// clearing the search must not clear the independently selected filters.
 	await page
 		.getByRole('search')
@@ -141,8 +139,7 @@ test('follows a prerequisite outside the result set without losing filters or re
 
 	await enterprise
 		.getByRole('button', {
-			name: 'Open details for Database Systems',
-			exact: true,
+			name: /Database Systems/,
 		})
 		.click();
 	const database = page.getByRole(panelRole, {
@@ -221,4 +218,28 @@ test('semester dropdown commits keyboard selection but Escape leaves the current
 	await expect(semester).toHaveText('All semesters');
 	await expect(courseRow(page, 'ENLAB_MM')).toBeVisible();
 	await expect(courseRow(page, 'MOBLAB')).toBeVisible();
+});
+
+test('closed settings stay out of keyboard navigation', async ({ page }) => {
+	await page.goto('/courses');
+	const settings = page.getByRole('button', {
+		name: 'Settings & help',
+		exact: true,
+	});
+	const search = page.getByRole('textbox', { name: 'Search courses' });
+
+	await settings.focus();
+	await page.keyboard.press('Tab');
+	await expect(search).toBeFocused();
+
+	await settings.click();
+	const theme = page.getByRole('combobox', { name: 'Theme', exact: true });
+	await theme.focus();
+	await expect(theme).toBeFocused();
+	await theme.press('Escape');
+	await expect(theme).toBeHidden();
+
+	await settings.focus();
+	await page.keyboard.press('Tab');
+	await expect(search).toBeFocused();
 });

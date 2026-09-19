@@ -76,13 +76,17 @@ bun run e2e:test
 
 `e2e:test` builds the production frontend and runs the same user flows on desktop and mobile Chromium. Each test gets a fresh browser context and isolated local D1 storage using Wrangler's test harness, the real Worker, and the real database migrations. No running development server, production credentials, or existing development database is needed. The test-only frontend Worker serves the compiled assets and translates its ephemeral loopback origin to the API's existing development origin; production origin checks stay unchanged.
 
-The suite covers combined filters, prerequisite navigation and focus, keyboard dropdown selection, review CRUD across reloads, guest/other-user controls, and preserving a draft after a failed write. Authenticated cases provision real Better Auth sessions with test users and signed cookies. They do not automate GitHub OAuth; the external login round trip still needs a release smoke check.
+The suite covers combined filters, prerequisite navigation and focus, keyboard dropdown selection, closed-panel tab order, review CRUD across reloads, guest/other-user controls, and preserving a draft after a failed write. Authenticated cases provision real Better Auth sessions with test users and signed cookies. They do not automate GitHub OAuth; the external login round trip still needs a release smoke check.
 
 Run `bun run e2e:check` to type-check the browser tests. After changing test Worker bindings, regenerate their types with `bun run e2e:types`. CI runs all three test suites and uploads the Playwright HTML report; failed tests include screenshots, traces, and Worker logs. Local reports are in `frontend/playwright-report/` and `frontend/test-results/`.
 
 ### Selection controls
 
 Use `frontend/src/lib/components/ui/Dropdown.svelte` for value selections; enable `searchable` for elective-course search. Supply a localized `label` and connect visible labels through `id`. Controls fill their container by default; `width` sets a fixed size, with settings selectors using `9rem`. Menus use the native Popover API to avoid clipping inside scrollable panels. Action menus and informational popovers remain separate components.
+
+### Tutorial
+
+The guided tour uses unmodified Driver.js. In version 1.8.0, its [highlight implementation](https://github.com/nilbuild/driver.js/blob/1.8.0/packages/driver/src/highlight.ts) adds popup-related ARIA attributes to highlighted elements, including noninteractive containers, and removes existing values when leaving a step. This can cause accessibility warnings and affect the exposed state of highlighted controls. We do not carry a local patch or DOM-restoration workaround. Recheck the complete tutorial and accessibility audits when upgrading the dependency.
 
 ### Course review API
 
