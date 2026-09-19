@@ -70,7 +70,7 @@ const ectsTooltip = $derived(
 );
 </script>
 
-<header {@attach measureHeaderHeight} class="relative z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-border-primary bg-bg-primary px-4 py-2 sm:gap-4 sm:py-3 lg:flex-nowrap">
+<header {@attach measureHeaderHeight} class="relative z-[60] flex items-center justify-between gap-2 border-b border-border-primary bg-bg-primary px-3 py-2 sm:gap-4 sm:px-4 sm:py-3">
   <div class="flex min-w-0 items-center gap-3">
     <div class="leading-tight">
       <h1 class="text-lg font-semibold text-text-primary lg:hidden">{m.header_title_short()}</h1>
@@ -80,11 +80,11 @@ const ectsTooltip = $derived(
   </div>
 
 
-  <div class="flex flex-1 items-center justify-end gap-2">
-    <a href="/courses" class="hidden h-9 shrink-0 items-center justify-center gap-2 rounded-lg border border-border-primary px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-blue-500 lg:flex">
+  <div class="flex flex-1 items-center justify-end gap-1 sm:gap-2">
+    <a href="/courses" aria-label={m.browser_title()} title={m.browser_title()} class="flex h-11 w-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-border-primary text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-blue-500 lg:h-9 lg:w-auto lg:px-3">
       <span class="i-lucide-library h-4 w-4 shrink-0" aria-hidden="true"></span>
-      {m.browser_title()}
-      <span class="i-lucide-arrow-right h-4 w-4 shrink-0" aria-hidden="true"></span>
+      <span class="hidden lg:inline">{m.browser_title()}</span>
+      <span class="i-lucide-arrow-right hidden h-4 w-4 shrink-0 lg:block" aria-hidden="true"></span>
     </a>
 
     <div class="relative program-dropdown">
@@ -93,7 +93,7 @@ const ectsTooltip = $derived(
         onclick={toggleProgramDropdown}
         aria-label={m.header_study_plan()}
         aria-expanded={programDropdownOpen}
-        class="flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-border-primary bg-transparent px-3 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all"
+        class="flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-border-primary bg-transparent px-2 py-2 text-text-primary hover:bg-bg-secondary hover:shadow-sm transition-all sm:px-3"
         >
         <div class="i-lucide-graduation-cap h-4 w-4 text-text-primary"></div>
         <span class="hidden sm:inline text-sm font-medium text-text-primary">{m.header_study_plan()}</span>
@@ -117,11 +117,11 @@ const ectsTooltip = $derived(
     <button
       data-tour="progress"
       onclick={toggleAnalytics}
-      class="flex h-9 items-center gap-1.5 rounded-lg border border-border-primary bg-bg-secondary px-3 py-2 cursor-pointer hover:bg-bg-secondary/80 hover:shadow-sm transition-all"
+      class="flex h-9 items-center gap-1.5 rounded-lg border border-border-primary bg-bg-secondary px-2 py-2 cursor-pointer hover:bg-bg-secondary/80 hover:shadow-sm transition-all sm:px-3"
       title={ectsTooltip}
       aria-label={m.header_open_progress_analytics()}
     >
-      <span class="whitespace-nowrap text-xs font-bold text-text-primary">{requiredEcts > 0 ? `${passedEcts} / ${requiredEcts} ECTS` : `${passedEcts} ECTS`}</span>
+      <span class="whitespace-nowrap text-xs font-bold text-text-primary">{requiredEcts > 0 ? `${passedEcts} / ${requiredEcts}` : passedEcts}<span class="hidden sm:inline"> ECTS</span></span>
     </button>
 
 
@@ -145,11 +145,6 @@ const ectsTooltip = $derived(
       </button>
     </Tooltip>
   </div>
-  <a href="/courses" class="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-border-primary px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-blue-500 lg:hidden">
-    <span class="i-lucide-library h-4 w-4 shrink-0" aria-hidden="true"></span>
-    {m.browser_title()}
-    <span class="i-lucide-arrow-right h-4 w-4 shrink-0" aria-hidden="true"></span>
-  </a>
 </header>
 
 <SettingsSidebar
