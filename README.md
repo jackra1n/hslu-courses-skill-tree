@@ -98,6 +98,8 @@ The Course Browser detail panel shows reviews without authors' names and separat
 
 Recommendation and content-interest averages use five-star displays with partial fills. Difficulty and workload retain their descriptive scales. Each review's ratings are behind an info control supporting hover, keyboard focus, tap, and Escape. Review headers show the date, with an additional label for your own review. The form explains that the name is not shown, but the review remains linked to the account for editing and deletion.
 
+When a course has multiple reviews, the list can be sorted by highest or lowest recommendation, newest first, or oldest first. Highest recommendation is the default; equal ratings show newer reviews first. Sorting covers the complete course review list and does not change the separate rating averages.
+
 | Method | Endpoint | Access | Success |
 | --- | --- | --- | --- |
 | GET | `/api/courses/:courseId/reviews` | Public | `200 { reviews, ownReviewId, summary }` |
