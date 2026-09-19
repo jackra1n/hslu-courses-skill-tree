@@ -125,6 +125,7 @@
 	"page_catalog_unavailable_text": "Check your connection and try again.",
 
 	"settings_title": "Settings",
+	"settings_close": "Close settings",
 	"settings_view_github": "View on GitHub",
 	"settings_start_tutorial": "Start guided tutorial",
 	"settings_theme": "Theme",
@@ -314,7 +315,6 @@
 	"tutorial_course_description": "Select any course to view its details and prerequisites. In the details panel, mark it as attended or completed to track your status.",
 	"tutorial_program_title": "Change your program",
 	"tutorial_program_description": "Choose your degree program, study model, start year, and semester, then load the matching curriculum.",
-	"tutorial_program_mobile": "Open Menu, then Study plan to choose your degree program, study model, start year, and semester.",
 	"tutorial_progress_title": "Review your progress",
 	"tutorial_progress_description": "Open the ECTS summary to see passed, completed, and failed credits overall and by module type.",
 	"tutorial_sync_title": "Sync across devices",

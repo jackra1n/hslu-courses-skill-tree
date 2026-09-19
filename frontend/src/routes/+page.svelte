@@ -104,12 +104,13 @@ $effect(() => {
     <GuidedTutorial />
 
     <div class="xl:hidden fixed bottom-4 right-4 z-30 w-72 max-w-[90vw]">
-      <div class={`rounded-2xl border border-border-primary bg-bg-primary shadow-2xl backdrop-blur transition-all duration-300 overflow-hidden flex flex-col-reverse ${legendOpen ? 'max-h-96' : 'max-h-14'}`}>
+      <div class="rounded-2xl border border-border-primary bg-bg-primary shadow-2xl overflow-hidden flex flex-col-reverse">
         <button
           type="button"
-          class="flex w-full items-center justify-between gap-2 px-4 py-3 text-text-primary"
+          class="flex min-h-11 w-full shrink-0 items-center justify-between gap-2 px-4 py-3 text-text-primary"
           aria-label={m.legend_toggle()}
-          aria-pressed={legendOpen}
+          aria-expanded={legendOpen}
+          aria-controls="mobile-status-legend"
           onclick={() => legendOpen = !legendOpen}
         >
           <div class="flex items-center gap-2">
@@ -122,7 +123,7 @@ $effect(() => {
             <div class="i-lucide-chevron-up h-4 w-4 text-text-secondary"></div>
           {/if}
         </button>
-        <div class="px-4 pb-4 pt-3 border-b border-border-primary" inert={!legendOpen}>
+        <div id="mobile-status-legend" hidden={!legendOpen} class="max-h-80 overflow-y-auto px-4 pb-4 pt-3 border-b border-border-primary">
           <div class="[&>div:first-child]:border-t-0 [&>div:first-child]:pt-0">
             <StatusLegend />
           </div>

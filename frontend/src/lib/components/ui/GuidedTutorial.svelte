@@ -62,14 +62,10 @@ function buildSteps(): DriveStep[] {
 			},
 		},
 		{
-			element: mobileNavigation
-				? '[data-tour="navigation"]'
-				: '[data-tour="program"]',
+			element: '[data-tour="program"]',
 			popover: {
 				title: m.tutorial_program_title(),
-				description: mobileNavigation
-					? m.tutorial_program_mobile()
-					: m.tutorial_program_description(),
+				description: m.tutorial_program_description(),
 			},
 		},
 		{

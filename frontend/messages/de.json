@@ -125,6 +125,7 @@
 	"page_catalog_unavailable_text": "Überprüfe deine Verbindung und versuche es erneut.",
 
 	"settings_title": "Einstellungen",
+	"settings_close": "Einstellungen schließen",
 	"settings_view_github": "Auf GitHub ansehen",
 	"settings_start_tutorial": "Geführte Einführung starten",
 	"settings_theme": "Design",
@@ -313,7 +314,6 @@
 	"tutorial_course_description": "Wähle ein Modul aus, um Details und Voraussetzungen zu sehen. Im Detailpanel kannst du es als besucht oder abgeschlossen markieren, um deinen Status zu tracken.",
 	"tutorial_program_title": "Studiengang wechseln",
 	"tutorial_program_description": "Wähle deinen Studiengang, dein Studienmodell, dein Startjahr und dein Startsemester und lade den passenden Studienplan.",
-	"tutorial_program_mobile": "Öffne Menü und dann Studienplan, um Studiengang, Studienmodell, Startjahr und Startsemester auszuwählen.",
 	"tutorial_progress_title": "Fortschritt überprüfen",
 	"tutorial_progress_description": "Öffne die ECTS-Übersicht, um bestandene, geplante und nicht bestandene Credits insgesamt und nach Modultyp zu sehen.",
 	"tutorial_sync_title": "Geräteübergreifend synchronisieren",

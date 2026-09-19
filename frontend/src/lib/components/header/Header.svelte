@@ -14,6 +14,7 @@ let activeSidebar = $state<'settings' | 'analytics' | null>(null);
 let mobileMenuOpen = $state(false);
 let accountMenuOpen = $state(false);
 let menuButton: HTMLButtonElement;
+let programButton: HTMLButtonElement;
 let navigation: HTMLElement;
 const navigationId = $props.id();
 
@@ -24,7 +25,8 @@ function closeMobileMenu() {
 }
 
 async function toggleMobileMenu() {
-	if (mobileMenuOpen) {
+	if (mobileMenuOpen || activeSidebar || programDropdownOpen) {
+		activeSidebar = null;
 		closeMobileMenu();
 		return;
 	}
@@ -62,6 +64,10 @@ onMount(() => {
 			closeMobileMenu();
 			menuButton.focus();
 		}
+		if (event.key === 'Escape' && programDropdownOpen) {
+			programDropdownOpen = false;
+			programButton.focus();
+		}
 	};
 	const handleFocus = (event: FocusEvent) => {
 		if (
@@ -87,9 +93,10 @@ onMount(() => {
 });
 
 function toggleProgramDropdown() {
-	programDropdownOpen = !programDropdownOpen;
-	accountMenuOpen = false;
-	if (programDropdownOpen) activeSidebar = null;
+	const opening = !programDropdownOpen;
+	closeMobileMenu();
+	programDropdownOpen = opening;
+	activeSidebar = null;
 }
 
 function toggleSettings() {
@@ -100,6 +107,11 @@ function toggleSettings() {
 function toggleAnalytics() {
 	closeMobileMenu();
 	activeSidebar = activeSidebar === 'analytics' ? null : 'analytics';
+}
+
+function closeSidebar() {
+	activeSidebar = null;
+	if (menuButton.getClientRects().length) menuButton.focus();
 }
 
 const plannedCredits = $derived(courseStore.totalCredits);
@@ -125,6 +137,18 @@ const ectsTooltip = $derived(
   </div>
 
   <div class="flex flex-1 items-center justify-end gap-2">
+      <div class="relative program-dropdown">
+        <button bind:this={programButton} data-tour="program" onclick={toggleProgramDropdown} aria-label={m.header_study_plan()} aria-expanded={programDropdownOpen}
+          class="flex h-11 w-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-border-primary text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:h-9 lg:w-auto lg:px-3">
+          <span class="i-lucide-graduation-cap h-4 w-4 shrink-0" aria-hidden="true"></span>
+          <span class="hidden lg:inline">{m.header_study_plan()}</span>
+        </button>
+        {#if programDropdownOpen}
+          <div class="fixed inset-x-3 top-[var(--app-header-height)] max-h-[calc(100dvh-var(--app-header-height)-12px)] overflow-y-auto rounded-lg border border-border-primary bg-bg-primary p-3 shadow-xl lg:absolute lg:inset-x-auto lg:right-0 lg:top-full lg:mt-1 lg:w-80 lg:overflow-visible lg:shadow-lg">
+            <div class="space-y-4"><TemplateSelector /></div>
+          </div>
+        {/if}
+      </div>
     <button data-tour="progress" onclick={toggleAnalytics}
       class="flex h-11 shrink-0 items-center rounded-lg border border-border-primary bg-bg-secondary px-3 text-xs font-bold text-text-primary hover:bg-bg-secondary/80 focus-visible:outline-blue-500 lg:order-1 lg:h-9"
       title={ectsTooltip} aria-label={m.header_open_progress_analytics()}>
@@ -132,31 +156,19 @@ const ectsTooltip = $derived(
     </button>
 
     <button bind:this={menuButton} type="button" data-tour="navigation" onclick={toggleMobileMenu}
-      aria-label={m.header_menu()} aria-expanded={mobileMenuOpen} aria-controls={navigationId}
-      class="header-navigation flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border-primary text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:hidden">
-      <span class={`${mobileMenuOpen ? 'i-lucide-x' : 'i-lucide-menu'} h-5 w-5`} aria-hidden="true"></span>
+      aria-label={activeSidebar || programDropdownOpen ? m.common_close() : m.header_menu()} aria-expanded={mobileMenuOpen || activeSidebar !== null || programDropdownOpen} aria-controls={mobileMenuOpen ? navigationId : undefined}
+      class="header-navigation program-dropdown flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border-primary text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:hidden">
+      <span class={`${mobileMenuOpen || activeSidebar || programDropdownOpen ? 'i-lucide-x' : 'i-lucide-menu'} h-5 w-5`} aria-hidden="true"></span>
     </button>
 
     <nav bind:this={navigation} id={navigationId} aria-label={m.header_menu()}
       class={`header-navigation ${mobileMenuOpen ? 'flex' : 'hidden'} fixed inset-x-3 top-[var(--app-header-height)] z-50 max-h-[calc(100dvh-var(--app-header-height)-12px)] flex-col gap-1 overflow-y-auto rounded-lg border border-border-primary bg-bg-primary p-2 shadow-xl lg:contents`}>
       <a href="/courses" onclick={closeMobileMenu}
-        class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:min-h-9 lg:gap-2 lg:border lg:border-border-primary">
+        class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:order-first lg:min-h-9 lg:gap-2 lg:border lg:border-border-primary">
         <span class="i-lucide-library h-4 w-4 shrink-0" aria-hidden="true"></span>
         {m.browser_title()}
       </a>
 
-      <div class="relative program-dropdown">
-        <button data-tour="program" onclick={toggleProgramDropdown} aria-label={m.header_study_plan()} aria-expanded={programDropdownOpen}
-          class="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:min-h-9 lg:gap-2 lg:border lg:border-border-primary">
-          <span class="i-lucide-graduation-cap h-4 w-4 shrink-0" aria-hidden="true"></span>
-          {m.header_study_plan()}
-        </button>
-        {#if programDropdownOpen}
-          <div class="rounded-lg border border-border-primary bg-bg-primary p-3 lg:absolute lg:right-0 lg:top-full lg:mt-1 lg:w-80 lg:shadow-lg">
-            <div class="space-y-4"><TemplateSelector /></div>
-          </div>
-        {/if}
-      </div>
 
       <div class="lg:order-2">
         <AccountMenu navigationMenu bind:accountMenuOpen onInteract={() => {
@@ -176,9 +188,9 @@ const ectsTooltip = $derived(
 
 <SettingsSidebar
   isOpen={activeSidebar === 'settings'}
-  onClose={() => (activeSidebar = null)}
+  onClose={closeSidebar}
 />
 <ProgressAnalytics
   isOpen={activeSidebar === 'analytics'}
-  onClose={() => (activeSidebar = null)}
+  onClose={closeSidebar}
 />
