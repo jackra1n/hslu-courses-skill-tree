@@ -5,7 +5,7 @@ import type {
 	CourseReviewsResponse,
 	Review,
 } from '../../src/lib/data/review-types';
-import { auth } from '../auth';
+import { getAuth } from '../auth';
 import worker from '../index';
 import { applyMigrations, resetTestData, seedUser } from './apply-migrations';
 
@@ -30,7 +30,7 @@ const INPUT = {
 
 // real sessions and signed cookies exercise Better Auth, not an auth mock.
 async function sessionCookie(userId: string): Promise<string> {
-	const context = await auth.$context;
+	const context = await getAuth().$context;
 	const session = await context.internalAdapter.createSession(userId);
 	const encoder = new TextEncoder();
 	const key = await crypto.subtle.importKey(

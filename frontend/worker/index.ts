@@ -1,4 +1,4 @@
-import { auth } from './auth';
+import { getAuth } from './auth';
 import { json } from './http';
 import { handleProgressRequest } from './progress';
 import {
@@ -38,7 +38,7 @@ export default {
 		if (url.pathname.startsWith('/api/auth/')) {
 			if (request.method === 'GET' || request.method === 'POST') {
 				try {
-					return await auth.handler(request);
+					return await getAuth().handler(request);
 				} catch (error) {
 					logError('auth', request, error);
 					return json({ error: 'internal' }, 500);
@@ -60,7 +60,9 @@ export default {
 				}
 			}
 			try {
-				const session = await auth.api.getSession({ headers: request.headers });
+				const session = await getAuth().api.getSession({
+					headers: request.headers,
+				});
 				if (!session) return json({ error: 'unauthorized' }, 401);
 				return await handleProgressRequest(request, session.user.id, env.DB);
 			} catch (error) {
@@ -103,7 +105,7 @@ export default {
 			}
 			try {
 				if (request.method === 'GET') {
-					const session = await auth.api.getSession({
+					const session = await getAuth().api.getSession({
 						headers: request.headers,
 					});
 					return await getCourseReviews(id, session?.user.id ?? null, env.DB);
@@ -112,7 +114,9 @@ export default {
 				if (!origin || !ALLOWED_ORIGINS.has(origin)) {
 					return json({ error: 'forbidden origin' }, 403);
 				}
-				const session = await auth.api.getSession({ headers: request.headers });
+				const session = await getAuth().api.getSession({
+					headers: request.headers,
+				});
 				if (!session) return json({ error: 'unauthorized' }, 401);
 				if (courseReviews) {
 					return await createCourseReview(request, id, session.user.id, env.DB);

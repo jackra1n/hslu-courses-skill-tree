@@ -1,9 +1,13 @@
 import { env } from 'cloudflare:workers';
-import { betterAuth } from 'better-auth';
+import { type Auth, betterAuth } from 'better-auth';
 import { type AuthSecrets, createAuthOptions } from './auth-options';
 
-// Secrets are runtime bindings not visible to `wrangler types`; the cast
-// documents the contract they must satisfy at deploy time.
-export const auth = betterAuth(
-	createAuthOptions(env.DB, env as Cloudflare.Env & AuthSecrets),
-);
+let auth: Auth | undefined;
+
+// Schema validation performs database I/O, so initialize on first use within
+// a request rather than while the Worker module is loading.
+export function getAuth() {
+	return (auth ??= betterAuth(
+		createAuthOptions(env.DB, env as Cloudflare.Env & AuthSecrets),
+	));
+}
