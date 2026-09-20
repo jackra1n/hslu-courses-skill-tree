@@ -20,7 +20,7 @@ import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { theme } from '$lib/stores/theme.svelte';
 import {
-	selection,
+	selectedSlotId,
 	showCourseTypeBadges,
 	uiStore,
 } from '$lib/stores/uiStore.svelte';
@@ -41,7 +41,6 @@ const nodeTypes = {
 
 let isDragging = $state(false);
 let hideAttribution = $state(false);
-let selectedNodeId = $state<string | null>(null);
 
 const courseStore = getCourseStore();
 
@@ -53,6 +52,14 @@ const semesterIndicators = $derived(courseStore.semesterDividerData);
 const statuses = $derived.by(() =>
 	computeStatuses(courseStore.studyPlan, slotStatusMap()),
 );
+
+// A removed slot or a different study plan must not leave stale details open.
+$effect(() => {
+	const slotId = selectedSlotId();
+	if (slotId && !courseStore.studyPlan.nodes[slotId]) {
+		uiStore.deselectCourse();
+	}
+});
 
 const ADD_NODE_STYLE =
 	'width: 80px; height: 80px; min-width: 80px; max-width: 80px;';
@@ -77,9 +84,7 @@ function styleCourseNode(flowNode: Node) {
 		courseStore.studyPlan,
 		flowNode.id,
 	);
-	const selected = selection();
-	const isSelected =
-		selected?.id === flowNode.id || (!!course && selected?.id === course.id);
+	const isSelected = selectedSlotId() === flowNode.id;
 
 	const style = getNodeStyle({
 		status: statuses[flowNode.id],
@@ -102,11 +107,12 @@ function styleCourseNode(flowNode: Node) {
 	return {
 		...flowNode,
 		style,
+		selected: isSelected,
 		zIndex: isSelected ? 1000 : undefined,
 		data: {
 			...nodeData,
 			showCourseTypeBadges: showCourseTypeBadges(),
-			showRemoveButton: selectedNodeId === flowNode.id,
+			showRemoveButton: isSelected,
 			onRemove: handleRemoveClick,
 			hasMissingPrerequisites: hasMissingPrereqs,
 		},
@@ -118,10 +124,9 @@ $effect(() => {
 	styledEdges = courseStore.edges.map((edge) => {
 		const { style, markerEnd, animated, zIndex } = getEdgeStyle(
 			edge,
-			selection(),
+			selectedSlotId(),
 			statuses,
 			slotStatusMap(),
-			courseStore.studyPlan,
 			isDragging,
 		);
 		return { ...edge, style, markerEnd, animated, zIndex };
@@ -163,10 +168,7 @@ function handleNodeClick({
 	node: Node;
 	event: MouseEvent | TouchEvent;
 }) {
-	if (!clickedNode) return;
-
-	// Set selected node for showing remove button
-	selectedNodeId = clickedNode.id;
+	if (clickedNode.type !== 'custom') return;
 
 	const nodeData = clickedNode.data as ExtendedNodeData;
 	const slot = nodeData.slot;
@@ -194,13 +196,12 @@ function handleNodeClick({
 }
 
 function handleCanvasClick() {
-	// Clear selected node when clicking canvas background
-	selectedNodeId = null;
+	uiStore.deselectCourse();
 }
 
 function handleRemoveClick(nodeId: string) {
 	courseStore.removeNode(nodeId);
-	selectedNodeId = null;
+	if (selectedSlotId() === nodeId) uiStore.deselectCourse();
 }
 
 // Canvas nodes are positioned by the viewport transform, not page scroll,
@@ -251,6 +252,7 @@ onMount(() => {
     zoomOnDoubleClick={false}
     nodesDraggable={true}
     nodesConnectable={false}
+    deleteKey={null}
     fitView
     colorMode={theme() === "system" ? "system" : theme()}
     proOptions={{ hideAttribution }}

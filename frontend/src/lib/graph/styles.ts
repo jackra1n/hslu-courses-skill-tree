@@ -1,6 +1,5 @@
 import { type Edge, type EdgeMarker, MarkerType } from '@xyflow/svelte';
-import type { StudyPlan } from '$lib/data/study-plan';
-import type { Course, Status } from '../types';
+import type { Status } from '../types';
 
 // Edge.markerEnd may be a string id or undefined; normalise to an object marker.
 function toEdgeMarker(marker: Edge['markerEnd']): EdgeMarker {
@@ -125,34 +124,6 @@ export function getNodeStyle(input: NodeStyleInput): string {
 	return style;
 }
 
-// The selection may be a slot id or a course id; resolve to the slot it sits in.
-function resolveSelectedSlotId(
-	selection: Course | null,
-	plan: StudyPlan,
-): string | undefined {
-	if (!selection) return undefined;
-
-	if (plan.nodes[selection.id]) {
-		return selection.id;
-	}
-
-	const matchingNode = Object.values(plan.nodes).find(
-		(node) => node.courseId === selection.id,
-	);
-	return matchingNode?.id;
-}
-
-function getEdgeRelationship(
-	edge: Edge,
-	selectedSlotId: string | undefined,
-): { isSelected: boolean; isPrerequisite: boolean; isDependent: boolean } {
-	const isSelected =
-		selectedSlotId === edge.source || selectedSlotId === edge.target;
-	const isPrerequisite = selectedSlotId === edge.target;
-	const isDependent = selectedSlotId === edge.source;
-
-	return { isSelected, isPrerequisite, isDependent };
-}
 
 export type EdgeStyleResult = {
 	style: string;
@@ -228,25 +199,21 @@ function buildEdgeStateStyle(input: EdgeStateInput): EdgeStyleResult {
 
 export function getEdgeStyle(
 	edge: Edge,
-	selection: Course | null,
+	selectedSlotId: string | null,
 	statuses: Record<string, Status>,
 	slotStatus: Map<string, 'attended' | 'completed'>,
-	plan: StudyPlan,
 	isDragging: boolean,
 ): EdgeStyleResult {
-	const selectedSlotId = resolveSelectedSlotId(selection, plan);
-	const { isPrerequisite, isDependent } = getEdgeRelationship(
-		edge,
-		selectedSlotId,
-	);
+	const isPrerequisite = selectedSlotId === edge.target;
+	const isDependent = selectedSlotId === edge.source;
 
 	return buildEdgeStateStyle({
 		isPrerequisite,
 		isDependent,
-		hasSelection: selectedSlotId !== undefined,
+		hasSelection: selectedSlotId !== null,
 		sourceCompleted: slotStatus.get(edge.source) === 'completed',
 		targetCompleted: slotStatus.get(edge.target) === 'completed',
-		targetAvailable: statuses[edge.target as string] === 'available',
+		targetAvailable: statuses[edge.target] === 'available',
 		markerType: toEdgeMarker(edge.markerEnd),
 		isDragging,
 	});
