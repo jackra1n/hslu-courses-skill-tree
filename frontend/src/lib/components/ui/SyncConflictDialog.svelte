@@ -34,16 +34,6 @@ const differences = $derived.by(() => {
 			value: (data) => data.slotStatus,
 		},
 		{
-			label: m.settings_theme(),
-			value: (data) => data.preferences.theme,
-			display: (data) =>
-				data.preferences.theme === 'system'
-					? m.theme_system()
-					: data.preferences.theme === 'dark'
-						? m.theme_dark()
-						: m.theme_light(),
-		},
-		{
 			label: m.sync_difference_short_names(),
 			value: (data) => data.preferences.showShortNamesOnly,
 			display: (data) => enabledLabel(data.preferences.showShortNamesOnly),

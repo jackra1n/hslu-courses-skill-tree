@@ -536,11 +536,6 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 	login,
 }) => {
 	await page.clock.setFixedTime(new Date('2026-02-15T12:00:00Z'));
-	await page.addInitScript(() => {
-		if (localStorage.getItem('theme') === null) {
-			localStorage.setItem('theme', 'system');
-		}
-	});
 	await login();
 	await page.goto('/courses');
 	await expect(
@@ -574,7 +569,12 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 		},
 	});
 	expect(remoteChange.ok()).toBe(true);
-	await page.evaluate(() => localStorage.setItem('theme', 'light'));
+	const slotId = Object.keys(
+		original.data.studyPlans[original.data.currentTemplateId].nodes,
+	)[0];
+	await page.evaluate((id) => {
+		localStorage.setItem('slotStatus', JSON.stringify({ [id]: 'attended' }));
+	}, slotId);
 	await page.reload();
 	await expect(conflict).toBeVisible();
 	await conflict.getByRole('button', { name: 'Use cloud data' }).click();
@@ -582,15 +582,20 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 	await page
 		.getByRole('button', { name: 'Settings & help', exact: true })
 		.click();
-	const theme = page.getByRole('combobox', { name: 'Theme', exact: true });
-	await expect(theme).toHaveText('System');
-	await theme.click();
-	await page.getByRole('option', { name: 'Dark', exact: true }).click();
+	const choosing = page.waitForEvent('filechooser');
+	await page.getByRole('button', { name: 'Import Data', exact: true }).click();
+	const imported = await (await page.request.get('/api/progress')).json();
+	imported.data.slotStatus = { [slotId]: 'completed' };
+	await (await choosing).setFiles({
+		name: 'progress.json',
+		mimeType: 'application/json',
+		buffer: Buffer.from(JSON.stringify(imported.data)),
+	});
 	await expect
 		.poll(async () => {
 			const saved = await (await page.request.get('/api/progress')).json();
 			return (
-				saved.data.preferences.theme === 'dark' &&
+				saved.data.slotStatus[slotId] === 'completed' &&
 				saved.revision > original.revision
 			);
 		})

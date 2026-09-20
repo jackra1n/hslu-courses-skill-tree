@@ -3,15 +3,38 @@ import { expect, test } from './fixtures';
 
 const conflictName = 'Choose which data to keep';
 
-async function changeTheme(page: Page, name: 'Light' | 'Dark') {
-	await page
-		.getByRole('button', { name: 'Settings & help', exact: true })
+async function openCourse(page: Page) {
+	const course = page.locator('.svelte-flow__node-custom').first();
+	await course.click();
+	const slotId = await course.getAttribute('data-id');
+	expect(slotId).not.toBeNull();
+	await expect(page.locator('#skill-tree-course-detail-panel')).toBeVisible();
+	return slotId!;
+}
+
+async function changeProgress(page: Page, status: 'Attended' | 'Completed') {
+	const panel = page.locator('#skill-tree-course-detail-panel');
+	await panel
+		.getByRole('button', { name: `Mark as ${status}`, exact: true })
 		.click();
-	await page.getByRole('combobox', { name: 'Theme', exact: true }).click();
-	await page.getByRole('option', { name, exact: true }).click();
-	await page
-		.getByRole('button', { name: 'Close settings', exact: true })
-		.click();
+	await expect(
+		panel.getByRole('button', { name: status, exact: true }),
+	).toBeVisible();
+}
+
+async function expectLocalProgress(
+	page: Page,
+	slotId: string,
+	status: 'attended' | 'completed',
+) {
+	await expect
+		.poll(() =>
+			page.evaluate(
+				(id) => JSON.parse(localStorage.getItem('slotStatus') ?? '{}')[id],
+				slotId,
+			),
+		)
+		.toBe(status);
 }
 
 async function expectSaved(page: Page) {
@@ -34,20 +57,22 @@ test.beforeEach(async ({ page, login, isMobile }) => {
 	);
 	await page.addInitScript(() => {
 		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
-		if (localStorage.getItem('theme') === null)
-			localStorage.setItem('theme', 'system');
 	});
 	await login();
-	await page.goto('/courses');
-	await expect(
-		page.getByRole('textbox', { name: 'Search courses' }),
-	).toBeVisible();
+	await page.goto('/');
+	await expect(page.locator('.svelte-flow__node-custom').first()).toBeVisible();
 	await expectSaved(page);
 });
 
 test('object key order alone neither conflicts nor uploads', async ({
 	page,
 }) => {
+	const slotId = await openCourse(page);
+	await changeProgress(page, 'Attended');
+	await expect
+		.poll(async () => (await snapshot(page)).data.slotStatus[slotId])
+		.toBe('attended');
+	await expectSaved(page);
 	const original = await snapshot(page);
 	let writes = 0;
 	await page.route('**/api/progress', async (route) => {
@@ -64,34 +89,42 @@ test('object key order alone neither conflicts nor uploads', async ({
 		}
 	});
 	await page.reload();
-	await expect(
-		page.getByRole('textbox', { name: 'Search courses' }),
-	).toBeVisible();
+	await expect(page.locator('.svelte-flow__node-custom').first()).toBeVisible();
 	await expectSaved(page);
 	expect(writes).toBe(0);
 	expect((await snapshot(page)).revision).toBe(original.revision);
+	await expectLocalProgress(page, slotId, 'attended');
 });
 
 test('a local-only change survives navigation without a conflict', async ({
 	page,
 }) => {
-	await changeTheme(page, 'Dark');
+	const slotId = await openCourse(page);
+	await changeProgress(page, 'Attended');
+	await page.getByRole('link', { name: 'Course Browser', exact: true }).click();
+	await expect(
+		page.getByRole('textbox', { name: 'Search courses' }),
+	).toBeVisible();
 	await page.getByRole('link', { name: 'Skill Tree', exact: true }).click();
 	await expect(page.locator('.svelte-flow')).toBeVisible();
 	await expectSaved(page);
-	expect((await snapshot(page)).data.preferences.theme).toBe('dark');
+	await expectLocalProgress(page, slotId, 'attended');
+	expect((await snapshot(page)).data.slotStatus).toEqual({
+		[slotId]: 'attended',
+	});
 });
 
 test('a cloud-only change is applied on reload without an echo write', async ({
 	page,
 }) => {
+	const slotId = await openCourse(page);
 	const original = await snapshot(page);
 	const updated = await page.request.put('/api/progress', {
 		headers: { Origin: new URL(page.url()).origin },
 		data: {
 			data: {
 				...original.data,
-				preferences: { ...original.data.preferences, theme: 'dark' },
+				slotStatus: { [slotId]: 'completed' },
 			},
 			expectedRevision: original.revision,
 		},
@@ -99,11 +132,15 @@ test('a cloud-only change is applied on reload without an echo write', async ({
 	expect(updated.ok()).toBe(true);
 	const remote = await updated.json();
 	await page.reload();
-	await expect(
-		page.getByRole('textbox', { name: 'Search courses' }),
-	).toBeVisible();
+	await expect(page.locator('.svelte-flow__node-custom').first()).toBeVisible();
 	await expectSaved(page);
-	await expect(page.locator('html')).toHaveClass(/\bdark\b/);
+	await openCourse(page);
+	await expect(
+		page
+			.locator('#skill-tree-course-detail-panel')
+			.getByRole('button', { name: 'Completed', exact: true }),
+	).toBeVisible();
+	await expectLocalProgress(page, slotId, 'completed');
 	expect((await snapshot(page)).revision).toBe(remote.revision);
 });
 
@@ -111,22 +148,27 @@ test('a stale revision with identical data is acknowledged without a conflict', 
 	page,
 }) => {
 	let writes = 0;
+	const slotId = await openCourse(page);
 	await page.route('**/api/progress', async (route) => {
 		if (route.request().method() !== 'PUT') return route.continue();
 		writes++;
 		const response = await route.fetch();
 		await route.fulfill({ status: 409, json: await response.json() });
 	});
-	await changeTheme(page, 'Dark');
+	await changeProgress(page, 'Attended');
 	await expect.poll(() => writes).toBe(1);
 	await expectSaved(page);
-	expect((await snapshot(page)).data.preferences.theme).toBe('dark');
+	await expectLocalProgress(page, slotId, 'attended');
+	expect((await snapshot(page)).data.slotStatus).toEqual({
+		[slotId]: 'attended',
+	});
 	expect(writes).toBe(1);
 });
 
 test('a failed older write retains the latest edit for reconnect', async ({
 	page,
 }) => {
+	const slotId = await openCourse(page);
 	let release!: () => void;
 	const blocked = new Promise<void>((resolve) => {
 		release = resolve;
@@ -142,9 +184,9 @@ test('a failed older write retains the latest edit for reconnect', async ({
 			await route.continue();
 		}
 	});
-	await changeTheme(page, 'Dark');
+	await changeProgress(page, 'Attended');
 	await expect.poll(() => writes).toBe(1);
-	await changeTheme(page, 'Light');
+	await changeProgress(page, 'Completed');
 	release();
 	await page.getByRole('button', { name: 'Account menu', exact: true }).click();
 	await expect(
@@ -156,19 +198,23 @@ test('a failed older write retains the latest edit for reconnect', async ({
 	await page.getByRole('button', { name: 'Account menu', exact: true }).click();
 	await page.evaluate(() => window.dispatchEvent(new Event('online')));
 	await expectSaved(page);
-	expect((await snapshot(page)).data.preferences.theme).toBe('light');
+	await expectLocalProgress(page, slotId, 'completed');
+	expect((await snapshot(page)).data.slotStatus).toEqual({
+		[slotId]: 'completed',
+	});
 });
 
 test('unauthorized writes stop after one session revalidation', async ({
 	page,
 }) => {
+	const slotId = await openCourse(page);
 	let writes = 0;
 	await page.route('**/api/progress', async (route) => {
 		if (route.request().method() !== 'PUT') return route.continue();
 		writes++;
 		await route.fulfill({ status: 401, json: { error: 'unauthorized' } });
 	});
-	await changeTheme(page, 'Dark');
+	await changeProgress(page, 'Attended');
 	await page.getByRole('button', { name: 'Account menu', exact: true }).click();
 	await expect(
 		page.getByText(
@@ -177,29 +223,34 @@ test('unauthorized writes stop after one session revalidation', async ({
 		),
 	).toBeVisible();
 	expect(writes).toBe(2);
+	await expectLocalProgress(page, slotId, 'attended');
+	expect((await snapshot(page)).data.slotStatus).toEqual({});
 });
 
 test('conflict choices are locked while the selected version is saving', async ({
 	page,
 }) => {
+	const slotId = await openCourse(page);
 	const original = await snapshot(page);
 	const changed = await page.request.put('/api/progress', {
 		headers: { Origin: new URL(page.url()).origin },
 		data: {
 			data: {
 				...original.data,
-				preferences: { ...original.data.preferences, theme: 'dark' },
+				slotStatus: { [slotId]: 'completed' },
 			},
 			expectedRevision: original.revision,
 		},
 	});
 	expect(changed.ok()).toBe(true);
-	await page.evaluate(() => localStorage.setItem('theme', 'light'));
+	await page.evaluate((id) => {
+		localStorage.setItem('slotStatus', JSON.stringify({ [id]: 'attended' }));
+	}, slotId);
 	await page.reload();
 	const conflict = page.getByRole('dialog', { name: conflictName });
 	await expect(conflict).toBeVisible();
 	await expect(
-		conflict.getByText('Theme', { exact: true }).first(),
+		conflict.getByText('Individual course progress', { exact: true }),
 	).toBeVisible();
 	let release!: () => void;
 	const blocked = new Promise<void>((resolve) => {
@@ -217,13 +268,19 @@ test('conflict choices are locked while the selected version is saving', async (
 	release();
 	await expect(conflict).toBeHidden();
 	await expectSaved(page);
-	expect((await snapshot(page)).data.preferences.theme).toBe('light');
+	await expectLocalProgress(page, slotId, 'attended');
+	expect((await snapshot(page)).data.slotStatus).toEqual({
+		[slotId]: 'attended',
+	});
 });
 
 test('another account never inherits the previous accounts sync baseline', async ({
 	page,
 	login,
 }) => {
+	const slotId = await openCourse(page);
+	await changeProgress(page, 'Attended');
+	await expectSaved(page);
 	const original = await snapshot(page);
 	await login('Another account');
 	const created = await page.request.put('/api/progress', {
@@ -231,17 +288,22 @@ test('another account never inherits the previous accounts sync baseline', async
 		data: {
 			data: {
 				...original.data,
-				preferences: { ...original.data.preferences, theme: 'dark' },
+				slotStatus: { [slotId]: 'completed' },
 			},
 			expectedRevision: null,
 		},
 	});
 	expect(created.ok()).toBe(true);
 	await page.reload();
-	await expect(page.getByRole('dialog', { name: conflictName })).toBeVisible();
+	const conflict = page.getByRole('dialog', { name: conflictName });
+	await expect(conflict).toBeVisible();
+	await expect(
+		conflict.getByText('Individual course progress', { exact: true }),
+	).toBeVisible();
+	await expectLocalProgress(page, slotId, 'attended');
 	const remote = await snapshot(page);
 	expect(remote.revision).toBe(1);
-	expect(remote.data.preferences.theme).toBe('dark');
+	expect(remote.data.slotStatus).toEqual({ [slotId]: 'completed' });
 });
 
 test('equal completion counts do not hide different course progress', async ({
@@ -281,6 +343,7 @@ test('equal completion counts do not hide different course progress', async ({
 test('an already uploaded snapshot does not conflict with a newer queued edit', async ({
 	page,
 }) => {
+	const slotId = await openCourse(page);
 	let release!: () => void;
 	const blocked = new Promise<void>((resolve) => {
 		release = resolve;
@@ -298,11 +361,14 @@ test('an already uploaded snapshot does not conflict with a newer queued edit', 
 			await route.continue();
 		}
 	});
-	await changeTheme(page, 'Dark');
+	await changeProgress(page, 'Attended');
 	await expect.poll(() => writes).toBe(1);
-	await changeTheme(page, 'Light');
+	await changeProgress(page, 'Completed');
 	release();
 	await expectSaved(page);
-	expect((await snapshot(page)).data.preferences.theme).toBe('light');
+	await expectLocalProgress(page, slotId, 'completed');
+	expect((await snapshot(page)).data.slotStatus).toEqual({
+		[slotId]: 'completed',
+	});
 	expect(writes).toBe(2);
 });

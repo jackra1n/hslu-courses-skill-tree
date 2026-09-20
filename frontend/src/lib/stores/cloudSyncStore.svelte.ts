@@ -378,12 +378,10 @@ async function initialize(localDataIsMeaningful: boolean): Promise<void> {
 		const userId = sessionUser.id;
 		const local = collectAppData();
 		const serialized = observeLocal(local);
-		if (
-			metadata.lastSyncedSnapshot !== null &&
-			serialized !== metadata.lastSyncedSnapshot
-		)
-			metadata.dirty = true;
-		if (metadata.dirty) pendingSnapshot = local;
+		if (metadata.lastSyncedSnapshot !== null) {
+			metadata.dirty = serialized !== metadata.lastSyncedSnapshot;
+		}
+		pendingSnapshot = metadata.dirty ? local : null;
 		persistMetadata();
 
 		// Route initialization must settle its own debounce before reading an

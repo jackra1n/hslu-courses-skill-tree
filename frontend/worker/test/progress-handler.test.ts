@@ -12,7 +12,6 @@ const SNAPSHOT = {
 	preferences: {
 		showShortNamesOnly: false,
 		showCourseTypeBadges: false,
-		theme: 'light',
 	},
 };
 

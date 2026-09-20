@@ -4,7 +4,6 @@ import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { clearAllPlans, loadAllPlans, savePlan } from '$lib/stores/planStorage';
 import { progressStore } from '$lib/stores/progressStore.svelte';
-import { type Theme, theme, themeStore } from '$lib/stores/theme.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import type { Season } from './season';
 import type { StudyPlan } from './study-plan';
@@ -20,7 +19,6 @@ export type AppData = {
 	preferences: {
 		showShortNamesOnly: boolean;
 		showCourseTypeBadges: boolean;
-		theme: Theme;
 	};
 };
 
@@ -53,7 +51,6 @@ export function collectAppData(): AppData {
 		preferences: {
 			showShortNamesOnly: store.showShortNamesOnly,
 			showCourseTypeBadges: uiStore.showCourseTypeBadges,
-			theme: theme(),
 		},
 	};
 }
@@ -70,7 +67,6 @@ export function applyAppData(data: AppData): void {
 	);
 	progressStore.replaceAll(data.slotStatus);
 	uiStore.setShowCourseTypeBadges(data.preferences.showCourseTypeBadges);
-	themeStore.set(data.preferences.theme);
 }
 
 export function importAppData(
@@ -99,7 +95,14 @@ export function parseAppData(value: unknown): AppData | null {
 	if (!data.studyPlans || typeof data.studyPlans !== 'object') return null;
 	if (!data.slotStatus || typeof data.slotStatus !== 'object') return null;
 	if (!data.preferences || typeof data.preferences !== 'object') return null;
-	return data as AppData;
+	// Older snapshots included theme; device-local preferences never enter sync.
+	return {
+		...(data as AppData),
+		preferences: {
+			showShortNamesOnly: data.preferences.showShortNamesOnly,
+			showCourseTypeBadges: data.preferences.showCourseTypeBadges,
+		},
+	};
 }
 
 // True when local storage holds real user state beyond an untouched default
@@ -112,7 +115,6 @@ const MEANINGFUL_KEYS = [
 	'startSeason',
 	'startYear',
 	'showCourseTypeBadges',
-	'theme',
 ] as const;
 
 export function hasMeaningfulStoredAppData(): boolean {
