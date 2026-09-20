@@ -25,11 +25,7 @@ import {
 	uiStore,
 } from '$lib/stores/uiStore.svelte';
 import type { Course, ExtendedNodeData } from '$lib/types';
-import {
-	computeStatuses,
-	hasAssessmentStageViolation,
-	hasMissingPrerequisites,
-} from '$lib/utils/status';
+import { computePlanWarnings, computeStatuses } from '$lib/utils/status';
 import AddNodeButton from './AddNodeButton.svelte';
 import CustomNode from './CustomNode.svelte';
 import SemesterDivider from './SemesterDivider.svelte';
@@ -52,6 +48,7 @@ const semesterIndicators = $derived(courseStore.semesterDividerData);
 const statuses = $derived.by(() =>
 	computeStatuses(courseStore.studyPlan, slotStatusMap()),
 );
+const warnings = $derived(computePlanWarnings(courseStore.studyPlan));
 
 // A removed slot or a different study plan must not leave stale details open.
 $effect(() => {
@@ -80,10 +77,7 @@ function styleCourseNode(flowNode: Node) {
 	const { slot, course, isElectiveSlot } = nodeData;
 
 	const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
-	const hasMissingPrereqs = hasMissingPrerequisites(
-		courseStore.studyPlan,
-		flowNode.id,
-	);
+	const nodeWarnings = warnings[flowNode.id];
 	const isSelected = selectedSlotId() === flowNode.id;
 
 	const style = getNodeStyle({
@@ -96,11 +90,7 @@ function styleCourseNode(flowNode: Node) {
 		hasSelectedCourse:
 			isElectiveSlot && slot ? !!courseStore.userSelections[slot.id] : false,
 		hasLaterPrerequisites: nodeData.hasLaterPrerequisites || false,
-		hasMissingPrerequisites: hasMissingPrereqs,
-		hasAssessmentStageViolation: hasAssessmentStageViolation(
-			courseStore.studyPlan,
-			flowNode.id,
-		),
+		...nodeWarnings,
 		isDragging,
 	});
 
@@ -114,7 +104,6 @@ function styleCourseNode(flowNode: Node) {
 			showCourseTypeBadges: showCourseTypeBadges(),
 			showRemoveButton: isSelected,
 			onRemove: handleRemoveClick,
-			hasMissingPrerequisites: hasMissingPrereqs,
 		},
 	};
 }

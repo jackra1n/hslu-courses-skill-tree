@@ -63,42 +63,41 @@ export function computeStatuses(
 	return statuses;
 }
 
-/**
- * Checks if a course has prerequisite requirements where none of the required courses exist in the study plan.
- * Handles both OR rules (all modules missing) and AND rules (any module missing).
- * When multiple prerequisite rules exist, they are connected with OR logic (PrerequisiteLinkType).
- * Returns true only if ALL rule groups have missing prerequisites.
- */
-export function hasMissingPrerequisites(
-	plan: StudyPlan,
-	nodeId: string,
-): boolean {
-	const node = plan.nodes[nodeId];
-	if (!node?.courseId) return false;
+type NodeWarnings = {
+	hasMissingPrerequisites: boolean;
+	hasAssessmentStageViolation: boolean;
+};
 
-	const course = resolveCourse(node.courseId);
-	if (!course || course.prerequisites.length === 0) return false;
-
-	// Build a set of all course IDs in the plan for quick lookup
+/** Plan-only warnings, computed once rather than on every canvas restyle. */
+export function computePlanWarnings(plan: StudyPlan): Record<string, NodeWarnings> {
+	const nodes = Object.values(plan.nodes);
 	const coursesInPlan = new Set<string>();
-	Object.values(plan.nodes).forEach((n) => {
-		if (n.courseId) {
-			coursesInPlan.add(n.courseId);
-		}
-	});
+	for (const node of nodes) {
+		if (node.courseId) coursesInPlan.add(node.courseId);
+	}
+	const assessmentSemesters = getAssessmentStageSemesters(plan);
+	const warnings: Record<string, NodeWarnings> = {};
+	for (const node of nodes) {
+		const course = resolveCourse(node.courseId);
+		warnings[node.id] = {
+			// Rule groups are alternatives; warn only when all groups are missing.
+			hasMissingPrerequisites:
+				!!course?.prerequisites.length &&
+				course.prerequisites.every((rule) =>
+					rule.moduleLinkType === 'oder'
+						? !rule.modules.some((id) => coursesInPlan.has(id))
+						: !rule.modules.every((id) => coursesInPlan.has(id)),
+				),
+			hasAssessmentStageViolation:
+				!!course?.assessmentLevelPassed && node.semester <= assessmentSemesters,
+		};
+	}
+	return warnings;
+}
 
-	const allRulesHaveMissing = course.prerequisites.every((rule) => {
-		const modulesInPlan = rule.modules.filter((moduleId) =>
-			coursesInPlan.has(moduleId),
-		);
-
-		if (rule.moduleLinkType === 'oder') {
-			return modulesInPlan.length === 0;
-		} else {
-			return modulesInPlan.length < rule.modules.length;
-		}
-	});
-	return allRulesHaveMissing;
+function getAssessmentStageSemesters(plan: StudyPlan): number {
+	const template = getTemplateById(plan.templateId);
+	return template ? (template.modell === 'parttime' ? 3 : 2) : 0;
 }
 
 /**
@@ -115,13 +114,5 @@ export function hasAssessmentStageViolation(
 	const course = resolveCourse(node.courseId);
 	if (!course?.assessmentLevelPassed) return false;
 
-	// Get the template to determine the model type
-	const template = getTemplateById(plan.templateId);
-	if (!template) return false;
-
-	// Determine assessment stage semesters based on model
-	const assessmentStageSemesters = template.modell === 'parttime' ? 3 : 2;
-
-	// Check if the node is in the assessment stage
-	return node.semester <= assessmentStageSemesters;
+	return node.semester <= getAssessmentStageSemesters(plan);
 }

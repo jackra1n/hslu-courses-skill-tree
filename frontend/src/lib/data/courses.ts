@@ -270,6 +270,5 @@ export type ExtendedNodeData = {
 	showCourseTypeBadges?: boolean;
 	showRemoveButton?: boolean;
 	onRemove?: (nodeId: string) => void;
-	hasMissingPrerequisites?: boolean;
 	hasLaterPrerequisites?: boolean;
 };

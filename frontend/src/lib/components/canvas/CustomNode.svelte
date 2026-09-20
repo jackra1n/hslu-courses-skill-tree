@@ -3,8 +3,6 @@ import { Handle, Position } from '@xyflow/svelte';
 import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import type { Course, ExtendedNodeData, TemplateSlot } from '$lib/data/courses';
 import * as m from '$lib/paraglide/messages';
-import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { hasMissingPrerequisites as checkMissingPrerequisites } from '$lib/utils/status';
 
 let {
 	id,
@@ -22,8 +20,6 @@ let {
 	onRemove?: (nodeId: string) => void;
 } = $props();
 
-const courseStore = getCourseStore();
-
 const nodeData = $derived(data);
 const slot = $derived(nodeData.slot);
 const course = $derived(nodeData.course);
@@ -33,13 +29,6 @@ const sourceHandles = $derived(nodeData.sourceHandles ?? 0);
 const targetHandles = $derived(nodeData.targetHandles ?? 0);
 const showRemoveBtn = $derived(nodeData.showRemoveButton ?? showRemoveButton);
 const removeHandler = $derived(nodeData.onRemove ?? onRemove);
-
-const hasMissingPrerequisites = $derived.by(() => {
-	if (nodeData.hasMissingPrerequisites !== undefined) {
-		return nodeData.hasMissingPrerequisites;
-	}
-	return checkMissingPrerequisites(courseStore.studyPlan, id);
-});
 
 function handleRemoveClick(event: MouseEvent) {
 	event.stopPropagation();
