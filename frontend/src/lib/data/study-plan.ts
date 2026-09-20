@@ -9,7 +9,7 @@ import * as m from '$lib/paraglide/messages';
 
 export type PlanNodeKind = 'fixed' | 'elective' | 'custom';
 
-export type PlanNode = {
+export type PlanNode = Readonly<{
 	id: string;
 	kind: PlanNodeKind;
 	slotType: TemplateSlot['type'] | 'custom';
@@ -18,19 +18,19 @@ export type PlanNode = {
 	courseId?: string | null;
 	ects: number;
 	label: string;
-};
+}>;
 
-export type PlanRow = {
+export type PlanRow = Readonly<{
 	semester: number;
-	nodeOrder: string[];
-};
+	nodeOrder: readonly string[];
+}>;
 
-export type StudyPlan = {
+export type StudyPlan = Readonly<{
 	templateId: string;
 	planCode: string;
-	rows: PlanRow[];
-	nodes: Record<string, PlanNode>;
-};
+	rows: readonly PlanRow[];
+	nodes: Readonly<Record<string, PlanNode>>;
+}>;
 
 function getDefaultLabel(slotType: TemplateSlot['type'] | 'custom'): string {
 	if (slotType === 'elective') return m.slot_wahl();
@@ -198,26 +198,25 @@ export function getPlanNodeCourse(node: PlanNode): Course | undefined {
 }
 
 export function normalizePlan(plan: StudyPlan): StudyPlan {
-	const nextRows: PlanRow[] = plan.rows.map((row, index) => ({
-		semester: index + 1,
-		nodeOrder: [...row.nodeOrder],
-	}));
-
-	const nextNodes: Record<string, PlanNode> = { ...plan.nodes };
-	nextRows.forEach((row) => {
-		row.nodeOrder.forEach((nodeId) => {
-			const node = nextNodes[nodeId];
-			if (node && node.semester !== row.semester) {
-				nextNodes[nodeId] = { ...node, semester: row.semester };
+	let rows: PlanRow[] | undefined;
+	let nodes: Record<string, PlanNode> | undefined;
+	plan.rows.forEach((row, index) => {
+		const semester = index + 1;
+		if (row.semester !== semester) {
+			rows ??= plan.rows.slice();
+			rows[index] = { ...row, semester };
+		}
+		for (const nodeId of row.nodeOrder) {
+			const node = plan.nodes[nodeId];
+			if (node && node.semester !== semester) {
+				nodes ??= { ...plan.nodes };
+				nodes[nodeId] = { ...node, semester };
 			}
-		});
+		}
 	});
-
-	return {
-		...plan,
-		rows: nextRows,
-		nodes: nextNodes,
-	};
+	return rows || nodes
+		? { ...plan, rows: rows ?? plan.rows, nodes: nodes ?? plan.nodes }
+		: plan;
 }
 
 export function buildPlanRowIndex(plan: StudyPlan): Record<string, number> {

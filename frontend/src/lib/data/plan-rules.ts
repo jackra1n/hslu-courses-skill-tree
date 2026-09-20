@@ -71,7 +71,7 @@ export function isPlanCustomized(plan: StudyPlan): boolean {
 	return !rowsEqual(plan.rows, defaultPlan.rows);
 }
 
-function rowsEqual(a: PlanRow[], b: PlanRow[]): boolean {
+function rowsEqual(a: readonly PlanRow[], b: readonly PlanRow[]): boolean {
 	if (a.length !== b.length) return false;
 	return a.every(
 		(row, i) =>

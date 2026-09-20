@@ -6,7 +6,6 @@ import ThemeSwitcher from '$lib/components/ui/ThemeSwitcher.svelte';
 import { collectAppData, importAppData } from '$lib/data/persistence';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import { downloadJson, pickTextFile } from '$lib/utils/file-transfer';
 
@@ -76,10 +75,7 @@ function handleResetProgress() {
 }
 
 function confirmResetProgress() {
-	const plan = courseStore.studyPlan;
-	Object.keys(plan.nodes).forEach((slotId) => {
-		progressStore.clearSlotStatus(slotId);
-	});
+	courseStore.resetProgress();
 	showResetProgressDialog = false;
 	closeSidebar();
 }
@@ -89,12 +85,7 @@ function handleResetAllData() {
 }
 
 function confirmResetAllData() {
-	const template = courseStore.currentTemplate;
-	courseStore.switchTemplate(template.id, true);
-	const plan = courseStore.studyPlan;
-	Object.keys(plan.nodes).forEach((slotId) => {
-		progressStore.clearSlotStatus(slotId);
-	});
+	courseStore.resetCurrentPlan();
 	showResetAllDataDialog = false;
 	closeSidebar();
 }

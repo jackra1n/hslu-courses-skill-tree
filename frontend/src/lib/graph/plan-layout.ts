@@ -22,7 +22,7 @@ export function resolveNodeWidth(node: Node | undefined): number {
 
 // Returns the x cursor just past the last node (where the next slot sits).
 function walkRow(
-	nodeOrder: string[],
+	nodeOrder: readonly string[],
 	widthOf: (nodeId: string) => number,
 	visit?: (nodeId: string, x: number) => void,
 ): number {
@@ -37,7 +37,7 @@ function walkRow(
 // `skipNodeId` reserves a node's space without moving it (used while dragging).
 export function layoutNodes(
 	sourceNodes: Node[],
-	rows: PlanRow[],
+	rows: readonly PlanRow[],
 	options: { skipNodeId?: string } = {},
 ): Node[] {
 	const byId = new Map(sourceNodes.map((node) => [node.id, node] as const));
@@ -58,7 +58,10 @@ export function layoutNodes(
 	return sourceNodes.map((node) => byId.get(node.id) ?? node);
 }
 
-export function addAddNodeButtons(nodes: Node[], rows: PlanRow[]): Node[] {
+export function addAddNodeButtons(
+	nodes: Node[],
+	rows: readonly PlanRow[],
+): Node[] {
 	const byId = new Map(nodes.map((node) => [node.id, node] as const));
 	const addNodes: Node[] = [];
 	const semestersToShow = Math.min(rows.length + 1, MAX_SEMESTERS);
@@ -115,7 +118,10 @@ function calculateRowRightEdge(
 	return rightEdge;
 }
 
-export function computeDividerLength(rows: PlanRow[], nodes: Node[]): number {
+export function computeDividerLength(
+	rows: readonly PlanRow[],
+	nodes: Node[],
+): number {
 	if (!rows.length) return MIN_DIVIDER_WIDTH;
 	const lookup = new Map(nodes.map((node) => [node.id, node] as const));
 	const longestEnd = Math.max(

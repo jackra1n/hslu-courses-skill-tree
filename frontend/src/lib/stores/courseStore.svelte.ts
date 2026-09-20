@@ -69,8 +69,16 @@ function requireDefaultTemplate(): CurriculumTemplate {
 }
 
 class CourseStore {
-	currentTemplate = $state(requireDefaultTemplate());
-	studyPlan = $state<StudyPlan>(createStudyPlan(this.currentTemplate, {}));
+	private template = $state.raw(requireDefaultTemplate());
+	private plan = $state.raw<StudyPlan>(createStudyPlan(this.template, {}));
+
+	get currentTemplate(): CurriculumTemplate {
+		return this.template;
+	}
+
+	get studyPlan(): StudyPlan {
+		return this.plan;
+	}
 	showShortNamesOnly = $state(false);
 	startSeason = $state<Season>(INITIAL_TERM.season);
 	startYear = $state<number>(INITIAL_TERM.year);
@@ -98,18 +106,6 @@ class CourseStore {
 	completedCredits = $derived.by(() =>
 		calculateCompletedCredits(this.studyPlan, slotStatusMap()),
 	);
-	calculatedTotalCredits = $derived(
-		Math.max(0, this.totalCredits - this.attendedCredits),
-	);
-	availablePlans = $derived(
-		getTemplatesByProgram(
-			this.currentTemplate.studiengang,
-			this.currentTemplate.modell,
-		)
-			.map((t) => t.plan)
-			.filter((plan, index, arr) => arr.indexOf(plan) === index)
-			.sort(),
-	);
 	nodes = $derived.by(() => this.drag.activeNodes);
 	edges = $derived.by(() =>
 		orderEdgeHandles(this.graph.edges, this.positionedNodes),
@@ -136,28 +132,40 @@ class CourseStore {
 		return canSelectCourse(this.studyPlan, slotId, courseId);
 	}
 
-	switchTemplate(templateId: string, forceReset: boolean = false) {
-		const template = getTemplateById(templateId);
-		if (!template) return;
-
-		this.currentTemplate = template;
+	private activateTemplate(
+		template: CurriculumTemplate,
+		resetLayout = false,
+		legacySelections: Record<string, string> = {},
+	): void {
 		setCoursePlan(template.plan);
-
-		this.setStudyPlan(
-			forceReset ? createStudyPlan(template, {}) : loadPlan(template),
-		);
-		planPrefs.saveTemplate(templateId, template.plan);
+		const loaded =
+			!resetLayout || template.id !== this.currentTemplate.id
+				? loadPlan(template, legacySelections)
+				: this.studyPlan;
+		const next = resetLayout ? createStudyPlan(template, {}) : loaded;
+		if (resetLayout) {
+			const status = Object.fromEntries(slotStatusMap());
+			for (const node of Object.values(loaded.nodes)) {
+				if (!node.courseId || next.nodes[node.id]?.courseId !== node.courseId) {
+					delete status[node.id];
+				}
+			}
+			progressStore.replaceAll(status);
+		}
+		this.template = template;
+		this.setStudyPlan(next);
+		planPrefs.saveTemplate(template.id, template.plan);
 	}
 
-	switchPlan(plan: string) {
-		setCoursePlan(plan);
-		const nextTemplate = getTemplatesByProgram(
-			this.currentTemplate.studiengang,
-			this.currentTemplate.modell,
-		).find((t) => t.plan === plan);
-		if (nextTemplate) {
-			this.switchTemplate(nextTemplate.id);
-		}
+	resetProgress(): void {
+		const status = Object.fromEntries(slotStatusMap());
+		for (const id of Object.keys(this.studyPlan.nodes)) delete status[id];
+		progressStore.replaceAll(status);
+	}
+
+	resetCurrentPlan(): void {
+		this.resetProgress();
+		this.activateTemplate(this.currentTemplate, true);
 	}
 
 	selectCourseForSlot(slotId: string, courseId: string) {
@@ -171,7 +179,12 @@ class CourseStore {
 
 	private assignCourse(slotId: string, courseId: string | null): void {
 		const node = this.studyPlan.nodes[slotId];
-		if (!node || node.slotType === 'fixed' || (node.courseId ?? null) === courseId) return;
+		if (
+			!node ||
+			node.slotType === 'fixed' ||
+			(node.courseId ?? null) === courseId
+		)
+			return;
 		progressStore.clearSlotStatus(slotId);
 		this.setStudyPlan(updateNodeCourse(this.studyPlan, slotId, courseId));
 	}
@@ -190,12 +203,14 @@ class CourseStore {
 		season: Season,
 		forceReset = false,
 	) {
+		const template = getTemplateById(templateId);
+		if (!template) return;
 		this.startYear = year;
 		this.startSeason = season;
 		planPrefs.saveStartYear(year);
 		planPrefs.saveStartSeason(season);
 		if (forceReset || templateId !== this.currentTemplate.id) {
-			this.switchTemplate(templateId, forceReset);
+			this.activateTemplate(template, forceReset);
 		}
 	}
 
@@ -207,16 +222,13 @@ class CourseStore {
 		showShortNamesOnly: boolean,
 	) {
 		const template = getTemplateById(currentTemplateId) ?? this.currentTemplate;
-		this.currentTemplate = template;
 		this.startYear = year;
 		this.startSeason = season;
 		this.showShortNamesOnly = showShortNamesOnly;
-		planPrefs.saveTemplate(template.id, template.plan);
 		planPrefs.saveStartYear(year);
 		planPrefs.saveStartSeason(season);
 		planPrefs.saveShortNames(showShortNamesOnly);
-		setCoursePlan(template.plan);
-		this.setStudyPlan(loadPlan(template));
+		this.activateTemplate(template);
 	}
 
 	// The calendar season (HS/FS) a given 1-indexed plan semester falls in.
@@ -250,10 +262,10 @@ class CourseStore {
 						this.currentTemplate.modell,
 					).find((t) => t.plan === savedPlanCode)
 				: undefined;
+		let template = savedTemplate ?? this.currentTemplate;
 
 		if (savedTemplate) {
 			// returning user: keep their curriculum and start term
-			this.currentTemplate = savedTemplate;
 			this.startSeason = planPrefs.loadStartSeason() ?? 'HS';
 			this.startYear =
 				planPrefs.loadStartYear() ??
@@ -271,19 +283,16 @@ class CourseStore {
 				),
 				term,
 			);
-			const template = plan
+			const resolvedTemplate = plan
 				? getTemplatesByProgram(
 						this.currentTemplate.studiengang,
 						this.currentTemplate.modell,
 					).find((t) => t.plan === plan)
 				: undefined;
-			if (template) this.currentTemplate = template;
+			if (resolvedTemplate) template = resolvedTemplate;
 		}
 
-		setCoursePlan(this.currentTemplate.plan);
-
-		const legacySelections = loadLegacySelections();
-		this.setStudyPlan(loadPlan(this.currentTemplate, legacySelections));
+		this.activateTemplate(template, false, loadLegacySelections());
 	}
 
 	handleNodeDragStart() {
@@ -299,6 +308,8 @@ class CourseStore {
 	}
 
 	addCustomNode(semester: number) {
+		if (!Number.isInteger(semester) || semester < 1 || semester > MAX_SEMESTERS)
+			return;
 		const nodeId = generateNodeId();
 		const newNode: PlanNode = {
 			id: nodeId,
@@ -310,14 +321,15 @@ class CourseStore {
 			label: m.slot_custom(),
 		};
 
-		const updatedRows = this.studyPlan.rows.map((row) => ({
-			...row,
-			nodeOrder: [...row.nodeOrder],
-		}));
+		const updatedRows = this.studyPlan.rows.slice();
 		while (updatedRows.length < semester) {
 			updatedRows.push({ semester: updatedRows.length + 1, nodeOrder: [] });
 		}
-		updatedRows[semester - 1]?.nodeOrder.push(nodeId);
+		const row = updatedRows[semester - 1];
+		updatedRows[semester - 1] = {
+			...row,
+			nodeOrder: [...row.nodeOrder, nodeId],
+		};
 
 		this.setStudyPlan({
 			...this.studyPlan,
@@ -336,7 +348,10 @@ class CourseStore {
 				? { ...row, nodeOrder: row.nodeOrder.filter((id) => id !== nodeId) }
 				: row,
 		);
-		while (updatedRows.length > 1 && updatedRows.at(-1)?.nodeOrder.length === 0) {
+		while (
+			updatedRows.length > 1 &&
+			updatedRows.at(-1)?.nodeOrder.length === 0
+		) {
 			updatedRows.pop();
 		}
 
@@ -352,7 +367,9 @@ class CourseStore {
 	}
 
 	private setStudyPlan(nextPlan: StudyPlan): void {
-		this.studyPlan = normalizePlan(nextPlan);
+		const normalized = normalizePlan(nextPlan);
+		if (normalized === this.plan) return;
+		this.plan = normalized;
 		this.drag.clear();
 		savePlan(this.studyPlan);
 	}
