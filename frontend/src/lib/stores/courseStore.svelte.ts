@@ -87,7 +87,7 @@ class CourseStore {
 	startYear = $state<number>(INITIAL_TERM.year);
 
 	private graph = $derived.by(() =>
-		toGraph(this.studyPlan, this.showShortNamesOnly),
+		toGraph(this.studyPlan, this.showShortNamesOnly, progressStore.slotStatus),
 	);
 	private positionedNodes = $derived.by(() =>
 		layoutNodes(this.graph.nodes, this.studyPlan.rows),

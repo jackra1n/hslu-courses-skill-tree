@@ -1,4 +1,8 @@
 import { readFile } from 'node:fs/promises';
+import type { Page } from '@playwright/test';
+import catalog from '../src/lib/data/catalog/catalog.generated.json' with {
+	type: 'json',
+};
 import { expect, test } from './fixtures';
 
 test('progress imports and saved statuses discard invalid entries without losing valid progress', async ({
@@ -212,4 +216,120 @@ test('replacing a completed elective does not transfer its progress', async ({
 	await expect(
 		panel.getByRole('button', { name: 'Completed', exact: true }),
 	).toHaveCount(0);
+});
+
+async function loadRetakePlan(page: Page) {
+	const template = catalog.templates[0];
+	const courses = [
+		{ id: 'custom-original', courseId: 'OOP', semester: 1 },
+		{ id: 'custom-retake', courseId: 'OOP', semester: 2 },
+		{ id: 'custom-passed', courseId: 'IOS', semester: 3 },
+		{ id: 'custom-attended', courseId: 'AD', semester: 3 },
+	];
+	const plan = {
+		templateId: template.id,
+		planCode: template.plan,
+		rows: [1, 2, 3].map((semester) => ({
+			semester,
+			nodeOrder: courses
+				.filter((course) => course.semester === semester)
+				.map((course) => course.id),
+		})),
+		nodes: Object.fromEntries(
+			courses.map((course) => [
+				course.id,
+				{
+					...course,
+					kind: 'custom',
+					slotType: 'custom',
+					ects: catalog.courses.find((entry) => entry.id === course.courseId)!
+						.ects,
+					label: course.courseId,
+				},
+			]),
+		),
+	};
+	await page.addInitScript((plan) => {
+		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
+		localStorage.setItem('currentTemplate', plan.templateId);
+		localStorage.setItem('selectedPlan', plan.planCode);
+		localStorage.setItem(`studyPlan:${plan.templateId}`, JSON.stringify(plan));
+		localStorage.setItem(
+			'slotStatus',
+			JSON.stringify({
+				'custom-original': 'attended',
+				'custom-retake': 'completed',
+			}),
+		);
+	}, plan);
+	await page.goto('/');
+}
+
+test('prerequisite edges follow successful retakes and react to corrected outcomes', async ({
+	page,
+}) => {
+	await loadRetakePlan(page);
+	const edge = (source: string, target: string) =>
+		page.locator(
+			`.svelte-flow__edge[data-id="custom-${source}=>custom-${target}"]`,
+		);
+	await expect(edge('retake', 'passed')).toBeVisible();
+	await expect(edge('original', 'passed')).toHaveCount(0);
+	// An attendance-only prerequisite is already satisfied by the first attempt.
+	await expect(edge('original', 'attended')).toBeVisible();
+
+	await page
+		.locator('.svelte-flow__node-custom[data-id="custom-original"]')
+		.click();
+	const panel = page.locator('#skill-tree-course-detail-panel');
+	await panel
+		.getByRole('button', { name: 'Mark as Completed', exact: true })
+		.click();
+	await expect(edge('original', 'passed')).toBeVisible();
+	await expect(edge('retake', 'passed')).toHaveCount(0);
+
+	await panel.getByRole('button', { name: 'Completed', exact: true }).click();
+	await panel
+		.getByRole('button', { name: 'Mark as Attended', exact: true })
+		.click();
+	await expect(edge('retake', 'passed')).toBeVisible();
+	await expect(edge('original', 'passed')).toHaveCount(0);
+	await expect(edge('original', 'attended')).toBeVisible();
+});
+
+test('graph animations and transitions follow live reduced-motion preferences', async ({
+	page,
+}) => {
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await loadRetakePlan(page);
+	const node = page.locator(
+		'.svelte-flow__node-custom[data-id="custom-original"]',
+	);
+	const paths = [
+		page.locator(
+			'.svelte-flow__edge[data-id="custom-retake=>custom-passed"] .svelte-flow__edge-path',
+		),
+		page.locator(
+			'.svelte-flow__edge[data-id="custom-original=>custom-attended"] .svelte-flow__edge-path',
+		),
+	];
+	await expect(node).toHaveCSS('transition-duration', '0s');
+	for (const path of paths) {
+		await expect(path).toHaveCSS('animation-name', 'none');
+		await expect(path).toHaveCSS('transition-duration', '0s');
+	}
+
+	await page.emulateMedia({ reducedMotion: 'no-preference' });
+	await expect(node).not.toHaveCSS('transition-duration', '0s');
+	for (const path of paths) {
+		await expect(path).not.toHaveCSS('animation-name', 'none');
+		await expect(path).not.toHaveCSS('transition-duration', '0s');
+	}
+
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await expect(node).toHaveCSS('transition-duration', '0s');
+	for (const path of paths) {
+		await expect(path).toHaveCSS('animation-name', 'none');
+		await expect(path).toHaveCSS('transition-duration', '0s');
+	}
 });

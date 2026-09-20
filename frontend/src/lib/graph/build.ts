@@ -24,16 +24,29 @@ const MAX_HANDLES = 7;
 export function toGraph(
 	plan: StudyPlan,
 	showShortNamesOnly: boolean,
+	slotStatus: ReadonlyMap<string, 'attended' | 'completed'>,
 ): { nodes: Node[]; edges: Edge[] } {
 	const courseProviders = mapPlanCourseProviders(plan);
 	const rowIndex = buildPlanRowIndex(plan);
 	const retakes = mapRetakes(courseProviders, rowIndex);
 
 	const nodes = Object.values(plan.nodes).map((planNode) =>
-		buildNode(planNode, plan, showShortNamesOnly, retakes.has(planNode.id)),
+		buildNode(
+			planNode,
+			plan,
+			showShortNamesOnly,
+			retakes.has(planNode.id),
+			slotStatus,
+		),
 	);
 
-	const { edges, usage } = buildEdges(plan, courseProviders, rowIndex, retakes);
+	const { edges, usage } = buildEdges(
+		plan,
+		courseProviders,
+		rowIndex,
+		retakes,
+		slotStatus,
+	);
 	applyHandleUsage(nodes, usage);
 
 	return { nodes, edges };
@@ -81,6 +94,7 @@ function buildNode(
 	plan: StudyPlan,
 	showShortNamesOnly: boolean,
 	isRetake: boolean,
+	slotStatus: ReadonlyMap<string, 'attended' | 'completed'>,
 ): Node {
 	const course = resolveCourse(planNode.courseId) ?? null;
 	const slot = toSlotSnapshot(planNode);
@@ -104,7 +118,11 @@ function buildNode(
 			course,
 			isElectiveSlot,
 			width: getNodeWidth(ects),
-			hasLaterPrerequisites: hasPlanPrereqConflict(plan, planNode.id),
+			hasLaterPrerequisites: hasPlanPrereqConflict(
+				plan,
+				planNode.id,
+				slotStatus,
+			),
 			targetHandles,
 		} as ExtendedNodeData,
 		style: '',
@@ -129,41 +147,46 @@ function getFallbackLabel(slotType: TemplateSlot['type']): string {
 	return m.slot_course();
 }
 
-// The provider node sitting in the earliest semester row, or undefined if none.
-function earliestByRow(
-	ids: string[],
-	rowIndex: Record<string, number>,
-): string | undefined {
-	if (ids.length === 0) return undefined;
-	return ids.reduce((best, current) =>
-		(rowIndex[current] ?? Infinity) < (rowIndex[best] ?? Infinity)
-			? current
-			: best,
-	);
-}
-
 export function selectProviderForRule(
 	rule: PrerequisiteRule,
 	courseProviders: Map<string, string[]>,
 	rowIndex: Record<string, number>,
+	slotStatus: ReadonlyMap<string, 'attended' | 'completed'>,
 ): string[] {
-	if (rule.moduleLinkType === 'oder') {
-		// any one module satisfies the rule: pick the single earliest provider
-		const allProviders = rule.modules.flatMap(
-			(moduleId) => courseProviders.get(moduleId) ?? [],
-		);
-		const earliest = earliestByRow(allProviders, rowIndex);
-		return earliest ? [earliest] : [];
+	const selected: string[] = [];
+	const isModuleOr = rule.moduleLinkType === 'oder';
+	let best: string | undefined;
+	let bestPriority = Infinity;
+	let bestRow = Infinity;
+
+	for (const moduleId of rule.modules) {
+		for (const providerId of courseProviders.get(moduleId) ?? []) {
+			const status = slotStatus.get(providerId);
+			const satisfies =
+				status === 'completed' || (!rule.mustBePassed && status === 'attended');
+			// Prefer a satisfying outcome, then a planned attempt, then a failure.
+			const priority = satisfies ? 0 : status === undefined ? 1 : 2;
+			const row = rowIndex[providerId] ?? Infinity;
+			const preferredRow = priority === 2 ? row > bestRow : row < bestRow;
+			if (
+				best === undefined ||
+				priority < bestPriority ||
+				(priority === bestPriority && preferredRow)
+			) {
+				best = providerId;
+				bestPriority = priority;
+				bestRow = row;
+			}
+		}
+
+		if (!isModuleOr && best !== undefined) {
+			selected.push(best);
+			best = undefined;
+		}
 	}
 
-	// every module required: pick the earliest provider of each
-	return rule.modules.flatMap((moduleId) => {
-		const earliest = earliestByRow(
-			courseProviders.get(moduleId) ?? [],
-			rowIndex,
-		);
-		return earliest ? [earliest] : [];
-	});
+	if (isModuleOr && best !== undefined) selected.push(best);
+	return selected;
 }
 
 // Which prerequisite rules get edges drawn. OR-linked rules show only the one
@@ -172,13 +195,19 @@ function selectRulesToProcess(
 	course: Course,
 	courseProviders: Map<string, string[]>,
 	rowIndex: Record<string, number>,
+	slotStatus: ReadonlyMap<string, 'attended' | 'completed'>,
 ): PrerequisiteRule[] {
 	const rules = course.prerequisites;
 	if (rules.length <= 1) return rules;
 	if ((rules[0].prerequisiteLinkType || 'und') !== 'oder') return rules;
 
 	const ruleRows = rules.map((rule) => {
-		const providers = selectProviderForRule(rule, courseProviders, rowIndex);
+		const providers = selectProviderForRule(
+			rule,
+			courseProviders,
+			rowIndex,
+			slotStatus,
+		);
 		return providers.length === 0
 			? Infinity
 			: Math.min(...providers.map((id) => rowIndex[id] ?? Infinity));
@@ -191,6 +220,7 @@ function buildEdges(
 	courseProviders: Map<string, string[]>,
 	rowIndex: Record<string, number>,
 	retakes: Map<string, string>,
+	slotStatus: ReadonlyMap<string, 'attended' | 'completed'>,
 ): { edges: Edge[]; usage: HandleUsage } {
 	const edges: Edge[] = [];
 	const usage: HandleUsage = {};
@@ -235,13 +265,18 @@ function buildEdges(
 		const course = resolveCourse(planNode.courseId);
 		if (!course) return;
 
-		selectRulesToProcess(course, courseProviders, rowIndex).forEach((rule) => {
-			selectProviderForRule(rule, courseProviders, rowIndex).forEach(
-				(providerId) => {
+		selectRulesToProcess(course, courseProviders, rowIndex, slotStatus).forEach(
+			(rule) => {
+				selectProviderForRule(
+					rule,
+					courseProviders,
+					rowIndex,
+					slotStatus,
+				).forEach((providerId) => {
 					addEdge(providerId, planNode.id);
-				},
-			);
-		});
+				});
+			},
+		);
 	});
 
 	return { edges, usage };

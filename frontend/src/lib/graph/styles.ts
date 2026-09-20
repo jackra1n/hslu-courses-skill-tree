@@ -8,8 +8,16 @@ function toEdgeMarker(marker: Edge['markerEnd']): EdgeMarker {
 		: { type: MarkerType.ArrowClosed };
 }
 
-function buildBaseNodeStyle(nodeWidth: number, isDragging: boolean): string {
-	const transition = !isDragging ? 'transition: all 0.2s;' : '';
+function buildBaseNodeStyle(
+	nodeWidth: number,
+	isDragging: boolean,
+	reducedMotion: boolean,
+): string {
+	const transition = reducedMotion
+		? 'transition: none;'
+		: isDragging
+			? ''
+			: 'transition: all 0.2s;';
 	return `border-radius: 12px; font-weight: 500; font-size: 14px; text-align: center; min-width: ${nodeWidth}px; width: ${nodeWidth}px; font-family: Inter, sans-serif; ${transition} `;
 }
 
@@ -99,11 +107,12 @@ export type NodeStyleInput = {
 	hasMissingPrerequisites: boolean;
 	hasAssessmentStageViolation: boolean;
 	isDragging: boolean;
+	reducedMotion: boolean;
 };
 
 export function getNodeStyle(input: NodeStyleInput): string {
 	const style =
-		buildBaseNodeStyle(input.nodeWidth, input.isDragging) +
+		buildBaseNodeStyle(input.nodeWidth, input.isDragging, input.reducedMotion) +
 		buildSelectionStyle(input.isSelected) +
 		buildNodeStateStyle(
 			input.status,
@@ -144,10 +153,15 @@ type EdgeStateInput = {
 	targetAvailable: boolean;
 	markerType: EdgeMarker;
 	isDragging: boolean;
+	reducedMotion: boolean;
 };
 
 function buildEdgeStateStyle(input: EdgeStateInput): EdgeStyleResult {
-	const transition = !input.isDragging ? 'transition: all 0.2s;' : '';
+	const transition = input.reducedMotion
+		? 'transition: none;'
+		: input.isDragging
+			? ''
+			: 'transition: all 0.2s;';
 	const base = `stroke-width: 2px; ${transition} filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); `;
 	const { markerType } = input;
 
@@ -184,14 +198,15 @@ function buildEdgeStateStyle(input: EdgeStateInput): EdgeStyleResult {
 		return {
 			style: `${base}stroke: rgb(34 197 94); stroke-width: 3px; `,
 			markerEnd: { type: markerType.type, color: 'rgb(34 197 94)' },
-			animated: !input.targetCompleted && input.targetAvailable,
+			animated:
+				!input.reducedMotion && !input.targetCompleted && input.targetAvailable,
 			zIndex: EDGE_Z_BASE,
 		};
 	}
 	return {
 		style: `${base}stroke: rgb(var(--border-primary)); stroke-opacity: 0.6; `,
 		markerEnd: { type: markerType.type },
-		animated: input.targetAvailable,
+		animated: !input.reducedMotion && input.targetAvailable,
 		zIndex: EDGE_Z_BASE,
 	};
 }
@@ -202,6 +217,7 @@ export function getEdgeStyle(
 	statuses: Record<string, Status>,
 	slotStatus: Map<string, 'attended' | 'completed'>,
 	isDragging: boolean,
+	reducedMotion: boolean,
 ): EdgeStyleResult {
 	const isPrerequisite = selectedSlotId === edge.target;
 	const isDependent = selectedSlotId === edge.source;
@@ -215,5 +231,6 @@ export function getEdgeStyle(
 		targetAvailable: statuses[edge.target] === 'available',
 		markerType: toEdgeMarker(edge.markerEnd),
 		isDragging,
+		reducedMotion,
 	});
 }

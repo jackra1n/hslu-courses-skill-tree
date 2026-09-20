@@ -7,7 +7,7 @@ import {
 } from '$lib/data/planning/study-plan';
 import { selectProviderForRule } from '$lib/graph/build';
 
-type SlotStatus = Map<string, 'attended' | 'completed'>;
+type SlotStatus = ReadonlyMap<string, 'attended' | 'completed'>;
 
 export function evaluatePrerequisiteRule(
 	rule: PrerequisiteRule,
@@ -53,6 +53,7 @@ export function evaluatePrerequisites(
 export function hasPlanPrereqConflict(
 	plan: StudyPlan,
 	targetNodeId: string,
+	slotStatus: SlotStatus,
 	options: { considerSameSemester?: boolean } = {},
 ): boolean {
 	const node = plan.nodes[targetNodeId];
@@ -81,6 +82,7 @@ export function hasPlanPrereqConflict(
 					rule,
 					providers,
 					rowIndex,
+					slotStatus,
 				);
 				if (selectedProviders.length === 0) return Infinity;
 				return Math.min(
@@ -96,7 +98,12 @@ export function hasPlanPrereqConflict(
 	}
 
 	const ruleConflicts = rulesToCheck.map((rule) => {
-		const selectedProviders = selectProviderForRule(rule, providers, rowIndex);
+		const selectedProviders = selectProviderForRule(
+			rule,
+			providers,
+			rowIndex,
+			slotStatus,
+		);
 
 		if (selectedProviders.length === 0) return true;
 

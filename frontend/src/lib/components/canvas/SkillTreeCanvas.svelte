@@ -39,6 +39,7 @@ function isCourseNode(node: Node): node is CourseNode {
 
 let isDragging = $state(false);
 const compactScreen = new MediaQuery('(max-width: 1024px)');
+const reducedMotion = new MediaQuery('(prefers-reduced-motion: reduce)');
 
 const courseStore = getCourseStore();
 
@@ -93,6 +94,7 @@ function styleCourseNode(flowNode: CourseNode): CourseNode {
 		hasLaterPrerequisites: nodeData.hasLaterPrerequisites ?? false,
 		...nodeWarnings,
 		isDragging,
+		reducedMotion: reducedMotion.current,
 	});
 
 	return {
@@ -119,6 +121,7 @@ const styledEdges = $derived(
 				statuses,
 				progressStore.slotStatus,
 				isDragging,
+				reducedMotion.current,
 			),
 		}),
 	),
