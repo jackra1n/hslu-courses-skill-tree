@@ -208,42 +208,41 @@ $effect(() => {
 </script>
 
 <div class="relative h-full min-h-0" data-tour="skill-tree">
-  <SvelteFlow
-    nodes={styledNodes}
-    edges={styledEdges}
-    {nodeTypes}
-    onnodeclick={handleNodeClick}
-    onnodedragstart={handleNodeDragStart}
-    onnodedrag={handleNodeDrag}
-    onnodedragstop={handleNodeDragStop}
-    onpaneclick={() => uiStore.deselectCourse()}
-    panOnScroll={true}
-    zoomOnDoubleClick={false}
-    nodesDraggable={true}
-    nodesConnectable={false}
-    deleteKey={null}
-    fitView
-    colorMode={theme()}
-    proOptions={{ hideAttribution: compactScreen.current }}
-  >
-    <svg
-      class="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
-    >
-      <g
-        transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})"
-      >
-        {#each semesterIndicators as divider}
-          <SemesterDivider
-            semester={divider.semester}
-            plan={courseStore.studyPlan}
-            isPreview={divider.isPreview}
-            length={divider.length}
-          />
-        {/each}
-      </g>
-    </svg>
-    <Controls />
-    <Background gap={16} />
-  </SvelteFlow>
-
+	<SvelteFlow
+		nodes={styledNodes}
+		edges={styledEdges}
+		{nodeTypes}
+		onnodeclick={handleNodeClick}
+		onnodedragstart={handleNodeDragStart}
+		onnodedrag={handleNodeDrag}
+		onnodedragstop={handleNodeDragStop}
+		onpaneclick={() => uiStore.deselectCourse()}
+		panOnScroll={true}
+		zoomOnDoubleClick={false}
+		nodesDraggable={true}
+		nodesConnectable={false}
+		deleteKey={null}
+		fitView
+		colorMode={theme()}
+		proOptions={{ hideAttribution: compactScreen.current }}
+	>
+		<svg
+			class="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
+		>
+			<g
+				transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})"
+			>
+				{#each semesterIndicators as divider (divider.semester)}
+					<SemesterDivider
+						semester={divider.semester}
+						plan={courseStore.studyPlan}
+						isPreview={divider.isPreview}
+						length={divider.length}
+					/>
+				{/each}
+			</g>
+		</svg>
+		<Controls />
+		<Background gap={16} />
+	</SvelteFlow>
 </div>

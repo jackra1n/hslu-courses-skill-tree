@@ -50,14 +50,23 @@ function seasonTitle(season: Season): string {
 				{courseLabel(course)}
 			</span>
 			<span class="mt-0.5 block text-sm text-text-secondary">
-				{course.id} · {course.ects} ECTS
+				{course.id}
+				· {course.ects} ECTS
 			</span>
 			{#if prerequisiteIds.length > 0}
-				<span class="mt-1 flex items-center gap-1.5 text-xs text-text-secondary">
-					<span class="i-lucide-lock h-3.5 w-3.5 shrink-0" aria-hidden="true"></span>
+				<span
+					class="mt-1 flex items-center gap-1.5 text-xs text-text-secondary"
+				>
+					<span
+						class="i-lucide-lock h-3.5 w-3.5 shrink-0"
+						aria-hidden="true"
+					></span>
 					<span class="min-w-0 truncate">
-						{m.prereq_title()}: {visiblePrerequisites.join(', ')}{#if hiddenPrerequisiteCount > 0}
-							+{hiddenPrerequisiteCount}{/if}
+						{m.prereq_title()}:
+						{visiblePrerequisites.join(', ')}
+						{#if hiddenPrerequisiteCount > 0}
+							+{hiddenPrerequisiteCount}
+						{/if}
 					</span>
 				</span>
 			{/if}

@@ -137,69 +137,79 @@ $effect(() => {
 </script>
 
 {#if isDrawerOpen}
-  <button
-    type="button"
-    tabindex="-1"
-    aria-label={m.details_deselect()}
-    class="fixed inset-0 z-[70] cursor-default bg-black/45 xl:hidden"
-    onclick={closeDetails}
-  ></button>
+	<button
+		type="button"
+		tabindex="-1"
+		aria-label={m.details_deselect()}
+		class="fixed inset-0 z-[70] cursor-default bg-black/45 xl:hidden"
+		onclick={closeDetails}
+	></button>
 {/if}
 
 <aside
-  bind:this={panel}
-  id="skill-tree-course-detail-panel"
-  class={`fixed inset-y-0 right-0 z-[80] w-full overflow-y-auto border border-border-primary bg-bg-secondary shadow-2xl transition-transform duration-300 ease-out sm:max-w-lg
+	bind:this={panel}
+	id="skill-tree-course-detail-panel"
+	class={`fixed inset-y-0 right-0 z-[80] w-full overflow-y-auto border border-border-primary bg-bg-secondary shadow-2xl transition-transform duration-300 ease-out sm:max-w-lg
     ${isDrawerOpen ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'}
     xl:static xl:z-auto xl:max-w-none xl:w-full xl:border-y-0 xl:border-r-0 xl:border-l xl:translate-x-0 xl:shadow-none xl:pointer-events-auto`}
-  role={isDrawerOpen ? (isOverlay ? 'dialog' : 'region') : undefined}
-  aria-modal={isDrawerOpen && isOverlay ? 'true' : undefined}
-  aria-labelledby={isDrawerOpen ? TITLE_ID : undefined}
-  onkeydown={handleKeydown}
+	role={isDrawerOpen ? (isOverlay ? 'dialog' : 'region') : undefined}
+	aria-modal={isDrawerOpen && isOverlay ? 'true' : undefined}
+	aria-labelledby={isDrawerOpen ? TITLE_ID : undefined}
+	onkeydown={handleKeydown}
 >
-  {#if hasSelection()}
-    {#if displayCourse}
-      {#snippet electiveSelector()}
-        <ElectiveCourseSelector slotId={selection()?.id || ''} />
-      {/snippet}
-      {#key `${selection()?.id}:${displayCourse.id}`}
-      <CourseDetailContent course={displayCourse} moduleType={displayCourse.type} titleId={TITLE_ID} semester={activePlanNode?.semester} targetNodeId={activePlanNode?.id} elective={isElectiveSlot() && !activePlanNode?.courseId} selector={isElectiveSlot() ? electiveSelector : undefined} onNavigate={navigateToPrerequisite}>
-        {#snippet close()}
-          <button
-            bind:this={closeButton}
-            type="button"
-            onclick={closeDetails}
-            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-            title={m.details_deselect()}
-            aria-label={m.details_deselect()}
-          >
-            <span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
-          </button>
-        {/snippet}
-        {#snippet actions()}
-          {#if !isElectiveSlot() || activePlanNode?.courseId}
-            <ActionButtons courseId={displayCourse.id} />
-          {/if}
-        {/snippet}
-      </CourseDetailContent>
-      {/key}
-    {/if}
+	{#if hasSelection()}
+		{#if displayCourse}
+			{#snippet electiveSelector()}
+				<ElectiveCourseSelector slotId={selection()?.id || ''} />
+			{/snippet}
+			{#key `${selection()?.id}:${displayCourse.id}`}
+				<CourseDetailContent
+					course={displayCourse}
+					moduleType={displayCourse.type}
+					titleId={TITLE_ID}
+					semester={activePlanNode?.semester}
+					targetNodeId={activePlanNode?.id}
+					elective={isElectiveSlot() && !activePlanNode?.courseId}
+					selector={isElectiveSlot() ? electiveSelector : undefined}
+					onNavigate={navigateToPrerequisite}
+				>
+					{#snippet close()}
+						<button
+							bind:this={closeButton}
+							type="button"
+							onclick={closeDetails}
+							class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+							title={m.details_deselect()}
+							aria-label={m.details_deselect()}
+						>
+							<span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
+						</button>
+					{/snippet}
+					{#snippet actions()}
+						{#if !isElectiveSlot() || activePlanNode?.courseId}
+							<ActionButtons courseId={displayCourse.id} />
+						{/if}
+					{/snippet}
+				</CourseDetailContent>
+			{/key}
+		{/if}
+	{:else}
+		<div class="p-6 space-y-6">
+			<div class="text-center py-8">
+				<div
+					class="i-lucide-mouse-pointer-click w-12 h-12 mx-auto text-text-secondary mb-3"
+				></div>
+				<p class="text-sm text-text-secondary">
+					{m.details_empty_hint()}
+				</p>
+				<p class="text-xs text-text-tertiary mt-2">
+					{m.details_empty_elective_hint()}
+				</p>
+			</div>
 
-  {:else}
-    <div class="p-6 space-y-6">
-      <div class="text-center py-8">
-        <div class="i-lucide-mouse-pointer-click w-12 h-12 mx-auto text-text-secondary mb-3"></div>
-        <p class="text-sm text-text-secondary">
-          {m.details_empty_hint()}
-        </p>
-        <p class="text-xs text-text-tertiary mt-2">
-          {m.details_empty_elective_hint()}
-        </p>
-      </div>
-      
-      <div class="hidden xl:block">
-        <StatusLegend />
-      </div>
-    </div>
-  {/if}
+			<div class="hidden xl:block">
+				<StatusLegend />
+			</div>
+		</div>
+	{/if}
 </aside>

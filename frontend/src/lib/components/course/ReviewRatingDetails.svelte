@@ -142,30 +142,50 @@ $effect(() => () => clearTimeout(closeTimer));
 		class="fixed inset-auto m-0 w-72 overflow-y-auto rounded-lg border border-border-primary bg-bg-primary p-3 text-sm text-text-primary shadow-xl"
 	>
 		{#if open}
-		<dl class="space-y-3">
-			<div>
-				<dt class="mb-1 font-medium">{m.reviews_recommendation()}</dt>
-				<dd><ReviewStars value={review.recommendation} label={m.reviews_star_label({ value: review.recommendation })} /></dd>
-			</div>
-			<div>
-				<dt class="mb-1 font-medium">{m.reviews_content_interest()}</dt>
-				<dd><ReviewStars value={review.contentInterest} label={m.reviews_star_label({ value: review.contentInterest })} /></dd>
-			</div>
-			<div>
-				<dt class="font-medium">{m.reviews_difficulty()}</dt>
-				<dd>
-					<span class="font-semibold tabular-nums">{review.difficulty}/5</span>
-					<span class="mt-1 flex justify-between gap-3 text-xs text-text-secondary"><span>1: {m.reviews_easy()}</span><span class="text-right">5: {m.reviews_hard()}</span></span>
-				</dd>
-			</div>
-			<div>
-				<dt class="font-medium">{m.reviews_workload()}</dt>
-				<dd>
-					<span class="font-semibold tabular-nums">{review.workload}/5</span>
-					<span class="mt-1 flex justify-between gap-3 text-xs text-text-secondary"><span>1: {m.reviews_low()}</span><span class="text-right">5: {m.reviews_high()}</span></span>
-				</dd>
-			</div>
-		</dl>
+			<dl class="space-y-3">
+				<div>
+					<dt class="mb-1 font-medium">{m.reviews_recommendation()}</dt>
+					<dd>
+						<ReviewStars
+							value={review.recommendation}
+							label={m.reviews_star_label({ value: review.recommendation })}
+						/>
+					</dd>
+				</div>
+				<div>
+					<dt class="mb-1 font-medium">{m.reviews_content_interest()}</dt>
+					<dd>
+						<ReviewStars
+							value={review.contentInterest}
+							label={m.reviews_star_label({ value: review.contentInterest })}
+						/>
+					</dd>
+				</div>
+				<div>
+					<dt class="font-medium">{m.reviews_difficulty()}</dt>
+					<dd>
+						<span class="font-semibold tabular-nums"
+							>{review.difficulty}/5</span
+						>
+						<span
+							class="mt-1 flex justify-between gap-3 text-xs text-text-secondary"
+							><span>1: {m.reviews_easy()}</span
+							><span class="text-right">5: {m.reviews_hard()}</span></span
+						>
+					</dd>
+				</div>
+				<div>
+					<dt class="font-medium">{m.reviews_workload()}</dt>
+					<dd>
+						<span class="font-semibold tabular-nums">{review.workload}/5</span>
+						<span
+							class="mt-1 flex justify-between gap-3 text-xs text-text-secondary"
+							><span>1: {m.reviews_low()}</span
+							><span class="text-right">5: {m.reviews_high()}</span></span
+						>
+					</dd>
+				</div>
+			</dl>
 		{/if}
 	</div>
 </div>

@@ -38,23 +38,25 @@ function hide() {
 </script>
 
 <span
-  class="relative inline-flex"
-  role="group"
-  onpointerenter={show}
-  onpointerleave={hide}
-  onfocusin={show}
-  onfocusout={hide}
+	class="relative inline-flex"
+	role="group"
+	onpointerenter={show}
+	onpointerleave={hide}
+	onfocusin={show}
+	onfocusout={hide}
 >
-  {@render children?.()}
+	{@render children?.()}
 
-  {#if open}
-    <span
-      role="tooltip"
-      class="pointer-events-none absolute top-full z-50 mt-2 whitespace-nowrap rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-primary shadow-xl {positions[align]}"
-      transition:fly={{ y: -4, duration: 120 }}
-    >
-      <span class="absolute -top-1 h-2 w-2 rotate-45 border-l border-t border-border-primary bg-bg-primary {arrowPositions[align]}"></span>
-      {text}
-    </span>
-  {/if}
+	{#if open}
+		<span
+			role="tooltip"
+			class="pointer-events-none absolute top-full z-50 mt-2 whitespace-nowrap rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-primary shadow-xl {positions[align]}"
+			transition:fly={{ y: -4, duration: 120 }}
+		>
+			<span
+				class="absolute -top-1 h-2 w-2 rotate-45 border-l border-t border-border-primary bg-bg-primary {arrowPositions[align]}"
+			></span>
+			{text}
+		</span>
+	{/if}
 </span>

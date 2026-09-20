@@ -115,44 +115,83 @@ function groupTitle(index: number) {
 
 {#snippet candidateContent(candidate: PrerequisiteCourseSummary, group: PrerequisiteRuleSummary)}
 	{@const prerequisite = getCourseById(candidate.courseId)}
-	<span class={`mt-0.5 h-4 w-4 shrink-0 ${isMet(candidate) ? 'i-lucide-circle-check text-green-700 dark:text-green-400' : rowWarning(candidate, group) ? 'i-lucide-triangle-alert text-amber-700 dark:text-amber-400' : candidate.state === 'planned' ? 'i-lucide-calendar-days text-text-secondary' : 'i-lucide-circle text-text-secondary'}`} aria-hidden="true"></span>
+	<span
+		class={`mt-0.5 h-4 w-4 shrink-0 ${isMet(candidate) ? 'i-lucide-circle-check text-green-700 dark:text-green-400' : rowWarning(candidate, group) ? 'i-lucide-triangle-alert text-amber-700 dark:text-amber-400' : candidate.state === 'planned' ? 'i-lucide-calendar-days text-text-secondary' : 'i-lucide-circle text-text-secondary'}`}
+		aria-hidden="true"
+	></span>
 	<span class="min-w-0 flex-1">
 		<span class="block break-words text-sm leading-snug text-text-primary">
-			<span class="mr-1 font-mono text-xs text-text-secondary">{candidate.courseId}</span>
-			{#if prerequisite}{courseLabel(prerequisite)}{/if}
+			<span class="mr-1 font-mono text-xs text-text-secondary"
+				>{candidate.courseId}</span
+			>
+			{#if prerequisite}
+				{courseLabel(prerequisite)}
+			{/if}
 		</span>
-		<span class={`mt-0.5 block text-xs leading-relaxed ${isMet(candidate) ? 'text-green-700 dark:text-green-400' : rowWarning(candidate, group) ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}>
+		<span
+			class={`mt-0.5 block text-xs leading-relaxed ${isMet(candidate) ? 'text-green-700 dark:text-green-400' : rowWarning(candidate, group) ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}
+		>
 			{statusLabel(candidate)}
 			{#if (candidate.state === 'planned' || candidate.state === 'later') && candidate.semesters.length}
-				 · {candidate.semesters.map((number) => m.details_semester({ number })).join(', ')}
+				·
+				{candidate.semesters.map((number) => m.details_semester({ number })).join(', ')}
 			{/if}
 		</span>
 	</span>
-	{#if prerequisite}<span class="i-lucide-chevron-right mt-0.5 h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true"></span>{/if}
+	{#if prerequisite}
+		<span
+			class="i-lucide-chevron-right mt-0.5 h-4 w-4 shrink-0 text-text-secondary"
+			aria-hidden="true"
+		></span>
+	{/if}
 {/snippet}
 
 {#snippet requirementGroup(index: number)}
 	{@const group = groups[index]}
 	{@const rule = course.prerequisites[index]}
 	{@const required = rule.moduleLinkType === 'oder' ? 1 : rule.modules.length}
-	<section class="overflow-hidden rounded-lg border border-border-primary" aria-labelledby={`${id}-group-${index}`}>
+	<section
+		class="overflow-hidden rounded-lg border border-border-primary"
+		aria-labelledby={`${id}-group-${index}`}
+	>
 		<header class="border-b border-border-primary bg-bg-primary/40 px-3 py-2.5">
-			<div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-				<h4 id={`${id}-group-${index}`} class="text-sm font-semibold text-text-primary">{groupTitle(index)}</h4>
-				<span class={`text-xs font-medium ${group.state === 'satisfied' ? 'text-green-700 dark:text-green-400' : needsAttention(group) ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}>
+			<div
+				class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1"
+			>
+				<h4
+					id={`${id}-group-${index}`}
+					class="text-sm font-semibold text-text-primary"
+				>
+					{groupTitle(index)}
+				</h4>
+				<span
+					class={`text-xs font-medium ${group.state === 'satisfied' ? 'text-green-700 dark:text-green-400' : needsAttention(group) ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}
+				>
 					{group.state === 'satisfied' ? m.prerequisites_met() : !group.relevant ? m.prerequisites_alternative() : needsAttention(group) ? m.prerequisites_needs_attention() : group.state === 'planned' ? m.course_summary_planned() : m.course_summary_required()}
 				</span>
 			</div>
-			{#if rule.modules.length > 1}<p class="mt-1 text-xs text-text-secondary">{m.prerequisites_required_count({ count: required, total: rule.modules.length })}</p>{/if}
+			{#if rule.modules.length > 1}
+				<p class="mt-1 text-xs text-text-secondary">
+					{m.prerequisites_required_count({ count: required, total: rule.modules.length })}
+				</p>
+			{/if}
 		</header>
 		<ul class="divide-y divide-border-primary">
 			{#each group.courses as candidate (candidate.courseId)}
 				<li>
 					{#if getCourseById(candidate.courseId)}
-						<button type="button" onclick={() => onNavigate(candidate.courseId)} class="flex min-h-11 w-full cursor-pointer items-start gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500">
+						<button
+							type="button"
+							onclick={() => onNavigate(candidate.courseId)}
+							class="flex min-h-11 w-full cursor-pointer items-start gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+						>
 							{@render candidateContent(candidate, group)}
 						</button>
-					{:else}<div class="flex items-start gap-2.5 px-3 py-2.5">{@render candidateContent(candidate, group)}</div>{/if}
+					{:else}
+						<div class="flex items-start gap-2.5 px-3 py-2.5">
+							{@render candidateContent(candidate, group)}
+						</div>
+					{/if}
 				</li>
 			{/each}
 		</ul>
@@ -163,9 +202,13 @@ function groupTitle(index: number) {
 	{#if 'ruleIndex' in node}
 		{@render requirementGroup(node.ruleIndex)}
 	{:else}
-		<div class={root ? 'space-y-3' : 'space-y-3 rounded-lg border border-border-primary p-3'}>
-			<p class="text-sm font-medium text-text-secondary">{node.operator === 'and' ? m.prerequisites_all_groups() : m.prerequisites_one_group()}</p>
-			{#each node.children as child}
+		<div
+			class={root ? 'space-y-3' : 'space-y-3 rounded-lg border border-border-primary p-3'}
+		>
+			<p class="text-sm font-medium text-text-secondary">
+				{node.operator === 'and' ? m.prerequisites_all_groups() : m.prerequisites_one_group()}
+			</p>
+			{#each node.children as child (child)}
 				{@render requirementExpression(child)}
 			{/each}
 		</div>
@@ -173,26 +216,59 @@ function groupTitle(index: number) {
 {/snippet}
 
 <section aria-labelledby={`${id}-title`} class="space-y-4">
-	<h3 id={`${id}-title`} class="text-sm font-semibold text-text-primary">{m.prereq_title()}</h3>
+	<h3 id={`${id}-title`} class="text-sm font-semibold text-text-primary">
+		{m.prereq_title()}
+	</h3>
 	{#if course.assessmentLevelPassed}
-		<section class="rounded-lg border border-border-primary p-3" aria-labelledby={`${id}-assessment`}>
+		<section
+			class="rounded-lg border border-border-primary p-3"
+			aria-labelledby={`${id}-assessment`}
+		>
 			<div class="flex items-start gap-2.5">
-				<span class={`mt-0.5 h-4 w-4 shrink-0 ${assessment.passed && hasPlan ? 'i-lucide-circle-check text-green-700 dark:text-green-400' : 'i-lucide-badge-check text-text-secondary'}`} aria-hidden="true"></span>
+				<span
+					class={`mt-0.5 h-4 w-4 shrink-0 ${assessment.passed && hasPlan ? 'i-lucide-circle-check text-green-700 dark:text-green-400' : 'i-lucide-badge-check text-text-secondary'}`}
+					aria-hidden="true"
+				></span>
 				<div class="min-w-0 flex-1">
 					<div class="flex flex-wrap items-baseline justify-between gap-2">
-						<h4 id={`${id}-assessment`} class="text-sm font-semibold text-text-primary">{m.course_summary_assessment()}</h4>
-						<span class={`text-xs font-medium ${hasPlan && assessment.passed ? 'text-green-700 dark:text-green-400' : hasPlan ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}>{!hasPlan ? m.course_summary_required() : assessment.passed ? m.course_summary_passed() : m.course_summary_not_passed()}</span>
+						<h4
+							id={`${id}-assessment`}
+							class="text-sm font-semibold text-text-primary"
+						>
+							{m.course_summary_assessment()}
+						</h4>
+						<span
+							class={`text-xs font-medium ${hasPlan && assessment.passed ? 'text-green-700 dark:text-green-400' : hasPlan ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}
+							>{!hasPlan ? m.course_summary_required() : assessment.passed ? m.course_summary_passed() : m.course_summary_not_passed()}</span
+						>
 					</div>
 				</div>
 			</div>
 			{#if hasPlan}
-				<p class="mt-2 text-xs leading-relaxed text-text-secondary">{m.prereq_ects_progress({ completed: assessment.completedEcts, project: assessment.projectEcts })}</p>
+				<p class="mt-2 text-xs leading-relaxed text-text-secondary">
+					{m.prereq_ects_progress({ completed: assessment.completedEcts, project: assessment.projectEcts })}
+				</p>
 			{/if}
-			{#if assessmentPlacement}<p class="mt-2 text-xs leading-relaxed text-amber-700 dark:text-amber-400">{m.warning_assessment_message()}</p>{/if}
+			{#if assessmentPlacement}
+				<p
+					class="mt-2 text-xs leading-relaxed text-amber-700 dark:text-amber-400"
+				>
+					{m.warning_assessment_message()}
+				</p>
+			{/if}
 			<details class="mt-2 text-xs text-text-secondary">
-				<summary class="cursor-pointer py-2 text-blue-600 focus-visible:outline-blue-500 dark:text-blue-400">{m.prereq_assessment_more()}</summary>
-				<p class="mb-2 leading-relaxed">{m.prerequisites_assessment_required()}</p>
-				<ul class="mt-1 list-disc space-y-1 pl-4 leading-relaxed"><li>{m.assessment_definitiv()}</li><li>{m.assessment_bedingt()}</li></ul>
+				<summary
+					class="cursor-pointer py-2 text-blue-600 focus-visible:outline-blue-500 dark:text-blue-400"
+				>
+					{m.prereq_assessment_more()}
+				</summary>
+				<p class="mb-2 leading-relaxed">
+					{m.prerequisites_assessment_required()}
+				</p>
+				<ul class="mt-1 list-disc space-y-1 pl-4 leading-relaxed">
+					<li>{m.assessment_definitiv()}</li>
+					<li>{m.assessment_bedingt()}</li>
+				</ul>
 			</details>
 		</section>
 	{/if}
@@ -202,9 +278,18 @@ function groupTitle(index: number) {
 		<p class="text-sm text-text-secondary">{m.prereq_none()}</p>
 	{/if}
 	{#if note}
-		<section class="border-t border-border-primary pt-4" aria-labelledby={`${id}-note`}>
-			<h4 id={`${id}-note`} class="text-sm font-semibold text-text-primary">{m.course_details_note()}</h4>
-			<p class="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary">{note}</p>
+		<section
+			class="border-t border-border-primary pt-4"
+			aria-labelledby={`${id}-note`}
+		>
+			<h4 id={`${id}-note`} class="text-sm font-semibold text-text-primary">
+				{m.course_details_note()}
+			</h4>
+			<p
+				class="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary"
+			>
+				{note}
+			</p>
 		</section>
 	{/if}
 </section>

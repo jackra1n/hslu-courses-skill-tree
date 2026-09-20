@@ -181,121 +181,129 @@ const id = $props.id();
 </script>
 
 <div class="space-y-3">
-  <div class="space-y-1.5">
-    <label for={`${id}-program`} class="text-xs font-medium text-text-secondary"
-      >{m.template_program()}</label
-    >
-    <Dropdown
-      options={programOptions}
-      selected={program}
-      onSelect={handleProgramChange}
-      id={`${id}-program`}
-      label={m.template_program()}
-    />
-  </div>
+	<div class="space-y-1.5">
+		<label for={`${id}-program`} class="text-xs font-medium text-text-secondary"
+			>{m.template_program()}</label
+		>
+		<Dropdown
+			options={programOptions}
+			selected={program}
+			onSelect={handleProgramChange}
+			id={`${id}-program`}
+			label={m.template_program()}
+		/>
+	</div>
 
-  <div class="space-y-1.5">
-    <label for={`${id}-model`} class="text-xs font-medium text-text-secondary"
-      >{m.template_study_model()}</label
-    >
-    <Dropdown
-      options={modelOptions}
-      selected={model}
-      onSelect={handleModelChange}
-      id={`${id}-model`}
-      label={m.template_study_model()}
-    />
-  </div>
+	<div class="space-y-1.5">
+		<label for={`${id}-model`} class="text-xs font-medium text-text-secondary"
+			>{m.template_study_model()}</label
+		>
+		<Dropdown
+			options={modelOptions}
+			selected={model}
+			onSelect={handleModelChange}
+			id={`${id}-model`}
+			label={m.template_study_model()}
+		/>
+	</div>
 
-  <div class="grid grid-cols-2 gap-2">
-    <div class="space-y-1.5">
-      <label for={`${id}-year`} class="text-xs font-medium text-text-secondary"
-        >{m.template_start_year()}</label
-      >
-      <Dropdown
-        options={yearOptions}
-        selected={String(year)}
-        onSelect={handleYearChange}
-        id={`${id}-year`}
-        label={m.template_start_year()}
-      />
-    </div>
-    <div class="space-y-1.5">
-      <label for={`${id}-season`} class="text-xs font-medium text-text-secondary"
-        >{m.template_start_season()}</label
-      >
-      <Dropdown
-        options={seasonOptions}
-        selected={season}
-        onSelect={handleSeasonChange}
-        id={`${id}-season`}
-        label={m.template_start_season()}
-      />
-    </div>
-  </div>
+	<div class="grid grid-cols-2 gap-2">
+		<div class="space-y-1.5">
+			<label for={`${id}-year`} class="text-xs font-medium text-text-secondary"
+				>{m.template_start_year()}</label
+			>
+			<Dropdown
+				options={yearOptions}
+				selected={String(year)}
+				onSelect={handleYearChange}
+				id={`${id}-year`}
+				label={m.template_start_year()}
+			/>
+		</div>
+		<div class="space-y-1.5">
+			<label
+				for={`${id}-season`}
+				class="text-xs font-medium text-text-secondary"
+				>{m.template_start_season()}</label
+			>
+			<Dropdown
+				options={seasonOptions}
+				selected={season}
+				onSelect={handleSeasonChange}
+				id={`${id}-season`}
+				label={m.template_start_season()}
+			/>
+		</div>
+	</div>
 
-  <button
-    onclick={handleLoadClick}
-    disabled={!canLoad}
-    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors {canLoad
+	<button
+		onclick={handleLoadClick}
+		disabled={!canLoad}
+		class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors {canLoad
       ? 'bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
       : 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500'}"
-  >
-    <div class="i-lucide-download"></div>
-    {m.template_load()}
-  </button>
+	>
+		<div class="i-lucide-download"></div>
+		{m.template_load()}
+	</button>
 
-  <div class="border-b border-border-primary"></div>
+	<div class="border-b border-border-primary"></div>
 
-  <div class="space-y-3">
-    <div class="text-xs font-medium text-text-secondary">{m.template_view_options()}</div>
-    <div class="flex items-center justify-between">
-      <label for="show-full-course-names" class="text-sm text-text-primary">{m.template_show_full_names()}</label>
-      <button
-        id="show-full-course-names"
-        onclick={toggleCourseNames}
-        class="relative w-11 h-6 rounded-full transition-colors duration-200 {!courseStore.showShortNamesOnly
+	<div class="space-y-3">
+		<div class="text-xs font-medium text-text-secondary">
+			{m.template_view_options()}
+		</div>
+		<div class="flex items-center justify-between">
+			<label for="show-full-course-names" class="text-sm text-text-primary"
+				>{m.template_show_full_names()}</label
+			>
+			<button
+				id="show-full-course-names"
+				onclick={toggleCourseNames}
+				class="relative w-11 h-6 rounded-full transition-colors duration-200 {!courseStore.showShortNamesOnly
           ? 'bg-blue-600 dark:bg-blue-500'
           : 'bg-gray-300 dark:bg-gray-600'}"
-        aria-label={m.template_toggle_full_names()}
-        aria-pressed={!courseStore.showShortNamesOnly}
-      >
-        <div
-          class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {!courseStore.showShortNamesOnly
+				aria-label={m.template_toggle_full_names()}
+				aria-pressed={!courseStore.showShortNamesOnly}
+			>
+				<div
+					class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {!courseStore.showShortNamesOnly
             ? 'translate-x-5'
             : 'translate-x-0.5'}"
-        ></div>
-      </button>
-    </div>
-    <div class="flex items-center justify-between">
-      <label for="show-course-badges" class="text-sm text-text-primary">{m.template_show_badges()}</label>
-      <button
-        id="show-course-badges"
-        onclick={toggleCourseBadges}
-        class="relative w-11 h-6 rounded-full transition-colors duration-200 {showCourseTypeBadges()
+				></div>
+			</button>
+		</div>
+		<div class="flex items-center justify-between">
+			<label for="show-course-badges" class="text-sm text-text-primary"
+				>{m.template_show_badges()}</label
+			>
+			<button
+				id="show-course-badges"
+				onclick={toggleCourseBadges}
+				class="relative w-11 h-6 rounded-full transition-colors duration-200 {showCourseTypeBadges()
           ? 'bg-blue-600 dark:bg-blue-500'
           : 'bg-gray-300 dark:bg-gray-600'}"
-        aria-label={m.template_toggle_badges()}
-        aria-pressed={showCourseTypeBadges()}
-      >
-        <div
-          class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {showCourseTypeBadges()
+				aria-label={m.template_toggle_badges()}
+				aria-pressed={showCourseTypeBadges()}
+			>
+				<div
+					class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {showCourseTypeBadges()
             ? 'translate-x-5'
             : 'translate-x-0.5'}"
-        ></div>
-      </button>
-    </div>
-  </div>
+				></div>
+			</button>
+		</div>
+	</div>
 </div>
 
 {#if showWarningDialog}
-  <ConfirmationDialog
-    title={m.template_load_confirm_title()}
-    message={m.template_load_confirm_message()}
-    confirmText={m.template_load()}
-    cancelText={m.common_cancel()}
-    variant="warning"
-    onConfirm={confirmTemplateSwitch}
-    onCancel={cancelTemplateSwitch}
-  />
+	<ConfirmationDialog
+		title={m.template_load_confirm_title()}
+		message={m.template_load_confirm_message()}
+		confirmText={m.template_load()}
+		cancelText={m.common_cancel()}
+		variant="warning"
+		onConfirm={confirmTemplateSwitch}
+		onCancel={cancelTemplateSwitch}
+	/>
 {/if}

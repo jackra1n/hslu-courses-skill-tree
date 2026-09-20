@@ -1,5 +1,6 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
+import { resolve } from '$app/paths';
 import AccountMenu from '$lib/components/header/AccountMenu.svelte';
 import SettingsSidebar from '$lib/components/sidebar/SettingsSidebar.svelte';
 import Dropdown from '$lib/components/ui/Dropdown.svelte';
@@ -234,7 +235,7 @@ onMount(() => {
 
 <svelte:head>
 	<title>{m.browser_title()}</title>
-	<meta name="description" content={m.browser_meta_description()} />
+	<meta name="description" content={m.browser_meta_description()}>
 </svelte:head>
 
 {#if phase === 'loading'}
@@ -251,11 +252,18 @@ onMount(() => {
 		</p>
 	</div>
 {:else}
-	<div class="flex h-screen h-dvh overflow-hidden flex-col bg-bg-primary font-sans text-text-primary">
-		<header {@attach measureHeaderHeight} class="shrink-0 border-b border-border-primary bg-bg-primary px-4 py-2 sm:py-3">
-			<div class="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-3">
+	<div
+		class="flex h-screen h-dvh overflow-hidden flex-col bg-bg-primary font-sans text-text-primary"
+	>
+		<header
+			{@attach measureHeaderHeight}
+			class="shrink-0 border-b border-border-primary bg-bg-primary px-4 py-2 sm:py-3"
+		>
+			<div
+				class="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-3"
+			>
 				<a
-					href="/"
+					href={resolve('/')}
 					class="flex min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-text-secondary transition-all hover:bg-bg-secondary hover:text-text-primary"
 				>
 					<div class="i-lucide-arrow-left h-4 w-4 shrink-0"></div>
@@ -280,8 +288,12 @@ onMount(() => {
 			onClose={() => (settingsOpen = false)}
 			showTutorial={false}
 		/>
-		<main class="mx-auto flex min-h-0 w-full max-w-[90rem] flex-1 flex-col px-4 py-6">
-			<div class="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:items-start lg:gap-8 xl:grid-cols-[16rem_minmax(0,1fr)_30rem]">
+		<main
+			class="mx-auto flex min-h-0 w-full max-w-[90rem] flex-1 flex-col px-4 py-6"
+		>
+			<div
+				class="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:items-start lg:gap-8 xl:grid-cols-[16rem_minmax(0,1fr)_30rem]"
+			>
 				<div class="lg:col-start-2">
 					<h1 class="text-2xl font-bold">{m.browser_title()}</h1>
 					<p class="mt-1 text-sm text-text-secondary">
@@ -300,7 +312,7 @@ onMount(() => {
 							placeholder={m.elective_search()}
 							aria-label={m.browser_search_label()}
 							class="h-10 w-full rounded-lg border border-border-primary bg-bg-secondary pl-9 pr-9 text-sm text-text-primary placeholder:text-text-tertiary focus:outline-none focus:ring-2 focus:ring-blue-500"
-						/>
+						>
 						{#if query}
 							<button
 								type="button"
@@ -338,16 +350,30 @@ onMount(() => {
 						></span>
 					</button>
 					<div class="mt-3 flex items-center gap-3">
-						<label for="course-sort" class="shrink-0 text-sm font-medium text-text-secondary">{m.browser_sort()}</label>
+						<label
+							for="course-sort"
+							class="shrink-0 text-sm font-medium text-text-secondary"
+							>{m.browser_sort()}</label
+						>
 						<div class="min-w-0 flex-1">
-							<Dropdown id="course-sort" label={m.browser_sort()} options={sortOptions} selected={sort} onSelect={(value) => { sort = value; }} />
+							<Dropdown
+								id="course-sort"
+								label={m.browser_sort()}
+								options={sortOptions}
+								selected={sort}
+								onSelect={(value) => { sort = value; }}
+							/>
 						</div>
 					</div>
 					{#if scoresLoading}
-						<p role="status" class="mt-2 text-xs text-text-secondary">{m.browser_scores_loading()}</p>
+						<p role="status" class="mt-2 text-xs text-text-secondary">
+							{m.browser_scores_loading()}
+						</p>
 					{/if}
 				</div>
-				<div class="{sidebarOpen ? 'block' : 'hidden'} mt-3 max-h-[45dvh] shrink-0 overflow-y-auto lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:mt-0 lg:block lg:min-h-0 lg:max-h-none lg:h-full">
+				<div
+					class="{sidebarOpen ? 'block' : 'hidden'} mt-3 max-h-[45dvh] shrink-0 overflow-y-auto lg:col-start-1 lg:row-start-1 lg:row-span-2 lg:mt-0 lg:block lg:min-h-0 lg:max-h-none lg:h-full"
+				>
 					<div>
 						<FilterSidebar
 							bind:season
@@ -363,7 +389,9 @@ onMount(() => {
 						/>
 					</div>
 				</div>
-				<div class="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden lg:col-start-2 lg:row-start-2 lg:mt-3 lg:self-stretch">
+				<div
+					class="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden lg:col-start-2 lg:row-start-2 lg:mt-3 lg:self-stretch"
+				>
 					<div class="flex items-center justify-between gap-3">
 						<p class="text-sm text-text-secondary" aria-live="polite">
 							{#if !filtering}
@@ -387,7 +415,9 @@ onMount(() => {
 							<div
 								class="rounded-lg border border-border-primary bg-bg-secondary p-6 text-center"
 							>
-								<p class="text-sm text-text-secondary">{m.elective_no_results()}</p>
+								<p class="text-sm text-text-secondary">
+									{m.elective_no_results()}
+								</p>
 								<button
 									type="button"
 									onclick={clearFilters}

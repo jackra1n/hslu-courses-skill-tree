@@ -46,7 +46,7 @@ async function seedReview(
 
 async function expectCourseOrder(page: Page, courseIds: string[]) {
 	await expect(page.getByRole('list').getByRole('button')).toContainText(
-		courseIds.map((id) => new RegExp(`\\b${id} ·`)),
+		courseIds.map((id) => new RegExp(`\\b${id}\\b`)),
 	);
 	await expect(page.getByRole('list').getByRole('button')).toHaveCount(
 		courseIds.length,

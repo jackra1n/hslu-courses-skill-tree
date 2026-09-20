@@ -48,34 +48,34 @@ const lineEnd = $derived(LINE_START + length);
 </script>
 
 <line
-  x1={LINE_START}
-  y1={yPosition}
-  x2={lineEnd}
-  y2={yPosition}
-  stroke="rgb(var(--border-primary))"
-  stroke-width={strokeWidth}
-  stroke-dasharray={dashArray}
-  stroke-opacity={lineOpacity}
+	x1={LINE_START}
+	y1={yPosition}
+	x2={lineEnd}
+	y2={yPosition}
+	stroke="rgb(var(--border-primary))"
+	stroke-width={strokeWidth}
+	stroke-dasharray={dashArray}
+	stroke-opacity={lineOpacity}
 />
 <text
-  x="-100"
-  y={yPosition - 50}
-  fill="rgb(var(--text-secondary))"
-  font-size={titleFontSize}
-  font-weight="500"
-  opacity={textOpacity}
+	x="-100"
+	y={yPosition - 50}
+	fill="rgb(var(--text-secondary))"
+	font-size={titleFontSize}
+	font-weight="500"
+	opacity={textOpacity}
 >
-  {courseStore.semesterLabel(semester)}
+	{courseStore.semesterLabel(semester)}
 </text>
 <text
-  x="-100"
-  y={yPosition - 20}
-  fill="rgb(var(--text-secondary))"
-  font-size={titleFontSize}
-  opacity={textOpacity}
+	x="-100"
+	y={yPosition - 20}
+	fill="rgb(var(--text-secondary))"
+	font-size={titleFontSize}
+	opacity={textOpacity}
 >
-  {calculatedSemesterCredits !== semesterCredits
+	{calculatedSemesterCredits !== semesterCredits
     ? `${calculatedSemesterCredits} / ${semesterCredits}`
-    : `${semesterCredits}`
-  } ECTS
+    : `${semesterCredits}`}
+	ECTS
 </text>

@@ -20,7 +20,7 @@ onMount(() => {
 
 <svelte:head>
 	<title>{m.layout_title()}</title>
-	<meta name="description" content={m.layout_description()} />
+	<meta name="description" content={m.layout_description()}>
 </svelte:head>
 
 {@render children?.()}

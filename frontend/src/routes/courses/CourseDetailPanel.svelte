@@ -119,27 +119,42 @@ async function navigateToPrerequisite(courseId: string): Promise<void> {
 	{#if course}
 		<div bind:this={content} class="min-h-0 flex-1 overflow-y-auto">
 			{#key course.id}
-			<CourseDetailContent {course} {moduleType} titleId={TITLE_ID} onNavigate={navigateToPrerequisite} {onReviewSummary}>
-				{#snippet close()}
-				<button
-					bind:this={closeButton}
-					type="button"
-					onclick={onClose}
-					aria-label={m.browser_details_close()}
-					class="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+				<CourseDetailContent
+					{course}
+					{moduleType}
+					titleId={TITLE_ID}
+					onNavigate={navigateToPrerequisite}
+					{onReviewSummary}
 				>
-					<span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
-				</button>
-				{/snippet}
-			</CourseDetailContent>
+					{#snippet close()}
+						<button
+							bind:this={closeButton}
+							type="button"
+							onclick={onClose}
+							aria-label={m.browser_details_close()}
+							class="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+						>
+							<span class="i-lucide-x h-4 w-4" aria-hidden="true"></span>
+						</button>
+					{/snippet}
+				</CourseDetailContent>
 			{/key}
 		</div>
 	{:else}
-		<div class="flex h-full flex-col items-center justify-center px-8 text-center">
-			<div class="flex h-12 w-12 items-center justify-center rounded-full border border-border-primary bg-bg-primary text-text-tertiary">
-				<span class="i-lucide-panel-right-open h-5 w-5" aria-hidden="true"></span>
+		<div
+			class="flex h-full flex-col items-center justify-center px-8 text-center"
+		>
+			<div
+				class="flex h-12 w-12 items-center justify-center rounded-full border border-border-primary bg-bg-primary text-text-tertiary"
+			>
+				<span
+					class="i-lucide-panel-right-open h-5 w-5"
+					aria-hidden="true"
+				></span>
 			</div>
-			<h2 class="mt-4 font-semibold text-text-primary">{m.browser_details_empty_title()}</h2>
+			<h2 class="mt-4 font-semibold text-text-primary">
+				{m.browser_details_empty_title()}
+			</h2>
 			<p class="mt-1 max-w-xs text-sm leading-relaxed text-text-secondary">
 				{m.browser_details_empty_text()}
 			</p>

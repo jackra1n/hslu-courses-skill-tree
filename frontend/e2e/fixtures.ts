@@ -26,7 +26,7 @@ type Fixtures = {
 
 export const test = base.extend<Fixtures, { harness: TestHarness }>({
 	harness: [
-		// biome-ignore lint/correctness/noEmptyPattern: Playwright requires destructuring to declare fixture dependencies.
+		// eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring to declare fixture dependencies.
 		async ({}, use) => {
 			const harness = createTestHarness({
 				workers: [
@@ -54,6 +54,7 @@ export const test = base.extend<Fixtures, { harness: TestHarness }>({
 		// bypass Wrangler's dev proxy and its idle connection race:
 		// https://github.com/cloudflare/workers-sdk/issues/14641
 		const frontend = harness.getWorker();
+		// eslint-disable-next-line @typescript-eslint/no-misused-promises -- The callback catches request failures and destroys the response.
 		const server = createServer(async (request, response) => {
 			try {
 				const headers = new Headers();

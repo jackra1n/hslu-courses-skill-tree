@@ -96,92 +96,106 @@ async function handleSignOut() {
 </script>
 
 <div class="relative account-menu" data-tour="account">
-  {#if user}
-    <button
-      onclick={toggleAccountMenu}
-      class={triggerClass}
-      aria-label={m.account_menu()}
-      aria-expanded={accountMenuOpen}
-    >
-      {#if user.image}
-        <img
-          src={user.image}
-          alt=""
-          class="h-6 w-6 rounded-full object-cover"
-          referrerpolicy="no-referrer"
-        />
-      {:else}
-        <div class="i-lucide-user h-4 w-4 text-text-primary"></div>
-      {/if}
-      {#if navigationMenu}<span class="text-sm font-medium lg:hidden">{m.account_menu()}</span>{/if}
-      <span class={`${navigationMenu ? 'hidden lg:inline' : 'hidden sm:inline'} max-w-40 truncate text-sm font-medium text-text-primary`}>{user.name}</span>
-    </button>
+	{#if user}
+		<button
+			onclick={toggleAccountMenu}
+			class={triggerClass}
+			aria-label={m.account_menu()}
+			aria-expanded={accountMenuOpen}
+		>
+			{#if user.image}
+				<img
+					src={user.image}
+					alt=""
+					class="h-6 w-6 rounded-full object-cover"
+					referrerpolicy="no-referrer"
+				>
+			{:else}
+				<div class="i-lucide-user h-4 w-4 text-text-primary"></div>
+			{/if}
+			{#if navigationMenu}
+				<span class="text-sm font-medium lg:hidden">{m.account_menu()}</span>
+			{/if}
+			<span
+				class={`${navigationMenu ? 'hidden lg:inline' : 'hidden sm:inline'} max-w-40 truncate text-sm font-medium text-text-primary`}
+				>{user.name}</span
+			>
+		</button>
 
-    {#if accountMenuOpen}
-      <div
-        class={panelClass}
-      >
-        <div class="flex items-center gap-3 px-1 pb-3">
-          {#if user.image}
-            <img
-              src={user.image}
-              alt=""
-              class="h-9 w-9 rounded-full object-cover"
-              referrerpolicy="no-referrer"
-            />
-          {:else}
-            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-bg-secondary">
-              <div class="i-lucide-user h-5 w-5 text-text-primary"></div>
-            </div>
-          {/if}
-          <div class="min-w-0">
-            <div class="truncate text-sm font-semibold text-text-primary">{user.name}</div>
-            <div class="truncate text-xs text-text-secondary">{user.email}</div>
-          </div>
-        </div>
+		{#if accountMenuOpen}
+			<div class={panelClass}>
+				<div class="flex items-center gap-3 px-1 pb-3">
+					{#if user.image}
+						<img
+							src={user.image}
+							alt=""
+							class="h-9 w-9 rounded-full object-cover"
+							referrerpolicy="no-referrer"
+						>
+					{:else}
+						<div
+							class="flex h-9 w-9 items-center justify-center rounded-full bg-bg-secondary"
+						>
+							<div class="i-lucide-user h-5 w-5 text-text-primary"></div>
+						</div>
+					{/if}
+					<div class="min-w-0">
+						<div class="truncate text-sm font-semibold text-text-primary">
+							{user.name}
+						</div>
+						<div class="truncate text-xs text-text-secondary">{user.email}</div>
+					</div>
+				</div>
 
-        <div class="border-b border-border-primary mb-2"></div>
+				<div class="border-b border-border-primary mb-2"></div>
 
-        {#if syncStatusLabel}
-          <div class="mb-1.5 flex items-start gap-2 rounded-md bg-bg-secondary px-2.5 py-2 text-xs text-text-secondary">
-            <div class="i-lucide-cloud mt-0.5 h-4 w-4 flex-none text-text-secondary"></div>
-            <span class="min-w-0 leading-5">{syncStatusLabel}</span>
-          </div>
-        {/if}
+				{#if syncStatusLabel}
+					<div
+						class="mb-1.5 flex items-start gap-2 rounded-md bg-bg-secondary px-2.5 py-2 text-xs text-text-secondary"
+					>
+						<div
+							class="i-lucide-cloud mt-0.5 h-4 w-4 flex-none text-text-secondary"
+						></div>
+						<span class="min-w-0 leading-5">{syncStatusLabel}</span>
+					</div>
+				{/if}
 
-        <button
-          onclick={handleSignOut}
-          class="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-text-primary hover:bg-bg-secondary transition-colors"
-        >
-          <div class="i-lucide-log-out h-4 w-4"></div>
-          <span>{m.account_sign_out()}</span>
-        </button>
-      </div>
-    {/if}
-  {:else}
-    <button
-      onclick={toggleAccountMenu}
-      class={triggerClass}
-      aria-label={m.account_sign_in()}
-      aria-expanded={accountMenuOpen}
-    >
-      <div class="i-lucide-user h-4 w-4 text-text-primary"></div>
-      <span class={`${navigationMenu ? '' : 'hidden sm:inline'} text-sm font-medium text-text-primary`}>{m.account_sign_in()}</span>
-    </button>
+				<button
+					onclick={handleSignOut}
+					class="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-text-primary hover:bg-bg-secondary transition-colors"
+				>
+					<div class="i-lucide-log-out h-4 w-4"></div>
+					<span>{m.account_sign_out()}</span>
+				</button>
+			</div>
+		{/if}
+	{:else}
+		<button
+			onclick={toggleAccountMenu}
+			class={triggerClass}
+			aria-label={m.account_sign_in()}
+			aria-expanded={accountMenuOpen}
+		>
+			<div class="i-lucide-user h-4 w-4 text-text-primary"></div>
+			<span
+				class={`${navigationMenu ? '' : 'hidden sm:inline'} text-sm font-medium text-text-primary`}
+				>{m.account_sign_in()}</span
+			>
+		</button>
 
-    {#if accountMenuOpen}
-      <div
-        class={panelClass}
-      >
-        <div class="px-1 pb-2 text-xs font-medium text-text-secondary">{m.account_sign_in_with()}</div>
-        <button
-          onclick={handleSignIn}
-          class="flex w-full items-center gap-3 rounded-lg bg-bg-secondary px-3 py-2.5 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary/80"
-        >
-          <div class="i-lucide-github h-4 w-4"></div>
-          <span>{m.account_continue_github()}</span>
-        </button>
-      </div>
-    {/if}
-  {/if}
+		{#if accountMenuOpen}
+			<div class={panelClass}>
+				<div class="px-1 pb-2 text-xs font-medium text-text-secondary">
+					{m.account_sign_in_with()}
+				</div>
+				<button
+					onclick={handleSignIn}
+					class="flex w-full items-center gap-3 rounded-lg bg-bg-secondary px-3 py-2.5 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary/80"
+				>
+					<div class="i-lucide-github h-4 w-4"></div>
+					<span>{m.account_continue_github()}</span>
+				</button>
+			</div>
+		{/if}
+	{/if}
 </div>

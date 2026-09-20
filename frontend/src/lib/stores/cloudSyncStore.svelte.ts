@@ -18,7 +18,7 @@ export type SyncStatus =
 	| 'error'
 	| 'conflict';
 
-export type SyncUser = {
+type SyncUser = {
 	id: string;
 	name: string;
 	email: string;
@@ -51,7 +51,7 @@ let status = $state<SyncStatus>('loading');
 let syncError = $state<SyncError | null>(null);
 let conflict = $state<SyncConflict | null>(null);
 
-let metadata = $state<SyncMetadata>(loadMetadata());
+const metadata = $state<SyncMetadata>(loadMetadata());
 let baseline: string | null = null; // last known serialized AppData
 let pendingSnapshot: AppData | null = null;
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;

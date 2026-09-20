@@ -45,13 +45,18 @@ async function startFromCatalog(): Promise<void> {
 	phase = 'ready';
 }
 
+function handleStartupError(error: unknown): void {
+	console.error('Failed to initialize study plan', error);
+	phase = 'catalog-error';
+}
+
 function retryCatalog(): void {
 	phase = 'catalog';
-	startFromCatalog();
+	startFromCatalog().catch(handleStartupError);
 }
 
 onMount(() => {
-	startFromCatalog();
+	startFromCatalog().catch(handleStartupError);
 });
 
 // One root snapshot effect: every reactive store change flows through the
@@ -70,71 +75,90 @@ $effect(() => {
 </script>
 
 {#if phase === 'catalog' || phase === 'progress'}
-  <div class="flex h-screen items-center justify-center font-sans">
-    <p class="text-sm text-text-secondary" role="status" aria-live="polite">
-      {phase === 'catalog' ? m.page_loading_catalog() : m.page_loading_progress()}
-    </p>
-  </div>
+	<div class="flex h-screen items-center justify-center font-sans">
+		<p class="text-sm text-text-secondary" role="status" aria-live="polite">
+			{phase === 'catalog' ? m.page_loading_catalog() : m.page_loading_progress()}
+		</p>
+	</div>
 {:else if phase === 'catalog-error'}
-  <div class="flex h-screen items-center justify-center font-sans">
-    <div class="flex flex-col items-center gap-4 text-center px-6">
-      <h1 class="text-lg font-semibold text-text-primary">{m.page_catalog_unavailable_title()}</h1>
-      <p class="text-sm text-text-secondary">{m.page_catalog_unavailable_text()}</p>
-      <button
-        type="button"
-        class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
-        onclick={retryCatalog}
-      >
-        {m.common_retry()}
-      </button>
-    </div>
-  </div>
+	<div class="flex h-screen items-center justify-center font-sans">
+		<div class="flex flex-col items-center gap-4 text-center px-6">
+			<h1 class="text-lg font-semibold text-text-primary">
+				{m.page_catalog_unavailable_title()}
+			</h1>
+			<p class="text-sm text-text-secondary">
+				{m.page_catalog_unavailable_text()}
+			</p>
+			<button
+				type="button"
+				class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
+				onclick={retryCatalog}
+			>
+				{m.common_retry()}
+			</button>
+		</div>
+	</div>
 {:else}
-  <div class="font-sans h-screen h-dvh overflow-hidden flex flex-col">
-    <Header />
-    
-    <SvelteFlowProvider>
-      <div class="flex-1 min-h-0 xl:grid xl:grid-cols-[1fr_400px]">
-        <SkillTreeCanvas />
-        <CourseDetailsPanel />
-      </div>
-    </SvelteFlowProvider>
-    
-    <GuidedTutorial />
+	<div class="font-sans h-screen h-dvh overflow-hidden flex flex-col">
+		<Header />
 
-    <div class="xl:hidden fixed bottom-4 right-4 z-30 w-72 max-w-[90vw]">
-      <div class="rounded-2xl border border-border-primary bg-bg-primary shadow-2xl overflow-hidden flex flex-col-reverse">
-        <button
-          type="button"
-          class="flex min-h-11 w-full shrink-0 items-center justify-between gap-2 px-4 py-3 text-text-primary"
-          aria-label={m.legend_toggle()}
-          aria-expanded={legendOpen}
-          aria-controls="mobile-status-legend"
-          onclick={() => legendOpen = !legendOpen}
-        >
-          <div class="flex items-center gap-2">
-            <div class="i-lucide-info w-4 h-4"></div>
-            <span class="text-sm font-medium">{m.legend_button()}</span>
-          </div>
-          {#if legendOpen}
-            <div class="i-lucide-chevron-down h-4 w-4 text-text-secondary"></div>
-          {:else}
-            <div class="i-lucide-chevron-up h-4 w-4 text-text-secondary"></div>
-          {/if}
-        </button>
-        {#if legendOpen}
-        <div id="mobile-status-legend" transition:slide={{ duration: reducedMotion.current ? 0 : 200 }} class="max-h-80 overflow-y-auto px-4 pb-4 pt-3 border-b border-border-primary">
-          <div class="[&>div:first-child]:border-t-0 [&>div:first-child]:pt-0">
-            <StatusLegend />
-          </div>
-        </div>
-        {/if}
-      </div>
+		<SvelteFlowProvider>
+			<div class="flex-1 min-h-0 xl:grid xl:grid-cols-[1fr_400px]">
+				<SkillTreeCanvas />
+				<CourseDetailsPanel />
+			</div>
+		</SvelteFlowProvider>
 
-    </div>
-  </div>
+		<GuidedTutorial />
+
+		<div class="xl:hidden fixed bottom-4 right-4 z-30 w-72 max-w-[90vw]">
+			<div
+				class="rounded-2xl border border-border-primary bg-bg-primary shadow-2xl overflow-hidden flex flex-col-reverse"
+			>
+				<button
+					type="button"
+					class="flex min-h-11 w-full shrink-0 items-center justify-between gap-2 px-4 py-3 text-text-primary"
+					aria-label={m.legend_toggle()}
+					aria-expanded={legendOpen}
+					aria-controls="mobile-status-legend"
+					onclick={() => legendOpen = !legendOpen}
+				>
+					<div class="flex items-center gap-2">
+						<div class="i-lucide-info w-4 h-4"></div>
+						<span class="text-sm font-medium">{m.legend_button()}</span>
+					</div>
+					{#if legendOpen}
+						<div
+							class="i-lucide-chevron-down h-4 w-4 text-text-secondary"
+						></div>
+					{:else}
+						<div class="i-lucide-chevron-up h-4 w-4 text-text-secondary"></div>
+					{/if}
+				</button>
+				{#if legendOpen}
+					<div
+						id="mobile-status-legend"
+						transition:slide={{ duration: reducedMotion.current ? 0 : 200 }}
+						class="max-h-80 overflow-y-auto px-4 pb-4 pt-3 border-b border-border-primary"
+					>
+						<div
+							class="[&>div:first-child]:border-t-0 [&>div:first-child]:pt-0"
+						>
+							<StatusLegend />
+						</div>
+					</div>
+				{/if}
+			</div>
+		</div>
+	</div>
 {/if}
 
 <svelte:head>
-	<link rel="preload" as="fetch" type="application/json" href={catalogAssetUrl} crossorigin="anonymous" />
+	<link
+		rel="preload"
+		as="fetch"
+		type="application/json"
+		href={catalogAssetUrl}
+		crossorigin="anonymous"
+	>
 </svelte:head>

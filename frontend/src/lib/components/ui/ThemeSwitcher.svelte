@@ -26,10 +26,10 @@ function selectTheme(selectedTheme: Theme) {
 }
 </script>
 
-<Dropdown 
-  options={themeOptions}
-  selected={theme()}
-  onSelect={selectTheme}
-  label={m.settings_theme()}
-  width="9rem"
+<Dropdown
+	options={themeOptions}
+	selected={theme()}
+	onSelect={selectTheme}
+	label={m.settings_theme()}
+	width="9rem"
 />

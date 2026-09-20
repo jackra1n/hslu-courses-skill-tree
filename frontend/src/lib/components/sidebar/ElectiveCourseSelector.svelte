@@ -82,37 +82,38 @@ function clearSelection() {
 </script>
 
 <div class="border-t border-border-primary pt-4">
-  <h3 class="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
-    <div class="i-lucide-book-plus text-text-secondary"></div>
-    {m.elective_select_title()}
-  </h3>
-  <div class="space-y-3">
-    <div class="space-y-2">
-      <div class="flex items-center justify-between">
-        <label for={id} class="text-sm font-medium text-text-primary">
-          {m.elective_choose()}
-        </label>
-        {#if selectedCourseId}
-          <button 
-            onclick={clearSelection}
-            class="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-          >
-            {m.common_clear()}
-          </button>
-        {/if}
-      </div>
-      <Dropdown
-        options={courseOptions}
-        selected={selectedCourseId || ''}
-        onSelect={handleCourseSelect}
-        placeholder={m.elective_placeholder()}
-        searchPlaceholder={m.elective_search()}
-        noResultsText={m.elective_no_results()}
-        {id}
-        label={m.elective_choose()}
-        searchable
-      />
-    </div>
-  </div>
+	<h3
+		class="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2"
+	>
+		<div class="i-lucide-book-plus text-text-secondary"></div>
+		{m.elective_select_title()}
+	</h3>
+	<div class="space-y-3">
+		<div class="space-y-2">
+			<div class="flex items-center justify-between">
+				<label for={id} class="text-sm font-medium text-text-primary">
+					{m.elective_choose()}
+				</label>
+				{#if selectedCourseId}
+					<button
+						onclick={clearSelection}
+						class="text-xs text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+					>
+						{m.common_clear()}
+					</button>
+				{/if}
+			</div>
+			<Dropdown
+				options={courseOptions}
+				selected={selectedCourseId || ''}
+				onSelect={handleCourseSelect}
+				placeholder={m.elective_placeholder()}
+				searchPlaceholder={m.elective_search()}
+				noResultsText={m.elective_no_results()}
+				{id}
+				label={m.elective_choose()}
+				searchable
+			/>
+		</div>
+	</div>
 </div>
-

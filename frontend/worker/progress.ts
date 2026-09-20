@@ -97,7 +97,7 @@ export async function handleProgressRequest(
 		const updatedAt = Date.now();
 		const dataJson = JSON.stringify(data);
 
-		let changed = 0;
+		let changed: number;
 		if (expectedRevision === null) {
 			const result = await db
 				.prepare(
