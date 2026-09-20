@@ -118,7 +118,7 @@ function groupTitle(index: number) {
 {#snippet candidateContent(candidate: PrerequisiteCourseSummary, group: PrerequisiteRuleSummary)}
 	{@const prerequisite = getCourseById(candidate.courseId)}
 	<span
-		class={`mt-0.5 h-4 w-4 shrink-0 ${isMet(candidate) ? 'i-lucide-circle-check text-green-700 dark:text-green-400' : rowWarning(candidate, group) ? 'i-lucide-triangle-alert text-amber-700 dark:text-amber-400' : candidate.state === 'planned' ? 'i-lucide-calendar-days text-text-secondary' : 'i-lucide-circle text-text-secondary'}`}
+		class={`mt-0.5 h-4 w-4 shrink-0 ${isMet(candidate) ? 'i-lucide-circle-check text-green-800 dark:text-green-400' : rowWarning(candidate, group) ? 'i-lucide-triangle-alert text-amber-700 dark:text-amber-400' : candidate.state === 'planned' ? 'i-lucide-calendar-days text-text-secondary' : 'i-lucide-circle text-text-secondary'}`}
 		aria-hidden="true"
 	></span>
 	<span class="min-w-0 flex-1">
@@ -131,7 +131,7 @@ function groupTitle(index: number) {
 			{/if}
 		</span>
 		<span
-			class={`mt-0.5 block text-xs leading-relaxed ${isMet(candidate) ? 'text-green-700 dark:text-green-400' : rowWarning(candidate, group) ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}
+			class={`mt-0.5 block text-xs leading-relaxed ${isMet(candidate) ? 'text-green-800 dark:text-green-400' : rowWarning(candidate, group) ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}
 		>
 			{statusLabel(candidate)}
 			{#if (candidate.state === 'planned' || candidate.state === 'later') && candidate.semesters.length}
@@ -152,11 +152,14 @@ function groupTitle(index: number) {
 	{@const group = groups[index]}
 	{@const rule = course.prerequisites[index]}
 	{@const required = rule.moduleLinkType === 'oder' ? 1 : rule.modules.length}
+	{@const satisfied = group.state === 'satisfied'}
 	<section
-		class="overflow-hidden rounded-lg border border-border-primary"
+		class={`overflow-hidden rounded-lg border ${satisfied ? 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950/50' : 'border-border-primary'}`}
 		aria-labelledby={`${id}-group-${index}`}
 	>
-		<header class="border-b border-border-primary bg-bg-primary/40 px-3 py-2.5">
+		<header
+			class={`border-b px-3 py-2.5 ${satisfied ? 'border-green-200 bg-green-100/70 dark:border-green-800 dark:bg-green-900/30' : 'border-border-primary bg-bg-primary/40'}`}
+		>
 			<div
 				class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1"
 			>
@@ -167,9 +170,15 @@ function groupTitle(index: number) {
 					{groupTitle(index)}
 				</h4>
 				<span
-					class={`text-xs font-medium ${group.state === 'satisfied' ? 'text-green-700 dark:text-green-400' : needsAttention(group) ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}
+					class={`inline-flex items-center gap-1.5 text-xs font-medium ${satisfied ? 'text-green-800 dark:text-green-400' : needsAttention(group) ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}
 				>
-					{group.state === 'satisfied' ? m.prerequisites_met() : !group.relevant ? m.prerequisites_alternative() : needsAttention(group) ? m.prerequisites_needs_attention() : group.state === 'planned' ? m.course_summary_planned() : m.course_summary_required()}
+					{#if satisfied}
+						<span
+							class="i-lucide-circle-check h-3.5 w-3.5 shrink-0"
+							aria-hidden="true"
+						></span>
+					{/if}
+					{satisfied ? m.prerequisites_met() : !group.relevant ? m.prerequisites_alternative() : needsAttention(group) ? m.prerequisites_needs_attention() : group.state === 'planned' ? m.course_summary_planned() : m.course_summary_required()}
 				</span>
 			</div>
 			{#if rule.modules.length > 1}
@@ -178,14 +187,16 @@ function groupTitle(index: number) {
 				</p>
 			{/if}
 		</header>
-		<ul class="divide-y divide-border-primary">
+		<ul
+			class={`divide-y ${satisfied ? 'divide-green-200 dark:divide-green-800' : 'divide-border-primary'}`}
+		>
 			{#each group.courses as candidate (candidate.courseId)}
 				<li>
 					{#if getCourseById(candidate.courseId)}
 						<button
 							type="button"
 							onclick={() => onNavigate(candidate.courseId)}
-							class="flex min-h-11 w-full cursor-pointer items-start gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
+							class={`flex min-h-11 w-full cursor-pointer items-start gap-2.5 px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 ${satisfied ? 'hover:bg-green-100 dark:hover:bg-green-900/50' : 'hover:bg-bg-primary'}`}
 						>
 							{@render candidateContent(candidate, group)}
 						</button>
@@ -223,12 +234,12 @@ function groupTitle(index: number) {
 	</h3>
 	{#if course.assessmentLevelPassed}
 		<section
-			class="rounded-lg border border-border-primary p-3"
+			class={`rounded-lg border p-3 ${hasPlan && assessment.passed ? 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950/50' : 'border-border-primary'}`}
 			aria-labelledby={`${id}-assessment`}
 		>
 			<div class="flex items-start gap-2.5">
 				<span
-					class={`mt-0.5 h-4 w-4 shrink-0 ${assessment.passed && hasPlan ? 'i-lucide-circle-check text-green-700 dark:text-green-400' : 'i-lucide-badge-check text-text-secondary'}`}
+					class={`mt-0.5 h-4 w-4 shrink-0 ${assessment.passed && hasPlan ? 'i-lucide-circle-check text-green-800 dark:text-green-400' : 'i-lucide-badge-check text-text-secondary'}`}
 					aria-hidden="true"
 				></span>
 				<div class="min-w-0 flex-1">
@@ -240,7 +251,7 @@ function groupTitle(index: number) {
 							{m.course_summary_assessment()}
 						</h4>
 						<span
-							class={`text-xs font-medium ${hasPlan && assessment.passed ? 'text-green-700 dark:text-green-400' : hasPlan ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}
+							class={`text-xs font-medium ${hasPlan && assessment.passed ? 'text-green-800 dark:text-green-400' : hasPlan ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}
 							>{!hasPlan ? m.course_summary_required() : assessment.passed ? m.course_summary_passed() : m.course_summary_not_passed()}</span
 						>
 					</div>
