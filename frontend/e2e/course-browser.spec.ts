@@ -549,7 +549,7 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 	const original = await (await page.request.get('/api/progress')).json();
 	// An untouched reload must preserve the inferred start term and stay synced.
 	const conflict = page.getByRole('dialog', {
-		name: 'Choose which progress to keep',
+		name: 'Choose which data to keep',
 	});
 	await page.reload();
 	await expect(
@@ -559,6 +559,21 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 	const unchanged = await (await page.request.get('/api/progress')).json();
 	expect(unchanged).toEqual(original);
 
+	// Both sides changed since the acknowledged revision: require a choice.
+	const remoteChange = await page.request.put('/api/progress', {
+		headers: { Origin: new URL(page.url()).origin },
+		data: {
+			data: {
+				...original.data,
+				preferences: {
+					...original.data.preferences,
+					showCourseTypeBadges: true,
+				},
+			},
+			expectedRevision: original.revision,
+		},
+	});
+	expect(remoteChange.ok()).toBe(true);
 	await page.evaluate(() => localStorage.setItem('theme', 'light'));
 	await page.reload();
 	await expect(conflict).toBeVisible();

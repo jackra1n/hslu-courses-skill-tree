@@ -1,5 +1,7 @@
 <script lang="ts">
 import { fade, scale } from 'svelte/transition';
+import { serializeSnapshot } from '$lib/data/persistence';
+import { seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import {
 	cloudSyncStore,
@@ -7,6 +9,63 @@ import {
 } from '$lib/stores/cloudSyncStore.svelte';
 
 const conflict = $derived(cloudSyncStore.conflict);
+const differences = $derived.by(() => {
+	if (!conflict) return [];
+	const categories: {
+		label: string;
+		value: (data: SyncConflict['local']) => unknown;
+		display?: (data: SyncConflict['local']) => string;
+	}[] = [
+		{
+			label: m.sync_difference_curriculum(),
+			value: (data) => data.currentTemplateId,
+		},
+		{
+			label: m.sync_difference_start_term(),
+			value: (data) => data.start,
+			display: (data) => `${seasonLabel(data.start.season)} ${data.start.year}`,
+		},
+		{
+			label: m.sync_difference_plans(),
+			value: (data) => data.studyPlans,
+		},
+		{
+			label: m.sync_difference_progress(),
+			value: (data) => data.slotStatus,
+		},
+		{
+			label: m.settings_theme(),
+			value: (data) => data.preferences.theme,
+			display: (data) =>
+				data.preferences.theme === 'system'
+					? m.theme_system()
+					: data.preferences.theme === 'dark'
+						? m.theme_dark()
+						: m.theme_light(),
+		},
+		{
+			label: m.sync_difference_short_names(),
+			value: (data) => data.preferences.showShortNamesOnly,
+			display: (data) => enabledLabel(data.preferences.showShortNamesOnly),
+		},
+		{
+			label: m.template_show_badges(),
+			value: (data) => data.preferences.showCourseTypeBadges,
+			display: (data) => enabledLabel(data.preferences.showCourseTypeBadges),
+		},
+	];
+	const { local, cloud } = conflict;
+	return categories.filter(
+		(category) =>
+			serializeSnapshot({ value: category.value(local) }) !==
+			serializeSnapshot({ value: category.value(cloud) }),
+	);
+});
+
+function enabledLabel(enabled: boolean): string {
+	return enabled ? m.sync_preference_enabled() : m.sync_preference_disabled();
+}
+
 function formatTime(timestamp: number | null): string {
 	if (timestamp === null) return m.sync_unknown_time();
 	return new Date(timestamp).toLocaleString(undefined, {
@@ -35,9 +94,11 @@ function counts(data: SyncConflict['local']) {
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="sync-conflict-title"
+		aria-describedby="sync-conflict-description"
+		aria-busy={cloudSyncStore.resolvingConflict}
 	>
 		<div
-			class="w-full max-w-lg rounded-2xl border border-border-primary bg-bg-primary shadow-2xl"
+			class="max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-2xl border border-border-primary bg-bg-primary shadow-2xl"
 			transition:scale={{ duration: 200, start: 0.95 }}
 			role="document"
 		>
@@ -53,6 +114,7 @@ function counts(data: SyncConflict['local']) {
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
+						aria-hidden="true"
 					>
 						<path
 							stroke-linecap="round"
@@ -72,9 +134,20 @@ function counts(data: SyncConflict['local']) {
 
 			<!-- Content -->
 			<div class="px-6 py-6 space-y-4">
-				<p class="text-sm text-text-secondary leading-relaxed">
+				<p
+					id="sync-conflict-description"
+					class="text-sm text-text-secondary leading-relaxed"
+				>
 					{m.sync_description()}
 				</p>
+				<div class="space-y-2 text-sm text-text-secondary">
+					<p>{m.sync_differences_intro()}</p>
+					<ul class="list-disc space-y-1 pl-5 text-text-primary">
+						{#each differences as difference (difference.label)}
+							<li>{difference.label}</li>
+						{/each}
+					</ul>
+				</div>
 
 				<div class="grid gap-3 sm:grid-cols-2">
 					{#snippet card(title: string, icon: string, data: SyncConflict['local'], time: number | null)}
@@ -82,7 +155,10 @@ function counts(data: SyncConflict['local']) {
 							class="rounded-xl border border-border-primary bg-bg-secondary p-4"
 						>
 							<div class="flex items-center gap-2 mb-3">
-								<div class="{icon} h-4 w-4 text-text-primary"></div>
+								<div
+									class="{icon} h-4 w-4 text-text-primary"
+									aria-hidden="true"
+								></div>
 								<div class="text-sm font-semibold text-text-primary">
 									{title}
 								</div>
@@ -104,6 +180,16 @@ function counts(data: SyncConflict['local']) {
 									<dt class="text-text-secondary">{m.sync_saved_plans()}</dt>
 									<dd class="text-text-primary">{counts(data).plans}</dd>
 								</div>
+								{#each differences as difference (difference.label)}
+									{#if difference.display}
+										<div class="flex justify-between gap-2">
+											<dt class="text-text-secondary">{difference.label}</dt>
+											<dd class="text-right text-text-primary">
+												{difference.display(data)}
+											</dd>
+										</div>
+									{/if}
+								{/each}
 							</dl>
 						</div>
 					{/snippet}
@@ -111,6 +197,11 @@ function counts(data: SyncConflict['local']) {
 					{@render card(m.sync_this_device(), 'i-lucide-monitor', conflict.local, conflict.localUpdatedAt)}
 					{@render card(m.sync_cloud_data(), 'i-lucide-cloud', conflict.cloud, conflict.cloudUpdatedAt)}
 				</div>
+				{#if cloudSyncStore.resolvingConflict}
+					<p class="text-sm text-text-secondary" role="status">
+						{m.account_status_saving()}
+					</p>
+				{/if}
 			</div>
 
 			<!-- Actions -->
@@ -118,14 +209,16 @@ function counts(data: SyncConflict['local']) {
 				class="flex flex-col-reverse gap-3 border-t border-border-primary px-6 py-4 sm:flex-row sm:justify-end"
 			>
 				<button
-					class="rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors"
+					class="rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors disabled:cursor-wait disabled:opacity-50"
 					onclick={() => cloudSyncStore.useLocalConflict()}
+					disabled={cloudSyncStore.resolvingConflict}
 				>
 					{m.sync_use_device()}
 				</button>
 				<button
-					class="rounded-lg px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+					class="rounded-lg px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors disabled:cursor-wait disabled:opacity-50"
 					onclick={() => cloudSyncStore.useCloudConflict()}
+					disabled={cloudSyncStore.resolvingConflict}
 				>
 					{m.sync_use_cloud()}
 				</button>

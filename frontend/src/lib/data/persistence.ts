@@ -24,6 +24,21 @@ export type AppData = {
 	};
 };
 
+// Record insertion order is not a change; array order (such as semester rows) is.
+export function serializeSnapshot(snapshot: object): string {
+	return JSON.stringify(snapshot, (_key, value: unknown) => {
+		if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+			return value;
+		}
+		const record = value as Record<string, unknown>;
+		return Object.fromEntries(
+			Object.keys(record)
+				.sort()
+				.map((key) => [key, record[key]]),
+		);
+	});
+}
+
 export function collectAppData(): AppData {
 	const studyPlans = loadAllPlans();
 	const store = getCourseStore();
