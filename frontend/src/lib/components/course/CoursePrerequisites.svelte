@@ -55,6 +55,13 @@ const assessmentPlacement = $derived(
 );
 const note = $derived(course.prerequisiteNote?.trim());
 
+function isExpressionSatisfied(node: PrerequisiteExpression): boolean {
+	if ('ruleIndex' in node) return groups[node.ruleIndex].state === 'satisfied';
+	return node.operator === 'and'
+		? node.children.every(isExpressionSatisfied)
+		: node.children.some(isExpressionSatisfied);
+}
+
 function isMet(candidate: PrerequisiteCourseSummary) {
 	return candidate.state === 'completed' || candidate.state === 'attended';
 }
@@ -154,7 +161,7 @@ function groupTitle(index: number) {
 	{@const required = rule.moduleLinkType === 'oder' ? 1 : rule.modules.length}
 	{@const satisfied = group.state === 'satisfied'}
 	<section
-		class={`overflow-hidden rounded-lg border ${satisfied ? 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950/50' : 'border-border-primary'}`}
+		class={`overflow-hidden rounded-lg border ${satisfied ? 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950/50' : 'border-border-primary bg-bg-secondary'}`}
 		aria-labelledby={`${id}-group-${index}`}
 	>
 		<header
@@ -211,16 +218,32 @@ function groupTitle(index: number) {
 	</section>
 {/snippet}
 
-{#snippet requirementExpression(node: PrerequisiteExpression, root: boolean = false)}
+{#snippet requirementExpression(node: PrerequisiteExpression)}
 	{#if 'ruleIndex' in node}
 		{@render requirementGroup(node.ruleIndex)}
 	{:else}
+		{@const satisfied = isExpressionSatisfied(node)}
 		<div
-			class={root ? 'space-y-3' : 'space-y-3 rounded-lg border border-border-primary p-3'}
+			class={`space-y-3 rounded-lg border p-3 ${satisfied ? 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950/50' : 'border-border-primary bg-bg-secondary'}`}
 		>
-			<p class="text-sm font-medium text-text-secondary">
-				{node.operator === 'and' ? m.prerequisites_all_groups() : m.prerequisites_one_group()}
-			</p>
+			<div
+				class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1"
+			>
+				<p class="text-sm font-medium text-text-secondary">
+					{node.operator === 'and' ? m.prerequisites_all_groups() : m.prerequisites_one_group()}
+				</p>
+				{#if satisfied}
+					<span
+						class="inline-flex items-center gap-1.5 text-xs font-medium text-green-800 dark:text-green-400"
+					>
+						<span
+							class="i-lucide-circle-check h-3.5 w-3.5 shrink-0"
+							aria-hidden="true"
+						></span>
+						{m.prerequisites_met()}
+					</span>
+				{/if}
+			</div>
 			{#each node.children as child (child)}
 				{@render requirementExpression(child)}
 			{/each}
@@ -286,7 +309,7 @@ function groupTitle(index: number) {
 		</section>
 	{/if}
 	{#if expression}
-		{@render requirementExpression(expression, true)}
+		{@render requirementExpression(expression)}
 	{:else if !course.assessmentLevelPassed && !note}
 		<p class="text-sm text-text-secondary">{m.prereq_none()}</p>
 	{/if}
