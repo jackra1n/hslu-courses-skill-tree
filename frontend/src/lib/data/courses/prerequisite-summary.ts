@@ -1,6 +1,6 @@
 import { evaluatePrerequisiteRule } from '$lib/utils/prerequisite';
-import type { PrerequisiteRule } from './catalog-types';
-import { buildPlanRowIndex, type StudyPlan } from './study-plan';
+import type { PrerequisiteRule } from '../catalog/catalog-types';
+import { buildPlanRowIndex, type StudyPlan } from '../planning/study-plan';
 
 export type PrerequisiteCourseSummary = {
 	courseId: string;

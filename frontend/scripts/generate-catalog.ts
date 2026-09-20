@@ -11,7 +11,7 @@ import type {
 	PrerequisiteRule,
 	ProgramInfo,
 	StudyModel,
-} from '../src/lib/data/catalog-types';
+} from '../src/lib/data/catalog/catalog-types';
 import type { Season } from '../src/lib/data/season';
 
 declare global {
@@ -783,6 +783,7 @@ function main(): void {
 		'src',
 		'lib',
 		'data',
+		'catalog',
 		'catalog.generated.json',
 	);
 

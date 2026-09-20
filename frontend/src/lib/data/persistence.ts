@@ -1,12 +1,12 @@
 import { browser } from '$app/environment';
-import { isPlanCustomized } from '$lib/data/plan-rules';
+import { isPlanCustomized } from '$lib/data/planning/plan-rules';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { clearAllPlans, loadAllPlans, savePlan } from '$lib/stores/planStorage';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import type { Season } from './season';
-import type { StudyPlan } from './study-plan';
+import type { StudyPlan } from './planning/study-plan';
 
 const CURRENT_VERSION = 1;
 

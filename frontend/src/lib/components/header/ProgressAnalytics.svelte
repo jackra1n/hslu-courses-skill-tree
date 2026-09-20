@@ -1,8 +1,8 @@
 <script lang="ts">
 import Sidebar from '$lib/components/ui/Sidebar.svelte';
-import { computeCategoryProgress } from '$lib/data/analytics';
-import { getEctsRequirements } from '$lib/data/ects-requirements';
-import { moduleTypeLabel } from '$lib/data/module-type';
+import { computeCategoryProgress } from '$lib/data/planning/analytics';
+import { getEctsRequirements } from '$lib/data/catalog/ects-requirements';
+import { moduleTypeLabel } from '$lib/data/courses/module-type';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';

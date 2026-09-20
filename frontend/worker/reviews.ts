@@ -1,10 +1,10 @@
-import { courses } from '../src/lib/data/catalog.generated.json';
+import { courses } from '../src/lib/data/catalog/catalog.generated.json';
 import type {
 	CourseReviewScore,
 	CourseReviewsResponse,
 	Review,
 	ReviewInput,
-} from '../src/lib/data/review-types';
+} from '../src/lib/data/reviews/review-types';
 import { json, readBoundedBody } from './http';
 
 const courseIds = new Set<string>();

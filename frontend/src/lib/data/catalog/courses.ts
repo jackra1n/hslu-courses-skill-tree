@@ -7,7 +7,7 @@ import type {
 	TemplateSlot,
 } from './catalog-types';
 import { loadCourseData } from './course-data-adapter';
-import { courseLabel } from './course-label';
+import { courseLabel } from '../courses/course-label';
 
 export type {
 	Course,

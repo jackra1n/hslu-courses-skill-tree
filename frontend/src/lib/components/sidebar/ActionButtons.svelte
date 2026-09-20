@@ -1,5 +1,5 @@
 <script lang="ts">
-import { getCourseById } from '$lib/data/courses';
+import { getCourseById } from '$lib/data/catalog/courses';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';

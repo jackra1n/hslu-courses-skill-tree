@@ -4,7 +4,7 @@ import type {
 	CourseReviewScore,
 	CourseReviewsResponse,
 	Review,
-} from '../../src/lib/data/review-types';
+} from '../../src/lib/data/reviews/review-types';
 import { getAuth } from '../auth';
 import worker from '../index';
 import { applyMigrations, resetTestData, seedUser } from './apply-migrations';

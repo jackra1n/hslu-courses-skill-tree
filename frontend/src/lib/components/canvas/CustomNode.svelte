@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Handle, type Node, type NodeProps, Position } from '@xyflow/svelte';
 import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
-import type { ExtendedNodeData } from '$lib/data/courses';
+import type { ExtendedNodeData } from '$lib/data/catalog/courses';
 import * as m from '$lib/paraglide/messages';
 
 let {

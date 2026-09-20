@@ -4,4 +4,4 @@ export type {
 	PrerequisiteRule,
 	Status,
 	TemplateSlot,
-} from '$lib/data/courses';
+} from '$lib/data/catalog/courses';

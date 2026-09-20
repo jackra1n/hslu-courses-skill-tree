@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Review } from '$lib/data/review-types';
+import type { Review } from '$lib/data/reviews/review-types';
 import * as m from '$lib/paraglide/messages';
 import ReviewStars from './ReviewStars.svelte';
 

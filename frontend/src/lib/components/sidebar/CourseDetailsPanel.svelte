@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
 import CourseDetailContent from '$lib/components/course/CourseDetailContent.svelte';
-import { getCourseById } from '$lib/data/courses';
+import { getCourseById } from '$lib/data/catalog/courses';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';

@@ -1,10 +1,10 @@
-import { getTemplateById } from '$lib/data/courses';
+import { getTemplateById } from '$lib/data/catalog/courses';
 import {
 	createStudyPlan,
 	deriveSelections,
 	type PlanRow,
 	type StudyPlan,
-} from '$lib/data/study-plan';
+} from '$lib/data/planning/study-plan';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 
 export function canSelectCourse(

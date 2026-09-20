@@ -1,8 +1,8 @@
 <script lang="ts">
 import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
-import type { CatalogCourse } from '$lib/data/catalog-types';
-import { courseModuleType } from '$lib/data/course-filters';
-import { courseLabel } from '$lib/data/course-label';
+import type { CatalogCourse } from '$lib/data/catalog/catalog-types';
+import { courseModuleType } from '$lib/data/courses/course-filters';
+import { courseLabel } from '$lib/data/courses/course-label';
 import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 

@@ -6,11 +6,11 @@ import {
 	fetchCourseReviews,
 	ReviewApiError,
 	saveCourseReview,
-} from '$lib/data/review-client';
+} from '$lib/data/reviews/review-client';
 import type {
 	CourseReviewsResponse,
 	ReviewInput,
-} from '$lib/data/review-types';
+} from '$lib/data/reviews/review-types';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { locale } from '$lib/stores/locale.svelte';

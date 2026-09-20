@@ -1,5 +1,5 @@
-import type { ModuleType } from './courses';
-import { getEctsRequirements } from './ects-requirements';
+import type { ModuleType } from '../catalog/courses';
+import { getEctsRequirements } from '../catalog/ects-requirements';
 import type { StudyPlan } from './study-plan';
 import { resolveCourse } from './study-plan';
 

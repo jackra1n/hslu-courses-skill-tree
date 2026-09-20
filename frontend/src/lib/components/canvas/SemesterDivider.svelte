@@ -1,10 +1,10 @@
 <script lang="ts">
 import { useViewport } from '@xyflow/svelte';
-import type { StudyPlan } from '$lib/data/study-plan';
+import type { StudyPlan } from '$lib/data/planning/study-plan';
 import {
 	calculatePlanSemesterAttendedCredits,
 	calculatePlanSemesterCredits,
-} from '$lib/data/study-plan';
+} from '$lib/data/planning/study-plan';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 

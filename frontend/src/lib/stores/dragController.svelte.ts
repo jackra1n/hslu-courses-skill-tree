@@ -1,6 +1,6 @@
 import type { Node } from '@xyflow/svelte';
-import type { ExtendedNodeData } from '$lib/data/courses';
-import type { PlanRow, StudyPlan } from '$lib/data/study-plan';
+import type { ExtendedNodeData } from '$lib/data/catalog/courses';
+import type { PlanRow, StudyPlan } from '$lib/data/planning/study-plan';
 import { getNodeWidth } from '$lib/graph/layout';
 import { GRID_SIZE, layoutNodes, MAX_SEMESTERS } from '$lib/graph/plan-layout';
 

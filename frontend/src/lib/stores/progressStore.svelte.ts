@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
-import type { StudyPlan } from '$lib/data/study-plan';
-import { resolveCourse } from '$lib/data/study-plan';
+import type { StudyPlan } from '$lib/data/planning/study-plan';
+import { resolveCourse } from '$lib/data/planning/study-plan';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
 import { getAssessmentStageProgress } from '$lib/utils/status';
 

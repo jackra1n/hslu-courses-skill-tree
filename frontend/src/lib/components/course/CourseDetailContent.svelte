@@ -1,10 +1,10 @@
 <script lang="ts">
 import type { Snippet } from 'svelte';
 import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
-import { assessmentModeLabel } from '$lib/data/assessment-mode';
-import type { Course, ModuleType } from '$lib/data/catalog-types';
-import { courseLabel } from '$lib/data/course-label';
-import type { CourseReviewsResponse } from '$lib/data/review-types';
+import { assessmentModeLabel } from '$lib/data/courses/assessment-mode';
+import type { Course, ModuleType } from '$lib/data/catalog/catalog-types';
+import { courseLabel } from '$lib/data/courses/course-label';
+import type { CourseReviewsResponse } from '$lib/data/reviews/review-types';
 import { seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';

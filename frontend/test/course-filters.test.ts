@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'bun:test';
-import type { CatalogCourse } from '../src/lib/data/catalog-types';
+import type { CatalogCourse } from '../src/lib/data/catalog/catalog-types';
 import {
 	courseModuleType,
 	EMPTY_FILTERS,
 	filterCourses,
 	isFiltering,
-} from '../src/lib/data/course-filters';
+} from '../src/lib/data/courses/course-filters';
 
 function course(
 	overrides: Partial<CatalogCourse> & { id: string },

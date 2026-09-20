@@ -1,4 +1,4 @@
-import type { PrerequisiteRule } from './catalog-types';
+import type { PrerequisiteRule } from '../catalog/catalog-types';
 
 export type PrerequisiteExpression =
 	| { ruleIndex: number }

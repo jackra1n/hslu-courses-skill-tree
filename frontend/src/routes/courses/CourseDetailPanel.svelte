@@ -1,9 +1,9 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
 import CourseDetailContent from '$lib/components/course/CourseDetailContent.svelte';
-import type { CatalogCourse } from '$lib/data/catalog-types';
-import { courseModuleType } from '$lib/data/course-filters';
-import type { CourseReviewsResponse } from '$lib/data/review-types';
+import type { CatalogCourse } from '$lib/data/catalog/catalog-types';
+import { courseModuleType } from '$lib/data/courses/course-filters';
+import type { CourseReviewsResponse } from '$lib/data/reviews/review-types';
 import * as m from '$lib/paraglide/messages';
 
 let {

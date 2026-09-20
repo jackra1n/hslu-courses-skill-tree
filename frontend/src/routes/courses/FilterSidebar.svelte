@@ -1,9 +1,12 @@
 <script lang="ts">
 import Dropdown from '$lib/components/ui/Dropdown.svelte';
-import { assessmentModeLabel } from '$lib/data/assessment-mode';
-import type { AssessmentMode, ModuleType } from '$lib/data/catalog-types';
-import type { EctsRange } from '$lib/data/course-filters';
-import { moduleTypeLabel } from '$lib/data/module-type';
+import { assessmentModeLabel } from '$lib/data/courses/assessment-mode';
+import type {
+	AssessmentMode,
+	ModuleType,
+} from '$lib/data/catalog/catalog-types';
+import type { EctsRange } from '$lib/data/courses/course-filters';
+import { moduleTypeLabel } from '$lib/data/courses/module-type';
 import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 

@@ -1,10 +1,10 @@
-import type { PrerequisiteRule } from '$lib/data/courses';
-import type { StudyPlan } from '$lib/data/study-plan';
+import type { PrerequisiteRule } from '$lib/data/catalog/courses';
+import type { StudyPlan } from '$lib/data/planning/study-plan';
 import {
 	buildPlanRowIndex,
 	mapPlanCourseProviders,
 	resolveCourse,
-} from '$lib/data/study-plan';
+} from '$lib/data/planning/study-plan';
 import { selectProviderForRule } from '$lib/graph/build';
 
 type SlotStatus = Map<string, 'attended' | 'completed'>;

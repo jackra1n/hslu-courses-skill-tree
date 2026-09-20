@@ -1,5 +1,5 @@
-import type { Course } from '$lib/data/catalog-types';
-import { courseLabel } from '$lib/data/course-label';
+import type { Course } from '$lib/data/catalog/catalog-types';
+import { courseLabel } from '$lib/data/courses/course-label';
 
 export function getNodeWidth(credits: number): number {
 	const blocks = Math.max(1, Math.round(credits / 3));

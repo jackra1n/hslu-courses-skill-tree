@@ -1,6 +1,6 @@
 import type { Node } from '@xyflow/svelte';
-import type { ExtendedNodeData } from '$lib/data/courses';
-import type { PlanRow } from '$lib/data/study-plan';
+import type { ExtendedNodeData } from '$lib/data/catalog/courses';
+import type { PlanRow } from '$lib/data/planning/study-plan';
 import { getNodeWidth } from './layout';
 
 export const GRID_SIZE = { x: 40, y: 200 };

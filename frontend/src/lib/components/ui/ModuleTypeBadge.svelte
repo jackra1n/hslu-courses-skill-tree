@@ -1,6 +1,9 @@
 <script lang="ts">
-import type { ModuleType } from '$lib/data/catalog-types';
-import { moduleTypeBadge, moduleTypeLabel } from '$lib/data/module-type';
+import type { ModuleType } from '$lib/data/catalog/catalog-types';
+import {
+	moduleTypeBadge,
+	moduleTypeLabel,
+} from '$lib/data/courses/module-type';
 
 let {
 	type,

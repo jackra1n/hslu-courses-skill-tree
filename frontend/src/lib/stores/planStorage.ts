@@ -1,11 +1,11 @@
 import { browser } from '$app/environment';
-import type { CurriculumTemplate } from '$lib/data/courses';
+import type { CurriculumTemplate } from '$lib/data/catalog/courses';
 import type { Season } from '$lib/data/season';
 import {
 	createStudyPlan,
 	normalizePlan,
 	type StudyPlan,
-} from '$lib/data/study-plan';
+} from '$lib/data/planning/study-plan';
 
 const KEYS = {
 	template: 'currentTemplate',

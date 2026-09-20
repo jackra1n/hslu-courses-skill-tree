@@ -2,8 +2,8 @@ import type {
 	AssessmentMode,
 	CatalogCourse,
 	ModuleType,
-} from './catalog-types';
-import type { Season } from './season';
+} from '../catalog/catalog-types';
+import type { Season } from '../season';
 
 // inclusive ECTS bounds. Null means unbounded (matches everything).
 export type EctsRange = { min: number; max: number } | null;

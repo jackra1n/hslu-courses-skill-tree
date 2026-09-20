@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount, tick } from 'svelte';
 import { resolve } from '$app/paths';
-import { getEctsRequirements } from '$lib/data/ects-requirements';
+import { getEctsRequirements } from '$lib/data/catalog/ects-requirements';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';

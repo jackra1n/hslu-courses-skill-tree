@@ -1,8 +1,8 @@
 <script lang="ts">
-import type { Course } from '$lib/data/catalog-types';
-import { courseLabel } from '$lib/data/course-label';
-import { getCourseById } from '$lib/data/courses';
-import { summarizePrerequisites } from '$lib/data/prerequisite-summary';
+import type { Course } from '$lib/data/catalog/catalog-types';
+import { courseLabel } from '$lib/data/courses/course-label';
+import { getCourseById } from '$lib/data/catalog/courses';
+import { summarizePrerequisites } from '$lib/data/courses/prerequisite-summary';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';

@@ -1,6 +1,9 @@
-import { getTemplateById } from '$lib/data/courses';
-import type { StudyPlan } from '$lib/data/study-plan';
-import { calculateCompletedCredits, resolveCourse } from '$lib/data/study-plan';
+import { getTemplateById } from '$lib/data/catalog/courses';
+import type { StudyPlan } from '$lib/data/planning/study-plan';
+import {
+	calculateCompletedCredits,
+	resolveCourse,
+} from '$lib/data/planning/study-plan';
 import type { Status } from '../types';
 import { assessmentStagePassed } from './assessment-stage';
 import { evaluatePrerequisites } from './prerequisite';

@@ -1,7 +1,7 @@
 <script lang="ts">
 import Dropdown from '$lib/components/ui/Dropdown.svelte';
-import { courseLabel } from '$lib/data/course-label';
-import { COURSES, type Course } from '$lib/data/courses';
+import { courseLabel } from '$lib/data/courses/course-label';
+import { COURSES, type Course } from '$lib/data/catalog/courses';
 import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';

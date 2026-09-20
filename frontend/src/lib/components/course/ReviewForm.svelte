@@ -1,6 +1,6 @@
 <script lang="ts">
 import { onMount, untrack } from 'svelte';
-import type { Review, ReviewInput } from '$lib/data/review-types';
+import type { Review, ReviewInput } from '$lib/data/reviews/review-types';
 import * as m from '$lib/paraglide/messages';
 import ReviewRating from './ReviewRating.svelte';
 

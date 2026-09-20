@@ -34,7 +34,7 @@
 	"linter": { "enabled": false },
 	"overrides": [
 		{
-			"includes": ["src/lib/data/catalog.generated.json"],
+			"includes": ["src/lib/data/catalog/catalog.generated.json"],
 			"formatter": {
 				"lineWidth": 120
 			}

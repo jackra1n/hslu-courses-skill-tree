@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'bun:test';
-import type { PrerequisiteRule } from '../src/lib/data/catalog-types';
+import type { PrerequisiteRule } from '../src/lib/data/catalog/catalog-types';
 import {
 	buildPrerequisiteExpression,
 	type PrerequisiteExpression,
-} from '../src/lib/data/prerequisite-expression';
-import { summarizePrerequisites } from '../src/lib/data/prerequisite-summary';
-import type { PlanNode, StudyPlan } from '../src/lib/data/study-plan';
+} from '../src/lib/data/courses/prerequisite-expression';
+import { summarizePrerequisites } from '../src/lib/data/courses/prerequisite-summary';
+import type { PlanNode, StudyPlan } from '../src/lib/data/planning/study-plan';
 import { evaluatePrerequisites } from '../src/lib/utils/prerequisite';
 
 function node(id: string, courseId: string | null, semester = 1): PlanNode {

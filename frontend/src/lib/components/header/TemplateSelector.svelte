@@ -6,8 +6,8 @@ import {
 	getAvailablePlans,
 	getTemplatesByProgram,
 	type StudyModel,
-} from '$lib/data/courses';
-import { getProgramPlans, getPrograms } from '$lib/data/programs';
+} from '$lib/data/catalog/courses';
+import { getProgramPlans, getPrograms } from '$lib/data/catalog/programs';
 import {
 	planIntroYear,
 	resolvePlan,

@@ -5,8 +5,11 @@ import {
 	getTemplateById,
 	getTemplatesByProgram,
 	setCoursePlan,
-} from '$lib/data/courses';
-import { canSelectCourse, isPlanCustomized } from '$lib/data/plan-rules';
+} from '$lib/data/catalog/courses';
+import {
+	canSelectCourse,
+	isPlanCustomized,
+} from '$lib/data/planning/plan-rules';
 import {
 	currentStartTerm,
 	formatTerm,
@@ -26,7 +29,7 @@ import {
 	type PlanNode,
 	type StudyPlan,
 	updateNodeCourse,
-} from '$lib/data/study-plan';
+} from '$lib/data/planning/study-plan';
 import { toGraph } from '$lib/graph/build';
 import { orderEdgeHandles } from '$lib/graph/edge-order';
 import {

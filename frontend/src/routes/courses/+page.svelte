@@ -5,26 +5,26 @@ import AccountMenu from '$lib/components/header/AccountMenu.svelte';
 import SettingsSidebar from '$lib/components/sidebar/SettingsSidebar.svelte';
 import Dropdown from '$lib/components/ui/Dropdown.svelte';
 import Tooltip from '$lib/components/ui/Tooltip.svelte';
-import { loadCatalog } from '$lib/data/catalog-loader';
+import { loadCatalog } from '$lib/data/catalog/catalog-loader';
 import type {
 	AssessmentMode,
 	CatalogCourse,
 	ModuleType,
-} from '$lib/data/catalog-types';
+} from '$lib/data/catalog/catalog-types';
 import {
 	courseModuleType,
 	type EctsRange,
 	EMPTY_FILTERS,
 	filterCourses,
 	isFiltering,
-} from '$lib/data/course-filters';
-import { courseLabel } from '$lib/data/course-label';
-import { nextCourseIds } from '$lib/data/course-readiness';
+} from '$lib/data/courses/course-filters';
+import { courseLabel } from '$lib/data/courses/course-label';
+import { nextCourseIds } from '$lib/data/courses/course-readiness';
 import {
 	collectAppData,
 	hasMeaningfulStoredAppData,
 } from '$lib/data/persistence';
-import { fetchCourseReviewScores } from '$lib/data/review-client';
+import { fetchCourseReviewScores } from '$lib/data/reviews/review-client';
 import { type Season } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';

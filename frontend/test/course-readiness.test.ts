@@ -2,9 +2,9 @@ import { describe, expect, test } from 'bun:test';
 import type {
 	CatalogCourse,
 	PrerequisiteRule,
-} from '../src/lib/data/catalog-types';
-import { nextCourseIds } from '../src/lib/data/course-readiness';
-import type { PlanNode, StudyPlan } from '../src/lib/data/study-plan';
+} from '../src/lib/data/catalog/catalog-types';
+import { nextCourseIds } from '../src/lib/data/courses/course-readiness';
+import type { PlanNode, StudyPlan } from '../src/lib/data/planning/study-plan';
 
 function course(
 	id: string,

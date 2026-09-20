@@ -1,6 +1,6 @@
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
-import type { CatalogCourse } from './catalog-types';
-import type { StudyPlan } from './study-plan';
+import type { CatalogCourse } from '../catalog/catalog-types';
+import type { StudyPlan } from '../planning/study-plan';
 
 type SlotStatus = Map<string, 'attended' | 'completed'>;
 
