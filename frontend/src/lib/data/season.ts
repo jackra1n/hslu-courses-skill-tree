@@ -6,7 +6,7 @@ export function seasonLabel(season: Season): string {
 	return season === 'HS' ? m.season_hs() : m.season_fs();
 }
 
-export function otherSeason(season: Season): Season {
+function otherSeason(season: Season): Season {
 	return season === 'HS' ? 'FS' : 'HS';
 }
 
@@ -21,7 +21,7 @@ export function seasonOfSemester(
 export type Term = { season: Season; year: number };
 
 // Orders terms chronologically: spring sorts before autumn within a year.
-export function termOrdinal(year: number, season: Season): number {
+function termOrdinal(year: number, season: Season): number {
 	return year * 2 + (season === 'HS' ? 1 : 0);
 }
 

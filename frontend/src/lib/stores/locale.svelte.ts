@@ -30,7 +30,7 @@ export function locale(): Locale {
 	return _locale;
 }
 
-export function isLocale(value: string): value is Locale {
+function isLocale(value: string): value is Locale {
 	return (locales as readonly string[]).includes(value);
 }
 

@@ -1,6 +1,6 @@
-export const ASSESSMENT_STAGE_DEFINITIVE_ECTS = 54;
-export const ASSESSMENT_STAGE_CONDITIONAL_ECTS = 42;
-export const ASSESSMENT_STAGE_PROJECT_ECTS = 6;
+const ASSESSMENT_STAGE_DEFINITIVE_ECTS = 54;
+const ASSESSMENT_STAGE_CONDITIONAL_ECTS = 42;
+const ASSESSMENT_STAGE_PROJECT_ECTS = 6;
 
 /**
  * An assessment stage is passed definitively at >= 54 completed ECTS, or

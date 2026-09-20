@@ -1,4 +1,4 @@
-export type ReviewRatings = {
+type ReviewRatings = {
 	recommendation: number;
 	contentInterest: number;
 	difficulty: number;

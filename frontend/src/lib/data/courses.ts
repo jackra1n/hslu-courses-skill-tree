@@ -3,7 +3,6 @@ import { getCatalog } from './catalog-loader';
 import type {
 	Course,
 	CurriculumTemplate,
-	ModuleType,
 	StudyModel,
 	TemplateSlot,
 } from './catalog-types';
@@ -14,7 +13,6 @@ export type {
 	Course,
 	CurriculumTemplate,
 	ModuleType,
-	PrerequisiteLink,
 	PrerequisiteRule,
 	StudyModel,
 	TemplateSlot,
@@ -145,118 +143,9 @@ export const COURSES: Course[] = new Proxy([], {
 	},
 }) as Course[];
 
-export const COURSES_MAP: Record<string, Course> = new Proxy(
-	{},
-	{
-		get(_target, prop) {
-			const { coursesMap } = buildCourseCollections();
-			return Reflect.get(coursesMap, prop);
-		},
-		has(_target, prop) {
-			const { coursesMap } = buildCourseCollections();
-			return Reflect.has(coursesMap, prop);
-		},
-		ownKeys(_target) {
-			const { coursesMap } = buildCourseCollections();
-			return Reflect.ownKeys(coursesMap);
-		},
-		getOwnPropertyDescriptor(_target, prop) {
-			const { coursesMap } = buildCourseCollections();
-			return Reflect.getOwnPropertyDescriptor(coursesMap, prop);
-		},
-	},
-) as Record<string, Course>;
-
 export function getCourseById(id: string): Course | undefined {
 	const { coursesMap } = buildCourseCollections();
 	return coursesMap[id];
-}
-
-export function getPrerequisitesForCourse(courseId: string): Course[] {
-	const course = getCourseById(courseId);
-	if (!course) return [];
-
-	const prerequisiteCourses: Course[] = [];
-
-	course.prerequisites.forEach((rule) => {
-		rule.modules.forEach((moduleId) => {
-			const prereqCourse = getCourseById(moduleId);
-			if (prereqCourse) {
-				prerequisiteCourses.push(prereqCourse);
-			}
-		});
-	});
-
-	return prerequisiteCourses;
-}
-
-export function calculateCreditsCompleted(
-	completed: Set<string>,
-	moduleType?: ModuleType,
-): number {
-	return COURSES.filter(
-		(course) =>
-			completed.has(course.id) && (!moduleType || course.type === moduleType),
-	).reduce((total, course) => total + course.ects, 0);
-}
-
-export function calculateCreditsAttended(
-	attended: Set<string>,
-	completed: Set<string>,
-	moduleType?: ModuleType,
-): number {
-	return COURSES.filter(
-		(course) =>
-			(attended.has(course.id) || completed.has(course.id)) &&
-			(!moduleType || course.type === moduleType),
-	).reduce((total, course) => total + course.ects, 0);
-}
-
-export function getCoursesForSlot(
-	slot: TemplateSlot,
-	userSelections: Record<string, string>,
-): Course[] {
-	if (slot.type === 'fixed' && slot.courseId) {
-		const course = getCourseById(slot.courseId);
-		return course ? [course] : [];
-	}
-
-	if (slot.type === 'elective' || slot.type === 'major') {
-		const selectedCourseId = userSelections[slot.id];
-		if (selectedCourseId) {
-			const course = getCourseById(selectedCourseId);
-			return course ? [course] : [];
-		}
-		return [];
-	}
-
-	return [];
-}
-
-export function calculateSemesterCredits(
-	semester: number,
-	template: CurriculumTemplate,
-	userSelections: Record<string, string>,
-	semesterOverrides: Record<string, number> = {},
-): number {
-	return template.slots
-		.filter(
-			(slot) => (semesterOverrides[slot.id] ?? slot.semester) === semester,
-		)
-		.reduce((total, slot) => {
-			const courses = getCoursesForSlot(slot, userSelections);
-			return total + courses.reduce((sum, course) => sum + course.ects, 0);
-		}, 0);
-}
-
-export function calculateTotalCredits(
-	template: CurriculumTemplate,
-	userSelections: Record<string, string>,
-): number {
-	return template.slots.reduce((total, slot) => {
-		const courses = getCoursesForSlot(slot, userSelections);
-		return total + courses.reduce((sum, course) => sum + course.ects, 0);
-	}, 0);
 }
 
 export type ExtendedNodeData = {

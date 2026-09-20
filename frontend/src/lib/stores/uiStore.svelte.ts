@@ -4,9 +4,7 @@ import type { Course } from '../types';
 let _selection = $state<Course | null>(null);
 let _selectedSlotId = $state<string | null>(null);
 let _showAssessmentInfo = $state(false);
-let _showMoreOptions = $state(false);
 let _showCourseTypeBadges = $state(false);
-let _showProgramSelector = $state(false);
 let _tutorialRequested = $state(false);
 let _tutorialNavigationOpen = $state(false);
 
@@ -27,14 +25,8 @@ export function selectedSlotId() {
 export function showAssessmentInfo() {
 	return _showAssessmentInfo;
 }
-export function showMoreOptions() {
-	return _showMoreOptions;
-}
 export function showCourseTypeBadges() {
 	return _showCourseTypeBadges;
-}
-export function showProgramSelector() {
-	return _showProgramSelector;
 }
 export function tutorialRequested() {
 	return _tutorialRequested;
@@ -64,10 +56,6 @@ export const uiStore = {
 		_showAssessmentInfo = !_showAssessmentInfo;
 	},
 
-	toggleMoreOptions() {
-		_showMoreOptions = !_showMoreOptions;
-	},
-
 	toggleCourseTypeBadges() {
 		this.setShowCourseTypeBadges(!_showCourseTypeBadges);
 	},
@@ -80,10 +68,6 @@ export const uiStore = {
 				JSON.stringify(_showCourseTypeBadges),
 			);
 		}
-	},
-
-	toggleProgramSelector() {
-		_showProgramSelector = !_showProgramSelector;
 	},
 
 	requestTutorial() {

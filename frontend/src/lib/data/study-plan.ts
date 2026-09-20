@@ -7,7 +7,7 @@ import type {
 import { getCourseById } from '$lib/data/courses';
 import * as m from '$lib/paraglide/messages';
 
-export type PlanNodeKind = 'fixed' | 'elective' | 'custom';
+type PlanNodeKind = 'fixed' | 'elective' | 'custom';
 
 export type PlanNode = Readonly<{
 	id: string;
@@ -191,10 +191,6 @@ export function calculatePlanSemesterAttendedCredits(
 		const node = plan.nodes[nodeId];
 		return sum + (node?.ects || 0);
 	}, 0);
-}
-
-export function getPlanNodeCourse(node: PlanNode): Course | undefined {
-	return resolveCourse(node.courseId);
 }
 
 export function normalizePlan(plan: StudyPlan): StudyPlan {
