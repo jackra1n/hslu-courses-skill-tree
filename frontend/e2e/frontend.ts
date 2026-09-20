@@ -3,6 +3,7 @@
 export default {
 	fetch(request: Request, env: E2EFrontendEnv): Promise<Response> {
 		const url = new URL(request.url);
+		if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
 		const localOrigin = url.origin;
 		url.protocol = 'http:';
 		url.host = 'localhost:5173';

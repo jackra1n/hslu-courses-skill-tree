@@ -1,5 +1,10 @@
 import { Buffer } from 'node:buffer';
 import { createHmac, randomBytes, randomUUID } from 'node:crypto';
+import { once } from 'node:events';
+import { createServer } from 'node:http';
+import type { AddressInfo } from 'node:net';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { test as base } from '@playwright/test';
 import { betterAuth } from 'better-auth';
 import { createTestHarness, type TestHarness } from 'wrangler';
@@ -46,7 +51,61 @@ export const test = base.extend<Fixtures, { harness: TestHarness }>({
 		const api = harness.getWorker<Cloudflare.Env>('hslu-skill-tree-api');
 		await api.applyD1Migrations('DB');
 		const { DB } = await api.getEnv();
-		const { url } = await harness.listen();
+		// bypass Wrangler's dev proxy and its idle connection race:
+		// https://github.com/cloudflare/workers-sdk/issues/14641
+		const frontend = harness.getWorker();
+		const server = createServer(async (request, response) => {
+			try {
+				const headers = new Headers();
+				for (let index = 0; index < request.rawHeaders.length; index += 2) {
+					headers.append(
+						request.rawHeaders[index],
+						request.rawHeaders[index + 1],
+					);
+				}
+				const result = await frontend.fetch(
+					new URL(request.url ?? '/', `http://${request.headers.host}`),
+					{
+						method: request.method,
+						headers,
+						body:
+							request.method === 'GET' || request.method === 'HEAD'
+								? undefined
+								: Readable.toWeb(request),
+						duplex: 'half',
+					},
+				);
+				response.statusCode = result.status;
+				// fetch decodes the body; Node supplies the outgoing framing.
+				result.headers.forEach((value, name) => {
+					if (
+						name !== 'content-encoding' &&
+						name !== 'content-length' &&
+						name !== 'transfer-encoding' &&
+						name !== 'set-cookie'
+					) {
+						response.setHeader(name, value);
+					}
+				});
+				const cookies = result.headers.getSetCookie();
+				if (cookies.length) response.setHeader('set-cookie', cookies);
+				if (result.body) {
+					await pipeline(Readable.fromWeb(result.body), response);
+				} else {
+					response.end();
+				}
+			} catch (error) {
+				response.destroy(
+					error instanceof Error ? error : new Error(String(error)),
+				);
+			}
+		});
+		server.keepAliveTimeout = 0;
+		server.listen(0, '127.0.0.1');
+		await once(server, 'listening');
+		const url = new URL(
+			`http://127.0.0.1:${(server.address() as AddressInfo).port}`,
+		);
 		try {
 			await use({ url, database: DB });
 		} finally {
@@ -56,6 +115,10 @@ export const test = base.extend<Fixtures, { harness: TestHarness }>({
 					contentType: 'application/json',
 				});
 			}
+			await new Promise<void>((resolve, reject) => {
+				server.close((error) => (error ? reject(error) : resolve()));
+				server.closeAllConnections();
+			});
 			await harness.reset();
 		}
 	},
