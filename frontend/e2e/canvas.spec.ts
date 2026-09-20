@@ -96,3 +96,57 @@ test('Backspace preserves the plan while the remove action persists deletion', a
 	await expect(page.locator('.svelte-flow__node-custom').first()).toBeVisible();
 	await expect(course).toHaveCount(0);
 });
+
+test('replacing a completed elective does not transfer its progress', async ({
+	page,
+	isMobile,
+}) => {
+	test.skip(isMobile, 'Uses the desktop canvas add button.');
+	await page.addInitScript(() =>
+		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'),
+	);
+	await page.goto('/');
+	await page
+		.getByRole('button', { name: 'Add course to semester 1', exact: true })
+		.click();
+	const node = page.locator('.svelte-flow__node-custom[data-id^="custom-"]');
+	await node.click();
+	const panel = page.locator('#skill-tree-course-detail-panel');
+	const choose = panel.getByRole('button', {
+		name: 'Choose a course for this slot',
+		exact: true,
+	});
+	await choose.click();
+	await page.getByRole('combobox').fill('Accounting Basics');
+	await page
+		.getByRole('option', {
+			name: 'Accounting Basics (ACBA) — 3 ECTS',
+			exact: true,
+		})
+		.click();
+	await panel
+		.getByRole('button', { name: 'Mark as Completed', exact: true })
+		.click();
+	await expect(
+		panel.getByRole('button', { name: 'Completed', exact: true }),
+	).toBeVisible();
+	await choose.click();
+	await page.getByRole('combobox').fill('Academic Methods');
+	await page
+		.getByRole('option', {
+			name: 'Academic Methods (ACMET) — 3 ECTS',
+			exact: true,
+		})
+		.click();
+	await expect(
+		panel.getByRole('button', { name: 'Completed', exact: true }),
+	).toHaveCount(0);
+	await expect(
+		page.getByRole('button', { name: 'Open progress analytics' }),
+	).toContainText('0 / 180');
+	await page.reload();
+	await node.click();
+	await expect(
+		panel.getByRole('button', { name: 'Completed', exact: true }),
+	).toHaveCount(0);
+});
