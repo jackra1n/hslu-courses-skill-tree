@@ -2,7 +2,7 @@
 import { getCourseById } from '$lib/data/courses';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
+import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
 import { computeStatuses, getAssessmentStageProgress } from '$lib/utils/status';
@@ -18,7 +18,7 @@ const slotStatus = $derived(
 const isAttended = $derived(slotStatus === 'attended');
 const isCompleted = $derived(slotStatus === 'completed');
 const statuses = $derived(
-	computeStatuses(courseStore.studyPlan, slotStatusMap()),
+	computeStatuses(courseStore.studyPlan, progressStore.slotStatus),
 );
 const isLocked = $derived(
 	_selectedSlotId ? statuses[_selectedSlotId] === 'locked' : true,
@@ -30,12 +30,12 @@ const prerequisitesMet = $derived.by(() => {
 	if (!course) return false;
 	const prereqsMet = evaluatePrerequisites(
 		course.prerequisites,
-		slotStatusMap(),
+		progressStore.slotStatus,
 		courseStore.studyPlan,
 	);
 	const assessmentStageMet = getAssessmentStageProgress(
 		courseStore.studyPlan,
-		slotStatusMap(),
+		progressStore.slotStatus,
 	).passed;
 	const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
 	return prereqsMet && assessmentMet;

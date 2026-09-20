@@ -43,7 +43,7 @@ import {
 	planPrefs,
 	savePlan,
 } from './planStorage';
-import { progressStore, slotStatusMap } from './progressStore.svelte';
+import { progressStore } from './progressStore.svelte';
 
 const INITIAL_TERM = currentStartTerm();
 
@@ -101,10 +101,10 @@ class CourseStore {
 	userSelections = $derived(deriveSelections(this.studyPlan));
 	totalCredits = $derived(calculatePlanTotalCredits(this.studyPlan));
 	attendedCredits = $derived.by(() =>
-		calculateAttendedCredits(this.studyPlan, slotStatusMap()),
+		calculateAttendedCredits(this.studyPlan, progressStore.slotStatus),
 	);
 	completedCredits = $derived.by(() =>
-		calculateCompletedCredits(this.studyPlan, slotStatusMap()),
+		calculateCompletedCredits(this.studyPlan, progressStore.slotStatus),
 	);
 	nodes = $derived.by(() => this.drag.activeNodes);
 	edges = $derived.by(() =>
@@ -144,7 +144,7 @@ class CourseStore {
 				: this.studyPlan;
 		const next = resetLayout ? createStudyPlan(template, {}) : loaded;
 		if (resetLayout) {
-			const status = Object.fromEntries(slotStatusMap());
+			const status = Object.fromEntries(progressStore.slotStatus);
 			for (const node of Object.values(loaded.nodes)) {
 				if (!node.courseId || next.nodes[node.id]?.courseId !== node.courseId) {
 					delete status[node.id];
@@ -158,7 +158,7 @@ class CourseStore {
 	}
 
 	resetProgress(): void {
-		const status = Object.fromEntries(slotStatusMap());
+		const status = Object.fromEntries(progressStore.slotStatus);
 		for (const id of Object.keys(this.studyPlan.nodes)) delete status[id];
 		progressStore.replaceAll(status);
 	}

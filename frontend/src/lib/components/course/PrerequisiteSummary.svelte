@@ -5,7 +5,7 @@ import { getCourseById } from '$lib/data/courses';
 import { summarizePrerequisites } from '$lib/data/prerequisite-summary';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { slotStatusMap } from '$lib/stores/progressStore.svelte';
+import { progressStore } from '$lib/stores/progressStore.svelte';
 import { getAssessmentStageProgress } from '$lib/utils/status';
 
 let {
@@ -21,13 +21,13 @@ const groups = $derived(
 	summarizePrerequisites(
 		course.prerequisites,
 		hasPlan ? plan : null,
-		slotStatusMap(),
+		progressStore.slotStatus,
 		targetNodeId,
 	).filter((group) => group.relevant),
 );
 const assessmentPassed = $derived(
 	course.assessmentLevelPassed && hasPlan
-		? getAssessmentStageProgress(plan, slotStatusMap()).passed
+		? getAssessmentStageProgress(plan, progressStore.slotStatus).passed
 		: false,
 );
 

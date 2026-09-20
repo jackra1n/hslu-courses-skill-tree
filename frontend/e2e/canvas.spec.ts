@@ -1,4 +1,46 @@
+import { readFile } from 'node:fs/promises';
 import { expect, test } from './fixtures';
+
+test('progress imports and saved statuses discard invalid entries without losing valid progress', async ({
+	page,
+	isMobile,
+}) => {
+	await page.addInitScript(() => {
+		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
+		localStorage.setItem(
+			'slotStatus',
+			JSON.stringify({ valid: 'completed', invalid: 'bogus' }),
+		);
+	});
+	await page.goto('/');
+	await expect(page.locator('.svelte-flow')).toBeVisible();
+	if (isMobile) {
+		await page.getByRole('button', { name: 'Menu', exact: true }).click();
+	}
+	await page
+		.getByRole('button', { name: 'Settings & help', exact: true })
+		.click();
+	const downloading = page.waitForEvent('download');
+	await page.getByRole('button', { name: 'Export Data', exact: true }).click();
+	const download = await downloading;
+	const data = JSON.parse(await readFile(await download.path(), 'utf8'));
+	expect(data.slotStatus).toEqual({ valid: 'completed' });
+
+	data.slotStatus = { valid: 'attended', invalid: null };
+	const choosing = page.waitForEvent('filechooser');
+	await page.getByRole('button', { name: 'Import Data', exact: true }).click();
+	await (await choosing).setFiles({
+		name: 'progress.json',
+		mimeType: 'application/json',
+		buffer: Buffer.from(JSON.stringify(data)),
+	});
+	await expect(
+		page.getByRole('button', { name: 'Close settings', exact: true }),
+	).toBeHidden();
+	expect(
+		await page.evaluate(() => JSON.parse(localStorage.getItem('slotStatus')!)),
+	).toEqual({ valid: 'attended' });
+});
 
 test('invalid badge preferences do not block startup or subsequent changes', async ({
 	page,

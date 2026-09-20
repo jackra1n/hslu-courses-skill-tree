@@ -13,7 +13,7 @@ import {
 } from '$lib/data/prerequisite-summary';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { slotStatusMap } from '$lib/stores/progressStore.svelte';
+import { progressStore } from '$lib/stores/progressStore.svelte';
 import {
 	getAssessmentStageProgress,
 	hasAssessmentStageViolation,
@@ -38,13 +38,15 @@ const groups = $derived(
 	summarizePrerequisites(
 		course.prerequisites,
 		hasPlan ? plan : null,
-		slotStatusMap(),
+		progressStore.slotStatus,
 		targetNodeId,
 		{ includeAlternatives: true },
 	),
 );
 const expression = $derived(buildPrerequisiteExpression(course.prerequisites));
-const assessment = $derived(getAssessmentStageProgress(plan, slotStatusMap()));
+const assessment = $derived(
+	getAssessmentStageProgress(plan, progressStore.slotStatus),
+);
 const assessmentPlacement = $derived(
 	!!targetNodeId &&
 		course.assessmentLevelPassed &&

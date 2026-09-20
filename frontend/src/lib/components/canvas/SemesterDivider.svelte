@@ -6,7 +6,7 @@ import {
 	calculatePlanSemesterCredits,
 } from '$lib/data/study-plan';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { slotStatusMap } from '$lib/stores/progressStore.svelte';
+import { progressStore } from '$lib/stores/progressStore.svelte';
 
 let {
 	semester,
@@ -34,7 +34,7 @@ const dashArray = $derived(`${8 / viewport.zoom},${4 / viewport.zoom}`);
 const titleFontSize = $derived(Math.max(21, 12 / viewport.zoom));
 const yPosition = $derived(BASE_OFFSET + SEMESTER_SPACING * semester);
 const semesterCredits = $derived(calculatePlanSemesterCredits(plan, semester));
-const slotStatuses = $derived(slotStatusMap());
+const slotStatuses = $derived(progressStore.slotStatus);
 const attendedSemesterCredits = $derived(
 	calculatePlanSemesterAttendedCredits(plan, semester, slotStatuses),
 );

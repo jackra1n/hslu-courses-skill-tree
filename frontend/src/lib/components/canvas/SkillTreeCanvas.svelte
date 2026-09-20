@@ -17,7 +17,7 @@ import { getNodeWidth } from '$lib/graph/layout';
 import { getEdgeStyle, getNodeStyle } from '$lib/graph/styles';
 import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
+import { progressStore } from '$lib/stores/progressStore.svelte';
 import { theme } from '$lib/stores/theme.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import type { Course, ExtendedNodeData } from '$lib/types';
@@ -48,7 +48,7 @@ const { setCenter, screenToFlowPosition } = useSvelteFlow();
 const semesterIndicators = $derived(courseStore.semesterDividerData);
 
 const statuses = $derived.by(() =>
-	computeStatuses(courseStore.studyPlan, slotStatusMap()),
+	computeStatuses(courseStore.studyPlan, progressStore.slotStatus),
 );
 const warnings = $derived(computePlanWarnings(courseStore.studyPlan));
 
@@ -117,7 +117,7 @@ const styledEdges = $derived(
 				edge,
 				uiStore.selectedSlotId,
 				statuses,
-				slotStatusMap(),
+				progressStore.slotStatus,
 				isDragging,
 			),
 		}),

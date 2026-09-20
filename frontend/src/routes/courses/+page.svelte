@@ -29,7 +29,7 @@ import { type Season } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
-import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
+import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import { measureHeaderHeight } from '$lib/utils/header-height';
 import { getAssessmentStageProgress } from '$lib/utils/status';
@@ -100,7 +100,7 @@ const catalogFilteredCourses = $derived(filterCourses(sortedCourses, filters));
 const nextCourseIdSet = $derived.by(() => {
 	if (!courseStore) return new Set<string>();
 	const plan = courseStore.studyPlan;
-	const statuses = slotStatusMap();
+	const statuses = progressStore.slotStatus;
 	const assessmentStageMet = getAssessmentStageProgress(plan, statuses).passed;
 	return nextCourseIds(courses, plan, statuses, assessmentStageMet);
 });

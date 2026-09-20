@@ -3,7 +3,7 @@ import { isPlanCustomized } from '$lib/data/plan-rules';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { clearAllPlans, loadAllPlans, savePlan } from '$lib/stores/planStorage';
-import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
+import { progressStore } from '$lib/stores/progressStore.svelte';
 import { type Theme, theme, themeStore } from '$lib/stores/theme.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import type { Season } from './season';
@@ -34,7 +34,7 @@ export function collectAppData(): AppData {
 		currentTemplateId: store.currentTemplate.id,
 		start: { season: store.startSeason, year: store.startYear },
 		studyPlans,
-		slotStatus: Object.fromEntries(slotStatusMap()),
+		slotStatus: Object.fromEntries(progressStore.slotStatus),
 		preferences: {
 			showShortNamesOnly: store.showShortNamesOnly,
 			showCourseTypeBadges: uiStore.showCourseTypeBadges,

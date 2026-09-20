@@ -5,7 +5,7 @@ import { getEctsRequirements } from '$lib/data/ects-requirements';
 import { moduleTypeLabel } from '$lib/data/module-type';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { slotStatusMap } from '$lib/stores/progressStore.svelte';
+import { progressStore } from '$lib/stores/progressStore.svelte';
 
 let { isOpen, onClose }: { isOpen: boolean; onClose: () => void } = $props();
 
@@ -23,7 +23,11 @@ const plannedRemaining = $derived(
 	Math.max(0, courseStore.totalCredits - passed - failed),
 );
 const categories = $derived.by(() =>
-	computeCategoryProgress(courseStore.studyPlan, slotStatusMap(), program),
+	computeCategoryProgress(
+		courseStore.studyPlan,
+		progressStore.slotStatus,
+		program,
+	),
 );
 
 function widths(done: number, projected: number, required: number) {
