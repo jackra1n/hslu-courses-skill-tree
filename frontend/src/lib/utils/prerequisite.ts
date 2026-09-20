@@ -1,11 +1,10 @@
-import type { PrerequisiteRule } from '$lib/data/catalog/courses';
+import type { Course, PrerequisiteRule } from '$lib/data/catalog/courses';
 import type { StudyPlan } from '$lib/data/planning/study-plan';
 import {
 	buildPlanRowIndex,
 	mapPlanCourseProviders,
 	resolveCourse,
 } from '$lib/data/planning/study-plan';
-import { selectProviderForRule } from '$lib/graph/build';
 
 type SlotStatus = ReadonlyMap<string, 'attended' | 'completed'>;
 
@@ -50,74 +49,97 @@ export function evaluatePrerequisites(
 	}, false);
 }
 
-export function hasPlanPrereqConflict(
-	plan: StudyPlan,
-	targetNodeId: string,
-	slotStatus: SlotStatus,
-	options: { considerSameSemester?: boolean } = {},
-): boolean {
-	const node = plan.nodes[targetNodeId];
-	if (!node?.courseId) return false;
-	const course = resolveCourse(node.courseId);
-	if (!course || course.prerequisites.length === 0) return false;
+// One context per graph build: all prerequisite decisions share the same indexes
+// and progress snapshot without depending on the graph renderer or global stores.
+export class PlanPrerequisites {
+	readonly courseProviders: Map<string, string[]>;
+	readonly rowIndex: Record<string, number>;
 
-	const rowIndex = buildPlanRowIndex(plan);
-	const providers = mapPlanCourseProviders(plan);
-	const dependentRow = rowIndex[targetNodeId] ?? 0;
-	const considerSameSemester = options.considerSameSemester ?? true;
-
-	let rulesToCheck: PrerequisiteRule[];
-
-	if (course.prerequisites.length === 0) {
-		return false;
-	} else if (course.prerequisites.length === 1) {
-		rulesToCheck = course.prerequisites;
-	} else {
-		const firstRule = course.prerequisites[0];
-		const prerequisiteLinkType = firstRule.prerequisiteLinkType || 'und';
-
-		if (prerequisiteLinkType === 'oder') {
-			const ruleScores = course.prerequisites.map((rule) => {
-				const selectedProviders = selectProviderForRule(
-					rule,
-					providers,
-					rowIndex,
-					slotStatus,
-				);
-				if (selectedProviders.length === 0) return Infinity;
-				return Math.min(
-					...selectedProviders.map((id) => rowIndex[id] ?? Infinity),
-				);
-			});
-
-			const bestRuleIndex = ruleScores.indexOf(Math.min(...ruleScores));
-			rulesToCheck = [course.prerequisites[bestRuleIndex]];
-		} else {
-			rulesToCheck = course.prerequisites;
-		}
+	constructor(
+		private readonly plan: StudyPlan,
+		private readonly slotStatus: SlotStatus,
+	) {
+		this.courseProviders = mapPlanCourseProviders(plan);
+		this.rowIndex = buildPlanRowIndex(plan);
 	}
 
-	const ruleConflicts = rulesToCheck.map((rule) => {
-		const selectedProviders = selectProviderForRule(
-			rule,
-			providers,
-			rowIndex,
-			slotStatus,
-		);
+	selectProviders(rule: PrerequisiteRule): string[] {
+		const selected: string[] = [];
+		const isModuleOr = rule.moduleLinkType === 'oder';
+		let best: string | undefined;
+		let bestPriority = Infinity;
+		let bestRow = Infinity;
 
-		if (selectedProviders.length === 0) return true;
+		for (const moduleId of rule.modules) {
+			for (const providerId of this.courseProviders.get(moduleId) ?? []) {
+				const status = this.slotStatus.get(providerId);
+				const satisfies =
+					status === 'completed' ||
+					(!rule.mustBePassed && status === 'attended');
+				// Prefer a satisfying outcome, then a planned attempt, then a failure.
+				const priority = satisfies ? 0 : status === undefined ? 1 : 2;
+				const row = this.rowIndex[providerId] ?? Infinity;
+				const preferredRow = priority === 2 ? row > bestRow : row < bestRow;
+				if (
+					best === undefined ||
+					priority < bestPriority ||
+					(priority === bestPriority && preferredRow)
+				) {
+					best = providerId;
+					bestPriority = priority;
+					bestRow = row;
+				}
+			}
 
-		return selectedProviders.some((providerId) => {
-			const providerRow = rowIndex[providerId] ?? 0;
-			return considerSameSemester
-				? providerRow >= dependentRow
-				: providerRow > dependentRow;
+			if (!isModuleOr && best !== undefined) {
+				selected.push(best);
+				best = undefined;
+			}
+		}
+
+		if (isModuleOr && best !== undefined) selected.push(best);
+		return selected;
+	}
+
+	// OR-linked rules use the earliest providers; AND-linked rules all apply.
+	selectRules(course: Course): PrerequisiteRule[] {
+		const rules = course.prerequisites;
+		if (rules.length <= 1) return rules;
+		if ((rules[0].prerequisiteLinkType || 'und') !== 'oder') return rules;
+
+		const ruleRows = rules.map((rule) => {
+			const providers = this.selectProviders(rule);
+			return providers.length === 0
+				? Infinity
+				: Math.min(...providers.map((id) => this.rowIndex[id] ?? Infinity));
 		});
-	});
+		return [rules[ruleRows.indexOf(Math.min(...ruleRows))]];
+	}
 
-	if (ruleConflicts.length === 1) return ruleConflicts[0];
+	hasConflict(
+		targetNodeId: string,
+		options?: { considerSameSemester?: boolean },
+	): boolean {
+		const node = this.plan.nodes[targetNodeId];
+		if (!node?.courseId) return false;
+		const course = resolveCourse(node.courseId);
+		if (!course || course.prerequisites.length === 0) return false;
 
-	return ruleConflicts.some((conflict) => conflict);
+		const dependentRow = this.rowIndex[targetNodeId] ?? 0;
+		const considerSameSemester = options?.considerSameSemester ?? true;
+
+		return this.selectRules(course).some((rule) => {
+			const providers = this.selectProviders(rule);
+			if (providers.length === 0) return true;
+
+			return providers.some((providerId) => {
+				const providerRow = this.rowIndex[providerId] ?? 0;
+				return considerSameSemester
+					? providerRow >= dependentRow
+					: providerRow > dependentRow;
+			});
+		});
+	}
 }
 
 function getNodesForCourse(plan: StudyPlan, courseId: string): string[] {
