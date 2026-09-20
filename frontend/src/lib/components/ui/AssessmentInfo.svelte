@@ -1,14 +1,14 @@
 <script lang="ts">
 import { fade, scale } from 'svelte/transition';
 import * as m from '$lib/paraglide/messages';
-import { showAssessmentInfo, uiStore } from '$lib/stores/uiStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
 
 function closeModal() {
-	uiStore.toggleAssessmentInfo();
+	uiStore.showAssessmentInfo = false;
 }
 </script>
 
-{#if showAssessmentInfo()}
+{#if uiStore.showAssessmentInfo}
 	<!-- modal backdrop -->
 	<div
 		class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"

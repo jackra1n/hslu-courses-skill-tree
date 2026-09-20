@@ -4,7 +4,7 @@ import { resolve } from '$app/paths';
 import { getEctsRequirements } from '$lib/data/ects-requirements';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { tutorialNavigationOpen } from '$lib/stores/uiStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
 import { measureHeaderHeight } from '$lib/utils/header-height';
 import SettingsSidebar from '../sidebar/SettingsSidebar.svelte';
 import AccountMenu from './AccountMenu.svelte';
@@ -14,7 +14,9 @@ import TemplateSelector from './TemplateSelector.svelte';
 let programDropdownOpen = $state(false);
 let activeSidebar = $state<'settings' | 'analytics' | null>(null);
 let mobileMenuOpen = $state(false);
-const navigationOpen = $derived(mobileMenuOpen || tutorialNavigationOpen());
+const navigationOpen = $derived(
+	mobileMenuOpen || uiStore.tutorialNavigationOpen,
+);
 let accountMenuOpen = $state(false);
 let menuButton: HTMLButtonElement;
 let programButton: HTMLButtonElement;

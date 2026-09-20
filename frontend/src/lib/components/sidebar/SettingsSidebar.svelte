@@ -66,7 +66,7 @@ function closeSidebar() {
 }
 
 function toggleAssessmentInfo() {
-	uiStore.toggleAssessmentInfo();
+	uiStore.showAssessmentInfo = true;
 	closeSidebar();
 }
 
@@ -130,7 +130,7 @@ function confirmResetAllData() {
 					<button
 						onclick={() => {
                 closeSidebar();
-                uiStore.requestTutorial();
+                uiStore.tutorialRequested = true;
               }}
 						class="w-full flex items-center gap-3 px-3 py-2.5 text-base border border-border-primary bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg transition-colors text-text-primary"
 					>

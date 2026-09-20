@@ -17,7 +17,7 @@ import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
-import { hasSelection, uiStore } from '$lib/stores/uiStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
 
 type StartupPhase = 'catalog' | 'progress' | 'ready' | 'catalog-error';
 
@@ -68,7 +68,7 @@ $effect(() => {
 });
 
 $effect(() => {
-	if (hasSelection()) {
+	if (uiStore.hasSelection) {
 		legendOpen = false;
 	}
 });

@@ -4,13 +4,7 @@ import CourseDetailContent from '$lib/components/course/CourseDetailContent.svel
 import { getCourseById } from '$lib/data/courses';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import {
-	hasSelection,
-	isElectiveSlot,
-	selectedSlotId,
-	selection,
-	uiStore,
-} from '$lib/stores/uiStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
 import ActionButtons from './ActionButtons.svelte';
 import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
 import StatusLegend from './StatusLegend.svelte';
@@ -24,10 +18,10 @@ let isOverlay = $state(false);
 const courseStore = getCourseStore();
 
 const displayCourse = $derived.by(() => {
-	const sel = selection();
+	const sel = uiStore.selection;
 	if (!sel) return null;
 
-	if (isElectiveSlot()) {
+	if (uiStore.isElectiveSlot) {
 		const selectedCourseId = courseStore.userSelections[sel.id];
 		if (selectedCourseId) {
 			const selectedCourse = getCourseById(selectedCourseId);
@@ -42,10 +36,10 @@ const displayCourse = $derived.by(() => {
 });
 
 const activePlanNode = $derived.by(() => {
-	const sel = selection();
+	const sel = uiStore.selection;
 	if (!sel) return null;
 	const plan = courseStore.studyPlan;
-	const explicitSlot = selectedSlotId();
+	const explicitSlot = uiStore.selectedSlotId;
 	if (explicitSlot && plan.nodes[explicitSlot]) return plan.nodes[explicitSlot];
 	const slotMatch = plan.nodes[sel.id];
 	if (slotMatch) return slotMatch;
@@ -54,7 +48,7 @@ const activePlanNode = $derived.by(() => {
 	);
 });
 
-const isDrawerOpen = $derived(hasSelection());
+const isDrawerOpen = $derived(uiStore.hasSelection);
 
 function focusableElements(): HTMLElement[] {
 	return Array.from(
@@ -157,20 +151,20 @@ $effect(() => {
 	aria-labelledby={isDrawerOpen ? TITLE_ID : undefined}
 	onkeydown={handleKeydown}
 >
-	{#if hasSelection()}
+	{#if uiStore.hasSelection}
 		{#if displayCourse}
 			{#snippet electiveSelector()}
-				<ElectiveCourseSelector slotId={selection()?.id || ''} />
+				<ElectiveCourseSelector slotId={uiStore.selection?.id || ''} />
 			{/snippet}
-			{#key `${selection()?.id}:${displayCourse.id}`}
+			{#key `${uiStore.selection?.id}:${displayCourse.id}`}
 				<CourseDetailContent
 					course={displayCourse}
 					moduleType={displayCourse.type}
 					titleId={TITLE_ID}
 					semester={activePlanNode?.semester}
 					targetNodeId={activePlanNode?.id}
-					elective={isElectiveSlot() && !activePlanNode?.courseId}
-					selector={isElectiveSlot() ? electiveSelector : undefined}
+					elective={uiStore.isElectiveSlot && !activePlanNode?.courseId}
+					selector={uiStore.isElectiveSlot ? electiveSelector : undefined}
 					onNavigate={navigateToPrerequisite}
 				>
 					{#snippet close()}
@@ -186,7 +180,7 @@ $effect(() => {
 						</button>
 					{/snippet}
 					{#snippet actions()}
-						{#if !isElectiveSlot() || activePlanNode?.courseId}
+						{#if !uiStore.isElectiveSlot || activePlanNode?.courseId}
 							<ActionButtons courseId={displayCourse.id} />
 						{/if}
 					{/snippet}

@@ -3,7 +3,7 @@ import { getCourseById } from '$lib/data/courses';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
-import { selectedSlotId } from '$lib/stores/uiStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
 import { computeStatuses, getAssessmentStageProgress } from '$lib/utils/status';
 
@@ -11,7 +11,7 @@ let { courseId }: { courseId: string } = $props();
 
 const courseStore = getCourseStore();
 
-const _selectedSlotId = $derived(selectedSlotId());
+const _selectedSlotId = $derived(uiStore.selectedSlotId);
 const slotStatus = $derived(
 	_selectedSlotId ? progressStore.getSlotStatus(_selectedSlotId) : null,
 );

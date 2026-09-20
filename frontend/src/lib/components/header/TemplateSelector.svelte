@@ -16,7 +16,7 @@ import {
 } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
 
 const MODEL_LABELS: Record<string, () => string> = {
 	fulltime: () => m.model_fulltime(),
@@ -280,14 +280,14 @@ const id = $props.id();
 			<button
 				id="show-course-badges"
 				onclick={toggleCourseBadges}
-				class="relative w-11 h-6 rounded-full transition-colors duration-200 {showCourseTypeBadges()
+				class="relative w-11 h-6 rounded-full transition-colors duration-200 {uiStore.showCourseTypeBadges
           ? 'bg-blue-600 dark:bg-blue-500'
           : 'bg-gray-300 dark:bg-gray-600'}"
 				aria-label={m.template_toggle_badges()}
-				aria-pressed={showCourseTypeBadges()}
+				aria-pressed={uiStore.showCourseTypeBadges}
 			>
 				<div
-					class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {showCourseTypeBadges()
+					class="absolute top-0.5 w-5 h-5 bg-white dark:bg-gray-800 rounded-full shadow-sm transition-transform duration-200 {uiStore.showCourseTypeBadges
             ? 'translate-x-5'
             : 'translate-x-0.5'}"
 				></div>

@@ -1,5 +1,26 @@
 import { expect, test } from './fixtures';
 
+test('invalid badge preferences do not block startup or subsequent changes', async ({
+	page,
+}) => {
+	await page.addInitScript(() => {
+		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
+		if (localStorage.getItem('showCourseTypeBadges') === null) {
+			localStorage.setItem('showCourseTypeBadges', '{broken');
+		}
+	});
+	await page.goto('/');
+	await expect(page.locator('.svelte-flow')).toBeVisible();
+	await page.getByRole('button', { name: 'Study plan', exact: true }).click();
+	const badges = page.locator('#show-course-badges');
+	await expect(badges).toHaveAttribute('aria-pressed', 'false');
+	await badges.click();
+	await expect(badges).toHaveAttribute('aria-pressed', 'true');
+	await page.reload();
+	await page.getByRole('button', { name: 'Study plan', exact: true }).click();
+	await expect(badges).toHaveAttribute('aria-pressed', 'true');
+});
+
 test('tutorial centers the course inside the canvas rather than the page', async ({
 	page,
 }) => {

@@ -4,7 +4,7 @@ import { flushSync, onDestroy, onMount, tick } from 'svelte';
 import 'driver.js/dist/driver.css';
 import * as m from '$lib/paraglide/messages';
 import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
-import { tutorialRequested, uiStore } from '$lib/stores/uiStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
 
 const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
 
@@ -130,13 +130,13 @@ async function centerHighlight(element: Element): Promise<void> {
 
 function handleTutorialError(error: unknown): void {
 	console.error('Failed to run guided tutorial', error);
-	uiStore.setTutorialNavigationOpen(false);
+	uiStore.tutorialNavigationOpen = false;
 	driverInstance?.destroy();
 	driverInstance = null;
 }
 
 function finishTutorial() {
-	uiStore.setTutorialNavigationOpen(false);
+	uiStore.tutorialNavigationOpen = false;
 	// onDestroyed can be skipped before the first step animation settles.
 	driverInstance?.destroy();
 	driverInstance = null;
@@ -180,12 +180,11 @@ async function runTutorial() {
 			steps: buildSteps(),
 			onHighlightStarted: (_element, step) => {
 				// reveal menu targets before driver.js measures their highlight.
-				flushSync(() =>
-					uiStore.setTutorialNavigationOpen(
+				flushSync(() => {
+					uiStore.tutorialNavigationOpen =
 						step.element === '[data-tour="course-browser"]' ||
-							step.element === '[data-tour="account"]',
-					),
-				);
+						step.element === '[data-tour="account"]';
+				});
 			},
 			onDestroyStarted: finishTutorial,
 		});
@@ -203,8 +202,8 @@ onMount(() => {
 });
 
 $effect(() => {
-	if (tutorialRequested()) {
-		uiStore.consumeTutorialRequest();
+	if (uiStore.tutorialRequested) {
+		uiStore.tutorialRequested = false;
 		runTutorial().catch(handleTutorialError);
 	}
 });

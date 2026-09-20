@@ -5,7 +5,7 @@ import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { clearAllPlans, loadAllPlans, savePlan } from '$lib/stores/planStorage';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { type Theme, theme, themeStore } from '$lib/stores/theme.svelte';
-import { showCourseTypeBadges, uiStore } from '$lib/stores/uiStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
 import type { Season } from './season';
 import type { StudyPlan } from './study-plan';
 
@@ -37,7 +37,7 @@ export function collectAppData(): AppData {
 		slotStatus: Object.fromEntries(slotStatusMap()),
 		preferences: {
 			showShortNamesOnly: store.showShortNamesOnly,
-			showCourseTypeBadges: showCourseTypeBadges(),
+			showCourseTypeBadges: uiStore.showCourseTypeBadges,
 			theme: theme(),
 		},
 	};

@@ -19,11 +19,7 @@ import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore, slotStatusMap } from '$lib/stores/progressStore.svelte';
 import { theme } from '$lib/stores/theme.svelte';
-import {
-	selectedSlotId,
-	showCourseTypeBadges,
-	uiStore,
-} from '$lib/stores/uiStore.svelte';
+import { uiStore } from '$lib/stores/uiStore.svelte';
 import type { Course, ExtendedNodeData } from '$lib/types';
 import { computePlanWarnings, computeStatuses } from '$lib/utils/status';
 import AddNodeButton from './AddNodeButton.svelte';
@@ -58,7 +54,7 @@ const warnings = $derived(computePlanWarnings(courseStore.studyPlan));
 
 // A removed slot or a different study plan must not leave stale details open.
 $effect(() => {
-	const slotId = selectedSlotId();
+	const slotId = uiStore.selectedSlotId;
 	if (slotId && !courseStore.studyPlan.nodes[slotId]) {
 		uiStore.deselectCourse();
 	}
@@ -83,7 +79,7 @@ function styleCourseNode(flowNode: CourseNode): CourseNode {
 
 	const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
 	const nodeWarnings = warnings[flowNode.id];
-	const isSelected = selectedSlotId() === flowNode.id;
+	const isSelected = uiStore.selectedSlotId === flowNode.id;
 
 	const style = getNodeStyle({
 		status: statuses[flowNode.id],
@@ -106,7 +102,7 @@ function styleCourseNode(flowNode: CourseNode): CourseNode {
 		zIndex: isSelected ? 1000 : undefined,
 		data: {
 			...nodeData,
-			showCourseTypeBadges: showCourseTypeBadges(),
+			showCourseTypeBadges: uiStore.showCourseTypeBadges,
 			showRemoveButton: isSelected,
 			onRemove: handleRemoveClick,
 		},
@@ -119,7 +115,7 @@ const styledEdges = $derived(
 			...edge,
 			...getEdgeStyle(
 				edge,
-				selectedSlotId(),
+				uiStore.selectedSlotId,
 				statuses,
 				slotStatusMap(),
 				isDragging,
@@ -183,7 +179,7 @@ function handleNodeClick({
 
 function handleRemoveClick(nodeId: string) {
 	courseStore.removeNode(nodeId);
-	if (selectedSlotId() === nodeId) uiStore.deselectCourse();
+	if (uiStore.selectedSlotId === nodeId) uiStore.deselectCourse();
 }
 
 // Canvas nodes are positioned by the viewport transform, not page scroll,
