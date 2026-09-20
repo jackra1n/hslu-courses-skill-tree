@@ -47,7 +47,7 @@ const courseStore = getCourseStore();
 
 const viewportSignal = useViewport();
 const viewport = $derived(viewportSignal.current);
-const { setCenter } = useSvelteFlow();
+const { setCenter, screenToFlowPosition } = useSvelteFlow();
 const semesterIndicators = $derived(courseStore.semesterDividerData);
 
 const statuses = $derived.by(() =>
@@ -208,12 +208,14 @@ function handleRemoveClick(nodeId: string) {
 // with a duration animates the pan and resolves once the transition ends.
 async function centerOnElement(element: Element) {
 	const rect = element.getBoundingClientRect();
-	const vp = viewportSignal.current;
-	await setCenter(
-		(rect.left + rect.width / 2 - vp.x) / vp.zoom,
-		(rect.top + rect.height / 2 - vp.y) / vp.zoom,
-		{ zoom: vp.zoom, duration: 400 },
+	const center = screenToFlowPosition(
+		{ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
+		{ snapToGrid: false },
 	);
+	await setCenter(center.x, center.y, {
+		zoom: viewportSignal.current.zoom,
+		duration: 400,
+	});
 }
 
 $effect(() => {
