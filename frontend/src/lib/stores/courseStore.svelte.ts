@@ -292,6 +292,9 @@ class CourseStore {
 			if (resolvedTemplate) template = resolvedTemplate;
 		}
 
+		// Keep the inferred term when activation makes this a returning visit.
+		planPrefs.saveStartYear(this.startYear);
+		planPrefs.saveStartSeason(this.startSeason);
 		this.activateTemplate(template, false, loadLegacySelections());
 	}
 

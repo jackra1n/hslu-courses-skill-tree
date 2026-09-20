@@ -535,6 +535,7 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 	page,
 	login,
 }) => {
+	await page.clock.setFixedTime(new Date('2026-02-15T12:00:00Z'));
 	await page.addInitScript(() => {
 		if (localStorage.getItem('theme') === null) {
 			localStorage.setItem('theme', 'system');
@@ -546,11 +547,20 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 		page.getByRole('textbox', { name: 'Search courses' }),
 	).toBeVisible();
 	const original = await (await page.request.get('/api/progress')).json();
-	await page.evaluate(() => localStorage.setItem('theme', 'light'));
-	await page.reload();
+	// An untouched reload must preserve the inferred start term and stay synced.
 	const conflict = page.getByRole('dialog', {
 		name: 'Choose which progress to keep',
 	});
+	await page.reload();
+	await expect(
+		page.getByRole('textbox', { name: 'Search courses' }),
+	).toBeVisible();
+	await expect(conflict).toBeHidden();
+	const unchanged = await (await page.request.get('/api/progress')).json();
+	expect(unchanged).toEqual(original);
+
+	await page.evaluate(() => localStorage.setItem('theme', 'light'));
+	await page.reload();
 	await expect(conflict).toBeVisible();
 	await conflict.getByRole('button', { name: 'Use cloud data' }).click();
 	await expect(conflict).toBeHidden();
