@@ -34,8 +34,14 @@ jobs:
       - name: Check translations
         run: bun run i18n:check
 
-      - name: Lint & format check
+      - name: Check formatting
+        run: bun run format:check
+
+      - name: Lint
         run: bun run lint
+
+      - name: Check unused code and dependencies
+        run: bun run unused
 
       - name: Test frontend
         run: bun run web:test

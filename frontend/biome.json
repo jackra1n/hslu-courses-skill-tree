@@ -16,7 +16,7 @@
 			"!src/lib/paraglide"
 		]
 	},
-	"assist": { "actions": { "source": { "organizeImports": "on" } } },
+	"assist": { "enabled": false },
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
@@ -27,24 +27,12 @@
 			"quoteStyle": "single"
 		}
 	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"preset": "recommended"
-		}
+	"html": {
+		"experimentalFullSupportEnabled": true,
+		"formatter": { "enabled": true }
 	},
+	"linter": { "enabled": false },
 	"overrides": [
-		{
-			"includes": ["**/*.svelte"],
-			"linter": {
-				"rules": {
-					"correctness": {
-						"noUnusedVariables": "off",
-						"noUnusedImports": "off"
-					}
-				}
-			}
-		},
 		{
 			"includes": ["src/lib/data/catalog.generated.json"],
 			"formatter": {

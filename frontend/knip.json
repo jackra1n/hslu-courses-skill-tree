@@ -1,0 +1,5 @@
+{
+	"$schema": "https://unpkg.com/knip@6.37.0/schema.json",
+	"entry": ["worker/auth.cli.ts", "e2e/frontend.ts"],
+	"ignoreDependencies": ["cloudflare"]
+}
