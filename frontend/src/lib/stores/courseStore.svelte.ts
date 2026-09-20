@@ -162,11 +162,18 @@ class CourseStore {
 
 	selectCourseForSlot(slotId: string, courseId: string) {
 		if (!this.canSelectCourseForSlot(slotId, courseId)) return;
-		this.setStudyPlan(updateNodeCourse(this.studyPlan, slotId, courseId));
+		this.assignCourse(slotId, courseId);
 	}
 
 	clearSlotSelection(slotId: string) {
-		this.setStudyPlan(updateNodeCourse(this.studyPlan, slotId, null));
+		this.assignCourse(slotId, null);
+	}
+
+	private assignCourse(slotId: string, courseId: string | null): void {
+		const node = this.studyPlan.nodes[slotId];
+		if (!node || node.slotType === 'fixed' || (node.courseId ?? null) === courseId) return;
+		progressStore.clearSlotStatus(slotId);
+		this.setStudyPlan(updateNodeCourse(this.studyPlan, slotId, courseId));
 	}
 
 	toggleShortNames() {
@@ -324,12 +331,14 @@ class CourseStore {
 		if (!removedNode) return;
 		progressStore.clearSlotStatus(nodeId);
 
-		const updatedRows = this.studyPlan.rows
-			.map((row) => ({
-				...row,
-				nodeOrder: row.nodeOrder.filter((id) => id !== nodeId),
-			}))
-			.filter((row) => row.nodeOrder.length > 0);
+		const updatedRows = this.studyPlan.rows.map((row) =>
+			row.semester === removedNode.semester
+				? { ...row, nodeOrder: row.nodeOrder.filter((id) => id !== nodeId) }
+				: row,
+		);
+		while (updatedRows.length > 1 && updatedRows.at(-1)?.nodeOrder.length === 0) {
+			updatedRows.pop();
+		}
 
 		this.setStudyPlan({
 			...this.studyPlan,
