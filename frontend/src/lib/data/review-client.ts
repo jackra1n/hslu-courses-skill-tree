@@ -27,7 +27,7 @@ export async function fetchCourseReviewScores(
 
 export async function fetchCourseReviews(
 	courseId: string,
-	signal: AbortSignal,
+	signal?: AbortSignal,
 ): Promise<CourseReviewsResponse> {
 	const response = await request(
 		`/api/courses/${encodeURIComponent(courseId)}/reviews`,

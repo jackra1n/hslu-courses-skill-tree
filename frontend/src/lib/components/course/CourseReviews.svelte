@@ -102,15 +102,21 @@ const errorMessage = $derived.by(() => {
 	}
 });
 
-async function load(): Promise<void> {
+async function load(afterWrite = false): Promise<void> {
 	loading = true;
 	loadFailed = false;
+	const requestedCourseId = courseId;
+	const publishSummary = onReviewSummary;
 	try {
-		const next = await fetchCourseReviews(courseId, controller.signal);
-		if (!controller.signal.aborted) {
-			data = next;
-			onReviewSummary?.(courseId, next.summary);
+		// A persisted write must refresh the course list even if its panel closes.
+		const next = await fetchCourseReviews(
+			requestedCourseId,
+			afterWrite ? undefined : controller.signal,
+		);
+		if (afterWrite || !controller.signal.aborted) {
+			publishSummary?.(requestedCourseId, next.summary);
 		}
+		if (!controller.signal.aborted) data = next;
 	} catch {
 		if (!controller.signal.aborted) {
 			data = null;
@@ -168,7 +174,7 @@ async function save(input: ReviewInput): Promise<void> {
 		notice = 'saved';
 		// a failed refresh is a read error, not a failed save. Never invite a
 		// second POST after the first one has already persisted successfully.
-		await load();
+		await load(true);
 		await tick();
 		if (!controller.signal.aborted) heading.focus();
 	} catch (cause) {
@@ -188,7 +194,7 @@ async function remove(): Promise<void> {
 		await deleteCourseReview(ownReview.id, controller.signal);
 		if (controller.signal.aborted) return;
 		notice = 'deleted';
-		await load();
+		await load(true);
 		await tick();
 		if (!controller.signal.aborted) heading.focus();
 	} catch (cause) {
@@ -250,7 +256,7 @@ async function reload(): Promise<void> {
 		<p role="status" class="mt-3 text-sm text-text-secondary">{m.reviews_loading()}</p>
 	{:else if loadFailed}
 		<p role="alert" class="mt-3 text-sm text-text-secondary">{m.reviews_load_error()}</p>
-		<button type="button" onclick={load} class="mt-2 min-h-11 rounded-lg border border-border-secondary px-3 text-sm text-text-primary">{m.common_retry()}</button>
+		<button type="button" onclick={() => load()} class="mt-2 min-h-11 rounded-lg border border-border-secondary px-3 text-sm text-text-primary">{m.common_retry()}</button>
 	{:else if data}
 		{#if data.summary.count > 0}
 			<dl aria-label={m.reviews_averages()} class="mt-3 grid grid-cols-2 gap-x-4 gap-y-3">

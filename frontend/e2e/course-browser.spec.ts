@@ -164,11 +164,25 @@ test('editing and deleting your review reorders courses without reloading the br
 		.getByRole('group', { name: 'Recommendation', exact: true })
 		.getByRole('radio', { name: /^5(?:\D|$)/ })
 		.press('Space');
+	// Closing the panel must not discard the summary of a persisted write.
+	const savedRefresh = Promise.withResolvers<void>();
+	await page.route(
+		'**/api/courses/WEBLAB/reviews',
+		async (route) => {
+			await savedRefresh.promise;
+			await route.continue();
+		},
+		{ times: 1 },
+	);
 	await form.getByRole('button', { name: 'Save changes', exact: true }).click();
 	await expect(form).toBeHidden();
 	await panel
 		.getByRole('button', { name: 'Close course details', exact: true })
 		.click();
+	await expect(
+		panel.getByRole('tab', { name: 'Reviews', exact: true }),
+	).toBeHidden();
+	savedRefresh.resolve();
 	await expectCourseOrder(page, [
 		'WEBLAB',
 		'CPLAB',
@@ -185,16 +199,32 @@ test('editing and deleting your review reorders courses without reloading the br
 		name: 'Delete your review?',
 		exact: true,
 	});
+	const deletedRefresh = Promise.withResolvers<void>();
+	await page.route(
+		'**/api/courses/WEBLAB/reviews',
+		async (route) => {
+			await deletedRefresh.promise;
+			await route.continue();
+		},
+		{ times: 1 },
+	);
+	const deletionRefreshing = page.waitForRequest(
+		(request) =>
+			request.method() === 'GET' &&
+			request.url().endsWith('/api/courses/WEBLAB/reviews'),
+	);
 	await confirmation
 		.getByRole('button', { name: 'Delete review', exact: true })
 		.click();
 	await expect(confirmation).toBeHidden();
-	await expect(
-		panel.getByRole('button', { name: 'Write a review', exact: true }),
-	).toBeVisible();
+	await deletionRefreshing;
 	await panel
 		.getByRole('button', { name: 'Close course details', exact: true })
 		.click();
+	await expect(
+		panel.getByRole('tab', { name: 'Reviews', exact: true }),
+	).toBeHidden();
+	deletedRefresh.resolve();
 	await expectCourseOrder(page, [
 		'CPLAB',
 		'ENLAB_MM',
