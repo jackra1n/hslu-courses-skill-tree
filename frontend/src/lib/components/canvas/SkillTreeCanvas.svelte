@@ -9,7 +9,7 @@ import {
 	useSvelteFlow,
 	useViewport,
 } from '@xyflow/svelte';
-import { onMount } from 'svelte';
+import { MediaQuery } from 'svelte/reactivity';
 import * as m from '$lib/paraglide/messages';
 import '@xyflow/svelte/dist/style.css';
 
@@ -35,8 +35,14 @@ const nodeTypes = {
 	addNode: AddNodeButton,
 };
 
+type CourseNode = Node<ExtendedNodeData, 'custom'>;
+
+function isCourseNode(node: Node): node is CourseNode {
+	return node.type === 'custom';
+}
+
 let isDragging = $state(false);
-let hideAttribution = $state(false);
+const compactScreen = new MediaQuery('(max-width: 1024px)');
 
 const courseStore = getCourseStore();
 
@@ -61,19 +67,18 @@ $effect(() => {
 const ADD_NODE_STYLE =
 	'width: 80px; height: 80px; min-width: 80px; max-width: 80px;';
 
-// SvelteFlow wants nodes/edges backed by $state.raw to avoid deep-proxy
-// overhead, so populate the raw arrays from an effect rather than deriving.
-let styledNodes = $state.raw<Node[]>([]);
-$effect(() => {
-	styledNodes = courseStore.nodes.map((flowNode) =>
-		flowNode.type === 'addNode'
-			? { ...flowNode, style: ADD_NODE_STYLE }
-			: styleCourseNode(flowNode),
-	);
-});
+// The plan owns graph data. SvelteFlow may keep transient interaction state
+// locally; these non-proxied projections refresh when their inputs change.
+const styledNodes = $derived(
+	courseStore.nodes.map((node) =>
+		isCourseNode(node)
+			? styleCourseNode(node)
+			: { ...node, style: ADD_NODE_STYLE },
+	),
+);
 
-function styleCourseNode(flowNode: Node) {
-	const nodeData = flowNode.data as ExtendedNodeData;
+function styleCourseNode(flowNode: CourseNode): CourseNode {
+	const nodeData = flowNode.data;
 	const { slot, course, isElectiveSlot } = nodeData;
 
 	const slotStatus = slot ? progressStore.getSlotStatus(slot.id) : null;
@@ -89,7 +94,7 @@ function styleCourseNode(flowNode: Node) {
 		nodeWidth: nodeData.width || getNodeWidth(course?.ects || 6),
 		hasSelectedCourse:
 			isElectiveSlot && slot ? !!courseStore.userSelections[slot.id] : false,
-		hasLaterPrerequisites: nodeData.hasLaterPrerequisites || false,
+		hasLaterPrerequisites: nodeData.hasLaterPrerequisites ?? false,
 		...nodeWarnings,
 		isDragging,
 	});
@@ -108,19 +113,20 @@ function styleCourseNode(flowNode: Node) {
 	};
 }
 
-let styledEdges = $state.raw<Edge[]>([]);
-$effect(() => {
-	styledEdges = courseStore.edges.map((edge) => {
-		const { style, markerEnd, animated, zIndex } = getEdgeStyle(
-			edge,
-			selectedSlotId(),
-			statuses,
-			slotStatusMap(),
-			isDragging,
-		);
-		return { ...edge, style, markerEnd, animated, zIndex };
-	});
-});
+const styledEdges = $derived(
+	courseStore.edges.map(
+		(edge): Edge => ({
+			...edge,
+			...getEdgeStyle(
+				edge,
+				selectedSlotId(),
+				statuses,
+				slotStatusMap(),
+				isDragging,
+			),
+		}),
+	),
+);
 
 const handleNodeDragStart: NodeTargetEventWithPointer<
 	MouseEvent | TouchEvent
@@ -134,21 +140,15 @@ const handleNodeDrag: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({
 	targetNode,
 }) => {
 	if (!targetNode) return;
-	courseStore.handleNodeDrag(
-		targetNode.id,
-		targetNode.position ?? { x: 0, y: 0 },
-	);
+	courseStore.handleNodeDrag(targetNode.id, targetNode.position);
 };
 
 const handleNodeDragStop: NodeTargetEventWithPointer<
 	MouseEvent | TouchEvent
 > = ({ targetNode }) => {
-	if (!targetNode) return;
 	isDragging = false;
-	courseStore.handleNodeDragStop(
-		targetNode.id,
-		targetNode.position ?? { x: 0, y: 0 },
-	);
+	if (!targetNode) return;
+	courseStore.handleNodeDragStop(targetNode.id, targetNode.position);
 };
 
 function handleNodeClick({
@@ -157,12 +157,9 @@ function handleNodeClick({
 	node: Node;
 	event: MouseEvent | TouchEvent;
 }) {
-	if (clickedNode.type !== 'custom') return;
+	if (!isCourseNode(clickedNode)) return;
 
-	const nodeData = clickedNode.data as ExtendedNodeData;
-	const slot = nodeData.slot;
-	const course = nodeData.course;
-	const isElectiveSlot = nodeData.isElectiveSlot;
+	const { slot, course, isElectiveSlot } = clickedNode.data;
 
 	if (isElectiveSlot && slot) {
 		const electiveCourse: Course = {
@@ -182,10 +179,6 @@ function handleNodeClick({
 	} else if (course && slot) {
 		uiStore.selectCourse(course, slot.id);
 	}
-}
-
-function handleCanvasClick() {
-	uiStore.deselectCourse();
 }
 
 function handleRemoveClick(nodeId: string) {
@@ -212,19 +205,6 @@ $effect(() => {
 	canvasCommands.set({ centerOnElement });
 	return () => canvasCommands.set(null);
 });
-
-onMount(() => {
-	const mediaQuery = window.matchMedia('(max-width: 1024px)');
-	const handleScreenChange = () => {
-		hideAttribution = mediaQuery.matches;
-	};
-	handleScreenChange();
-	mediaQuery.addEventListener('change', handleScreenChange);
-
-	return () => {
-		mediaQuery.removeEventListener('change', handleScreenChange);
-	};
-});
 </script>
 
 <div class="relative h-full min-h-0" data-tour="skill-tree">
@@ -236,15 +216,15 @@ onMount(() => {
     onnodedragstart={handleNodeDragStart}
     onnodedrag={handleNodeDrag}
     onnodedragstop={handleNodeDragStop}
-    onpaneclick={handleCanvasClick}
+    onpaneclick={() => uiStore.deselectCourse()}
     panOnScroll={true}
     zoomOnDoubleClick={false}
     nodesDraggable={true}
     nodesConnectable={false}
     deleteKey={null}
     fitView
-    colorMode={theme() === "system" ? "system" : theme()}
-    proOptions={{ hideAttribution }}
+    colorMode={theme()}
+    proOptions={{ hideAttribution: compactScreen.current }}
   >
     <svg
       class="absolute inset-0 w-full h-full pointer-events-none overflow-visible"

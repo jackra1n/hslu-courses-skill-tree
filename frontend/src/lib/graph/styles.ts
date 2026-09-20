@@ -124,7 +124,6 @@ export function getNodeStyle(input: NodeStyleInput): string {
 	return style;
 }
 
-
 export type EdgeStyleResult = {
 	style: string;
 	markerEnd: EdgeMarker;

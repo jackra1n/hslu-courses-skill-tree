@@ -1,40 +1,25 @@
 <script lang="ts">
-import { Handle, Position } from '@xyflow/svelte';
+import { Handle, type Node, type NodeProps, Position } from '@xyflow/svelte';
 import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
-import type { Course, ExtendedNodeData, TemplateSlot } from '$lib/data/courses';
+import type { ExtendedNodeData } from '$lib/data/courses';
 import * as m from '$lib/paraglide/messages';
 
 let {
 	id,
-	data = {},
-	selected = false,
+	data: nodeData,
 	width = 180,
-	showRemoveButton = false,
-	onRemove,
-}: {
-	id: string;
-	data: Partial<ExtendedNodeData>;
-	selected: boolean;
-	width?: number;
-	showRemoveButton?: boolean;
-	onRemove?: (nodeId: string) => void;
-} = $props();
+}: NodeProps<Node<ExtendedNodeData, 'custom'>> = $props();
 
-const nodeData = $derived(data);
-const slot = $derived(nodeData.slot);
 const course = $derived(nodeData.course);
 const isElectiveSlot = $derived(nodeData.isElectiveSlot);
 const nodeWidth = $derived(nodeData.width || width);
 const sourceHandles = $derived(nodeData.sourceHandles ?? 0);
 const targetHandles = $derived(nodeData.targetHandles ?? 0);
-const showRemoveBtn = $derived(nodeData.showRemoveButton ?? showRemoveButton);
-const removeHandler = $derived(nodeData.onRemove ?? onRemove);
+const showRemoveBtn = $derived(nodeData.showRemoveButton);
 
 function handleRemoveClick(event: MouseEvent) {
 	event.stopPropagation();
-	if (removeHandler) {
-		removeHandler(id);
-	}
+	nodeData.onRemove?.(id);
 }
 </script>
 

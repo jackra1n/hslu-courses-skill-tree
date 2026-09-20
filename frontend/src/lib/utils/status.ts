@@ -69,7 +69,9 @@ type NodeWarnings = {
 };
 
 /** Plan-only warnings, computed once rather than on every canvas restyle. */
-export function computePlanWarnings(plan: StudyPlan): Record<string, NodeWarnings> {
+export function computePlanWarnings(
+	plan: StudyPlan,
+): Record<string, NodeWarnings> {
 	const nodes = Object.values(plan.nodes);
 	const coursesInPlan = new Set<string>();
 	for (const node of nodes) {
