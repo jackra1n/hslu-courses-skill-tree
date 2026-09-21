@@ -4,8 +4,8 @@ export default defineConfig({
 	testDir: './e2e',
 	fullyParallel: true,
 	forbidOnly: Boolean(process.env.CI),
-	// Public ubuntu-latest runners provide four vCPUs.
-	workers: process.env.CI ? 4 : 2,
+	// Each worker runs Chromium plus a Wrangler harness; four overload the CI runner.
+	workers: 2,
 	retries: 0,
 	timeout: 30_000,
 	reporter: [[process.env.CI ? 'github' : 'list'], ['html', { open: 'never' }]],
