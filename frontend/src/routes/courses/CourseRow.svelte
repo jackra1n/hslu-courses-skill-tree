@@ -1,18 +1,22 @@
 <script lang="ts">
 import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import type { CatalogCourse } from '$lib/data/catalog/catalog-types';
+import type { CourseReviewScore } from '$lib/data/reviews/review-types';
 import { courseModuleType } from '$lib/data/courses/course-filters';
 import { courseLabel } from '$lib/data/courses/course-label';
 import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
+import { locale } from '$lib/stores/locale.svelte';
 
 let {
 	course,
 	selected,
+	reviewScore,
 	onSelect,
 }: {
 	course: CatalogCourse;
 	selected: boolean;
+	reviewScore: CourseReviewScore | null | undefined;
 	onSelect: (course: CatalogCourse, trigger: HTMLButtonElement) => void;
 } = $props();
 
@@ -24,6 +28,9 @@ const prerequisiteIds = $derived([
 const visiblePrerequisites = $derived(prerequisiteIds.slice(0, 3));
 const hiddenPrerequisiteCount = $derived(
 	prerequisiteIds.length - visiblePrerequisites.length,
+);
+const numberFormat = $derived(
+	new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 }),
 );
 
 function seasonTitle(season: Season): string {
@@ -37,17 +44,41 @@ function seasonTitle(season: Season): string {
 		onclick={(event) => onSelect(course, event.currentTarget)}
 		aria-expanded={selected}
 		aria-controls="course-detail-panel"
-		class="group flex w-full cursor-pointer items-start gap-3 rounded-lg border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary sm:p-4 {selected
+		class="block w-full cursor-pointer rounded-lg border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary sm:p-4 {selected
 			? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30'
 			: 'border-border-primary bg-bg-secondary hover:border-blue-400 hover:bg-bg-primary'}"
 	>
-		<span
-			class="i-lucide-book-open mt-1 h-5 w-5 shrink-0 text-text-tertiary transition-colors group-hover:text-blue-500"
-			aria-hidden="true"
-		></span>
-		<span class="min-w-0 flex-1">
-			<span class="block break-words font-semibold text-text-primary">
-				{courseLabel(course)}
+		<span class="block min-w-0">
+			<span class="flex items-start gap-3">
+				<span
+					class="min-w-0 flex-1 break-words font-semibold text-text-primary"
+				>
+					{courseLabel(course)}
+				</span>
+				{#if reviewScore}
+					{@const score = numberFormat.format(reviewScore.recommendation)}
+					<span
+						role="img"
+						aria-label={m.browser_course_review_summary({
+							score,
+							count: reviewScore.count,
+						})}
+						title={m.browser_course_review_summary({
+							score,
+							count: reviewScore.count,
+						})}
+						class="mt-0.5 inline-flex shrink-0 items-center gap-1 tabular-nums"
+					>
+						<span
+							class="i-lucide-star h-3.5 w-3.5 fill-current text-blue-600 dark:text-blue-400"
+							aria-hidden="true"
+						></span>
+						<span class="font-semibold text-text-primary">{score}</span>
+						<span class="text-xs text-text-tertiary"
+							>({numberFormat.format(reviewScore.count)})</span
+						>
+					</span>
+				{/if}
 			</span>
 			<span class="mt-0.5 block text-sm text-text-secondary">
 				{course.id}
@@ -96,11 +127,5 @@ function seasonTitle(season: Season): string {
 				{/if}
 			</span>
 		</span>
-		<span
-			class="i-lucide-chevron-right mt-1 h-4 w-4 shrink-0 text-text-tertiary transition-transform group-hover:translate-x-0.5 group-hover:text-text-secondary {selected
-				? 'text-blue-500'
-				: ''}"
-			aria-hidden="true"
-		></span>
 	</button>
 </li>

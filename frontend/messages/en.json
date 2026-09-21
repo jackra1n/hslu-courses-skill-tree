@@ -44,6 +44,7 @@
 	"browser_sort_rating_desc": "Review score: highest first",
 	"browser_sort_rating_asc": "Review score: lowest first",
 	"browser_scores_loading": "Loading review scores…",
+	"browser_course_review_summary": "Recommendation: {score} out of 5, based on {count} reviews",
 	"browser_next_courses": "Only courses I can take next",
 	"browser_next_courses_help": "Based on prerequisites and your progress.",
 	"browser_details_close": "Close course details",

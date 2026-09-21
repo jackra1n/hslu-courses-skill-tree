@@ -25,6 +25,7 @@ import {
 	hasMeaningfulStoredAppData,
 } from '$lib/data/persistence';
 import { fetchCourseReviewScores } from '$lib/data/reviews/review-client';
+import type { CourseReviewScore } from '$lib/data/reviews/review-types';
 import { type Season } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
@@ -57,7 +58,7 @@ let nextOnly = $state(false);
 let sidebarOpen = $state(false);
 type CourseSort = 'name-asc' | 'name-desc' | 'rating-desc' | 'rating-asc';
 let sort = $state<CourseSort>('name-asc');
-let reviewScores = $state<Record<string, number | null>>({});
+let reviewScores = $state<Record<string, CourseReviewScore | null>>({});
 let scoresLoaded = $state(false);
 let scoresLoading = $state(false);
 const scoresController = new AbortController();
@@ -84,8 +85,8 @@ const courseById = $derived(
 const sortedCourses = $derived(
 	courses.toSorted((a, b) => {
 		if (sort === 'rating-desc' || sort === 'rating-asc') {
-			const aScore = reviewScores[a.id] ?? null;
-			const bScore = reviewScores[b.id] ?? null;
+			const aScore = reviewScores[a.id]?.recommendation ?? null;
+			const bScore = reviewScores[b.id]?.recommendation ?? null;
 			if (aScore !== bScore) {
 				if (aScore === null) return 1;
 				if (bScore === null) return -1;
@@ -181,9 +182,7 @@ async function loadReviewScores(): Promise<void> {
 		// a detail-panel read may have returned a fresher summary while this
 		// initial aggregate request was in flight, including a deleted review.
 		reviewScores = {
-			...Object.fromEntries(
-				scores.map((score) => [score.courseId, score.recommendation]),
-			),
+			...Object.fromEntries(scores.map((score) => [score.courseId, score])),
 			...reviewScores,
 		};
 		scoresLoaded = true;
@@ -433,6 +432,7 @@ onMount(() => {
 										{course}
 										selected={selectedCourse?.id === course.id}
 										onSelect={selectCourse}
+										reviewScore={reviewScores[course.id]}
 									/>
 								{/each}
 							</ul>
@@ -444,7 +444,16 @@ onMount(() => {
 					{courseById}
 					onClose={closeCourseDetails}
 					onNavigate={(course) => (selectedCourse = course)}
-					onReviewSummary={(courseId, summary) => { reviewScores[courseId] = summary.recommendation; }}
+					onReviewSummary={(courseId, summary) => {
+						reviewScores[courseId] =
+							summary.recommendation === null
+								? null
+								: {
+										courseId,
+										recommendation: summary.recommendation,
+										count: summary.count,
+									};
+					}}
 				/>
 			</div>
 		</main>
