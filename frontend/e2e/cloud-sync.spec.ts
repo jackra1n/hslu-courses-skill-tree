@@ -50,11 +50,7 @@ async function snapshot(page: Page) {
 	return response.json();
 }
 
-test.beforeEach(async ({ page, login, isMobile }) => {
-	test.skip(
-		isMobile,
-		'Sync transitions run on desktop; the shared conflict dialog is also covered on mobile.',
-	);
+test.beforeEach(async ({ page, login }) => {
 	await page.addInitScript(() => {
 		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
 	});

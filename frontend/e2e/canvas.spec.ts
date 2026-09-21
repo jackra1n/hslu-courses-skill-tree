@@ -133,14 +133,9 @@ test('closing course details also clears the canvas remove action', async ({
 	}
 });
 
-test('Backspace preserves the plan while the remove action persists deletion', async ({
-	page,
-	isMobile,
-}) => {
-	test.skip(
-		isMobile,
-		'Keyboard deletion and the inline remove action use the desktop canvas.',
-	);
+test('Backspace preserves the plan while the remove action persists deletion', {
+	tag: '@desktop-only',
+}, async ({ page }) => {
 	await page.addInitScript(() =>
 		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'),
 	);
@@ -164,11 +159,9 @@ test('Backspace preserves the plan while the remove action persists deletion', a
 	await expect(course).toHaveCount(0);
 });
 
-test('replacing a completed elective does not transfer its progress', async ({
-	page,
-	isMobile,
-}) => {
-	test.skip(isMobile, 'Uses the desktop canvas add button.');
+test('replacing a completed elective does not transfer its progress', {
+	tag: '@desktop-only',
+}, async ({ page }) => {
 	await page.addInitScript(() =>
 		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'),
 	);

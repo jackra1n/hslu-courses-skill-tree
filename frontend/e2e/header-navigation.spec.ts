@@ -8,9 +8,7 @@ test.beforeEach(async ({ page }) => {
 
 test('mobile navigation keeps progress available and closes nested controls cleanly', async ({
 	page,
-	isMobile,
 }) => {
-	test.skip(!isMobile, 'Mobile navigation');
 	await page.goto('/');
 	const menu = page.getByRole('button', { name: 'Menu', exact: true });
 	const navigation = page.getByRole('navigation', {
@@ -69,9 +67,7 @@ test('mobile navigation keeps progress available and closes nested controls clea
 test('signed-in mobile account remains available inside navigation', async ({
 	page,
 	login,
-	isMobile,
 }) => {
-	test.skip(!isMobile, 'Mobile navigation');
 	await login();
 	await page.goto('/');
 	await page.getByRole('button', { name: 'Menu', exact: true }).click();
@@ -95,9 +91,7 @@ test('signed-in mobile account remains available inside navigation', async ({
 
 test('mobile settings close directly and the collapsed legend hides its contents', async ({
 	page,
-	isMobile,
 }) => {
-	test.skip(!isMobile, 'Mobile panels');
 	await page.goto('/');
 	const menu = page.getByRole('button', { name: 'Menu', exact: true });
 	await menu.click();
