@@ -13,7 +13,7 @@ Der *Course Browser* erweitert den HSLU Courses Skill Tree um eine such- und fil
 
 *Bereits vorhanden:* Der graphische Skill Tree, die Aufbereitung der HSLU-Katalogdaten, Studienplan und Fortschritt, GitHub-Anmeldung über Better Auth sowie das Hosting mit GitHub Pages, Cloudflare Workers und D1. Der Git-Tag `pre-weblab` markiert diesen Ausgangszustand.
 
-*Nachweis der Umsetzung:* #link("https://github.com/jackra1n/hslu-courses-skill-tree/pull/16")[PR \#16: feat: add course browser] enthält die WEBLAB-Erweiterung. Der abgeschlossene Produktstand ist der Merge-Commit #link("https://github.com/jackra1n/hslu-courses-skill-tree/commit/1cc856d1a0225f9a390eabe8f7b2c0564d1fa087")[`1cc856d`]. Der #link("https://github.com/jackra1n/hslu-courses-skill-tree/compare/970711bfbd387fce4d2d11f98e871e0a0cca998e...1cc856d1a0225f9a390eabe8f7b2c0564d1fa087")[Vergleich mit dem Ausgangsstand `pre-weblab` (`970711b`)] zeigt den gesamten Produktbeitrag.
+*Abgrenzung der Abgabe:* #link("https://github.com/jackra1n/hslu-courses-skill-tree/pull/16")[PR \#16: feat: add course browser] wurde bewusst auf den Course Browser, Rezensionen und begleitende Integrations-, UI- und Testanpassungen fokussiert. Dazu gehören auch Änderungen an gemeinsam genutzten Komponenten, nicht nur an der neuen Route. Der Merge-Commit #link("https://github.com/jackra1n/hslu-courses-skill-tree/commit/1cc856d1a0225f9a390eabe8f7b2c0564d1fa087")[`1cc856d`] ist der feste Referenzstand dieser Abgabe; der #link("https://github.com/jackra1n/hslu-courses-skill-tree/compare/970711bfbd387fce4d2d11f98e871e0a0cca998e...1cc856d1a0225f9a390eabe8f7b2c0564d1fa087")[Vergleich mit `pre-weblab` (`970711b`)] grenzt den Produktbeitrag vom Bestand ab.
 
 *Im Rahmen von WEBLAB ergänzt:*
 - Course Browser unter `/courses` mit deutsch-englischer Suche nach Modul-ID und Titel.
@@ -25,9 +25,11 @@ Der *Course Browser* erweitert den HSLU Courses Skill Tree um eine such- und fil
 
 Skill Tree und Course Browser zeigen denselben Katalog in zwei unterschiedlichen Formen: als Abhängigkeitsgraph für die Studienplanung und als Liste für die Kurssuche.
 
+*Dokumentationsstand:* Die Funktionsbeschreibung und die unten genannten Dateipfade wurden mit `master` am Commit #link("https://github.com/jackra1n/hslu-courses-skill-tree/commit/91227ca0cdb140ed673703b726ff5d837de12be3")[`91227ca`] abgeglichen. Nach dem Merge wurden unter anderem Studienplan, Fortschritt, Cloud-Synchronisation und Testinfrastruktur weiterentwickelt; der Course Browser zeigt nun auch Empfehlungsschnitt und Bewertungsanzahl direkt in den Kurszeilen. Diese späteren Änderungen sind nicht Bestandteil von PR \#16. Die Lighthouse-Messung bleibt dem tatsächlich geprüften Stand `1cc856d` zugeordnet.
+
 = 2. Lösungsstrategie
 
-Statische Katalogdaten und dynamische Rezensionen bleiben getrennt. Der Course Browser filtert den bereits geladenen Katalog lokal; eine Filteränderung benötigt keine Serveranfrage. Der Belegbarkeitsfilter verwendet den bestehenden Studienfortschritt und die Modulvoraussetzungen. Für die bewertungsbasierte Sortierung lädt die Oberfläche aggregierte Weiterempfehlungen über die API; ohne diese Daten bleibt die Namenssortierung verfügbar.
+Statische Katalogdaten und dynamische Rezensionen bleiben getrennt. Der Course Browser filtert den bereits geladenen Katalog lokal; eine Filteränderung benötigt keine Serveranfrage. Der Belegbarkeitsfilter verwendet den bestehenden Studienfortschritt und die Modulvoraussetzungen. Für die bewertungsbasierte Sortierung lädt die Oberfläche aggregierte Weiterempfehlungen über die API. Bis diese Daten vorliegen, bleibt die Sortierung auf Kursnamen beschränkt; ein Ladefehler blockiert die Kurssuche nicht.
 
 Rezensionen werden über den bestehenden API-Worker in D1 gespeichert. Die vorhandene Better-Auth-Sitzung identifiziert den Benutzer. Lesen ist öffentlich; Erstellen, Bearbeiten und Löschen erfordern eine Anmeldung. Damit benötigt die Erweiterung weder einen zusätzlichen Backend-Dienst noch eine zweite Anmeldung.
 
@@ -65,6 +67,19 @@ Eine Rezension enthält Kurs- und Benutzerzuordnung, vier Ganzzahlbewertungen vo
 
 Die öffentliche Ausgabe enthält keine Namen oder Benutzer-IDs. Intern bleibt die Kontozuordnung für Besitzprüfungen erhalten; namenlose Anzeige bedeutet keine anonyme Speicherung.
 
+== Einstieg für die Projektprüfung
+
+Die folgende Auswahl nennt zentrale Einstiegspunkte, kein vollständiges Änderungsverzeichnis. *Neu* und *angepasst* beziehen sich auf PR \#16 gegenüber `pre-weblab`; die Pfade entsprechen dem oben genannten Dokumentationsstand und sind relativ zu `frontend/`, sofern nicht anders angegeben. Die Datenmodule wurden nach dem Merge in Fachordner verschoben.
+
+- *Course Browser, neu:* `src/routes/courses/+page.svelte` verbindet Suche, Filter und Sortierung. `FilterSidebar.svelte`, `CourseRow.svelte` und `CourseDetailPanel.svelte` im selben Ordner bilden die Oberfläche.
+- *Filter und Belegbarkeit, neu:* `src/lib/data/courses/course-filters.ts` und `course-readiness.ts` enthalten die fachliche Auswertung unabhängig von der Oberfläche.
+- *Gemeinsame Details und Reviews, neu:* `src/lib/components/course/` enthält die gemeinsamen Tabs, Voraussetzungendarstellung und Review-Formulare; `src/lib/data/reviews/review-client.ts` bindet die API an.
+- *Review-Persistenz, neu:* `worker/reviews.ts` implementiert Validierung, Besitzprüfung und CRUD; `worker/migrations/0004_course_reviews.sql` definiert die neue Ressource und ihre Constraints.
+- *Integration, angepasst:* `worker/index.ts` registriert die API-Routen. `src/lib/components/header/Header.svelte` und `src/lib/components/sidebar/CourseDetailsPanel.svelte` integrieren Navigation und gemeinsame Details in die bestehende App.
+- *Katalog, angepasst:* `scripts/generate-catalog.ts` und `src/lib/data/catalog/catalog-types.ts` erweitern die vorhandene Katalogaufbereitung um Prüfungsformen und Unterrichtssprachen.
+- *Tests, neu:* `test/course-filters.test.ts`, `worker/test/review-api.test.ts` und `e2e/course-browser.spec.ts` sowie `e2e/course-reviews.spec.ts` zeigen Unit-, API- und Browserprüfungen der Erweiterung.
+- *CI, angepasst:* `.github/workflows/ci.yml` im Repository-Wurzelverzeichnis integriert die Browserprüfungen. Die spätere Aufteilung und Beschleunigung der CI gehört zur Weiterentwicklung nach dem Merge.
+
 = 4. Laufzeitsicht
 
 == Kurse finden und Voraussetzungen öffnen
@@ -72,14 +87,14 @@ Die öffentliche Ausgabe enthält keine Namen oder Benutzer-IDs. Intern bleibt d
 1. `/courses` lädt den statischen Katalog.
 2. Suche und Filter werden lokal ausgewertet: verschiedene Filtergruppen mit UND, mehrere Werte derselben Gruppe mit ODER.
    Die Treffer werden nach Name oder durchschnittlicher Weiterempfehlung sortiert. Unbewertete Kurse stehen bei Bewertungssortierung zuletzt; gleiche Bewertungen werden alphabetisch geordnet.
-3. Eine Kursauswahl öffnet die Details neben der Liste oder auf kleinen Bildschirmen als Dialog.
+3. Eine Kursauswahl öffnet die Details bei breiten Fenstern neben der Liste, bei schmaleren Fenstern als Dialog.
 4. Ein Klick auf eine Voraussetzung wechselt zum referenzierten Modul, auch ausserhalb der aktuellen Treffer. Filter bleiben erhalten; beim Schliessen kehrt der Fokus zur ursprünglichen Kurszeile zurück.
 
 == Rezension erstellen, bearbeiten und löschen
 
-1. Die Detailansicht lädt Rezensionen und gegebenenfalls `ownReviewId`.
+1. Beim ersten Öffnen des Rezensionen-Tabs lädt die Detailansicht Rezensionen und gegebenenfalls `ownReviewId`.
 2. Der angemeldete Benutzer übermittelt vier Bewertungen und optionalen Text. Die Sitzung wird über das bestehende Cookie mitgesendet.
-3. Der Worker prüft Origin, Sitzung, Kurs-ID und Eingaben. Text ist auf 5'000 Zeichen begrenzt; Bewertungen müssen Ganzzahlen von 1 bis 5 sein.
+3. Der Worker prüft Origin, Sitzung, Kurs-ID und Eingaben. Text ist auf 5'000 UTF-16-Codeeinheiten begrenzt; Bewertungen müssen Ganzzahlen von 1 bis 5 sein.
 4. D1 speichert die Rezension. Ein Unique-Constraint verhindert eine zweite Rezension desselben Benutzers zum selben Kurs, auch bei konkurrierenden Anfragen.
 5. Bearbeitung und Löschung prüfen erneut den Besitzer. Erfolgreiches Erstellen liefert `201`, Löschen `204`. Die Oberfläche aktualisiert Rezensionen und Durchschnittswerte; fehlgeschlagene Speicherung erhält den Entwurf.
 
@@ -87,7 +102,7 @@ Die öffentliche Ausgabe enthält keine Namen oder Benutzer-IDs. Intern bleibt d
 
 Die Anwendung ist unter #link("https://hsluskilltree.com")[hsluskilltree.com] veröffentlicht; der Course Browser ist über #link("https://hsluskilltree.com/courses")[/courses] erreichbar. GitHub Pages liefert den statischen SvelteKit-Build aus. Anfragen an `hsluskilltree.com/api/*` verarbeitet der Cloudflare Worker. Dieser greift über ein Binding auf D1 zu; der Browser hat keinen direkten Datenbankzugang. GitHub ist zugleich der externe OAuth-Anbieter.
 
-GitHub Actions prüft Übersetzungen, Typen, Linting und alle drei Testebenen. Das Deployment veröffentlicht Frontend und Worker und führt die versionierten D1-Migrationen aus. WEBLAB ergänzt diese Pipeline um die Browserprüfungen, statt eine separate Deployment-Infrastruktur einzuführen.
+GitHub Actions prüft Übersetzungen, Typen, Formatierung, Linting, ungenutzten Code und alle drei Testebenen. Reguläre Deployments folgen auf erfolgreiche CI: Frontend-Build und API-Deployment laufen parallel; beim API-Deployment werden zuerst die D1-Migrationen angewendet, dann der Worker veröffentlicht. Die Veröffentlichung auf GitHub Pages wartet auf beide Schritte. PR \#16 ergänzte die Browserprüfungen; die heutige Aufteilung in getrennte Frontend-, Worker- und Browserjobs entstand danach.
 
 = 6. Querschnittliche Konzepte
 
@@ -128,7 +143,7 @@ Lighthouse #quality.lighthouseVersion, gemessen am 20. September 2026 an der ver
 
 Die Bewertung konzentriert sich auf die Nutzung durch Menschen. Agentic Browsing wird nicht einbezogen. Der Mittelwert der vier ausgewerteten Kategorien liegt auf Desktop und Mobil jeweils über 90.
 
-*Grenzen:* Der mobile Course Browser erreicht 89 Performance-Punkte bei einem LCP von 3.17 s und 154 ms Total Blocking Time. Beim Skill Tree meldet Lighthouse ein ungültiges ARIA-Attribut im Driver.js-Willkommensdialog sowie auf Desktop zusätzlich eine übersprungene Überschriftenebene bei der Statuslegende; die Accessibility-Werte betragen 94 mobil und 92 auf Desktop. Die Einzelmessungen erfassen den Erstaufruf, nicht alle Dialoge oder Tutorial-Schritte. Es sind Labordaten der produktiven Website, keine Felddaten oder vollständige WCAG-Prüfung. Sie sind wegen der anderen Auslieferungsumgebung nicht direkt mit den früheren lokalen Messungen vergleichbar.
+*Befunde im Messstand:* Course Browser mobil: 89 Performance-Punkte, 3.17 s LCP und 154 ms Total Blocking Time. Beim Skill Tree meldete Lighthouse ein ungültiges ARIA-Attribut im Driver.js-Willkommensdialog und auf Desktop zusätzlich eine übersprungene Überschriftenebene der Statuslegende (Accessibility: mobil 94, Desktop 92). Die Erstaufrufe sind einzelne Labormessungen, keine Felddaten, vollständigen Interaktionsprüfungen oder WCAG-Nachweise. Sie gelten nur für `1cc856d`, nicht für spätere `master`-Stände, und sind nicht direkt mit den früheren lokalen Messungen vergleichbar.
 
 = 9. Reflexion und Fazit
 
