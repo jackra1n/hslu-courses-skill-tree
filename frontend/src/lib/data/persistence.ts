@@ -2,9 +2,10 @@ import { browser } from '$app/environment';
 import { isPlanCustomized } from '$lib/data/planning/plan-rules';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { clearAllPlans, loadAllPlans, savePlan } from '$lib/stores/planStorage';
+import { loadAllPlans, replaceAllPlans } from '$lib/stores/planStorage';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
+import { readStorage } from '$lib/utils/storage';
 import type { Season } from './season';
 import type { StudyPlan } from './planning/study-plan';
 
@@ -56,9 +57,9 @@ export function collectAppData(): AppData {
 }
 
 export function applyAppData(data: AppData): void {
-	// Replace stale plans so removed plans never resurface on the next upload.
-	clearAllPlans();
-	for (const plan of Object.values(data.studyPlans)) savePlan(plan);
+	if (!replaceAllPlans(Object.values(data.studyPlans))) {
+		throw new Error('Could not store study plans');
+	}
 	getCourseStore().restore(
 		data.currentTemplateId,
 		data.start.year,
@@ -82,7 +83,12 @@ export function importAppData(
 	const data = parseAppData(parsed);
 	if (!data) return { ok: false, error: m.persistence_invalid_backup() };
 
-	applyAppData(data);
+	try {
+		applyAppData(data);
+	} catch (error) {
+		console.error('Failed to import app data', error);
+		return { ok: false, error: m.persistence_storage_failed() };
+	}
 	return { ok: true };
 }
 
@@ -120,7 +126,7 @@ const MEANINGFUL_KEYS = [
 export function hasMeaningfulStoredAppData(): boolean {
 	if (!browser) return false;
 
-	const slotStatusRaw = localStorage.getItem('slotStatus');
+	const slotStatusRaw = readStorage('slotStatus');
 	if (slotStatusRaw) {
 		try {
 			const statuses = JSON.parse(slotStatusRaw) as Record<string, unknown>;
@@ -134,5 +140,5 @@ export function hasMeaningfulStoredAppData(): boolean {
 		if (isPlanCustomized(plan)) return true;
 	}
 
-	return MEANINGFUL_KEYS.some((key) => localStorage.getItem(key) !== null);
+	return MEANINGFUL_KEYS.some((key) => readStorage(key) !== null);
 }

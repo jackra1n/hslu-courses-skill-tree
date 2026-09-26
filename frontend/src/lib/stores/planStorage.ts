@@ -1,4 +1,3 @@
-import { browser } from '$app/environment';
 import type { CurriculumTemplate } from '$lib/data/catalog/courses';
 import type { Season } from '$lib/data/season';
 import {
@@ -6,6 +5,14 @@ import {
 	normalizePlan,
 	type StudyPlan,
 } from '$lib/data/planning/study-plan';
+import {
+	readStorage,
+	removeStorage,
+	storageKeys,
+	writeStorage,
+} from '$lib/utils/storage';
+
+const PLAN_PREFIX = 'studyPlan:';
 
 const KEYS = {
 	template: 'currentTemplate',
@@ -14,32 +21,17 @@ const KEYS = {
 	startSeason: 'startSeason',
 	startYear: 'startYear',
 	legacySelections: 'userSelections',
-	planFor: (templateId: string) => `studyPlan:${templateId}`,
+	planFor: (templateId: string) => `${PLAN_PREFIX}${templateId}`,
 } as const;
 
-function read(key: string): string | null {
-	return browser ? localStorage.getItem(key) : null;
-}
-
-function write(key: string, value: string): void {
-	if (browser) localStorage.setItem(key, value);
-}
-
-export function savePlan(plan: StudyPlan): void {
-	try {
-		write(KEYS.planFor(plan.templateId), JSON.stringify(plan));
-	} catch (error) {
-		console.error('Failed to persist study plan', error);
-	}
+export function savePlan(plan: StudyPlan): boolean {
+	return writeStorage(KEYS.planFor(plan.templateId), JSON.stringify(plan));
 }
 
 export function loadAllPlans(): Record<string, StudyPlan> {
-	if (!browser) return {};
 	const plans: Record<string, StudyPlan> = {};
-	for (let i = 0; i < localStorage.length; i++) {
-		const key = localStorage.key(i);
-		if (!key?.startsWith('studyPlan:')) continue;
-		const stored = localStorage.getItem(key);
+	for (const key of storageKeys(PLAN_PREFIX)) {
+		const stored = readStorage(key);
 		if (!stored) continue;
 		try {
 			const plan = normalizePlan(JSON.parse(stored) as StudyPlan);
@@ -51,23 +43,23 @@ export function loadAllPlans(): Record<string, StudyPlan> {
 	return plans;
 }
 
-// Removes every studyPlan:<templateId> key and nothing else. Used when a cloud
-// snapshot or import replaces the plan set, so deleted plans cannot resurface.
-export function clearAllPlans(): void {
-	if (!browser) return;
-	const keysToRemove: string[] = [];
-	for (let i = 0; i < localStorage.length; i++) {
-		const key = localStorage.key(i);
-		if (key?.startsWith('studyPlan:')) keysToRemove.push(key);
+export function replaceAllPlans(plans: StudyPlan[]): boolean {
+	const keep = new Set<string>();
+	for (const plan of plans) {
+		if (!savePlan(plan)) return false;
+		keep.add(KEYS.planFor(plan.templateId));
 	}
-	for (const key of keysToRemove) localStorage.removeItem(key);
+	for (const key of storageKeys(PLAN_PREFIX)) {
+		if (!keep.has(key)) removeStorage(key);
+	}
+	return true;
 }
 
 export function loadPlan(
 	template: CurriculumTemplate,
 	fallbackSelections: Record<string, string> = {},
 ): StudyPlan {
-	const stored = read(KEYS.planFor(template.id));
+	const stored = readStorage(KEYS.planFor(template.id));
 	if (stored) {
 		try {
 			const parsed = normalizePlan(JSON.parse(stored) as StudyPlan);
@@ -97,12 +89,12 @@ function isPlanCompatible(
 }
 
 export function loadLegacySelections(): Record<string, string> {
-	const stored = read(KEYS.legacySelections);
+	const stored = readStorage(KEYS.legacySelections);
 	if (!stored) return {};
 
 	try {
 		const selections = JSON.parse(stored) as Record<string, string>;
-		if (browser) localStorage.removeItem(KEYS.legacySelections);
+		removeStorage(KEYS.legacySelections);
 		return selections || {};
 	} catch (error) {
 		console.error('Failed to parse legacy user selections', error);
@@ -112,31 +104,31 @@ export function loadLegacySelections(): Record<string, string> {
 
 export const planPrefs = {
 	saveTemplate(templateId: string, plan: string): void {
-		write(KEYS.template, templateId);
-		write(KEYS.plan, plan);
+		writeStorage(KEYS.template, templateId);
+		writeStorage(KEYS.plan, plan);
 	},
-	loadTemplateId: (): string | null => read(KEYS.template),
-	loadPlanCode: (): string | null => read(KEYS.plan),
+	loadTemplateId: (): string | null => readStorage(KEYS.template),
+	loadPlanCode: (): string | null => readStorage(KEYS.plan),
 	saveStartSeason(season: Season): void {
-		write(KEYS.startSeason, season);
+		writeStorage(KEYS.startSeason, season);
 	},
 	loadStartSeason(): Season | null {
-		const raw = read(KEYS.startSeason);
+		const raw = readStorage(KEYS.startSeason);
 		return raw === 'HS' || raw === 'FS' ? raw : null;
 	},
 	saveStartYear(year: number): void {
-		write(KEYS.startYear, String(year));
+		writeStorage(KEYS.startYear, String(year));
 	},
 	loadStartYear(): number | null {
-		const raw = read(KEYS.startYear);
+		const raw = readStorage(KEYS.startYear);
 		const year = raw ? Number(raw) : NaN;
 		return Number.isInteger(year) ? year : null;
 	},
 	saveShortNames(value: boolean): void {
-		write(KEYS.shortNames, JSON.stringify(value));
+		writeStorage(KEYS.shortNames, JSON.stringify(value));
 	},
 	loadShortNames(): boolean | null {
-		const raw = read(KEYS.shortNames);
+		const raw = readStorage(KEYS.shortNames);
 		if (raw === null) return null;
 		try {
 			const value = JSON.parse(raw);

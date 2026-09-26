@@ -46,6 +46,60 @@ test('progress imports and saved statuses discard invalid entries without losing
 	).toEqual({ valid: 'attended' });
 });
 
+test('imports report storage failures and keep the stored plans', async ({
+	page,
+	isMobile,
+}) => {
+	await page.addInitScript(() => {
+		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
+	});
+	await page.goto('/');
+	await expect(page.locator('.svelte-flow')).toBeVisible();
+	if (isMobile) {
+		await page.getByRole('button', { name: 'Menu', exact: true }).click();
+	}
+	await page
+		.getByRole('button', { name: 'Settings & help', exact: true })
+		.click();
+	const downloading = page.waitForEvent('download');
+	await page.getByRole('button', { name: 'Export Data', exact: true }).click();
+	const data = JSON.parse(
+		await readFile(await (await downloading).path(), 'utf8'),
+	);
+	const storedPlans = () =>
+		page.evaluate(() =>
+			Object.keys(localStorage)
+				.filter((key) => key.startsWith('studyPlan:'))
+				.map((key) => [key, localStorage.getItem(key)]),
+		);
+	const before = await storedPlans();
+	expect(before.length).toBeGreaterThan(0);
+
+	await page.evaluate(() => {
+		const setItem = Storage.prototype.setItem;
+		Storage.prototype.setItem = function (key: string, value: string) {
+			if (key.startsWith('studyPlan:')) {
+				throw new DOMException('full', 'QuotaExceededError');
+			}
+			setItem.call(this, key, value);
+		};
+	});
+	const choosing = page.waitForEvent('filechooser');
+	await page.getByRole('button', { name: 'Import Data', exact: true }).click();
+	await (await choosing).setFiles({
+		name: 'progress.json',
+		mimeType: 'application/json',
+		buffer: Buffer.from(JSON.stringify(data)),
+	});
+
+	await expect(
+		page.getByText('Your data could not be saved in this browser.', {
+			exact: false,
+		}),
+	).toBeVisible();
+	expect(await storedPlans()).toEqual(before);
+});
+
 test('invalid badge preferences do not block startup or subsequent changes', async ({
 	page,
 }) => {
