@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { readStorage, STORAGE_KEYS, writeStorage } from '$lib/utils/storage';
 
 export type Theme = 'light' | 'dark' | 'system';
 type ResolvedTheme = Exclude<Theme, 'system'>;
@@ -19,7 +20,7 @@ export function theme() {
 export const themeStore = {
 	set: (newTheme: Theme) => {
 		if (browser) {
-			localStorage.setItem('theme', newTheme);
+			writeStorage(STORAGE_KEYS.theme, newTheme);
 			applyTheme(newTheme);
 		}
 		_theme = newTheme;
@@ -27,7 +28,7 @@ export const themeStore = {
 	init: () => {
 		if (!browser) return;
 
-		const stored = localStorage.getItem('theme');
+		const stored = readStorage(STORAGE_KEYS.theme);
 		const newTheme: Theme =
 			stored === 'light' || stored === 'dark' || stored === 'system'
 				? stored
