@@ -458,6 +458,7 @@ function readTemplate(path: string): {
 		fail(path, 'template "slots" must be an array');
 	}
 
+	const slotIds = new Set<string>();
 	const slots = data.slots.map(
 		(slot: unknown, index): CurriculumTemplate['slots'][number] => {
 			const scope = `${path}: slot #${index + 1}`;
@@ -469,8 +470,10 @@ function readTemplate(path: string): {
 			if (typeof record.id !== 'string' || record.id.trim() === '') {
 				fail(scope, 'slot is missing an id');
 			}
-			// Duplicate slot ids are tolerated by the runtime (INF parttime
-			// HS24/HS25 both contain elective3-s4), so they are not rejected.
+			if (slotIds.has(record.id)) {
+				fail(scope, `duplicate slot id "${record.id}"`);
+			}
+			slotIds.add(record.id);
 			const type = record.type;
 			if (type !== 'fixed' && type !== 'elective' && type !== 'major') {
 				fail(scope, `invalid slot type "${String(type)}"`);
