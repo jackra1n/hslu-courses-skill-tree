@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { isStudyPlan } from '$lib/data/app-data';
+import { parseStudyPlan } from '$lib/data/app-data';
 import type { CurriculumTemplate } from '$lib/data/catalog/courses';
 import type { Season } from '$lib/data/season';
 import {
@@ -43,8 +43,8 @@ export function loadAllPlans(): Record<string, StudyPlan> {
 		const stored = localStorage.getItem(key);
 		if (!stored) continue;
 		try {
-			const parsed: unknown = JSON.parse(stored);
-			if (!isStudyPlan(parsed)) continue;
+			const parsed = parseStudyPlan(JSON.parse(stored));
+			if (!parsed) continue;
 			const plan = normalizePlan(parsed);
 			plans[plan.templateId] = plan;
 		} catch (error) {
@@ -73,8 +73,8 @@ export function loadPlan(
 	const stored = read(KEYS.planFor(template.id));
 	if (stored) {
 		try {
-			const parsed: unknown = JSON.parse(stored);
-			if (isStudyPlan(parsed) && parsed.templateId === template.id) {
+			const parsed = parseStudyPlan(JSON.parse(stored));
+			if (parsed?.templateId === template.id) {
 				return normalizePlan(parsed);
 			}
 		} catch (error) {

@@ -84,6 +84,39 @@ describe('parseAppData', () => {
 	});
 
 	test.each([
+		[
+			'the same row',
+			[{ semester: 1, nodeOrder: ['ana-g', 'custom-1', 'ana-g'] }],
+		],
+		[
+			'another row',
+			[
+				{ semester: 1, nodeOrder: ['ana-g', 'custom-1'] },
+				{ semester: 2, nodeOrder: ['ana-g'] },
+			],
+		],
+	])(
+		'repairs a node repeated in %s by keeping its first entry',
+		(_name, rows) => {
+			const parsed = parseAppData(edited([...PLAN, 'rows'], rows));
+			expect(
+				parsed?.studyPlans['inf-fulltime-HS25']?.rows.flatMap(
+					(row) => row.nodeOrder,
+				),
+			).toEqual(['ana-g', 'custom-1']);
+		},
+	);
+
+	test('keeps plans for templates named like object prototype keys', () => {
+		const json = JSON.stringify(snapshot()).replaceAll(
+			'inf-fulltime-HS25',
+			'__proto__',
+		);
+		const parsed = parseAppData(JSON.parse(json));
+		expect(Object.hasOwn(parsed?.studyPlans ?? {}, '__proto__')).toBe(true);
+	});
+
+	test.each([
 		['a non-object', null],
 		['an array', []],
 		['an unknown version', edited(['version'], 2)],
@@ -104,16 +137,6 @@ describe('parseAppData', () => {
 			edited(
 				[...PLAN, 'rows'],
 				[{ semester: 1, nodeOrder: ['ana-g', 'custom-1', 'gone'] }],
-			),
-		],
-		[
-			'a node listed in two rows',
-			edited(
-				[...PLAN, 'rows'],
-				[
-					{ semester: 1, nodeOrder: ['ana-g', 'custom-1'] },
-					{ semester: 2, nodeOrder: ['ana-g'] },
-				],
 			),
 		],
 		[

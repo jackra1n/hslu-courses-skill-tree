@@ -72,28 +72,48 @@ function isPlanNode(value: unknown, id: string): value is PlanNode {
 	);
 }
 
+// Plans saved before elective4-s4 existed list elective3-s4 twice.
+function withoutRepeatedRowEntries(plan: StudyPlan): StudyPlan {
+	const seen = new Set<string>();
+	let repeated = false;
+	const rows = plan.rows.map((row) => {
+		const nodeOrder = row.nodeOrder.filter((id) => {
+			if (seen.has(id)) {
+				repeated = true;
+				return false;
+			}
+			seen.add(id);
+			return true;
+		});
+		return nodeOrder.length === row.nodeOrder.length
+			? row
+			: { ...row, nodeOrder };
+	});
+	return repeated ? { ...plan, rows } : plan;
+}
+
 function hasConsistentRows(plan: StudyPlan): boolean {
-	const rowNodeIds = plan.rows.flatMap((row) => row.nodeOrder);
-	const uniqueRowIds = new Set(rowNodeIds);
+	const rowNodeIds = new Set(plan.rows.flatMap((row) => row.nodeOrder));
 	const nodeIds = Object.keys(plan.nodes);
 	return (
-		uniqueRowIds.size === rowNodeIds.length &&
-		uniqueRowIds.size === nodeIds.length &&
-		nodeIds.every((id) => uniqueRowIds.has(id))
+		rowNodeIds.size === nodeIds.length &&
+		nodeIds.every((id) => rowNodeIds.has(id))
 	);
 }
 
-export function isStudyPlan(value: unknown): value is StudyPlan {
-	return (
-		isRecord(value) &&
-		typeof value.templateId === 'string' &&
-		typeof value.planCode === 'string' &&
-		Array.isArray(value.rows) &&
-		value.rows.every(isPlanRow) &&
-		isRecord(value.nodes) &&
-		Object.entries(value.nodes).every(([id, node]) => isPlanNode(node, id)) &&
-		hasConsistentRows(value as StudyPlan)
-	);
+export function parseStudyPlan(value: unknown): StudyPlan | null {
+	if (
+		!isRecord(value) ||
+		typeof value.templateId !== 'string' ||
+		typeof value.planCode !== 'string' ||
+		!Array.isArray(value.rows) ||
+		!value.rows.every(isPlanRow) ||
+		!isRecord(value.nodes) ||
+		!Object.entries(value.nodes).every(([id, node]) => isPlanNode(node, id))
+	)
+		return null;
+	const plan = withoutRepeatedRowEntries(value as StudyPlan);
+	return hasConsistentRows(plan) ? plan : null;
 }
 
 function validSlotStatuses(value: UnknownRecord): AppData['slotStatus'] {
@@ -116,13 +136,11 @@ export function parseAppData(value: unknown): AppData | null {
 		!Number.isInteger(start.year)
 	)
 		return null;
-	if (
-		!isRecord(studyPlans) ||
-		!Object.entries(studyPlans).every(
-			([templateId, plan]) =>
-				isStudyPlan(plan) && plan.templateId === templateId,
-		)
-	)
+	if (!isRecord(studyPlans)) return null;
+	const plans = Object.entries(studyPlans).map(
+		([templateId, plan]) => [templateId, parseStudyPlan(plan)] as const,
+	);
+	if (!plans.every(([templateId, plan]) => plan?.templateId === templateId))
 		return null;
 	if (!isRecord(slotStatus)) return null;
 	// Older snapshots included theme; device-local preferences never enter sync.
@@ -137,7 +155,7 @@ export function parseAppData(value: unknown): AppData | null {
 		version: APP_DATA_VERSION,
 		currentTemplateId,
 		start: { season: start.season, year: start.year as number },
-		studyPlans: studyPlans as Record<string, StudyPlan>,
+		studyPlans: Object.fromEntries(plans) as Record<string, StudyPlan>,
 		slotStatus: validSlotStatuses(slotStatus),
 		preferences: {
 			showShortNamesOnly: preferences.showShortNamesOnly,
