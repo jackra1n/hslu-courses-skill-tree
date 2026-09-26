@@ -39,6 +39,14 @@ class UIStore {
 		return writeStorage('showCourseTypeBadges', JSON.stringify(value));
 	}
 
+	captureState(): boolean {
+		return this.courseTypeBadges;
+	}
+
+	restoreState(showCourseTypeBadges: boolean): void {
+		this.courseTypeBadges = showCourseTypeBadges;
+	}
+
 	init() {
 		this.courseTypeBadges = readStorage('showCourseTypeBadges') === 'true';
 	}

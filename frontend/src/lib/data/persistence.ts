@@ -77,11 +77,17 @@ export function applyAppData(data: AppData): void {
 			'slotStatus',
 		]);
 	if (!backup) throw new Error('Could not back up stored app data');
+	const store = getCourseStore();
+	const live = {
+		course: store.captureState(),
+		progress: progressStore.captureState(),
+		ui: uiStore.captureState(),
+	};
 
 	try {
 		requirePersisted(replaceAllPlans(plans), 'study plans');
 		requirePersisted(
-			getCourseStore().restore(
+			store.restore(
 				data.currentTemplateId,
 				data.start.year,
 				data.start.season,
@@ -96,11 +102,11 @@ export function applyAppData(data: AppData): void {
 		);
 	} catch (error) {
 		if (!restoreStorage(backup)) {
-			console.error('Could not restore app data after a failed apply');
+			console.error('Could not restore stored app data after a failed apply');
 		}
-		getCourseStore().init();
-		progressStore.init();
-		uiStore.init();
+		store.restoreState(live.course);
+		progressStore.restoreState(live.progress);
+		uiStore.restoreState(live.ui);
 		throw error;
 	}
 }

@@ -62,6 +62,14 @@ class ProgressStore {
 		return this.statuses.get(slotId) ?? null;
 	}
 
+	captureState(): Map<string, SlotStatus> {
+		return this.statuses;
+	}
+
+	restoreState(statuses: Map<string, SlotStatus>): void {
+		this.statuses = statuses;
+	}
+
 	replaceAll(status: unknown): boolean {
 		this.statuses = parseSlotStatuses(status);
 		return this.saveToLocalStorage();

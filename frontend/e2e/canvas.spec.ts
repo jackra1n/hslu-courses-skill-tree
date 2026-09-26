@@ -91,12 +91,10 @@ for (const failure of STORAGE_FAILURES) {
 
 		const original = await exportData();
 		const plan = original.studyPlans[original.currentTemplateId];
-		await page.evaluate(
-			(stale) => {
-				localStorage.setItem('studyPlan:e2e-stale', JSON.stringify(stale));
-			},
-			{ ...plan, templateId: 'e2e-stale' },
-		);
+		const stale = { ...plan, templateId: 'e2e-stale' };
+		await page.evaluate((stale) => {
+			localStorage.setItem('studyPlan:e2e-stale', JSON.stringify(stale));
+		}, stale);
 		const before = await appStorage();
 
 		const nodeId = plan.rows[0].nodeOrder[0];
@@ -112,7 +110,12 @@ for (const failure of STORAGE_FAILURES) {
 				},
 				'e2e-new': { ...plan, templateId: 'e2e-new' },
 			},
+			start: { ...original.start, year: original.start.year + 1 },
 			slotStatus: { [nodeId]: 'completed' },
+			preferences: {
+				showShortNamesOnly: !original.preferences.showShortNamesOnly,
+				showCourseTypeBadges: !original.preferences.showCourseTypeBadges,
+			},
 		};
 		await page.evaluate(({ method, key }) => {
 			const original = Storage.prototype[method] as (
@@ -142,9 +145,10 @@ for (const failure of STORAGE_FAILURES) {
 			}),
 		).toBeVisible();
 		expect(await appStorage()).toEqual(before);
-		const after = await exportData();
-		expect(after.studyPlans[after.currentTemplateId]).toEqual(plan);
-		expect(after.slotStatus).toEqual(original.slotStatus);
+		expect(await exportData()).toEqual({
+			...original,
+			studyPlans: { ...original.studyPlans, 'e2e-stale': stale },
+		});
 	});
 }
 

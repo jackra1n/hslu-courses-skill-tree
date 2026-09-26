@@ -236,6 +236,26 @@ class CourseStore {
 		return this.activateTemplate(template) && prefsSaved;
 	}
 
+	captureState() {
+		return {
+			template: this.template,
+			plan: this.plan,
+			showShortNamesOnly: this.showShortNamesOnly,
+			startSeason: this.startSeason,
+			startYear: this.startYear,
+		};
+	}
+
+	restoreState(state: ReturnType<CourseStore['captureState']>): void {
+		setCoursePlan(state.template.plan);
+		this.template = state.template;
+		this.plan = state.plan;
+		this.showShortNamesOnly = state.showShortNamesOnly;
+		this.startSeason = state.startSeason;
+		this.startYear = state.startYear;
+		this.drag.clear();
+	}
+
 	// The calendar season (HS/FS) a given 1-indexed plan semester falls in.
 	seasonOf(semester: number): Season {
 		return seasonOfSemester(semester, this.startSeason);
