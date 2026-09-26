@@ -46,6 +46,69 @@ test('progress imports and saved statuses discard invalid entries without losing
 	).toEqual({ valid: 'attended' });
 });
 
+for (const templateId of [
+	'informatik-parttime-hs24',
+	'informatik-parttime-hs25',
+]) {
+	test(`${templateId} backups with the old repeated elective slot still import`, async ({
+		page,
+		isMobile,
+	}) => {
+		await page.addInitScript((templateId) => {
+			localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
+			localStorage.setItem('currentTemplate', templateId);
+		}, templateId);
+		await page.goto('/');
+		await expect(page.locator('.svelte-flow')).toBeVisible();
+		if (isMobile) {
+			await page.getByRole('button', { name: 'Menu', exact: true }).click();
+		}
+		await page
+			.getByRole('button', { name: 'Settings & help', exact: true })
+			.click();
+		const downloading = page.waitForEvent('download');
+		await page
+			.getByRole('button', { name: 'Export Data', exact: true })
+			.click();
+		const data = JSON.parse(
+			await readFile(await (await downloading).path(), 'utf8'),
+		);
+		expect(data.currentTemplateId).toBe(templateId);
+
+		const plan = data.studyPlans[templateId];
+		delete plan.nodes['elective4-s4'];
+		for (const row of plan.rows) {
+			row.nodeOrder = row.nodeOrder.map((id: string) =>
+				id === 'elective4-s4' ? 'elective3-s4' : id,
+			);
+		}
+		const choosing = page.waitForEvent('filechooser');
+		await page
+			.getByRole('button', { name: 'Import Data', exact: true })
+			.click();
+		await (await choosing).setFiles({
+			name: 'progress.json',
+			mimeType: 'application/json',
+			buffer: Buffer.from(JSON.stringify(data)),
+		});
+
+		await expect(
+			page.getByRole('button', { name: 'Close settings', exact: true }),
+		).toBeHidden();
+		const stored = await page.evaluate(
+			(key) => JSON.parse(localStorage.getItem(key) ?? 'null'),
+			`studyPlan:${templateId}`,
+		);
+		const rowIds = stored.rows.flatMap(
+			(row: { nodeOrder: string[] }) => row.nodeOrder,
+		);
+		expect(rowIds.filter((id: string) => id === 'elective3-s4')).toHaveLength(
+			1,
+		);
+		expect(new Set(rowIds).size).toBe(Object.keys(stored.nodes).length);
+	});
+}
+
 test('invalid badge preferences do not block startup or subsequent changes', async ({
 	page,
 }) => {
