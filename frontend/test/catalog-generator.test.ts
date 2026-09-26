@@ -166,8 +166,8 @@ function createFixture(): string {
 		name: 'INF full-time',
 		programName: 'Wrong fallback',
 		slots: [
-			{ id: 'duplicate', type: 'fixed', semester: 1, courseId: 'MAJOR' },
-			{ id: 'duplicate', type: 'elective', semester: 2 },
+			{ id: 'major-s1', type: 'fixed', semester: 1, courseId: 'MAJOR' },
+			{ id: 'elective-s2', type: 'elective', semester: 2 },
 		],
 	});
 	return root;
@@ -351,6 +351,16 @@ describe('catalog validation', () => {
 			slots: [],
 		});
 		expectBuildError(root, 'duplicate template id "supplied-template-id"');
+
+		root = createFixture();
+		writeJson(root, 'templates/zzz/parttime/hs24.json', {
+			name: 'Duplicate slots',
+			slots: [
+				{ id: 'elective-s1', type: 'elective', semester: 1 },
+				{ id: 'elective-s1', type: 'elective', semester: 1 },
+			],
+		});
+		expectBuildError(root, 'slot #2: duplicate slot id "elective-s1"');
 	});
 
 	test.each([

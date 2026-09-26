@@ -1,3 +1,4 @@
+import { parseStudyPlan } from '$lib/data/app-data';
 import type { CurriculumTemplate } from '$lib/data/catalog/courses';
 import type { Season } from '$lib/data/season';
 import {
@@ -25,7 +26,9 @@ export function loadAllPlans(): Record<string, StudyPlan> {
 		const stored = readStorage(key);
 		if (!stored) continue;
 		try {
-			const plan = normalizePlan(JSON.parse(stored) as StudyPlan);
+			const parsed = parseStudyPlan(JSON.parse(stored));
+			if (!parsed) continue;
+			const plan = normalizePlan(parsed);
 			plans[plan.templateId] = plan;
 		} catch (error) {
 			console.error('Failed to parse stored study plan', error);
@@ -50,30 +53,15 @@ export function loadPlan(
 	const stored = readStorage(KEYS.planFor(template.id));
 	if (stored) {
 		try {
-			const parsed = normalizePlan(JSON.parse(stored) as StudyPlan);
-			if (isPlanCompatible(parsed, template)) return parsed;
+			const parsed = parseStudyPlan(JSON.parse(stored));
+			if (parsed?.templateId === template.id) {
+				return normalizePlan(parsed);
+			}
 		} catch (error) {
 			console.error('Failed to parse stored study plan', error);
 		}
 	}
 	return createStudyPlan(template, fallbackSelections);
-}
-
-function isPlanCompatible(
-	plan: StudyPlan,
-	template: CurriculumTemplate,
-): boolean {
-	if (plan.templateId !== template.id) return false;
-
-	const rowNodeIds = plan.rows.flatMap((row) => row.nodeOrder);
-	const uniqueRowIds = new Set(rowNodeIds);
-	if (uniqueRowIds.size !== rowNodeIds.length) return false;
-
-	const nodeIds = Object.keys(plan.nodes);
-	return (
-		uniqueRowIds.size === nodeIds.length &&
-		nodeIds.every((id) => uniqueRowIds.has(id))
-	);
 }
 
 export function loadLegacySelections(): Record<string, string> {
