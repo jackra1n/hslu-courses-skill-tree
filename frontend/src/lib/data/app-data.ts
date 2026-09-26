@@ -85,13 +85,12 @@ export function isStudyPlan(value: unknown): value is StudyPlan {
 }
 
 function validSlotStatuses(value: UnknownRecord): AppData['slotStatus'] {
-	const statuses: AppData['slotStatus'] = {};
-	for (const [slotId, status] of Object.entries(value)) {
-		if (status === 'attended' || status === 'completed') {
-			statuses[slotId] = status;
-		}
-	}
-	return statuses;
+	return Object.fromEntries(
+		Object.entries(value).filter(
+			(entry): entry is [string, 'attended' | 'completed'] =>
+				entry[1] === 'attended' || entry[1] === 'completed',
+		),
+	);
 }
 
 export function parseAppData(value: unknown): AppData | null {
