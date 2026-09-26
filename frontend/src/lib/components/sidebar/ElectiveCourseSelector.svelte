@@ -1,7 +1,7 @@
 <script lang="ts">
 import Dropdown from '$lib/components/ui/Dropdown.svelte';
 import { courseLabel } from '$lib/data/courses/course-label';
-import { COURSES, type Course } from '$lib/data/catalog/courses';
+import { type Course, getSortedCourses } from '$lib/data/catalog/courses';
 import { type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
@@ -16,7 +16,7 @@ const selectedCourseId = $derived(courseStore.userSelections[slotId]);
 const slotNode = $derived(courseStore.studyPlan.nodes[slotId]);
 
 const availableCourses = $derived(
-	COURSES.filter((course) => {
+	getSortedCourses().filter((course) => {
 		if (!slotNode) return false;
 		if (selectedCourseId === course.id) return true;
 		return courseStore.canSelectCourseForSlot(slotId, course.id);
