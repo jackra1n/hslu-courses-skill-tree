@@ -1,10 +1,7 @@
 <script lang="ts">
 import Dropdown from '$lib/components/ui/Dropdown.svelte';
 import { assessmentModeLabel } from '$lib/data/courses/assessment-mode';
-import type {
-	AssessmentMode,
-	ModuleType,
-} from '$lib/data/catalog/catalog-types';
+import type { AssessmentMode, ModuleType } from '$lib/data/catalog/catalog-types';
 import type { EctsRange } from '$lib/data/courses/course-filters';
 import { moduleTypeLabel } from '$lib/data/courses/module-type';
 import { type Season, seasonLabel } from '$lib/data/season';
@@ -49,27 +46,14 @@ const moduleTypeOptions: ModuleType[] = [
 	'Zusatzmodul',
 ];
 
-const assessmentModeOptions: AssessmentMode[] = [
-	'coursework',
-	'written_exam',
-	'oral_exam',
-	'electronic_exam',
-];
+const assessmentModeOptions: AssessmentMode[] = ['coursework', 'written_exam', 'oral_exam', 'electronic_exam'];
 
 // the slider indexes into the distinct ECTS values present in the
 // catalog, so every stop matches real courses (no dead zones between
 // e.g. 6 and 8 ECTS).
 const lastIdx = $derived(ectsSteps.length - 1);
-const minIdx = $derived(
-	ects === null || ectsSteps.length === 0
-		? 0
-		: Math.max(0, ectsSteps.indexOf(ects.min)),
-);
-const maxIdx = $derived(
-	ects === null || ectsSteps.length === 0
-		? lastIdx
-		: Math.max(0, ectsSteps.indexOf(ects.max)),
-);
+const minIdx = $derived(ects === null || ectsSteps.length === 0 ? 0 : Math.max(0, ectsSteps.indexOf(ects.min)));
+const maxIdx = $derived(ects === null || ectsSteps.length === 0 ? lastIdx : Math.max(0, ectsSteps.indexOf(ects.max)));
 const minPct = $derived(lastIdx > 0 ? (minIdx / lastIdx) * 100 : 0);
 const maxPct = $derived(lastIdx > 0 ? (maxIdx / lastIdx) * 100 : 100);
 
@@ -82,10 +66,7 @@ function setMin(input: HTMLInputElement): void {
 	lastTouched = 'min';
 	const clamped = Math.min(input.valueAsNumber, maxIdx);
 	input.valueAsNumber = clamped;
-	ects =
-		clamped === 0 && maxIdx === lastIdx
-			? null
-			: { min: ectsSteps[clamped] ?? 0, max: ectsSteps[maxIdx] ?? 0 };
+	ects = clamped === 0 && maxIdx === lastIdx ? null : { min: ectsSteps[clamped] ?? 0, max: ectsSteps[maxIdx] ?? 0 };
 }
 
 function setMax(input: HTMLInputElement): void {
@@ -93,10 +74,7 @@ function setMax(input: HTMLInputElement): void {
 	lastTouched = 'max';
 	const clamped = Math.max(input.valueAsNumber, minIdx);
 	input.valueAsNumber = clamped;
-	ects =
-		minIdx === 0 && clamped === lastIdx
-			? null
-			: { min: ectsSteps[minIdx] ?? 0, max: ectsSteps[clamped] ?? 0 };
+	ects = minIdx === 0 && clamped === lastIdx ? null : { min: ectsSteps[minIdx] ?? 0, max: ectsSteps[clamped] ?? 0 };
 }
 </script>
 
@@ -115,9 +93,7 @@ function setMax(input: HTMLInputElement): void {
 		</button>
 	</div>
 	<div class="space-y-2">
-		<label for={`${id}-season`} class="text-sm font-semibold text-text-primary"
-			>{m.browser_filter_season()}</label
-		>
+		<label for={`${id}-season`} class="text-sm font-semibold text-text-primary">{m.browser_filter_season()}</label>
 		<Dropdown
 			id={`${id}-season`}
 			label={m.browser_filter_season()}
@@ -192,9 +168,7 @@ function setMax(input: HTMLInputElement): void {
 						aria-describedby={`${id}-type-count-${index}`}
 						class="h-5 w-5 shrink-0 cursor-pointer accent-blue-500"
 					>
-					<span id={`${id}-type-${index}`} class="min-w-0 flex-1 break-words"
-						>{moduleTypeLabel(option)}</span
-					>
+					<span id={`${id}-type-${index}`} class="min-w-0 flex-1 break-words">{moduleTypeLabel(option)}</span>
 					<span
 						id={`${id}-type-count-${index}`}
 						class="rounded bg-bg-secondary px-1.5 text-xs tabular-nums text-text-secondary"
@@ -221,9 +195,7 @@ function setMax(input: HTMLInputElement): void {
 						aria-describedby={`${id}-mode-count-${index}`}
 						class="h-5 w-5 shrink-0 cursor-pointer accent-blue-500"
 					>
-					<span id={`${id}-mode-${index}`} class="min-w-0 flex-1 break-words"
-						>{assessmentModeLabel(option)}</span
-					>
+					<span id={`${id}-mode-${index}`} class="min-w-0 flex-1 break-words">{assessmentModeLabel(option)}</span>
 					<span
 						id={`${id}-mode-count-${index}`}
 						class="rounded bg-bg-secondary px-1.5 text-xs tabular-nums text-text-secondary"
@@ -234,12 +206,8 @@ function setMax(input: HTMLInputElement): void {
 		</fieldset>
 	</div>
 	<div class="border-t border-border-primary pt-4 lg:pt-5">
-		<label
-			class="block cursor-pointer rounded-md focus-within:outline focus-within:outline-blue-500"
-		>
-			<span
-				id={`${id}-next-label`}
-				class="block text-sm font-semibold text-text-primary"
+		<label class="block cursor-pointer rounded-md focus-within:outline focus-within:outline-blue-500">
+			<span id={`${id}-next-label`} class="block text-sm font-semibold text-text-primary"
 				>{m.browser_next_courses()}</span
 			>
 			<span class="mt-2 flex min-h-11 items-center gap-3">
@@ -259,9 +227,7 @@ function setMax(input: HTMLInputElement): void {
 						class="pointer-events-none absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-5 motion-reduce:transition-none"
 					></span>
 				</span>
-				<span
-					id={`${id}-next-help`}
-					class="text-xs leading-relaxed text-text-secondary"
+				<span id={`${id}-next-help`} class="text-xs leading-relaxed text-text-secondary"
 					>{m.browser_next_courses_help()}</span
 				>
 			</span>

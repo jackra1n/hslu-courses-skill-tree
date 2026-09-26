@@ -25,12 +25,7 @@ async function collapseFilters(page: Page, isMobile: boolean) {
 	await expect(page.getByRole('combobox', { name: 'Semester' })).toBeHidden();
 }
 
-async function seedReview(
-	page: Page,
-	origin: string,
-	courseId: string,
-	recommendation: number,
-) {
+async function seedReview(page: Page, origin: string, courseId: string, recommendation: number) {
 	const response = await page.request.post(`/api/courses/${courseId}/reviews`, {
 		headers: { Origin: origin },
 		data: {
@@ -48,9 +43,7 @@ async function expectCourseOrder(page: Page, courseIds: string[]) {
 	await expect(page.getByRole('list').getByRole('button')).toContainText(
 		courseIds.map((id) => new RegExp(`\\b${id}\\b`)),
 	);
-	await expect(page.getByRole('list').getByRole('button')).toHaveCount(
-		courseIds.length,
-	);
+	await expect(page.getByRole('list').getByRole('button')).toHaveCount(courseIds.length);
 }
 
 test('sorts courses by name or average recommendation, retaining order through search and filters', async ({
@@ -74,52 +67,20 @@ test('sorts courses by name or average recommendation, retaining order through s
 	await search.fill('Programming Lab');
 	const sort = page.getByRole('combobox', { name: 'Sort by', exact: true });
 	await expect(sort).toHaveText('Course name: A–Z');
-	await expectCourseOrder(page, [
-		'CPLAB',
-		'ENLAB_MM',
-		'MOBLAB',
-		'PLAB',
-		'WEBLAB',
-	]);
+	await expectCourseOrder(page, ['CPLAB', 'ENLAB_MM', 'MOBLAB', 'PLAB', 'WEBLAB']);
 	await sort.click();
-	await page
-		.getByRole('option', { name: 'Course name: Z–A', exact: true })
-		.click();
-	await expectCourseOrder(page, [
-		'WEBLAB',
-		'PLAB',
-		'MOBLAB',
-		'ENLAB_MM',
-		'CPLAB',
-	]);
+	await page.getByRole('option', { name: 'Course name: Z–A', exact: true }).click();
+	await expectCourseOrder(page, ['WEBLAB', 'PLAB', 'MOBLAB', 'ENLAB_MM', 'CPLAB']);
 	await sort.click();
-	await page
-		.getByRole('option', { name: 'Review score: highest first', exact: true })
-		.click();
-	await expectCourseOrder(page, [
-		'ENLAB_MM',
-		'CPLAB',
-		'WEBLAB',
-		'MOBLAB',
-		'PLAB',
-	]);
+	await page.getByRole('option', { name: 'Review score: highest first', exact: true }).click();
+	await expectCourseOrder(page, ['ENLAB_MM', 'CPLAB', 'WEBLAB', 'MOBLAB', 'PLAB']);
 	await sort.click();
-	await page
-		.getByRole('option', { name: 'Review score: lowest first', exact: true })
-		.click();
+	await page.getByRole('option', { name: 'Review score: lowest first', exact: true }).click();
 	// cloud and Web tie alphabetically; the two unrated courses follow every
 	// rated course in alphabetical order in both score directions.
-	await expectCourseOrder(page, [
-		'CPLAB',
-		'WEBLAB',
-		'ENLAB_MM',
-		'MOBLAB',
-		'PLAB',
-	]);
+	await expectCourseOrder(page, ['CPLAB', 'WEBLAB', 'ENLAB_MM', 'MOBLAB', 'PLAB']);
 	await expandFilters(page, isMobile);
-	await page
-		.getByRole('checkbox', { name: 'Major/Minor module', exact: true })
-		.check();
+	await page.getByRole('checkbox', { name: 'Major/Minor module', exact: true }).check();
 	await page.getByRole('combobox', { name: 'Semester' }).click();
 	await page.getByRole('option', { name: 'Autumn (HS)', exact: true }).click();
 	await collapseFilters(page, isMobile);
@@ -140,21 +101,11 @@ test('editing and deleting your review reorders courses without reloading the br
 	await seedReview(page, backend.url.origin, 'CPLAB', 3);
 	await seedReview(page, backend.url.origin, 'WEBLAB', 1);
 	await page.goto('/courses');
-	await page
-		.getByRole('textbox', { name: 'Search courses' })
-		.fill('Programming Lab');
+	await page.getByRole('textbox', { name: 'Search courses' }).fill('Programming Lab');
 	const sort = page.getByRole('combobox', { name: 'Sort by', exact: true });
 	await sort.click();
-	await page
-		.getByRole('option', { name: 'Review score: highest first', exact: true })
-		.click();
-	await expectCourseOrder(page, [
-		'CPLAB',
-		'WEBLAB',
-		'ENLAB_MM',
-		'MOBLAB',
-		'PLAB',
-	]);
+	await page.getByRole('option', { name: 'Review score: highest first', exact: true }).click();
+	await expectCourseOrder(page, ['CPLAB', 'WEBLAB', 'ENLAB_MM', 'MOBLAB', 'PLAB']);
 	await courseRow(page, 'WEBLAB').click();
 	const panel = page.locator('#course-detail-panel');
 	await panel.getByRole('tab', { name: 'Reviews', exact: true }).click();
@@ -176,25 +127,13 @@ test('editing and deleting your review reorders courses without reloading the br
 	);
 	await form.getByRole('button', { name: 'Save changes', exact: true }).click();
 	await expect(form).toBeHidden();
-	await panel
-		.getByRole('button', { name: 'Close course details', exact: true })
-		.click();
-	await expect(
-		panel.getByRole('tab', { name: 'Reviews', exact: true }),
-	).toBeHidden();
+	await panel.getByRole('button', { name: 'Close course details', exact: true }).click();
+	await expect(panel.getByRole('tab', { name: 'Reviews', exact: true })).toBeHidden();
 	savedRefresh.resolve();
-	await expectCourseOrder(page, [
-		'WEBLAB',
-		'CPLAB',
-		'ENLAB_MM',
-		'MOBLAB',
-		'PLAB',
-	]);
+	await expectCourseOrder(page, ['WEBLAB', 'CPLAB', 'ENLAB_MM', 'MOBLAB', 'PLAB']);
 	await courseRow(page, 'WEBLAB').click();
 	await panel.getByRole('tab', { name: 'Reviews', exact: true }).click();
-	await panel
-		.getByRole('button', { name: 'Delete review', exact: true })
-		.click();
+	await panel.getByRole('button', { name: 'Delete review', exact: true }).click();
 	const confirmation = page.getByRole('dialog', {
 		name: 'Delete your review?',
 		exact: true,
@@ -209,29 +148,15 @@ test('editing and deleting your review reorders courses without reloading the br
 		{ times: 1 },
 	);
 	const deletionRefreshing = page.waitForRequest(
-		(request) =>
-			request.method() === 'GET' &&
-			request.url().endsWith('/api/courses/WEBLAB/reviews'),
+		(request) => request.method() === 'GET' && request.url().endsWith('/api/courses/WEBLAB/reviews'),
 	);
-	await confirmation
-		.getByRole('button', { name: 'Delete review', exact: true })
-		.click();
+	await confirmation.getByRole('button', { name: 'Delete review', exact: true }).click();
 	await expect(confirmation).toBeHidden();
 	await deletionRefreshing;
-	await panel
-		.getByRole('button', { name: 'Close course details', exact: true })
-		.click();
-	await expect(
-		panel.getByRole('tab', { name: 'Reviews', exact: true }),
-	).toBeHidden();
+	await panel.getByRole('button', { name: 'Close course details', exact: true }).click();
+	await expect(panel.getByRole('tab', { name: 'Reviews', exact: true })).toBeHidden();
 	deletedRefresh.resolve();
-	await expectCourseOrder(page, [
-		'CPLAB',
-		'ENLAB_MM',
-		'MOBLAB',
-		'PLAB',
-		'WEBLAB',
-	]);
+	await expectCourseOrder(page, ['CPLAB', 'ENLAB_MM', 'MOBLAB', 'PLAB', 'WEBLAB']);
 	await expect(sort).toHaveText('Review score: highest first');
 });
 
@@ -273,19 +198,12 @@ test('combines search, module type, assessment and semester, then recovers from 
 	await collapseFilters(page, isMobile);
 
 	await search.fill('no-such-course-e2e');
-	await expect(
-		page.getByText('No courses found', { exact: true }),
-	).toBeVisible();
+	await expect(page.getByText('No courses found', { exact: true })).toBeVisible();
 	await expect(page.getByRole('list').getByRole('button')).toHaveCount(0);
 	// clearing the search must not clear the independently selected filters.
-	await page
-		.getByRole('search')
-		.getByRole('button', { name: 'Clear', exact: true })
-		.click();
+	await page.getByRole('search').getByRole('button', { name: 'Clear', exact: true }).click();
 	await expect(search).toHaveValue('');
-	await expect(
-		page.getByText('No courses found', { exact: true }),
-	).toBeHidden();
+	await expect(page.getByText('No courses found', { exact: true })).toBeHidden();
 	await expect(courseRow(page, 'WEBLAB')).toBeVisible();
 	await expect(courseRow(page, 'ENLAB_MM')).toHaveCount(0);
 	await expect(courseRow(page, 'OOP')).toHaveCount(0);
@@ -304,10 +222,7 @@ test('combines search, module type, assessment and semester, then recovers from 
 	await expect(semester).toHaveText('All semesters');
 });
 
-test('facet counts ignore their own selection and reset restores every filter', async ({
-	page,
-	isMobile,
-}) => {
+test('facet counts ignore their own selection and reset restores every filter', async ({ page, isMobile }) => {
 	await page.goto('/courses');
 	await expandFilters(page, isMobile);
 	const reset = page.getByRole('button', { name: 'Reset all', exact: true });
@@ -388,9 +303,7 @@ test('follows a prerequisite outside the result set without losing filters or re
 		await expect(closeEnterprise).toBeFocused();
 	}
 
-	await enterprise
-		.getByRole('tab', { name: 'Prerequisites', exact: true })
-		.click();
+	await enterprise.getByRole('tab', { name: 'Prerequisites', exact: true }).click();
 	await enterprise
 		.getByRole('button', {
 			name: /Database Systems/,
@@ -402,12 +315,8 @@ test('follows a prerequisite outside the result set without losing filters or re
 	});
 	await expect(database).toBeVisible();
 	await expect(database.getByText('DBS', { exact: true })).toBeVisible();
-	await expect(
-		database.getByRole('heading', { name: 'Database Systems', exact: true }),
-	).toBeVisible();
-	await expect(
-		database.getByRole('button', { name: 'Close course details', exact: true }),
-	).toBeFocused();
+	await expect(database.getByRole('heading', { name: 'Database Systems', exact: true })).toBeVisible();
+	await expect(database.getByRole('button', { name: 'Close course details', exact: true })).toBeFocused();
 	await page.keyboard.press('Escape');
 	await expect(database).toBeHidden();
 	await expect(origin).toBeFocused();
@@ -430,9 +339,7 @@ test('semester dropdown commits keyboard selection but Escape leaves the current
 	isMobile,
 }) => {
 	await page.goto('/courses');
-	await page
-		.getByRole('textbox', { name: 'Search courses' })
-		.fill('programming');
+	await page.getByRole('textbox', { name: 'Search courses' }).fill('programming');
 	await expandFilters(page, isMobile);
 	const semester = page.getByRole('combobox', { name: 'Semester' });
 	const options = page.getByRole('listbox', { name: 'Semester' });
@@ -448,9 +355,10 @@ test('semester dropdown commits keyboard selection but Escape leaves the current
 	await expect(courseRow(page, 'MOBLAB')).toHaveCount(0);
 
 	await semester.press('ArrowUp');
-	await expect(
-		options.getByRole('option', { name: 'Spring (FS)', exact: true }),
-	).toHaveAttribute('aria-selected', 'true');
+	await expect(options.getByRole('option', { name: 'Spring (FS)', exact: true })).toHaveAttribute(
+		'aria-selected',
+		'true',
+	);
 	await semester.press('ArrowUp');
 	await semester.press('Escape');
 	await expect(options).toBeHidden();
@@ -474,9 +382,7 @@ test('semester dropdown commits keyboard selection but Escape leaves the current
 	await expect(courseRow(page, 'MOBLAB')).toBeVisible();
 });
 
-test('settings receive keyboard focus and restore it when closed', async ({
-	page,
-}) => {
+test('settings receive keyboard focus and restore it when closed', async ({ page }) => {
 	await page.goto('/courses');
 	const settings = page.getByRole('button', {
 		name: 'Settings & help',
@@ -490,9 +396,7 @@ test('settings receive keyboard focus and restore it when closed', async ({
 
 	await settings.focus();
 	await page.keyboard.press('Enter');
-	await expect(
-		page.getByRole('button', { name: 'Close settings', exact: true }),
-	).toBeFocused();
+	await expect(page.getByRole('button', { name: 'Close settings', exact: true })).toBeFocused();
 	const theme = page.getByRole('combobox', { name: 'Theme', exact: true });
 	await theme.focus();
 	await expect(theme).toBeFocused();
@@ -504,26 +408,16 @@ test('settings receive keyboard focus and restore it when closed', async ({
 	await expect(search).toBeFocused();
 });
 
-test('assessment information opens on the course browser without leaking into navigation', async ({
-	page,
-}) => {
-	await page.addInitScript(() =>
-		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'),
-	);
+test('assessment information opens on the course browser without leaking into navigation', async ({ page }) => {
+	await page.addInitScript(() => localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'));
 	await page.goto('/courses');
-	await page
-		.getByRole('button', { name: 'Settings & help', exact: true })
-		.click();
-	await page
-		.getByRole('button', { name: 'Assessment Information', exact: true })
-		.click();
+	await page.getByRole('button', { name: 'Settings & help', exact: true }).click();
+	await page.getByRole('button', { name: 'Assessment Information', exact: true }).click();
 	const assessment = page.getByRole('dialog', {
 		name: 'Assessment Stage Rules',
 	});
 	await expect(assessment).toBeVisible();
-	await assessment
-		.getByRole('button', { name: 'Close modal', exact: true })
-		.click();
+	await assessment.getByRole('button', { name: 'Close modal', exact: true }).click();
 	await expect(assessment).toBeHidden();
 	await page.getByRole('link', { name: 'Skill Tree', exact: true }).click();
 	await expect(page).toHaveURL(/\/$/);
@@ -531,25 +425,18 @@ test('assessment information opens on the course browser without leaking into na
 	await expect(assessment).toBeHidden();
 });
 
-test('direct course browser visits resolve cloud conflicts and resume syncing', async ({
-	page,
-	login,
-}) => {
+test('direct course browser visits resolve cloud conflicts and resume syncing', async ({ page, login }) => {
 	await page.clock.setFixedTime(new Date('2026-02-15T12:00:00Z'));
 	await login();
 	await page.goto('/courses');
-	await expect(
-		page.getByRole('textbox', { name: 'Search courses' }),
-	).toBeVisible();
+	await expect(page.getByRole('textbox', { name: 'Search courses' })).toBeVisible();
 	const original = await (await page.request.get('/api/progress')).json();
 	// An untouched reload must preserve the inferred start term and stay synced.
 	const conflict = page.getByRole('dialog', {
 		name: 'Choose which data to keep',
 	});
 	await page.reload();
-	await expect(
-		page.getByRole('textbox', { name: 'Search courses' }),
-	).toBeVisible();
+	await expect(page.getByRole('textbox', { name: 'Search courses' })).toBeVisible();
 	await expect(conflict).toBeHidden();
 	const unchanged = await (await page.request.get('/api/progress')).json();
 	expect(unchanged).toEqual(original);
@@ -569,9 +456,7 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 		},
 	});
 	expect(remoteChange.ok()).toBe(true);
-	const slotId = Object.keys(
-		original.data.studyPlans[original.data.currentTemplateId].nodes,
-	)[0];
+	const slotId = Object.keys(original.data.studyPlans[original.data.currentTemplateId].nodes)[0];
 	await page.evaluate((id) => {
 		localStorage.setItem('slotStatus', JSON.stringify({ [id]: 'attended' }));
 	}, slotId);
@@ -579,9 +464,7 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 	await expect(conflict).toBeVisible();
 	await conflict.getByRole('button', { name: 'Use cloud data' }).click();
 	await expect(conflict).toBeHidden();
-	await page
-		.getByRole('button', { name: 'Settings & help', exact: true })
-		.click();
+	await page.getByRole('button', { name: 'Settings & help', exact: true }).click();
 	const choosing = page.waitForEvent('filechooser');
 	await page.getByRole('button', { name: 'Import Data', exact: true }).click();
 	const imported = await (await page.request.get('/api/progress')).json();
@@ -594,17 +477,12 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 	await expect
 		.poll(async () => {
 			const saved = await (await page.request.get('/api/progress')).json();
-			return (
-				saved.data.slotStatus[slotId] === 'completed' &&
-				saved.revision > original.revision
-			);
+			return saved.data.slotStatus[slotId] === 'completed' && saved.revision > original.revision;
 		})
 		.toBe(true);
 });
 
-test('selected elective courses use the shared tabs and clearing returns to the picker', async ({
-	page,
-}) => {
+test('selected elective courses use the shared tabs and clearing returns to the picker', async ({ page }) => {
 	await page.addInitScript(() => {
 		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
 		localStorage.setItem('currentTemplate', 'aiml-fulltime-hs24');
@@ -623,20 +501,12 @@ test('selected elective courses use the shared tabs and clearing returns to the 
 			exact: true,
 		})
 		.click();
-	await expect(
-		panel.getByRole('tab', { name: 'Overview', exact: true }),
-	).toHaveAttribute('aria-selected', 'true');
-	await expect(
-		panel.getByRole('heading', { name: 'Prerequisites summary', exact: true }),
-	).toBeVisible();
+	await expect(panel.getByRole('tab', { name: 'Overview', exact: true })).toHaveAttribute('aria-selected', 'true');
+	await expect(panel.getByRole('heading', { name: 'Prerequisites summary', exact: true })).toBeVisible();
 	await panel.getByRole('tab', { name: 'Prerequisites', exact: true }).click();
-	await expect(
-		panel.getByRole('heading', { name: 'Prerequisites', exact: true }),
-	).toBeVisible();
+	await expect(panel.getByRole('heading', { name: 'Prerequisites', exact: true })).toBeVisible();
 	await panel.getByRole('tab', { name: 'Reviews', exact: true }).click();
-	await expect(
-		panel.getByRole('heading', { name: 'Student reviews', exact: true }),
-	).toBeVisible();
+	await expect(panel.getByRole('heading', { name: 'Student reviews', exact: true })).toBeVisible();
 	await panel.getByRole('button', { name: 'Clear', exact: true }).click();
 	await expect(panel.getByRole('tab')).toHaveCount(0);
 	await expect(picker).toBeVisible();
@@ -648,31 +518,21 @@ test('selected elective courses use the shared tabs and clearing returns to the 
 	).toHaveCount(0);
 });
 
-test('full prerequisites retain unused alternatives after a requirement is met', async ({
-	page,
-}) => {
+test('full prerequisites retain unused alternatives after a requirement is met', async ({ page }) => {
 	await page.addInitScript(() => {
 		localStorage.setItem('currentTemplate', 'aiml-fulltime-hs24');
 		localStorage.setItem('slotStatus', JSON.stringify({ oop: 'completed' }));
 	});
 	await page.goto('/courses?course=VSK_MM');
 	const panel = page.locator('#course-detail-panel');
-	await expect(
-		panel.getByRole('heading', { name: 'Prerequisites summary' }),
-	).toBeVisible();
+	await expect(panel.getByRole('heading', { name: 'Prerequisites summary' })).toBeVisible();
 	await panel.getByRole('tab', { name: 'Prerequisites', exact: true }).click();
 	const group = panel.getByRole('region', {
 		name: 'Complete one of',
 		exact: true,
 	});
 	await expect(group.getByText('Met', { exact: true })).toBeVisible();
-	await expect(
-		group.getByRole('button', { name: /OOP.*Completed/ }),
-	).toBeVisible();
-	await expect(
-		group.getByRole('button', { name: /PLAB.*Not in plan/ }),
-	).toBeVisible();
-	await expect(group.getByText('Needs attention', { exact: true })).toHaveCount(
-		0,
-	);
+	await expect(group.getByRole('button', { name: /OOP.*Completed/ })).toBeVisible();
+	await expect(group.getByRole('button', { name: /PLAB.*Not in plan/ })).toBeVisible();
+	await expect(group.getByText('Needs attention', { exact: true })).toHaveCount(0);
 });

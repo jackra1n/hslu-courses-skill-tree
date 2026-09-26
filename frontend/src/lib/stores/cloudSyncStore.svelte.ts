@@ -1,21 +1,11 @@
 import { browser } from '$app/environment';
 import { authClient } from '$lib/auth-client';
-import {
-	type AppData,
-	parseAppData,
-	serializeSnapshot,
-} from '$lib/data/app-data';
+import { type AppData, parseAppData, serializeSnapshot } from '$lib/data/app-data';
 import { applyAppData, collectAppData } from '$lib/data/persistence';
 import * as m from '$lib/paraglide/messages';
 import { readStorage, STORAGE_KEYS, writeStorage } from '$lib/utils/storage';
 
-export type SyncStatus =
-	| 'loading'
-	| 'local'
-	| 'saving'
-	| 'synced'
-	| 'error'
-	| 'conflict';
+export type SyncStatus = 'loading' | 'local' | 'saving' | 'synced' | 'error' | 'conflict';
 
 type SyncUser = {
 	id: string;
@@ -93,8 +83,7 @@ function loadMetadata(): SyncMetadata {
 				lastSyncedSnapshot,
 				dirty: parsed.dirty === true,
 				localUpdatedAt:
-					typeof parsed.localUpdatedAt === 'number' &&
-					Number.isFinite(parsed.localUpdatedAt)
+					typeof parsed.localUpdatedAt === 'number' && Number.isFinite(parsed.localUpdatedAt)
 						? parsed.localUpdatedAt
 						: null,
 			};
@@ -151,12 +140,7 @@ function parseCloudSnapshot(value: unknown): CloudSnapshot | null {
 	if (!value || typeof value !== 'object') return null;
 	const body = value as Partial<CloudSnapshot>;
 	const data = parseAppData(body.data);
-	if (
-		!data ||
-		!isRevision(body.revision) ||
-		typeof body.updatedAt !== 'number' ||
-		!Number.isFinite(body.updatedAt)
-	)
+	if (!data || !isRevision(body.revision) || typeof body.updatedAt !== 'number' || !Number.isFinite(body.updatedAt))
 		return null;
 	return { data, revision: body.revision, updatedAt: body.updatedAt };
 }
@@ -221,11 +205,7 @@ function reconcileCloud(
 
 	// Revision identity proves the cloud did not change. A known baseline also
 	// permits a rebase when only the revision changed, not the cloud contents.
-	if (
-		allowRebase &&
-		(metadata.revision === cloud.revision ||
-			(baseline !== null && cloudSerialized === baseline))
-	) {
+	if (allowRebase && (metadata.revision === cloud.revision || (baseline !== null && cloudSerialized === baseline))) {
 		conflict = null;
 		acknowledge(cloudSerialized, cloud.revision);
 		return 'write';
@@ -252,8 +232,7 @@ async function putSnapshot(
 		if (response.status !== 401 || attempt === 1) return response;
 		const session = await authClient.getSession();
 		if (user?.id !== userId) return null;
-		if (session.error)
-			throw new Error(`Session unavailable (${session.error.status})`);
+		if (session.error) throw new Error(`Session unavailable (${session.error.status})`);
 		if (session.data?.user?.id !== userId) {
 			setUser(null);
 			conflict = null;
@@ -264,10 +243,7 @@ async function putSnapshot(
 	return null;
 }
 
-async function writePending(
-	userId: string,
-	resolution: SyncConflict | null,
-): Promise<void> {
+async function writePending(userId: string, resolution: SyncConflict | null): Promise<void> {
 	let expectedRevision = resolution?.cloudRevision ?? metadata.revision;
 	let rebased = false;
 	try {
@@ -311,8 +287,7 @@ async function writePending(
 				continue;
 			}
 
-			if (!response.ok)
-				throw new Error(`Cloud write failed (${response.status})`);
+			if (!response.ok) throw new Error(`Cloud write failed (${response.status})`);
 			const body: unknown = await response.json();
 			if (user?.id !== userId) return;
 			if (
@@ -339,12 +314,9 @@ async function writePending(
 
 // The shared promise covers the entire drain, including conflict resolution.
 // Internal lifecycle callers may drain while public debounce/online writes pause.
-function startPendingWrite(
-	resolution: SyncConflict | null = null,
-): Promise<void> {
+function startPendingWrite(resolution: SyncConflict | null = null): Promise<void> {
 	if (inFlight) return inFlight;
-	if (!user || !canWrite || !pendingSnapshot || (conflict && !resolution))
-		return Promise.resolve();
+	if (!user || !canWrite || !pendingSnapshot || (conflict && !resolution)) return Promise.resolve();
 	cancelDebounce();
 	inFlight = writePending(user.id, resolution).finally(() => {
 		inFlight = null;
@@ -364,8 +336,7 @@ async function initialize(localDataIsMeaningful: boolean): Promise<void> {
 		await inFlight;
 		observeLocal(collectAppData());
 		const session = await authClient.getSession();
-		if (session.error)
-			throw new Error(`Session unavailable (${session.error.status})`);
+		if (session.error) throw new Error(`Session unavailable (${session.error.status})`);
 		const sessionUser = session.data?.user;
 		if (!sessionUser) {
 			setUser(null);
@@ -426,8 +397,7 @@ async function initialize(localDataIsMeaningful: boolean): Promise<void> {
 		if (user?.id !== userId) return;
 		if (!cloud) throw new Error('Invalid cloud snapshot');
 		canWrite = true;
-		if (reconcileCloud(cloud, localDataIsMeaningful, true) === 'write')
-			await startPendingWrite();
+		if (reconcileCloud(cloud, localDataIsMeaningful, true) === 'write') await startPendingWrite();
 	} catch (error) {
 		logSyncError('initialization', error);
 		setUnavailable();
@@ -459,8 +429,7 @@ export const cloudSyncStore = {
 			return Promise.resolve();
 		}
 		if (initialization) return initialization;
-		if (signingOut)
-			return signingOut.then(() => cloudSyncStore.init(localDataIsMeaningful));
+		if (signingOut) return signingOut.then(() => cloudSyncStore.init(localDataIsMeaningful));
 		cancelDebounce();
 		initialization = initialize(localDataIsMeaningful).finally(() => {
 			initialization = null;
@@ -497,10 +466,7 @@ export const cloudSyncStore = {
 				callbackURL,
 			});
 			if (result.error) {
-				logSyncError(
-					'sign-in',
-					new Error(`Sign-in failed (${result.error.status})`),
-				);
+				logSyncError('sign-in', new Error(`Sign-in failed (${result.error.status})`));
 				status = 'error';
 				syncError = 'sign-in-failed';
 			}
@@ -520,8 +486,7 @@ export const cloudSyncStore = {
 				await inFlight;
 				await startPendingWrite();
 				const result = await authClient.signOut();
-				if (result.error)
-					throw new Error(`Sign-out failed (${result.error.status})`);
+				if (result.error) throw new Error(`Sign-out failed (${result.error.status})`);
 				setUser(null);
 				conflict = null;
 				syncError = null;
@@ -537,14 +502,7 @@ export const cloudSyncStore = {
 	},
 
 	useCloudConflict(): void {
-		if (
-			!conflict ||
-			resolvingConflict ||
-			inFlight ||
-			initialization ||
-			signingOut
-		)
-			return;
+		if (!conflict || resolvingConflict || inFlight || initialization || signingOut) return;
 		try {
 			cancelDebounce();
 			applyCloud({
@@ -582,8 +540,7 @@ export const cloudSyncStore = {
 	armOnlineRetry(): void {
 		if (!browser) return;
 		window.addEventListener('online', () => {
-			if (metadata.dirty && user && !conflict && pendingSnapshot)
-				void flushPending();
+			if (metadata.dirty && user && !conflict && pendingSnapshot) void flushPending();
 		});
 	},
 };

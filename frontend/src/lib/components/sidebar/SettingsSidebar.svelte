@@ -31,8 +31,7 @@ $effect(() => {
 	closeButton.focus({ preventScroll: true });
 	return () => {
 		if (
-			(document.activeElement === document.body ||
-				sidebar?.contains(document.activeElement)) &&
+			(document.activeElement === document.body || sidebar?.contains(document.activeElement)) &&
 			opener instanceof HTMLElement &&
 			opener.isConnected &&
 			opener.getClientRects().length
@@ -93,9 +92,7 @@ function confirmResetAllData() {
 
 <Sidebar {isOpen} {onClose} label={m.settings_title()}>
 	<div class="flex h-full flex-col">
-		<div
-			class="flex shrink-0 items-center justify-between gap-3 border-b border-border-primary px-6 py-3"
-		>
+		<div class="flex shrink-0 items-center justify-between gap-3 border-b border-border-primary px-6 py-3">
 			<h2 class="text-lg font-semibold text-text-primary">
 				{m.settings_title()}
 			</h2>
@@ -122,9 +119,7 @@ function confirmResetAllData() {
 				>
 					<div class="i-lucide-github h-4 w-4 text-text-primary"></div>
 					<span>{m.settings_view_github()}</span>
-					<div
-						class="i-lucide-external-link h-4 w-4 text-text-secondary ml-auto"
-					></div>
+					<div class="i-lucide-external-link h-4 w-4 text-text-secondary ml-auto"></div>
 				</a>
 				{#if showTutorial}
 					<button
@@ -138,15 +133,11 @@ function confirmResetAllData() {
 						<span>{m.settings_start_tutorial()}</span>
 					</button>
 				{/if}
-				<div
-					class="flex w-full items-center justify-between gap-3 px-1 py-2 text-base text-text-primary"
-				>
+				<div class="flex w-full items-center justify-between gap-3 px-1 py-2 text-base text-text-primary">
 					<span>{m.settings_theme()}</span>
 					<ThemeSwitcher />
 				</div>
-				<div
-					class="flex w-full items-center justify-between gap-3 px-1 py-2 text-base text-text-primary"
-				>
+				<div class="flex w-full items-center justify-between gap-3 px-1 py-2 text-base text-text-primary">
 					<span>{m.settings_language()}</span>
 					<LanguageSwitcher />
 				</div>

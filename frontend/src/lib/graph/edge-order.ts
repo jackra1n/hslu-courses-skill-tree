@@ -5,10 +5,7 @@ import { resolveNodeWidth } from './plan-layout';
 // edge travels. Ordering by the connected node's angle (horizontal offset over
 // vertical gap) rather than its raw x keeps edges to far-away nodes central and
 // pushes edges to nearby off-to-the-side nodes to the outer handles.
-export function orderEdgeHandles(
-	edges: Edge[],
-	positionedNodes: Node[],
-): Edge[] {
+export function orderEdgeHandles(edges: Edge[], positionedNodes: Node[]): Edge[] {
 	const centers = new Map<string, { x: number; y: number }>();
 	for (const node of positionedNodes) {
 		centers.set(node.id, {
@@ -25,12 +22,8 @@ export function orderEdgeHandles(
 		return Math.atan2(to.x - from.x, Math.abs(to.y - from.y));
 	};
 
-	const sourceHandle = assignHandles(edges, 'source', (edge) =>
-		angle(edge.source, edge.target),
-	);
-	const targetHandle = assignHandles(edges, 'target', (edge) =>
-		angle(edge.target, edge.source),
-	);
+	const sourceHandle = assignHandles(edges, 'source', (edge) => angle(edge.source, edge.target));
+	const targetHandle = assignHandles(edges, 'target', (edge) => angle(edge.target, edge.source));
 
 	return edges.map((edge) => ({
 		...edge,

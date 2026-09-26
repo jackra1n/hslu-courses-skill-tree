@@ -37,10 +37,7 @@ function plan(...nodes: PlanNode[]): StudyPlan {
 	};
 }
 
-function rule(
-	modules: string[],
-	options: Partial<Omit<PrerequisiteRule, 'modules'>> = {},
-): PrerequisiteRule {
+function rule(modules: string[], options: Partial<Omit<PrerequisiteRule, 'modules'>> = {}): PrerequisiteRule {
 	return { modules, mustBePassed: false, moduleLinkType: 'und', ...options };
 }
 
@@ -79,17 +76,13 @@ describe('summarizePrerequisites', () => {
 			rule(['C', 'D'], { moduleLinkType: 'oder' }),
 		];
 		const studyPlan = plan(node('a', 'A'), node('c', 'C'));
-		const progress = new Map<string, 'attended' | 'completed'>([
-			['a', 'completed'],
-		]);
+		const progress = new Map<string, 'attended' | 'completed'>([['a', 'completed']]);
 		const compact = summarizePrerequisites(rules, studyPlan, progress);
 		const full = summarizePrerequisites(rules, studyPlan, progress, undefined, {
 			includeAlternatives: true,
 		});
 
-		expect(
-			compact.map((group) => group.courses.map((course) => course.courseId)),
-		).toEqual([['A'], ['C']]);
+		expect(compact.map((group) => group.courses.map((course) => course.courseId))).toEqual([['A'], ['C']]);
 		expect(full).toEqual([
 			{
 				ruleIndex: 0,
@@ -121,28 +114,13 @@ describe('summarizePrerequisites', () => {
 			rule(['C', 'D'], { moduleLinkType: 'oder', mustBePassed: true }),
 			rule(['E', 'F'], { moduleLinkType: 'oder' }),
 		];
-		const studyPlan = plan(
-			node('a', 'A'),
-			node('c', 'C'),
-			node('target', 'TARGET'),
-			node('e', 'E', 2),
-		);
-		const result = summarizePrerequisites(
-			rules,
-			studyPlan,
-			new Map([['c', 'attended']]),
-			'target',
-			{ includeAlternatives: true },
-		);
+		const studyPlan = plan(node('a', 'A'), node('c', 'C'), node('target', 'TARGET'), node('e', 'E', 2));
+		const result = summarizePrerequisites(rules, studyPlan, new Map([['c', 'attended']]), 'target', {
+			includeAlternatives: true,
+		});
 
-		expect(result.map((group) => group.state)).toEqual([
-			'missing',
-			'incomplete',
-			'later',
-		]);
-		expect(
-			result.map((group) => group.courses.map((course) => course.state)),
-		).toEqual([
+		expect(result.map((group) => group.state)).toEqual(['missing', 'incomplete', 'later']);
+		expect(result.map((group) => group.courses.map((course) => course.state))).toEqual([
 			['planned', 'missing'],
 			['incomplete', 'missing'],
 			['later', 'missing'],
@@ -184,11 +162,7 @@ describe('summarizePrerequisites', () => {
 	});
 
 	test('AND keeps missing members visible even when another member is completed', () => {
-		const result = summarizePrerequisites(
-			[rule(['A', 'B'])],
-			plan(node('a', 'A')),
-			new Map([['a', 'completed']]),
-		);
+		const result = summarizePrerequisites([rule(['A', 'B'])], plan(node('a', 'A')), new Map([['a', 'completed']]));
 
 		expect(result[0].state).toBe('missing');
 		expect(result[0].courses).toEqual([
@@ -238,9 +212,7 @@ describe('summarizePrerequisites', () => {
 		);
 
 		expect(result[0].state).toBe('satisfied');
-		expect(result[0].courses).toEqual([
-			{ courseId: 'A', state: 'completed', semesters: [1, 3] },
-		]);
+		expect(result[0].courses).toEqual([{ courseId: 'A', state: 'completed', semesters: [1, 3] }]);
 	});
 
 	test('same-row and earlier instances are feasible but exclusively later placement is not', () => {
@@ -251,12 +223,7 @@ describe('summarizePrerequisites', () => {
 			node('c-later', 'C', 3),
 			node('target', 'TARGET', 2),
 		);
-		const result = summarizePrerequisites(
-			[rule(['A', 'B', 'C'])],
-			studyPlan,
-			noProgress,
-			'target',
-		);
+		const result = summarizePrerequisites([rule(['A', 'B', 'C'])], studyPlan, noProgress, 'target');
 
 		expect(result[0].state).toBe('later');
 		expect(result[0].courses).toEqual([
@@ -264,26 +231,12 @@ describe('summarizePrerequisites', () => {
 			{ courseId: 'B', state: 'planned', semesters: [2] },
 			{ courseId: 'C', state: 'later', semesters: [3] },
 		]);
-		expect(
-			summarizePrerequisites([rule(['C'])], studyPlan, noProgress)[0].state,
-		).toBe('planned');
-		expect(
-			summarizePrerequisites(
-				[rule(['C'])],
-				studyPlan,
-				noProgress,
-				'unknown-target',
-			)[0].state,
-		).toBe('planned');
+		expect(summarizePrerequisites([rule(['C'])], studyPlan, noProgress)[0].state).toBe('planned');
+		expect(summarizePrerequisites([rule(['C'])], studyPlan, noProgress, 'unknown-target')[0].state).toBe('planned');
 	});
 
 	test('satisfying progress overrides later placement and OR retains feasible choices', () => {
-		const studyPlan = plan(
-			node('target', 'TARGET', 1),
-			node('a', 'A', 2),
-			node('b', 'B', 2),
-			node('c', 'C', 1),
-		);
+		const studyPlan = plan(node('target', 'TARGET', 1), node('a', 'A', 2), node('b', 'B', 2), node('c', 'C', 1));
 		const result = summarizePrerequisites(
 			[rule(['A']), rule(['B'], { mustBePassed: true })],
 			studyPlan,
@@ -293,10 +246,7 @@ describe('summarizePrerequisites', () => {
 			]),
 			'target',
 		);
-		expect(result.map((entry) => entry.state)).toEqual([
-			'satisfied',
-			'satisfied',
-		]);
+		expect(result.map((entry) => entry.state)).toEqual(['satisfied', 'satisfied']);
 
 		const alternatives = summarizePrerequisites(
 			[rule(['A', 'C'], { moduleLinkType: 'oder' })],
@@ -314,10 +264,7 @@ describe('summarizePrerequisites', () => {
 	test('uses actual row order rather than semester labels for known placement', () => {
 		const studyPlan = plan(node('a', 'A', 1), node('target', 'TARGET', 2));
 		studyPlan.rows.reverse();
-		expect(
-			summarizePrerequisites([rule(['A'])], studyPlan, noProgress, 'target')[0]
-				.state,
-		).toBe('later');
+		expect(summarizePrerequisites([rule(['A'])], studyPlan, noProgress, 'target')[0].state).toBe('later');
 	});
 
 	test('null and course-free plans keep every requirement neutral', () => {
@@ -346,18 +293,12 @@ describe('summarizePrerequisites', () => {
 			},
 		];
 		expect(summarizePrerequisites(rules, null, noProgress)).toEqual(expected);
-		expect(
-			summarizePrerequisites(rules, plan(node('empty', null)), noProgress),
-		).toEqual(expected);
+		expect(summarizePrerequisites(rules, plan(node('empty', null)), noProgress)).toEqual(expected);
 	});
 
 	test('inter-rule OR prefers satisfied branches without choosing between equally satisfied ones', () => {
 		const result = summarizePrerequisites(
-			[
-				rule(['A'], { prerequisiteLinkType: 'oder' }),
-				rule(['B'], { prerequisiteLinkType: 'oder' }),
-				rule(['C']),
-			],
+			[rule(['A'], { prerequisiteLinkType: 'oder' }), rule(['B'], { prerequisiteLinkType: 'oder' }), rule(['C'])],
 			plan(node('a', 'A'), node('b', 'B'), node('c', 'C')),
 			new Map([
 				['a', 'completed'],
@@ -386,29 +327,13 @@ describe('summarizePrerequisites', () => {
 				rule(['C'], { prerequisiteLinkType: 'oder' }),
 				rule(['D']),
 			],
-			plan(
-				node('a', 'A'),
-				node('b', 'B'),
-				node('c', 'C'),
-				node('d', 'D', 3),
-				node('target', 'TARGET', 2),
-			),
+			plan(node('a', 'A'), node('b', 'B'), node('c', 'C'), node('d', 'D', 3), node('target', 'TARGET', 2)),
 			noProgress,
 			'target',
 		);
 
-		expect(result.map((entry) => entry.relevant)).toEqual([
-			true,
-			false,
-			true,
-			false,
-		]);
-		expect(result.map((entry) => entry.state)).toEqual([
-			'planned',
-			'missing',
-			'planned',
-			'later',
-		]);
+		expect(result.map((entry) => entry.relevant)).toEqual([true, false, true, false]);
+		expect(result.map((entry) => entry.state)).toEqual(['planned', 'missing', 'planned', 'later']);
 	});
 
 	test('inter-rule OR retains all alternatives if none are satisfied or feasible', () => {
@@ -424,27 +349,17 @@ describe('summarizePrerequisites', () => {
 		);
 
 		expect(result.map((entry) => entry.relevant)).toEqual([true, true, true]);
-		expect(result.map((entry) => entry.state)).toEqual([
-			'missing',
-			'incomplete',
-			'later',
-		]);
+		expect(result.map((entry) => entry.state)).toEqual(['missing', 'incomplete', 'later']);
 	});
 
 	test('mixed links mean (A OR B) AND C, so a missing C is never pruned', () => {
 		const result = summarizePrerequisites(
-			[
-				rule(['A'], { prerequisiteLinkType: 'oder' }),
-				rule(['B'], { prerequisiteLinkType: 'und' }),
-				rule(['C']),
-			],
+			[rule(['A'], { prerequisiteLinkType: 'oder' }), rule(['B'], { prerequisiteLinkType: 'und' }), rule(['C'])],
 			plan(node('a', 'A')),
 			new Map([['a', 'completed']]),
 		);
 
-		expect(
-			result.filter((entry) => entry.relevant).map((entry) => entry.ruleIndex),
-		).toEqual([0, 2]);
+		expect(result.filter((entry) => entry.relevant).map((entry) => entry.ruleIndex)).toEqual([0, 2]);
 		expect(result[2].state).toBe('missing');
 	});
 
@@ -460,17 +375,12 @@ describe('summarizePrerequisites', () => {
 			new Map([['a', 'completed']]),
 		);
 
-		expect(
-			result.filter((entry) => entry.relevant).map((entry) => entry.ruleIndex),
-		).toEqual([3]);
+		expect(result.filter((entry) => entry.relevant).map((entry) => entry.ruleIndex)).toEqual([3]);
 		expect(result[3].state).toBe('planned');
 	});
 });
 
-function evaluateExpression(
-	expression: PrerequisiteExpression | null,
-	values: boolean[],
-): boolean {
+function evaluateExpression(expression: PrerequisiteExpression | null, values: boolean[]): boolean {
 	if (!expression) return true;
 	if ('ruleIndex' in expression) return values[expression.ruleIndex];
 	return expression.operator === 'or'
@@ -502,16 +412,12 @@ describe('buildPrerequisiteExpression', () => {
 					];
 					const expression = buildPrerequisiteExpression(rules);
 					for (let mask = 0; mask < 16; mask++) {
-						const values = courseIds.map((_, index) =>
-							Boolean(mask & (1 << index)),
-						);
+						const values = courseIds.map((_, index) => Boolean(mask & (1 << index)));
 						const progress = new Map<string, 'attended' | 'completed'>();
 						for (let index = 0; index < courseIds.length; index++) {
 							if (values[index]) progress.set(courseIds[index], 'completed');
 						}
-						expect(evaluateExpression(expression, values)).toBe(
-							evaluatePrerequisites(rules, progress, studyPlan),
-						);
+						expect(evaluateExpression(expression, values)).toBe(evaluatePrerequisites(rules, progress, studyPlan));
 					}
 				}
 			}

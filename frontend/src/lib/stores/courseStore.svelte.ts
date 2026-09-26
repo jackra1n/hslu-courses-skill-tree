@@ -6,10 +6,7 @@ import {
 	getTemplatesByProgram,
 	setCoursePlan,
 } from '$lib/data/catalog/courses';
-import {
-	canSelectCourse,
-	isPlanCustomized,
-} from '$lib/data/planning/plan-rules';
+import { canSelectCourse, isPlanCustomized } from '$lib/data/planning/plan-rules';
 import {
 	currentStartTerm,
 	formatTerm,
@@ -32,20 +29,10 @@ import {
 } from '$lib/data/planning/study-plan';
 import { toGraph } from '$lib/graph/build';
 import { orderEdgeHandles } from '$lib/graph/edge-order';
-import {
-	addAddNodeButtons,
-	computeDividerLength,
-	layoutNodes,
-	MAX_SEMESTERS,
-} from '$lib/graph/plan-layout';
+import { addAddNodeButtons, computeDividerLength, layoutNodes, MAX_SEMESTERS } from '$lib/graph/plan-layout';
 import * as m from '$lib/paraglide/messages';
 import { DragController } from './dragController.svelte';
-import {
-	loadLegacySelections,
-	loadPlan,
-	planPrefs,
-	savePlan,
-} from './planStorage';
+import { loadLegacySelections, loadPlan, planPrefs, savePlan } from './planStorage';
 import { progressStore } from './progressStore.svelte';
 
 const INITIAL_TERM = currentStartTerm();
@@ -64,9 +51,7 @@ function generateNodeId(): string {
 function requireDefaultTemplate(): CurriculumTemplate {
 	const template = getDefaultTemplate();
 	if (!template) {
-		throw new Error(
-			'Catalog does not contain the default Informatik curriculum.',
-		);
+		throw new Error('Catalog does not contain the default Informatik curriculum.');
 	}
 	return template;
 }
@@ -86,15 +71,9 @@ class CourseStore {
 	startSeason = $state<Season>(INITIAL_TERM.season);
 	startYear = $state<number>(INITIAL_TERM.year);
 
-	private graph = $derived.by(() =>
-		toGraph(this.studyPlan, this.showShortNamesOnly, progressStore.slotStatus),
-	);
-	private positionedNodes = $derived.by(() =>
-		layoutNodes(this.graph.nodes, this.studyPlan.rows),
-	);
-	private layoutedNodes = $derived.by(() =>
-		addAddNodeButtons(this.positionedNodes, this.studyPlan.rows),
-	);
+	private graph = $derived.by(() => toGraph(this.studyPlan, this.showShortNamesOnly, progressStore.slotStatus));
+	private positionedNodes = $derived.by(() => layoutNodes(this.graph.nodes, this.studyPlan.rows));
+	private layoutedNodes = $derived.by(() => addAddNodeButtons(this.positionedNodes, this.studyPlan.rows));
 	private drag = new DragController({
 		layoutedNodes: () => this.layoutedNodes,
 		plan: () => this.studyPlan,
@@ -103,22 +82,13 @@ class CourseStore {
 
 	userSelections = $derived(deriveSelections(this.studyPlan));
 	totalCredits = $derived(calculatePlanTotalCredits(this.studyPlan));
-	attendedCredits = $derived.by(() =>
-		calculateAttendedCredits(this.studyPlan, progressStore.slotStatus),
-	);
-	completedCredits = $derived.by(() =>
-		calculateCompletedCredits(this.studyPlan, progressStore.slotStatus),
-	);
+	attendedCredits = $derived.by(() => calculateAttendedCredits(this.studyPlan, progressStore.slotStatus));
+	completedCredits = $derived.by(() => calculateCompletedCredits(this.studyPlan, progressStore.slotStatus));
 	nodes = $derived.by(() => this.drag.activeNodes);
-	edges = $derived.by(() =>
-		orderEdgeHandles(this.graph.edges, this.positionedNodes),
-	);
+	edges = $derived.by(() => orderEdgeHandles(this.graph.edges, this.positionedNodes));
 
 	semesterDividerData: SemesterIndicator[] = $derived.by(() => {
-		const rows = (this.drag.previewRows ?? this.studyPlan.rows).slice(
-			0,
-			MAX_SEMESTERS,
-		);
+		const rows = (this.drag.previewRows ?? this.studyPlan.rows).slice(0, MAX_SEMESTERS);
 		if (!rows.length) return [];
 
 		const dividerLength = computeDividerLength(rows, this.drag.activeNodes);
@@ -142,9 +112,7 @@ class CourseStore {
 	): boolean {
 		setCoursePlan(template.plan);
 		const loaded =
-			!resetLayout || template.id !== this.currentTemplate.id
-				? loadPlan(template, legacySelections)
-				: this.studyPlan;
+			!resetLayout || template.id !== this.currentTemplate.id ? loadPlan(template, legacySelections) : this.studyPlan;
 		const next = resetLayout ? createStudyPlan(template, {}) : loaded;
 		if (resetLayout) {
 			const status = Object.fromEntries(progressStore.slotStatus);
@@ -182,12 +150,7 @@ class CourseStore {
 
 	private assignCourse(slotId: string, courseId: string | null): void {
 		const node = this.studyPlan.nodes[slotId];
-		if (
-			!node ||
-			node.slotType === 'fixed' ||
-			(node.courseId ?? null) === courseId
-		)
-			return;
+		if (!node || node.slotType === 'fixed' || (node.courseId ?? null) === courseId) return;
 		progressStore.clearSlotStatus(slotId);
 		this.setStudyPlan(updateNodeCourse(this.studyPlan, slotId, courseId));
 	}
@@ -200,12 +163,7 @@ class CourseStore {
 
 	// Switch to `templateId` and record the start term that derived it. When only
 	// the start term changes within the same plan, the curriculum is left intact.
-	applyStart(
-		templateId: string,
-		year: number,
-		season: Season,
-		forceReset = false,
-	) {
+	applyStart(templateId: string, year: number, season: Season, forceReset = false) {
 		const template = getTemplateById(templateId);
 		if (!template) return;
 		this.startYear = year;
@@ -218,12 +176,7 @@ class CourseStore {
 	}
 
 	// Restore state from imported data; study plans must already be in storage.
-	restore(
-		currentTemplateId: string,
-		year: number,
-		season: Season,
-		showShortNamesOnly: boolean,
-	): boolean {
+	restore(currentTemplateId: string, year: number, season: Season, showShortNamesOnly: boolean): boolean {
 		const template = getTemplateById(currentTemplateId) ?? this.currentTemplate;
 		this.startYear = year;
 		this.startSeason = season;
@@ -282,37 +235,26 @@ class CourseStore {
 		const savedTemplate = savedTemplateId
 			? getTemplateById(savedTemplateId)
 			: savedPlanCode
-				? getTemplatesByProgram(
-						this.currentTemplate.studiengang,
-						this.currentTemplate.modell,
-					).find((t) => t.plan === savedPlanCode)
+				? getTemplatesByProgram(this.currentTemplate.studiengang, this.currentTemplate.modell).find(
+						(t) => t.plan === savedPlanCode,
+					)
 				: undefined;
 		let template = savedTemplate ?? this.currentTemplate;
 
 		if (savedTemplate) {
 			// returning user: keep their curriculum and start term
 			this.startSeason = planPrefs.loadStartSeason() ?? 'HS';
-			this.startYear =
-				planPrefs.loadStartYear() ??
-				planIntroYear(savedTemplate.plan) ??
-				this.startYear;
+			this.startYear = planPrefs.loadStartYear() ?? planIntroYear(savedTemplate.plan) ?? this.startYear;
 		} else {
 			// new user: default to the current calendar term and derive the curriculum
 			const term = currentStartTerm();
 			this.startSeason = term.season;
 			this.startYear = term.year;
-			const plan = resolvePlan(
-				getAvailablePlans(
-					this.currentTemplate.studiengang,
-					this.currentTemplate.modell,
-				),
-				term,
-			);
+			const plan = resolvePlan(getAvailablePlans(this.currentTemplate.studiengang, this.currentTemplate.modell), term);
 			const resolvedTemplate = plan
-				? getTemplatesByProgram(
-						this.currentTemplate.studiengang,
-						this.currentTemplate.modell,
-					).find((t) => t.plan === plan)
+				? getTemplatesByProgram(this.currentTemplate.studiengang, this.currentTemplate.modell).find(
+						(t) => t.plan === plan,
+					)
 				: undefined;
 			if (resolvedTemplate) template = resolvedTemplate;
 		}
@@ -336,8 +278,7 @@ class CourseStore {
 	}
 
 	addCustomNode(semester: number) {
-		if (!Number.isInteger(semester) || semester < 1 || semester > MAX_SEMESTERS)
-			return;
+		if (!Number.isInteger(semester) || semester < 1 || semester > MAX_SEMESTERS) return;
 		const nodeId = generateNodeId();
 		const newNode: PlanNode = {
 			id: nodeId,
@@ -372,14 +313,9 @@ class CourseStore {
 		progressStore.clearSlotStatus(nodeId);
 
 		const updatedRows = this.studyPlan.rows.map((row) =>
-			row.semester === removedNode.semester
-				? { ...row, nodeOrder: row.nodeOrder.filter((id) => id !== nodeId) }
-				: row,
+			row.semester === removedNode.semester ? { ...row, nodeOrder: row.nodeOrder.filter((id) => id !== nodeId) } : row,
 		);
-		while (
-			updatedRows.length > 1 &&
-			updatedRows.at(-1)?.nodeOrder.length === 0
-		) {
+		while (updatedRows.length > 1 && updatedRows.at(-1)?.nodeOrder.length === 0) {
 			updatedRows.pop();
 		}
 

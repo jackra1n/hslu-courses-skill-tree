@@ -4,11 +4,7 @@ import ModuleTypeBadge from '$lib/components/ui/ModuleTypeBadge.svelte';
 import type { ExtendedNodeData } from '$lib/data/catalog/courses';
 import * as m from '$lib/paraglide/messages';
 
-let {
-	id,
-	data: nodeData,
-	width = 180,
-}: NodeProps<Node<ExtendedNodeData, 'custom'>> = $props();
+let { id, data: nodeData, width = 180 }: NodeProps<Node<ExtendedNodeData, 'custom'>> = $props();
 
 const course = $derived(nodeData.course);
 const isElectiveSlot = $derived(nodeData.isElectiveSlot);
@@ -72,9 +68,7 @@ function handleRemoveClick(event: MouseEvent) {
 		{/if}
 	{/if}
 
-	<div
-		class="p-2 text-sm font-medium text-text-primary flex-grow flex items-center justify-center text-center"
-	>
+	<div class="p-2 text-sm font-medium text-text-primary flex-grow flex items-center justify-center text-center">
 		{nodeData.label}
 	</div>
 </div>

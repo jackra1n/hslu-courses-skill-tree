@@ -1,8 +1,4 @@
-export function json(
-	body: unknown,
-	status: number,
-	extraHeaders: Record<string, string> = {},
-): Response {
+export function json(body: unknown, status: number, extraHeaders: Record<string, string> = {}): Response {
 	return new Response(JSON.stringify(body), {
 		status,
 		headers: {
@@ -14,10 +10,7 @@ export function json(
 }
 
 // null means the byte limit was exceeded; an absent body is an empty string.
-export async function readBoundedBody(
-	request: Request,
-	maxBytes: number,
-): Promise<string | null> {
+export async function readBoundedBody(request: Request, maxBytes: number): Promise<string | null> {
 	const reader = request.body?.getReader();
 	if (!reader) return '';
 	const decoder = new TextDecoder();

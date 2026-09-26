@@ -1,18 +1,8 @@
 import { parseStudyPlan } from '$lib/data/app-data';
 import type { CurriculumTemplate } from '$lib/data/catalog/courses';
 import type { Season } from '$lib/data/season';
-import {
-	createStudyPlan,
-	normalizePlan,
-	type StudyPlan,
-} from '$lib/data/planning/study-plan';
-import {
-	STORAGE_KEYS,
-	readStorage,
-	removeStorage,
-	storageKeys,
-	writeStorage,
-} from '$lib/utils/storage';
+import { createStudyPlan, normalizePlan, type StudyPlan } from '$lib/data/planning/study-plan';
+import { STORAGE_KEYS, readStorage, removeStorage, storageKeys, writeStorage } from '$lib/utils/storage';
 
 const KEYS = STORAGE_KEYS;
 
@@ -46,10 +36,7 @@ export function replaceAllPlans(plans: StudyPlan[]): boolean {
 	return stale !== null && stale.every(removeStorage) && plans.every(savePlan);
 }
 
-export function loadPlan(
-	template: CurriculumTemplate,
-	fallbackSelections: Record<string, string> = {},
-): StudyPlan {
+export function loadPlan(template: CurriculumTemplate, fallbackSelections: Record<string, string> = {}): StudyPlan {
 	const stored = readStorage(KEYS.planFor(template.id));
 	if (stored) {
 		try {
@@ -80,9 +67,7 @@ export function loadLegacySelections(): Record<string, string> {
 
 export const planPrefs = {
 	saveTemplate(templateId: string, plan: string): boolean {
-		return (
-			writeStorage(KEYS.template, templateId) && writeStorage(KEYS.plan, plan)
-		);
+		return writeStorage(KEYS.template, templateId) && writeStorage(KEYS.plan, plan);
 	},
 	loadTemplateId: (): string | null => readStorage(KEYS.template),
 	loadPlanCode: (): string | null => readStorage(KEYS.plan),

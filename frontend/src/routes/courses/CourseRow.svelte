@@ -22,16 +22,10 @@ let {
 
 const moduleType = $derived(courseModuleType(course));
 const seasons = $derived(course.seasons ?? []);
-const prerequisiteIds = $derived([
-	...new Set(course.prerequisites.flatMap((rule) => rule.modules)),
-]);
+const prerequisiteIds = $derived([...new Set(course.prerequisites.flatMap((rule) => rule.modules))]);
 const visiblePrerequisites = $derived(prerequisiteIds.slice(0, 3));
-const hiddenPrerequisiteCount = $derived(
-	prerequisiteIds.length - visiblePrerequisites.length,
-);
-const numberFormat = $derived(
-	new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 }),
-);
+const hiddenPrerequisiteCount = $derived(prerequisiteIds.length - visiblePrerequisites.length);
+const numberFormat = $derived(new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 }));
 
 function seasonTitle(season: Season): string {
 	return seasonLabel(season);
@@ -50,9 +44,7 @@ function seasonTitle(season: Season): string {
 	>
 		<span class="block min-w-0">
 			<span class="flex items-start gap-3">
-				<span
-					class="min-w-0 flex-1 break-words font-semibold text-text-primary"
-				>
+				<span class="min-w-0 flex-1 break-words font-semibold text-text-primary">
 					{courseLabel(course)}
 				</span>
 				{#if reviewScore}
@@ -74,24 +66,14 @@ function seasonTitle(season: Season): string {
 							aria-hidden="true"
 						></span>
 						<span class="font-semibold text-text-primary">{score}</span>
-						<span class="text-xs text-text-tertiary"
-							>({numberFormat.format(reviewScore.count)})</span
-						>
+						<span class="text-xs text-text-tertiary">({numberFormat.format(reviewScore.count)})</span>
 					</span>
 				{/if}
 			</span>
-			<span class="mt-0.5 block text-sm text-text-secondary">
-				{course.id}
-				· {course.ects} ECTS
-			</span>
+			<span class="mt-0.5 block text-sm text-text-secondary"> {course.id}· {course.ects} ECTS </span>
 			{#if prerequisiteIds.length > 0}
-				<span
-					class="mt-1 flex items-center gap-1.5 text-xs text-text-secondary"
-				>
-					<span
-						class="i-lucide-lock h-3.5 w-3.5 shrink-0"
-						aria-hidden="true"
-					></span>
+				<span class="mt-1 flex items-center gap-1.5 text-xs text-text-secondary">
+					<span class="i-lucide-lock h-3.5 w-3.5 shrink-0" aria-hidden="true"></span>
 					<span class="min-w-0 truncate">
 						{m.prereq_title()}:
 						{visiblePrerequisites.join(', ')}
@@ -119,10 +101,7 @@ function seasonTitle(season: Season): string {
 						title={m.prereq_assessment_passed()}
 						aria-label={m.prereq_assessment_passed()}
 					>
-						<span
-							class="i-lucide-badge-check h-3.5 w-3.5"
-							aria-hidden="true"
-						></span>
+						<span class="i-lucide-badge-check h-3.5 w-3.5" aria-hidden="true"></span>
 					</span>
 				{/if}
 			</span>

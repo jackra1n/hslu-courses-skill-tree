@@ -18,18 +18,10 @@ export function toGraph(
 	slotStatus: ReadonlyMap<string, 'attended' | 'completed'>,
 ): { nodes: Node[]; edges: Edge[] } {
 	const prerequisites = new PlanPrerequisites(plan, slotStatus);
-	const retakes = mapRetakes(
-		prerequisites.courseProviders,
-		prerequisites.rowIndex,
-	);
+	const retakes = mapRetakes(prerequisites.courseProviders, prerequisites.rowIndex);
 
 	const nodes = Object.values(plan.nodes).map((planNode) =>
-		buildNode(
-			planNode,
-			showShortNamesOnly,
-			retakes.has(planNode.id),
-			prerequisites.hasConflict(planNode.id),
-		),
+		buildNode(planNode, showShortNamesOnly, retakes.has(planNode.id), prerequisites.hasConflict(planNode.id)),
 	);
 
 	const { edges, usage } = buildEdges(plan, prerequisites, retakes);
@@ -40,16 +32,11 @@ export function toGraph(
 
 // Maps each retake (a course instance that isn't the first) to the attempt
 // directly before it. A course only repeats after an earlier failed attempt.
-function mapRetakes(
-	courseProviders: Map<string, string[]>,
-	rowIndex: Record<string, number>,
-): Map<string, string> {
+function mapRetakes(courseProviders: Map<string, string[]>, rowIndex: Record<string, number>): Map<string, string> {
 	const retakes = new Map<string, string>();
 	courseProviders.forEach((nodeIds) => {
 		if (nodeIds.length < 2) return;
-		const ordered = [...nodeIds].sort(
-			(a, b) => (rowIndex[a] ?? Infinity) - (rowIndex[b] ?? Infinity),
-		);
+		const ordered = [...nodeIds].sort((a, b) => (rowIndex[a] ?? Infinity) - (rowIndex[b] ?? Infinity));
 		for (let i = 1; i < ordered.length; i++) {
 			retakes.set(ordered[i], ordered[i - 1]);
 		}
@@ -63,13 +50,10 @@ function calculateTargetHandles(course: Course | null): number {
 	}
 
 	// OR within a rule needs 1 handle (any module satisfies); AND needs one per module.
-	const handlesPerRule = course.prerequisites.map((rule) =>
-		rule.moduleLinkType === 'oder' ? 1 : rule.modules.length,
-	);
+	const handlesPerRule = course.prerequisites.map((rule) => (rule.moduleLinkType === 'oder' ? 1 : rule.modules.length));
 
 	// OR between rules shows only one rule (the widest); AND shows them all.
-	const prerequisiteLinkType =
-		course.prerequisites[0].prerequisiteLinkType || 'und';
+	const prerequisiteLinkType = course.prerequisites[0].prerequisiteLinkType || 'und';
 	return prerequisiteLinkType === 'oder'
 		? Math.max(...handlesPerRule)
 		: handlesPerRule.reduce((sum, handles) => sum + handles, 0);
@@ -84,14 +68,10 @@ function buildNode(
 	const course = resolveCourse(planNode.courseId) ?? null;
 	const slot = toSlotSnapshot(planNode);
 	const isElectiveSlot = slot.type === 'elective' || slot.type === 'major';
-	const label = course
-		? getNodeLabel(course, showShortNamesOnly)
-		: getFallbackLabel(slot.type);
+	const label = course ? getNodeLabel(course, showShortNamesOnly) : getFallbackLabel(slot.type);
 	const ects = course?.ects ?? 3;
 	// A retake only receives the single arrow from its previous attempt.
-	const targetHandles = isRetake
-		? 1
-		: Math.min(calculateTargetHandles(course), MAX_HANDLES);
+	const targetHandles = isRetake ? 1 : Math.min(calculateTargetHandles(course), MAX_HANDLES);
 
 	const node: Node = {
 		id: planNode.id,

@@ -9,10 +9,7 @@ import CourseDetailsPanel from '$lib/components/sidebar/CourseDetailsPanel.svelt
 import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
 import GuidedTutorial from '$lib/components/ui/GuidedTutorial.svelte';
 import { catalogAssetUrl, loadCatalog } from '$lib/data/catalog/catalog-loader';
-import {
-	collectAppData,
-	hasMeaningfulStoredAppData,
-} from '$lib/data/persistence';
+import { collectAppData, hasMeaningfulStoredAppData } from '$lib/data/persistence';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
@@ -128,9 +125,7 @@ $effect(() => {
 						<span class="text-sm font-medium">{m.legend_button()}</span>
 					</div>
 					{#if legendOpen}
-						<div
-							class="i-lucide-chevron-down h-4 w-4 text-text-secondary"
-						></div>
+						<div class="i-lucide-chevron-down h-4 w-4 text-text-secondary"></div>
 					{:else}
 						<div class="i-lucide-chevron-up h-4 w-4 text-text-secondary"></div>
 					{/if}
@@ -141,9 +136,7 @@ $effect(() => {
 						transition:slide={{ duration: reducedMotion.current ? 0 : 200 }}
 						class="max-h-80 overflow-y-auto px-4 pb-4 pt-3 border-b border-border-primary"
 					>
-						<div
-							class="[&>div:first-child]:border-t-0 [&>div:first-child]:pt-0"
-						>
+						<div class="[&>div:first-child]:border-t-0 [&>div:first-child]:pt-0">
 							<StatusLegend />
 						</div>
 					</div>
@@ -154,11 +147,5 @@ $effect(() => {
 {/if}
 
 <svelte:head>
-	<link
-		rel="preload"
-		as="fetch"
-		type="application/json"
-		href={catalogAssetUrl}
-		crossorigin="anonymous"
-	>
+	<link rel="preload" as="fetch" type="application/json" href={catalogAssetUrl} crossorigin="anonymous">
 </svelte:head>

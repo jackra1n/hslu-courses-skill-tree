@@ -2,19 +2,10 @@ import { browser } from '$app/environment';
 import { isPlanCustomized } from '$lib/data/planning/plan-rules';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import {
-	loadAllPlans,
-	replaceAllPlans,
-	storedPlanKeys,
-} from '$lib/stores/planStorage';
+import { loadAllPlans, replaceAllPlans, storedPlanKeys } from '$lib/stores/planStorage';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
-import {
-	backupStorage,
-	readStorage,
-	restoreStorage,
-	STORAGE_KEYS,
-} from '$lib/utils/storage';
+import { backupStorage, readStorage, restoreStorage, STORAGE_KEYS } from '$lib/utils/storage';
 import { APP_DATA_VERSION, type AppData, parseAppData } from './app-data';
 
 export function collectAppData(): AppData {
@@ -61,19 +52,11 @@ export function applyAppData(data: AppData): void {
 	try {
 		requirePersisted(replaceAllPlans(plans), 'study plans');
 		requirePersisted(
-			store.restore(
-				data.currentTemplateId,
-				data.start.year,
-				data.start.season,
-				data.preferences.showShortNamesOnly,
-			),
+			store.restore(data.currentTemplateId, data.start.year, data.start.season, data.preferences.showShortNamesOnly),
 			'plan preferences',
 		);
 		requirePersisted(progressStore.replaceAll(data.slotStatus), 'progress');
-		requirePersisted(
-			uiStore.setShowCourseTypeBadges(data.preferences.showCourseTypeBadges),
-			'preferences',
-		);
+		requirePersisted(uiStore.setShowCourseTypeBadges(data.preferences.showCourseTypeBadges), 'preferences');
 	} catch (error) {
 		if (!restoreStorage(backup)) {
 			console.error('Could not restore stored app data after a failed apply');
@@ -85,9 +68,7 @@ export function applyAppData(data: AppData): void {
 	}
 }
 
-export function importAppData(
-	json: string,
-): { ok: true } | { ok: false; error: string } {
+export function importAppData(json: string): { ok: true } | { ok: false; error: string } {
 	let parsed: unknown;
 	try {
 		parsed = JSON.parse(json);

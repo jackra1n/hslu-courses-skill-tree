@@ -22,9 +22,7 @@ const id = $props.id();
 	<div class="flex gap-1">
 		{#each [1, 2, 3, 4, 5] as score (score)}
 			{@const highlighted = stars ? score <= value : score === value}
-			<label
-				class="relative flex h-11 w-11 cursor-pointer items-center justify-center"
-			>
+			<label class="relative flex h-11 w-11 cursor-pointer items-center justify-center">
 				<input
 					type="radio"
 					name={id}
@@ -46,9 +44,7 @@ const id = $props.id();
 							stroke-width="1.5"
 							aria-hidden="true"
 						>
-							<path
-								d="m12 3 2.8 5.7 6.3.9-4.6 4.4 1.1 6.3-5.6-3-5.6 3 1.1-6.3L3 9.6l6.2-.9L12 3Z"
-							/>
+							<path d="m12 3 2.8 5.7 6.3.9-4.6 4.4 1.1 6.3-5.6-3-5.6 3 1.1-6.3L3 9.6l6.2-.9L12 3Z" />
 						</svg>
 					{:else}
 						{score}
@@ -58,9 +54,7 @@ const id = $props.id();
 		{/each}
 	</div>
 	{#if low && high}
-		<div
-			class="mt-1 flex w-[14.75rem] max-w-full justify-between gap-2 text-xs text-text-secondary"
-		>
+		<div class="mt-1 flex w-[14.75rem] max-w-full justify-between gap-2 text-xs text-text-secondary">
 			<span>1: {low}</span><span class="text-right">5: {high}</span>
 		</div>
 	{/if}

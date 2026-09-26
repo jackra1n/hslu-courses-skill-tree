@@ -1,10 +1,4 @@
-import {
-	type Locale,
-	locales,
-	overwriteGetLocale,
-	overwriteSetLocale,
-	setLocale,
-} from '$lib/paraglide/runtime';
+import { type Locale, locales, overwriteGetLocale, overwriteSetLocale, setLocale } from '$lib/paraglide/runtime';
 import { readStorage, STORAGE_KEYS, writeStorage } from '$lib/utils/storage';
 
 const LOCALE_KEY = STORAGE_KEYS.locale;
@@ -21,8 +15,7 @@ overwriteSetLocale((newLocale) => {
 });
 
 function applyLocale(newLocale: Locale) {
-	if (typeof document !== 'undefined')
-		document.documentElement.lang = newLocale;
+	if (typeof document !== 'undefined') document.documentElement.lang = newLocale;
 	_locale = newLocale;
 }
 

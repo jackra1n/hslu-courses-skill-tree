@@ -22,8 +22,7 @@ export function nextCourseIds(
 	for (const course of courses) {
 		if (startedCourseIds.has(course.id)) continue;
 		if (course.assessmentLevelPassed && !assessmentStageMet) continue;
-		if (!evaluatePrerequisites(course.prerequisites, slotStatus, plan))
-			continue;
+		if (!evaluatePrerequisites(course.prerequisites, slotStatus, plan)) continue;
 		result.add(course.id);
 	}
 

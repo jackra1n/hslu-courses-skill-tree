@@ -48,9 +48,7 @@ const viewport = $derived(viewportSignal.current);
 const { setCenter, screenToFlowPosition } = useSvelteFlow();
 const semesterIndicators = $derived(courseStore.semesterDividerData);
 
-const statuses = $derived.by(() =>
-	computeStatuses(courseStore.studyPlan, progressStore.slotStatus),
-);
+const statuses = $derived.by(() => computeStatuses(courseStore.studyPlan, progressStore.slotStatus));
 const warnings = $derived(computePlanWarnings(courseStore.studyPlan));
 
 // A removed slot or a different study plan must not leave stale details open.
@@ -61,17 +59,12 @@ $effect(() => {
 	}
 });
 
-const ADD_NODE_STYLE =
-	'width: 80px; height: 80px; min-width: 80px; max-width: 80px;';
+const ADD_NODE_STYLE = 'width: 80px; height: 80px; min-width: 80px; max-width: 80px;';
 
 // The plan owns graph data. SvelteFlow may keep transient interaction state
 // locally; these non-proxied projections refresh when their inputs change.
 const styledNodes = $derived(
-	courseStore.nodes.map((node) =>
-		isCourseNode(node)
-			? styleCourseNode(node)
-			: { ...node, style: ADD_NODE_STYLE },
-	),
+	courseStore.nodes.map((node) => (isCourseNode(node) ? styleCourseNode(node) : { ...node, style: ADD_NODE_STYLE })),
 );
 
 function styleCourseNode(flowNode: CourseNode): CourseNode {
@@ -89,8 +82,7 @@ function styleCourseNode(flowNode: CourseNode): CourseNode {
 		isCompleted: slotStatus === 'completed',
 		isElectiveSlot: isElectiveSlot ?? false,
 		nodeWidth: nodeData.width || getNodeWidth(course?.ects || 6),
-		hasSelectedCourse:
-			isElectiveSlot && slot ? !!courseStore.userSelections[slot.id] : false,
+		hasSelectedCourse: isElectiveSlot && slot ? !!courseStore.userSelections[slot.id] : false,
 		hasLaterPrerequisites: nodeData.hasLaterPrerequisites ?? false,
 		...nodeWarnings,
 		isDragging,
@@ -127,35 +119,24 @@ const styledEdges = $derived(
 	),
 );
 
-const handleNodeDragStart: NodeTargetEventWithPointer<
-	MouseEvent | TouchEvent
-> = ({ targetNode }) => {
+const handleNodeDragStart: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
 	if (!targetNode) return;
 	isDragging = true;
 	courseStore.handleNodeDragStart();
 };
 
-const handleNodeDrag: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({
-	targetNode,
-}) => {
+const handleNodeDrag: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
 	if (!targetNode) return;
 	courseStore.handleNodeDrag(targetNode.id, targetNode.position);
 };
 
-const handleNodeDragStop: NodeTargetEventWithPointer<
-	MouseEvent | TouchEvent
-> = ({ targetNode }) => {
+const handleNodeDragStop: NodeTargetEventWithPointer<MouseEvent | TouchEvent> = ({ targetNode }) => {
 	isDragging = false;
 	if (!targetNode) return;
 	courseStore.handleNodeDragStop(targetNode.id, targetNode.position);
 };
 
-function handleNodeClick({
-	node: clickedNode,
-}: {
-	node: Node;
-	event: MouseEvent | TouchEvent;
-}) {
+function handleNodeClick({ node: clickedNode }: { node: Node; event: MouseEvent | TouchEvent }) {
 	if (!isCourseNode(clickedNode)) return;
 
 	const { slot, course, isElectiveSlot } = clickedNode.data;
@@ -163,12 +144,7 @@ function handleNodeClick({
 	if (isElectiveSlot && slot) {
 		const electiveCourse: Course = {
 			id: slot.id,
-			label:
-				slot.type === 'elective'
-					? m.slot_wahl()
-					: slot.type === 'major'
-						? m.slot_major()
-						: m.slot_course(),
+			label: slot.type === 'elective' ? m.slot_wahl() : slot.type === 'major' ? m.slot_major() : m.slot_course(),
 			ects: 0,
 			prerequisites: [],
 			assessmentModes: [],
@@ -225,12 +201,8 @@ $effect(() => {
 		colorMode={theme()}
 		proOptions={{ hideAttribution: compactScreen.current }}
 	>
-		<svg
-			class="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
-		>
-			<g
-				transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})"
-			>
+		<svg class="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
+			<g transform="translate({viewport.x}, {viewport.y}) scale({viewport.zoom})">
 				{#each semesterIndicators as divider (divider.semester)}
 					<SemesterDivider
 						semester={divider.semester}

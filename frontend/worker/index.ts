@@ -2,13 +2,7 @@ import { getAuth } from './auth';
 import { APP_ORIGINS } from './auth-options';
 import { json } from './http';
 import { handleProgressRequest } from './progress';
-import {
-	createCourseReview,
-	deleteReview,
-	getCourseReviewScores,
-	getCourseReviews,
-	updateReview,
-} from './reviews';
+import { createCourseReview, deleteReview, getCourseReviewScores, getCourseReviews, updateReview } from './reviews';
 
 const ALLOWED_ORIGINS = new Set(APP_ORIGINS);
 
@@ -30,10 +24,7 @@ function logError(scope: string, request: Request, error: unknown): void {
 			scope,
 			method: request.method,
 			path: new URL(request.url).pathname,
-			error:
-				error instanceof Error
-					? { name: error.name, message: error.message }
-					: 'unknown',
+			error: error instanceof Error ? { name: error.name, message: error.message } : 'unknown',
 		}),
 	);
 }
@@ -85,9 +76,7 @@ export default {
 			}
 		}
 
-		const courseReviews = /^\/api\/courses\/([^/]+)\/reviews$/.exec(
-			url.pathname,
-		);
+		const courseReviews = /^\/api\/courses\/([^/]+)\/reviews$/.exec(url.pathname);
 		const review = /^\/api\/reviews\/([^/]+)$/.exec(url.pathname);
 		const reviewRoute = courseReviews ?? review;
 		if (reviewRoute) {

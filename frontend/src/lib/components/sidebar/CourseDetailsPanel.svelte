@@ -46,9 +46,7 @@ const activePlanNode = $derived.by(() => {
 	if (explicitSlot && plan.nodes[explicitSlot]) return plan.nodes[explicitSlot];
 	const slotMatch = plan.nodes[sel.id];
 	if (slotMatch) return slotMatch;
-	return (
-		Object.values(plan.nodes).find((node) => node.courseId === sel.id) ?? null
-	);
+	return Object.values(plan.nodes).find((node) => node.courseId === sel.id) ?? null;
 });
 
 const isDrawerOpen = $derived(uiStore.hasSelection);
@@ -60,9 +58,7 @@ function closeDetails(): void {
 async function navigateToPrerequisite(courseId: string): Promise<void> {
 	const course = getCourseById(courseId);
 	if (!course) return;
-	const node = Object.values(courseStore.studyPlan.nodes).find(
-		(node) => node.courseId === courseId,
-	);
+	const node = Object.values(courseStore.studyPlan.nodes).find((node) => node.courseId === courseId);
 	uiStore.selectCourse(course, node?.id);
 	await tick();
 	panel.scrollTop = 0;
@@ -89,8 +85,7 @@ $effect(() => {
 $effect(() => {
 	if (!isDrawerOpen || !isOverlay) return;
 	const focusOrigin =
-		document.activeElement instanceof HTMLElement &&
-		document.activeElement !== document.body
+		document.activeElement instanceof HTMLElement && document.activeElement !== document.body
 			? document.activeElement
 			: null;
 	void tick().then(() => closeButton?.focus());
@@ -160,9 +155,7 @@ $effect(() => {
 	{:else}
 		<div class="p-6 space-y-6">
 			<div class="text-center py-8">
-				<div
-					class="i-lucide-mouse-pointer-click w-12 h-12 mx-auto text-text-secondary mb-3"
-				></div>
+				<div class="i-lucide-mouse-pointer-click w-12 h-12 mx-auto text-text-secondary mb-3"></div>
 				<p class="text-sm text-text-secondary">
 					{m.details_empty_hint()}
 				</p>

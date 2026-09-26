@@ -11,10 +11,7 @@ function otherSeason(season: Season): Season {
 }
 
 // Semester 1 runs in the start season; every later semester alternates.
-export function seasonOfSemester(
-	semester: number,
-	startSeason: Season,
-): Season {
+export function seasonOfSemester(semester: number, startSeason: Season): Season {
 	return (semester - 1) % 2 === 0 ? startSeason : otherSeason(startSeason);
 }
 
@@ -52,21 +49,14 @@ export function planIntroYear(plan: string): number | null {
 
 // The plan in effect for a start term: the latest one introduced on or before
 // it, falling back to the earliest available plan.
-export function resolvePlan(
-	availablePlans: string[],
-	start: Term,
-): string | null {
+export function resolvePlan(availablePlans: string[], start: Term): string | null {
 	const startOrdinal = termOrdinal(start.year, start.season);
 	const dated = availablePlans
 		.map((plan) => ({ plan, year: planIntroYear(plan) }))
-		.filter(
-			(entry): entry is { plan: string; year: number } => entry.year !== null,
-		)
+		.filter((entry): entry is { plan: string; year: number } => entry.year !== null)
 		.sort((a, b) => a.year - b.year);
 	if (dated.length === 0) return null;
 
-	const eligible = dated.filter(
-		(entry) => termOrdinal(entry.year, 'HS') <= startOrdinal,
-	);
+	const eligible = dated.filter((entry) => termOrdinal(entry.year, 'HS') <= startOrdinal);
 	return (eligible.at(-1) ?? dated[0]).plan;
 }

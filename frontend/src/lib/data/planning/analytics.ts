@@ -15,12 +15,7 @@ export type CategoryProgress = {
 type Tally = { passed: number; planned: number; failed: number };
 
 // Major/Minor modules are a kind of Erweiterungsmodul, so they roll up into it.
-const TOP_LEVEL: ModuleType[] = [
-	'Kernmodul',
-	'Projektmodul',
-	'Erweiterungsmodul',
-	'Zusatzmodul',
-];
+const TOP_LEVEL: ModuleType[] = ['Kernmodul', 'Projektmodul', 'Erweiterungsmodul', 'Zusatzmodul'];
 
 export function computeCategoryProgress(
 	plan: StudyPlan,
@@ -40,20 +35,13 @@ export function computeCategoryProgress(
 			failed: 0,
 		};
 		const status = slotStatus.get(node.id);
-		const field =
-			status === 'completed'
-				? 'passed'
-				: status === 'attended'
-					? 'failed'
-					: 'planned';
+		const field = status === 'completed' ? 'passed' : status === 'attended' ? 'failed' : 'planned';
 		bucket[field] += course.ects || 0;
 		totals.set(course.type, bucket);
 	}
 
-	const tallyOf = (category: ModuleType): Tally =>
-		totals.get(category) ?? { passed: 0, planned: 0, failed: 0 };
-	const requiredOf = (category: ModuleType) =>
-		requirements?.perModule[category] ?? 0;
+	const tallyOf = (category: ModuleType): Tally => totals.get(category) ?? { passed: 0, planned: 0, failed: 0 };
+	const requiredOf = (category: ModuleType) => requirements?.perModule[category] ?? 0;
 
 	return TOP_LEVEL.map((category) => {
 		if (category !== 'Erweiterungsmodul') {

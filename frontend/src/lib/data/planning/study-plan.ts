@@ -1,9 +1,5 @@
 import { courseLabel } from '$lib/data/courses/course-label';
-import type {
-	Course,
-	CurriculumTemplate,
-	TemplateSlot,
-} from '$lib/data/catalog/courses';
+import type { Course, CurriculumTemplate, TemplateSlot } from '$lib/data/catalog/courses';
 import { getCourseById } from '$lib/data/catalog/courses';
 import * as m from '$lib/paraglide/messages';
 
@@ -44,13 +40,9 @@ export function resolveCourse(id?: string | null): Course | undefined {
 	return getCourseById(id);
 }
 
-function toPlanNode(
-	slot: TemplateSlot,
-	selections: Record<string, string>,
-): PlanNode {
+function toPlanNode(slot: TemplateSlot, selections: Record<string, string>): PlanNode {
 	const kind: PlanNodeKind = slot.type === 'fixed' ? 'fixed' : 'elective';
-	const assignedCourseId =
-		slot.type === 'fixed' ? slot.courseId : selections[slot.id];
+	const assignedCourseId = slot.type === 'fixed' ? slot.courseId : selections[slot.id];
 	const course = resolveCourse(assignedCourseId);
 
 	return {
@@ -65,10 +57,7 @@ function toPlanNode(
 	};
 }
 
-export function createStudyPlan(
-	template: CurriculumTemplate,
-	selections: Record<string, string>,
-): StudyPlan {
+export function createStudyPlan(template: CurriculumTemplate, selections: Record<string, string>): StudyPlan {
 	const nodes: Record<string, PlanNode> = {};
 	const rowsBySemester = new Map<number, string[]>();
 
@@ -106,11 +95,7 @@ export function deriveSelections(plan: StudyPlan): Record<string, string> {
 	return selections;
 }
 
-export function updateNodeCourse(
-	plan: StudyPlan,
-	nodeId: string,
-	courseId: string | null,
-): StudyPlan {
+export function updateNodeCourse(plan: StudyPlan, nodeId: string, courseId: string | null): StudyPlan {
 	const node = plan.nodes[nodeId];
 	if (!node) return plan;
 
@@ -132,16 +117,10 @@ export function updateNodeCourse(
 }
 
 export function calculatePlanTotalCredits(plan: StudyPlan): number {
-	return Object.values(plan.nodes).reduce(
-		(sum, node) => sum + (node.ects || 0),
-		0,
-	);
+	return Object.values(plan.nodes).reduce((sum, node) => sum + (node.ects || 0), 0);
 }
 
-export function calculatePlanSemesterCredits(
-	plan: StudyPlan,
-	semester: number,
-): number {
+export function calculatePlanSemesterCredits(plan: StudyPlan, semester: number): number {
 	const row = plan.rows.find((r) => r.semester === semester);
 	if (!row) return 0;
 
@@ -164,17 +143,11 @@ function sumCreditsForStatus(
 	}, 0);
 }
 
-export function calculateAttendedCredits(
-	plan: StudyPlan,
-	slotStatus: Map<string, 'attended' | 'completed'>,
-): number {
+export function calculateAttendedCredits(plan: StudyPlan, slotStatus: Map<string, 'attended' | 'completed'>): number {
 	return sumCreditsForStatus(plan, slotStatus, 'attended');
 }
 
-export function calculateCompletedCredits(
-	plan: StudyPlan,
-	slotStatus: Map<string, 'attended' | 'completed'>,
-): number {
+export function calculateCompletedCredits(plan: StudyPlan, slotStatus: Map<string, 'attended' | 'completed'>): number {
 	return sumCreditsForStatus(plan, slotStatus, 'completed');
 }
 
@@ -210,9 +183,7 @@ export function normalizePlan(plan: StudyPlan): StudyPlan {
 			}
 		}
 	});
-	return rows || nodes
-		? { ...plan, rows: rows ?? plan.rows, nodes: nodes ?? plan.nodes }
-		: plan;
+	return rows || nodes ? { ...plan, rows: rows ?? plan.rows, nodes: nodes ?? plan.nodes } : plan;
 }
 
 export function buildPlanRowIndex(plan: StudyPlan): Record<string, number> {

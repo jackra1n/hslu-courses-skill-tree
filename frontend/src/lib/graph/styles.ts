@@ -3,21 +3,11 @@ import type { Status } from '../types';
 
 // Edge.markerEnd may be a string id or undefined; normalise to an object marker.
 function toEdgeMarker(marker: Edge['markerEnd']): EdgeMarker {
-	return marker && typeof marker === 'object'
-		? marker
-		: { type: MarkerType.ArrowClosed };
+	return marker && typeof marker === 'object' ? marker : { type: MarkerType.ArrowClosed };
 }
 
-function buildBaseNodeStyle(
-	nodeWidth: number,
-	isDragging: boolean,
-	reducedMotion: boolean,
-): string {
-	const transition = reducedMotion
-		? 'transition: none;'
-		: isDragging
-			? ''
-			: 'transition: all 0.2s;';
+function buildBaseNodeStyle(nodeWidth: number, isDragging: boolean, reducedMotion: boolean): string {
+	const transition = reducedMotion ? 'transition: none;' : isDragging ? '' : 'transition: all 0.2s;';
 	return `border-radius: 12px; font-weight: 500; font-size: 14px; text-align: center; min-width: ${nodeWidth}px; width: ${nodeWidth}px; font-family: Inter, sans-serif; ${transition} `;
 }
 
@@ -70,18 +60,11 @@ function buildNodeStateStyle(
 		);
 	}
 
-	return (
-		buildStatusBasedStyle(status, isAttended, isCompleted) +
-		shadowUnlessSelected(isSelected)
-	);
+	return buildStatusBasedStyle(status, isAttended, isCompleted) + shadowUnlessSelected(isSelected);
 }
 
 // Priority: completed > attended > available > locked
-function buildStatusBasedStyle(
-	status: Status,
-	isAttended: boolean,
-	isCompleted: boolean,
-): string {
+function buildStatusBasedStyle(status: Status, isAttended: boolean, isCompleted: boolean): string {
 	if (isCompleted) {
 		return 'background: rgb(var(--node-completed-bg)); border-color: rgb(var(--node-completed-border)); color: rgb(var(--text-primary)); ';
 	}
@@ -157,11 +140,7 @@ type EdgeStateInput = {
 };
 
 function buildEdgeStateStyle(input: EdgeStateInput): EdgeStyleResult {
-	const transition = input.reducedMotion
-		? 'transition: none;'
-		: input.isDragging
-			? ''
-			: 'transition: all 0.2s;';
+	const transition = input.reducedMotion ? 'transition: none;' : input.isDragging ? '' : 'transition: all 0.2s;';
 	const base = `stroke-width: 2px; ${transition} filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1)); `;
 	const { markerType } = input;
 
@@ -169,9 +148,7 @@ function buildEdgeStateStyle(input: EdgeStateInput): EdgeStyleResult {
 	if (input.hasSelection) {
 		if (input.isPrerequisite) {
 			return {
-				style:
-					base +
-					'stroke: rgb(245 158 11); stroke-width: 3px; stroke-dasharray: 5,5; ',
+				style: base + 'stroke: rgb(245 158 11); stroke-width: 3px; stroke-dasharray: 5,5; ',
 				markerEnd: { type: markerType.type, color: 'rgb(245 158 11)' },
 				animated: false,
 				zIndex: EDGE_Z_HIGHLIGHTED,
@@ -198,8 +175,7 @@ function buildEdgeStateStyle(input: EdgeStateInput): EdgeStyleResult {
 		return {
 			style: `${base}stroke: rgb(34 197 94); stroke-width: 3px; `,
 			markerEnd: { type: markerType.type, color: 'rgb(34 197 94)' },
-			animated:
-				!input.reducedMotion && !input.targetCompleted && input.targetAvailable,
+			animated: !input.reducedMotion && !input.targetCompleted && input.targetAvailable,
 			zIndex: EDGE_Z_BASE,
 		};
 	}

@@ -5,17 +5,11 @@ const FOCUSABLE =
 
 function focusableElements(container: HTMLElement): HTMLElement[] {
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-		(element) =>
-			element.tabIndex >= 0 &&
-			!element.matches(':disabled') &&
-			element.getClientRects().length > 0,
+		(element) => element.tabIndex >= 0 && !element.matches(':disabled') && element.getClientRects().length > 0,
 	);
 }
 
-export function trapTabFocus(
-	event: KeyboardEvent,
-	container: HTMLElement,
-): void {
+export function trapTabFocus(event: KeyboardEvent, container: HTMLElement): void {
 	if (event.key !== 'Tab') return;
 	const focusable = focusableElements(container);
 	const first = focusable[0];

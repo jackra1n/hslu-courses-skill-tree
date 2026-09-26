@@ -52,20 +52,14 @@ import * as m from '$lib/paraglide/messages';
 	</h3>
 	<div class="space-y-2.5">
 		<div class="flex items-center gap-3">
-			<div
-				class="w-4 h-0.5 bg-amber-500 border-0"
-				style="border-top: 3px dashed rgb(245 158 11);"
-			></div>
+			<div class="w-4 h-0.5 bg-amber-500 border-0" style="border-top: 3px dashed rgb(245 158 11);"></div>
 			<span class="text-sm text-text-primary"
 				><span class="font-medium">{m.legend_prereq()}</span>
 				- {m.legend_prereq_desc()}</span
 			>
 		</div>
 		<div class="flex items-center gap-3">
-			<div
-				class="w-4 h-0.5 bg-blue-500 border-0"
-				style="border-top: 3px solid rgb(59 130 246);"
-			></div>
+			<div class="w-4 h-0.5 bg-blue-500 border-0" style="border-top: 3px solid rgb(59 130 246);"></div>
 			<span class="text-sm text-text-primary"
 				><span class="font-medium">{m.legend_dependents()}</span>
 				- {m.legend_dependents_desc()}</span

@@ -4,26 +4,13 @@ import { buildPlanRowIndex, type StudyPlan } from '../planning/study-plan';
 
 export type PrerequisiteCourseSummary = {
 	courseId: string;
-	state:
-		| 'required'
-		| 'completed'
-		| 'attended'
-		| 'planned'
-		| 'missing'
-		| 'later'
-		| 'incomplete';
+	state: 'required' | 'completed' | 'attended' | 'planned' | 'missing' | 'later' | 'incomplete';
 	semesters: number[];
 };
 
 export type PrerequisiteRuleSummary = {
 	ruleIndex: number;
-	state:
-		| 'required'
-		| 'satisfied'
-		| 'planned'
-		| 'missing'
-		| 'later'
-		| 'incomplete';
+	state: 'required' | 'satisfied' | 'planned' | 'missing' | 'later' | 'incomplete';
 	relevant: boolean;
 	courses: PrerequisiteCourseSummary[];
 };
@@ -41,10 +28,7 @@ function branchQuality(summary: PrerequisiteRuleSummary): number {
 	return 0;
 }
 
-function markRelevantBranches(
-	rules: readonly PrerequisiteRule[],
-	summaries: PrerequisiteRuleSummary[],
-): void {
+function markRelevantBranches(rules: readonly PrerequisiteRule[], summaries: PrerequisiteRuleSummary[]): void {
 	if (summaries.length === 0) return;
 
 	// prefixes represent the evaluator's left-to-right expression, not AND precedence.
@@ -53,9 +37,7 @@ function markRelevantBranches(
 		const previous = prefixQuality[index - 1];
 		const current = branchQuality(summaries[index]);
 		prefixQuality.push(
-			rules[index - 1].prerequisiteLinkType === 'oder'
-				? Math.max(previous, current)
-				: Math.min(previous, current),
+			rules[index - 1].prerequisiteLinkType === 'oder' ? Math.max(previous, current) : Math.min(previous, current),
 		);
 	}
 
@@ -101,10 +83,7 @@ export function summarizePrerequisites(
 			progress.completed ||= status === 'completed';
 			progress.attended ||= status === 'attended';
 			const courseRow = rowIndex[node.id];
-			progress.hasSuitableInstance ||=
-				targetRow === undefined ||
-				courseRow === undefined ||
-				courseRow <= targetRow;
+			progress.hasSuitableInstance ||= targetRow === undefined || courseRow === undefined || courseRow <= targetRow;
 			if (!progress.semesters.includes(node.semester)) {
 				progress.semesters.push(node.semester);
 			}
@@ -144,9 +123,7 @@ export function summarizePrerequisites(
 		const isAlternative = rule.moduleLinkType === 'oder';
 		if (isAlternative && !options?.includeAlternatives) {
 			const candidates = courses.filter((course) =>
-				satisfied
-					? course.state === 'completed' || course.state === 'attended'
-					: course.state !== 'missing',
+				satisfied ? course.state === 'completed' || course.state === 'attended' : course.state !== 'missing',
 			);
 			if (candidates.length > 0) courses = candidates;
 		}
@@ -154,20 +131,14 @@ export function summarizePrerequisites(
 		let state: PrerequisiteRuleSummary['state'];
 		if (satisfied) state = 'satisfied';
 		else if (isAlternative) {
-			if (courses.some((course) => course.state === 'planned'))
-				state = 'planned';
-			else if (courses.some((course) => course.state === 'incomplete'))
-				state = 'incomplete';
-			else if (courses.some((course) => course.state === 'later'))
-				state = 'later';
+			if (courses.some((course) => course.state === 'planned')) state = 'planned';
+			else if (courses.some((course) => course.state === 'incomplete')) state = 'incomplete';
+			else if (courses.some((course) => course.state === 'later')) state = 'later';
 			else state = 'missing';
 		} else {
-			if (courses.some((course) => course.state === 'missing'))
-				state = 'missing';
-			else if (courses.some((course) => course.state === 'later'))
-				state = 'later';
-			else if (courses.some((course) => course.state === 'incomplete'))
-				state = 'incomplete';
+			if (courses.some((course) => course.state === 'missing')) state = 'missing';
+			else if (courses.some((course) => course.state === 'later')) state = 'later';
+			else if (courses.some((course) => course.state === 'incomplete')) state = 'incomplete';
 			else state = 'planned';
 		}
 		return { ruleIndex, state, relevant: false, courses };

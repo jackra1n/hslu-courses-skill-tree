@@ -27,14 +27,13 @@ describe('Better Auth database schema', () => {
 
 		for (const table of Object.values(authTables)) {
 			const tableName = quoteIdentifier(table.modelName);
-			const columnResult = await env.DB.prepare(
-				`PRAGMA table_info(${tableName})`,
-			).all<{ name: string; notnull: number; pk: number }>();
-			const columns = new Map(
-				columnResult.results.map((column) => [column.name, column]),
-			);
-			const physicalFieldName = (logicalName: string): string =>
-				table.fields[logicalName]?.fieldName ?? logicalName;
+			const columnResult = await env.DB.prepare(`PRAGMA table_info(${tableName})`).all<{
+				name: string;
+				notnull: number;
+				pk: number;
+			}>();
+			const columns = new Map(columnResult.results.map((column) => [column.name, column]));
+			const physicalFieldName = (logicalName: string): string => table.fields[logicalName]?.fieldName ?? logicalName;
 
 			for (const [logicalName, field] of Object.entries(table.fields)) {
 				const columnName = physicalFieldName(logicalName);
@@ -46,15 +45,17 @@ describe('Better Auth database schema', () => {
 				}
 			}
 
-			const indexResult = await env.DB.prepare(
-				`PRAGMA index_list(${tableName})`,
-			).all<{ name: string; unique: number }>();
+			const indexResult = await env.DB.prepare(`PRAGMA index_list(${tableName})`).all<{
+				name: string;
+				unique: number;
+			}>();
 			const actualUniqueIndexes: string[] = [];
 			for (const index of indexResult.results) {
 				if (!index.unique) continue;
-				const fields = await env.DB.prepare(
-					`PRAGMA index_info(${quoteIdentifier(index.name)})`,
-				).all<{ name: string; seqno: number }>();
+				const fields = await env.DB.prepare(`PRAGMA index_info(${quoteIdentifier(index.name)})`).all<{
+					name: string;
+					seqno: number;
+				}>();
 				actualUniqueIndexes.push(
 					fields.results
 						.sort((left, right) => left.seqno - right.seqno)
@@ -73,9 +74,7 @@ describe('Better Auth database schema', () => {
 			];
 			for (const expectedIndex of expectedUniqueIndexes) {
 				if (!actualUniqueIndexes.includes(expectedIndex)) {
-					missingUniqueIndexes.push(
-						`${table.modelName}(${expectedIndex.replaceAll(',', ', ')})`,
-					);
+					missingUniqueIndexes.push(`${table.modelName}(${expectedIndex.replaceAll(',', ', ')})`);
 				}
 			}
 		}

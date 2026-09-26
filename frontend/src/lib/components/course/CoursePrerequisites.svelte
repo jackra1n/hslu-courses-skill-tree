@@ -2,10 +2,7 @@
 import type { Course } from '$lib/data/catalog/catalog-types';
 import { courseLabel } from '$lib/data/courses/course-label';
 import { getCourseById } from '$lib/data/catalog/courses';
-import {
-	buildPrerequisiteExpression,
-	type PrerequisiteExpression,
-} from '$lib/data/courses/prerequisite-expression';
+import { buildPrerequisiteExpression, type PrerequisiteExpression } from '$lib/data/courses/prerequisite-expression';
 import {
 	type PrerequisiteCourseSummary,
 	type PrerequisiteRuleSummary,
@@ -14,10 +11,7 @@ import {
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
-import {
-	getAssessmentStageProgress,
-	hasAssessmentStageViolation,
-} from '$lib/utils/status';
+import { getAssessmentStageProgress, hasAssessmentStageViolation } from '$lib/utils/status';
 
 let {
 	course,
@@ -31,22 +25,14 @@ let {
 const id = $props.id();
 const courseStore = getCourseStore();
 const plan = $derived(courseStore.studyPlan);
-const hasPlan = $derived(
-	Object.values(plan.nodes).some((node) => node.courseId),
-);
+const hasPlan = $derived(Object.values(plan.nodes).some((node) => node.courseId));
 const groups = $derived(
-	summarizePrerequisites(
-		course.prerequisites,
-		hasPlan ? plan : null,
-		progressStore.slotStatus,
-		targetNodeId,
-		{ includeAlternatives: true },
-	),
+	summarizePrerequisites(course.prerequisites, hasPlan ? plan : null, progressStore.slotStatus, targetNodeId, {
+		includeAlternatives: true,
+	}),
 );
 const expression = $derived(buildPrerequisiteExpression(course.prerequisites));
-const assessment = $derived(
-	getAssessmentStageProgress(plan, progressStore.slotStatus),
-);
+const assessment = $derived(getAssessmentStageProgress(plan, progressStore.slotStatus));
 const assessmentPlacement = $derived(
 	!!targetNodeId &&
 		course.assessmentLevelPassed &&
@@ -67,23 +53,13 @@ function isMet(candidate: PrerequisiteCourseSummary) {
 }
 
 function needsAttention(group: PrerequisiteRuleSummary) {
-	return (
-		group.relevant &&
-		(group.state === 'missing' ||
-			group.state === 'later' ||
-			group.state === 'incomplete')
-	);
+	return group.relevant && (group.state === 'missing' || group.state === 'later' || group.state === 'incomplete');
 }
 
-function rowWarning(
-	candidate: PrerequisiteCourseSummary,
-	group: PrerequisiteRuleSummary,
-) {
+function rowWarning(candidate: PrerequisiteCourseSummary, group: PrerequisiteRuleSummary) {
 	return (
 		needsAttention(group) &&
-		(candidate.state === 'missing' ||
-			candidate.state === 'later' ||
-			candidate.state === 'incomplete')
+		(candidate.state === 'missing' || candidate.state === 'later' || candidate.state === 'incomplete')
 	);
 }
 
@@ -108,17 +84,10 @@ function statusLabel(candidate: PrerequisiteCourseSummary) {
 
 function groupTitle(index: number) {
 	const rule = course.prerequisites[index];
-	if (rule.modules.length === 1)
-		return rule.mustBePassed
-			? m.prerequisites_complete()
-			: m.prerequisites_attend();
+	if (rule.modules.length === 1) return rule.mustBePassed ? m.prerequisites_complete() : m.prerequisites_attend();
 	if (rule.moduleLinkType === 'oder')
-		return rule.mustBePassed
-			? m.prerequisites_complete_one()
-			: m.prerequisites_attend_one();
-	return rule.mustBePassed
-		? m.prerequisites_complete_all()
-		: m.prerequisites_attend_all();
+		return rule.mustBePassed ? m.prerequisites_complete_one() : m.prerequisites_attend_one();
+	return rule.mustBePassed ? m.prerequisites_complete_all() : m.prerequisites_attend_all();
 }
 </script>
 
@@ -130,9 +99,7 @@ function groupTitle(index: number) {
 	></span>
 	<span class="min-w-0 flex-1">
 		<span class="block break-words text-sm leading-snug text-text-primary">
-			<span class="mr-1 font-mono text-xs text-text-secondary"
-				>{candidate.courseId}</span
-			>
+			<span class="mr-1 font-mono text-xs text-text-secondary">{candidate.courseId}</span>
 			{#if prerequisite}
 				{courseLabel(prerequisite)}
 			{/if}
@@ -148,10 +115,7 @@ function groupTitle(index: number) {
 		</span>
 	</span>
 	{#if prerequisite}
-		<span
-			class="i-lucide-chevron-right mt-0.5 h-4 w-4 shrink-0 text-text-secondary"
-			aria-hidden="true"
-		></span>
+		<span class="i-lucide-chevron-right mt-0.5 h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true"></span>
 	{/if}
 {/snippet}
 
@@ -167,23 +131,15 @@ function groupTitle(index: number) {
 		<header
 			class={`border-b px-3 py-2.5 ${satisfied ? 'border-green-200 bg-green-100/70 dark:border-green-800 dark:bg-green-900/30' : 'border-border-primary bg-bg-primary/40'}`}
 		>
-			<div
-				class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1"
-			>
-				<h4
-					id={`${id}-group-${index}`}
-					class="text-sm font-semibold text-text-primary"
-				>
+			<div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+				<h4 id={`${id}-group-${index}`} class="text-sm font-semibold text-text-primary">
 					{groupTitle(index)}
 				</h4>
 				<span
 					class={`inline-flex items-center gap-1.5 text-xs font-medium ${satisfied ? 'text-green-800 dark:text-green-400' : needsAttention(group) ? 'text-amber-700 dark:text-amber-400' : 'text-text-secondary'}`}
 				>
 					{#if satisfied}
-						<span
-							class="i-lucide-circle-check h-3.5 w-3.5 shrink-0"
-							aria-hidden="true"
-						></span>
+						<span class="i-lucide-circle-check h-3.5 w-3.5 shrink-0" aria-hidden="true"></span>
 					{/if}
 					{satisfied ? m.prerequisites_met() : !group.relevant ? m.prerequisites_alternative() : needsAttention(group) ? m.prerequisites_needs_attention() : group.state === 'planned' ? m.course_summary_planned() : m.course_summary_required()}
 				</span>
@@ -194,9 +150,7 @@ function groupTitle(index: number) {
 				</p>
 			{/if}
 		</header>
-		<ul
-			class={`divide-y ${satisfied ? 'divide-green-200 dark:divide-green-800' : 'divide-border-primary'}`}
-		>
+		<ul class={`divide-y ${satisfied ? 'divide-green-200 dark:divide-green-800' : 'divide-border-primary'}`}>
 			{#each group.courses as candidate (candidate.courseId)}
 				<li>
 					{#if getCourseById(candidate.courseId)}
@@ -226,20 +180,13 @@ function groupTitle(index: number) {
 		<div
 			class={`space-y-3 rounded-lg border p-3 ${satisfied ? 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-950/50' : 'border-border-primary bg-bg-secondary'}`}
 		>
-			<div
-				class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1"
-			>
+			<div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
 				<p class="text-sm font-medium text-text-secondary">
 					{node.operator === 'and' ? m.prerequisites_all_groups() : m.prerequisites_one_group()}
 				</p>
 				{#if satisfied}
-					<span
-						class="inline-flex items-center gap-1.5 text-xs font-medium text-green-800 dark:text-green-400"
-					>
-						<span
-							class="i-lucide-circle-check h-3.5 w-3.5 shrink-0"
-							aria-hidden="true"
-						></span>
+					<span class="inline-flex items-center gap-1.5 text-xs font-medium text-green-800 dark:text-green-400">
+						<span class="i-lucide-circle-check h-3.5 w-3.5 shrink-0" aria-hidden="true"></span>
 						{m.prerequisites_met()}
 					</span>
 				{/if}
@@ -267,10 +214,7 @@ function groupTitle(index: number) {
 				></span>
 				<div class="min-w-0 flex-1">
 					<div class="flex flex-wrap items-baseline justify-between gap-2">
-						<h4
-							id={`${id}-assessment`}
-							class="text-sm font-semibold text-text-primary"
-						>
+						<h4 id={`${id}-assessment`} class="text-sm font-semibold text-text-primary">
 							{m.course_summary_assessment()}
 						</h4>
 						<span
@@ -286,16 +230,12 @@ function groupTitle(index: number) {
 				</p>
 			{/if}
 			{#if assessmentPlacement}
-				<p
-					class="mt-2 text-xs leading-relaxed text-amber-700 dark:text-amber-400"
-				>
+				<p class="mt-2 text-xs leading-relaxed text-amber-700 dark:text-amber-400">
 					{m.warning_assessment_message()}
 				</p>
 			{/if}
 			<details class="mt-2 text-xs text-text-secondary">
-				<summary
-					class="cursor-pointer py-2 text-blue-600 focus-visible:outline-blue-500 dark:text-blue-400"
-				>
+				<summary class="cursor-pointer py-2 text-blue-600 focus-visible:outline-blue-500 dark:text-blue-400">
 					{m.prereq_assessment_more()}
 				</summary>
 				<p class="mb-2 leading-relaxed">
@@ -314,16 +254,11 @@ function groupTitle(index: number) {
 		<p class="text-sm text-text-secondary">{m.prereq_none()}</p>
 	{/if}
 	{#if note}
-		<section
-			class="border-t border-border-primary pt-4"
-			aria-labelledby={`${id}-note`}
-		>
+		<section class="border-t border-border-primary pt-4" aria-labelledby={`${id}-note`}>
 			<h4 id={`${id}-note`} class="text-sm font-semibold text-text-primary">
 				{m.course_details_note()}
 			</h4>
-			<p
-				class="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary"
-			>
+			<p class="mt-2 whitespace-pre-line text-sm leading-relaxed text-text-secondary">
 				{note}
 			</p>
 		</section>

@@ -70,9 +70,7 @@ export function storageKeys(prefix: string): string[] | null {
 	}
 }
 
-export function backupStorage(
-	keys: Iterable<string>,
-): Map<string, string | null> | null {
+export function backupStorage(keys: Iterable<string>): Map<string, string | null> | null {
 	try {
 		if (!browser) return null;
 		const backup = new Map<string, string | null>();

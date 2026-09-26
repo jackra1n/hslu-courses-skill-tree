@@ -1,10 +1,7 @@
 <script lang="ts">
 import { useViewport } from '@xyflow/svelte';
 import type { StudyPlan } from '$lib/data/planning/study-plan';
-import {
-	calculatePlanSemesterAttendedCredits,
-	calculatePlanSemesterCredits,
-} from '$lib/data/planning/study-plan';
+import { calculatePlanSemesterAttendedCredits, calculatePlanSemesterCredits } from '$lib/data/planning/study-plan';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 
@@ -35,12 +32,8 @@ const titleFontSize = $derived(Math.max(21, 12 / viewport.zoom));
 const yPosition = $derived(BASE_OFFSET + SEMESTER_SPACING * semester);
 const semesterCredits = $derived(calculatePlanSemesterCredits(plan, semester));
 const slotStatuses = $derived(progressStore.slotStatus);
-const attendedSemesterCredits = $derived(
-	calculatePlanSemesterAttendedCredits(plan, semester, slotStatuses),
-);
-const calculatedSemesterCredits = $derived(
-	Math.max(0, semesterCredits - attendedSemesterCredits),
-);
+const attendedSemesterCredits = $derived(calculatePlanSemesterAttendedCredits(plan, semester, slotStatuses));
+const calculatedSemesterCredits = $derived(Math.max(0, semesterCredits - attendedSemesterCredits));
 const lineOpacity = $derived(isPreview ? 0.35 : 1);
 const textOpacity = $derived(isPreview ? 0.5 : 1);
 const LINE_START = -150;
@@ -67,13 +60,7 @@ const lineEnd = $derived(LINE_START + length);
 >
 	{courseStore.semesterLabel(semester)}
 </text>
-<text
-	x="-100"
-	y={yPosition - 20}
-	fill="rgb(var(--text-secondary))"
-	font-size={titleFontSize}
-	opacity={textOpacity}
->
+<text x="-100" y={yPosition - 20} fill="rgb(var(--text-secondary))" font-size={titleFontSize} opacity={textOpacity}>
 	{calculatedSemesterCredits !== semesterCredits
     ? `${calculatedSemesterCredits} / ${semesterCredits}`
     : `${semesterCredits}`}

@@ -29,12 +29,7 @@ function createFixture(): string {
 				Language: 'D',
 				ShortName: 'A',
 				Ects: 2,
-				ModeOfAssessments: [
-					'Arbeit / Kompetenznachweis im Semester',
-					'schriftlich',
-					'mündlich',
-					'elektronisch',
-				],
+				ModeOfAssessments: ['Arbeit / Kompetenznachweis im Semester', 'schriftlich', 'mündlich', 'elektronisch'],
 				ModuleOffers: [
 					{
 						DegreeProgramme: 'Informatik',
@@ -49,12 +44,7 @@ function createFixture(): string {
 				Language: 'D',
 				ShortName: 'B',
 				Ects: 3,
-				ModeOfAssessments: [
-					'Arbeit / Kompetenznachweis im Semester',
-					'schriftlich',
-					'mündlich',
-					'elektronisch',
-				],
+				ModeOfAssessments: ['Arbeit / Kompetenznachweis im Semester', 'schriftlich', 'mündlich', 'elektronisch'],
 				ModuleOffers: [
 					{
 						DegreeProgramme: 'Other',
@@ -186,12 +176,7 @@ afterEach(() => {
 describe('catalog normalization', () => {
 	test('preserves ordering while applying newest fields and unioning seasons', () => {
 		const catalog = buildCatalog(createFixture());
-		expect(catalog.courses.map((course) => course.id)).toEqual([
-			'A',
-			'B',
-			'C',
-			'D',
-		]);
+		expect(catalog.courses.map((course) => course.id)).toEqual(['A', 'B', 'C', 'D']);
 		expect(catalog.courses[0]).toEqual({
 			id: 'A',
 			label: 'Alpha neu',
@@ -208,12 +193,7 @@ describe('catalog normalization', () => {
 			],
 			prerequisiteNote: 'Bring experience',
 			assessmentLevelPassed: false,
-			assessmentModes: [
-				'coursework',
-				'written_exam',
-				'oral_exam',
-				'electronic_exam',
-			],
+			assessmentModes: ['coursework', 'written_exam', 'oral_exam', 'electronic_exam'],
 			typeByPlanSeason: {
 				HS: 'Erweiterungsmodul',
 				FS: 'Kernmodul',
@@ -223,12 +203,7 @@ describe('catalog normalization', () => {
 		});
 		expect(catalog.courses[1]?.label).toBe('Beta');
 		expect(catalog.courses[1]?.languages).toEqual(['de']);
-		expect(catalog.courses[1]?.assessmentModes).toEqual([
-			'coursework',
-			'written_exam',
-			'oral_exam',
-			'electronic_exam',
-		]);
+		expect(catalog.courses[1]?.assessmentModes).toEqual(['coursework', 'written_exam', 'oral_exam', 'electronic_exam']);
 		expect(catalog.courses[1]?.typeByPlanSeason).toEqual({
 			HS: 'Projektmodul',
 			FS: 'Projektmodul',
@@ -267,9 +242,7 @@ describe('catalog normalization', () => {
 				},
 			],
 		});
-		const byId = new Map(
-			buildCatalog(root).courses.map((course) => [course.id, course]),
-		);
+		const byId = new Map(buildCatalog(root).courses.map((course) => [course.id, course]));
 		expect(byId.get('A')?.languages).toBeUndefined();
 		expect(byId.get('B')?.languages).toEqual(['de', 'en']);
 		expect(byId.get('C')?.languages).toBeUndefined();
@@ -284,10 +257,7 @@ describe('catalog normalization', () => {
 			{ shortName: 'INF', name: 'Informatik' },
 			{ shortName: 'ZZZ', name: 'Zeta Programme' },
 		]);
-		expect(catalog.templates.map((template) => template.id)).toEqual([
-			'supplied-template-id',
-			'zzz-parttime-hs24',
-		]);
+		expect(catalog.templates.map((template) => template.id)).toEqual(['supplied-template-id', 'zzz-parttime-hs24']);
 		expect(catalog.templates[0]).toMatchObject({
 			studiengang: 'INF',
 			modell: 'fulltime',
@@ -399,12 +369,7 @@ describe('catalog validation', () => {
 	});
 
 	test.each([
-		[
-			'model',
-			'templates/inf/evening/hs24.json',
-			{ name: 'Bad', slots: [] },
-			'invalid study model',
-		],
+		['model', 'templates/inf/evening/hs24.json', { name: 'Bad', slots: [] }, 'invalid study model'],
 		[
 			'slot type',
 			'templates/inf/fulltime/hs25.json',
@@ -452,12 +417,8 @@ test('production catalog satisfies its data and size contract', () => {
 	expect(catalog.templates).toHaveLength(10);
 	expect(catalog.programmes).toHaveLength(6);
 	expect(catalog.ectsRequirements.INF?.total).toBe(180);
-	expect(byId.get('CISO_ISSUES')?.label).toBe(
-		'CISO Issues - angewandte Praxis',
-	);
-	expect(byId.get('CISO_ISSUES')?.labelEn).toBe(
-		'CISO Issues - applied experience',
-	);
+	expect(byId.get('CISO_ISSUES')?.label).toBe('CISO Issues - angewandte Praxis');
+	expect(byId.get('CISO_ISSUES')?.labelEn).toBe('CISO Issues - applied experience');
 	expect(byId.get('SOC')?.seasons).toEqual(['FS', 'HS']);
 	expect(Buffer.byteLength(serializeCatalog(catalog))).toBeLessThan(1_000_000);
 });

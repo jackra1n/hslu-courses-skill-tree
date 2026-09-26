@@ -29,10 +29,7 @@ export const themeStore = {
 		if (!browser) return;
 
 		const stored = readStorage(STORAGE_KEYS.theme);
-		const newTheme: Theme =
-			stored === 'light' || stored === 'dark' || stored === 'system'
-				? stored
-				: 'system';
+		const newTheme: Theme = stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
 		_theme = newTheme;
 		applyTheme(newTheme);
 	},
@@ -43,8 +40,7 @@ function applyTheme(themeValue: Theme) {
 
 	const root = document.documentElement;
 	const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-	const resolvedTheme: ResolvedTheme =
-		themeValue === 'system' ? (prefersDark ? 'dark' : 'light') : themeValue;
+	const resolvedTheme: ResolvedTheme = themeValue === 'system' ? (prefersDark ? 'dark' : 'light') : themeValue;
 
 	root.classList.toggle('dark', resolvedTheme === 'dark');
 	root.style.colorScheme = resolvedTheme;
@@ -52,20 +48,16 @@ function applyTheme(themeValue: Theme) {
 }
 
 function updateMetaThemeColor(themeValue: ResolvedTheme) {
-	const metaTheme = document.querySelector<HTMLMetaElement>(
-		'meta[name="theme-color"]',
-	);
+	const metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
 	if (!metaTheme) return;
 
 	metaTheme.setAttribute('content', THEME_COLORS[themeValue]);
 }
 
 if (browser) {
-	window
-		.matchMedia('(prefers-color-scheme: dark)')
-		.addEventListener('change', () => {
-			if (_theme === 'system') {
-				applyTheme('system');
-			}
-		});
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+		if (_theme === 'system') {
+			applyTheme('system');
+		}
+	});
 }

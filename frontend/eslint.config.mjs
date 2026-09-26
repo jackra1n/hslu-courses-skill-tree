@@ -37,12 +37,7 @@ export default defineConfig([
 			parserOptions: {
 				tsconfigRootDir: import.meta.dirname,
 				extraFileExtensions: ['.svelte'],
-				project: [
-					'./tsconfig.json',
-					'./tsconfig.e2e.json',
-					'./worker/tsconfig.json',
-					'./tsconfig.lint.json',
-				],
+				project: ['./tsconfig.json', './tsconfig.e2e.json', './worker/tsconfig.json', './tsconfig.lint.json'],
 			},
 		},
 		rules: {
@@ -65,13 +60,7 @@ export default defineConfig([
 		languageOptions: { globals: globals.browser },
 	},
 	{
-		files: [
-			'scripts/**/*.ts',
-			'test/**/*.ts',
-			'*.config.{ts,js,mjs}',
-			'e2e/**/*.ts',
-			'worker/**/*.ts',
-		],
+		files: ['scripts/**/*.ts', 'test/**/*.ts', '*.config.{ts,js,mjs}', 'e2e/**/*.ts', 'worker/**/*.ts'],
 		languageOptions: { globals: { ...globals.node, ...globals.bun } },
 	},
 	{

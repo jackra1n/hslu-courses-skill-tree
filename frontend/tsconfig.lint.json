@@ -4,12 +4,6 @@
 		"types": ["node", "bun"],
 		"noEmit": true
 	},
-	"include": [
-		"scripts/**/*.ts",
-		"test/**/*.ts",
-		"*.config.ts",
-		"*.config.js",
-		"*.config.mjs"
-	],
+	"include": ["scripts/**/*.ts", "test/**/*.ts", "*.config.ts", "*.config.js", "*.config.mjs"],
 	"exclude": ["node_modules", ".svelte-kit", "src/lib/paraglide"]
 }

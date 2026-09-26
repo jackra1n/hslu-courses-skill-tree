@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, mock, test } from 'bun:test';
 
 await mock.module('$app/environment', () => ({ browser: true }));
-const { backupStorage, restoreStorage, writeStorage } = await import(
-	'../src/lib/utils/storage'
-);
+const { backupStorage, restoreStorage, writeStorage } = await import('../src/lib/utils/storage');
 
 class QuotaStorage {
 	private values = new Map<string, string>();

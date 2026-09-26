@@ -78,17 +78,11 @@ export class DragController {
 	}
 
 	// Row arrangement a drop would produce, inserting by horizontal center.
-	private computeRowPreview(
-		nodeId: string,
-		dropPosition: Position,
-	): PlanRow[] | null {
+	private computeRowPreview(nodeId: string, dropPosition: Position): PlanRow[] | null {
 		const plan = this.deps.plan();
 		if (!plan.rows.length) return null;
 
-		const desiredSemester = Math.max(
-			1,
-			Math.round(dropPosition.y / GRID_SIZE.y),
-		);
+		const desiredSemester = Math.max(1, Math.round(dropPosition.y / GRID_SIZE.y));
 		const targetSemester = Math.min(MAX_SEMESTERS, desiredSemester);
 		const rows = plan.rows.map((row) => ({
 			semester: row.semester,
@@ -115,11 +109,7 @@ export class DragController {
 		});
 
 		const at = insertIndex === -1 ? targetRow.nodeOrder.length : insertIndex;
-		targetRow.nodeOrder = [
-			...targetRow.nodeOrder.slice(0, at),
-			nodeId,
-			...targetRow.nodeOrder.slice(at),
-		];
+		targetRow.nodeOrder = [...targetRow.nodeOrder.slice(0, at), nodeId, ...targetRow.nodeOrder.slice(at)];
 
 		return normalizeRows(rows);
 	}
@@ -136,10 +126,7 @@ function normalizeRows(rows: PlanRow[]): PlanRow[] {
 		nodeOrder: [...row.nodeOrder],
 	}));
 
-	while (
-		normalized.length > 1 &&
-		normalized[normalized.length - 1].nodeOrder.length === 0
-	) {
+	while (normalized.length > 1 && normalized[normalized.length - 1].nodeOrder.length === 0) {
 		normalized.pop();
 	}
 

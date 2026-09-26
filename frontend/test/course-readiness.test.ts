@@ -1,16 +1,9 @@
 import { describe, expect, test } from 'bun:test';
-import type {
-	CatalogCourse,
-	PrerequisiteRule,
-} from '../src/lib/data/catalog/catalog-types';
+import type { CatalogCourse, PrerequisiteRule } from '../src/lib/data/catalog/catalog-types';
 import { nextCourseIds } from '../src/lib/data/courses/course-readiness';
 import type { PlanNode, StudyPlan } from '../src/lib/data/planning/study-plan';
 
-function course(
-	id: string,
-	prerequisites: PrerequisiteRule[] = [],
-	assessmentLevelPassed = false,
-): CatalogCourse {
+function course(id: string, prerequisites: PrerequisiteRule[] = [], assessmentLevelPassed = false): CatalogCourse {
 	return {
 		id,
 		label: id,
@@ -75,29 +68,18 @@ describe('nextCourseIds', () => {
 			course('ASSESSMENT', [], true),
 		];
 
-		expect([...nextCourseIds(courses, studyPlan, statuses, false)]).toEqual([
-			'FREE',
-			'READY',
-		]);
+		expect([...nextCourseIds(courses, studyPlan, statuses, false)]).toEqual(['FREE', 'READY']);
 	});
 
 	test('accepts passed prerequisites and assessment-stage requirements', () => {
-		const completedNodes = Array.from({ length: 9 }, (_, index) =>
-			node(`completed-${index}`, `DONE-${index}`, 6),
-		);
+		const completedNodes = Array.from({ length: 9 }, (_, index) => node(`completed-${index}`, `DONE-${index}`, 6));
 		const studyPlan = plan([node('pre-slot', 'PRE'), ...completedNodes]);
 		const statuses = new Map<string, 'attended' | 'completed'>([
 			['pre-slot', 'completed'],
 			...completedNodes.map((entry) => [entry.id, 'completed'] as const),
 		]);
-		const courses = [
-			course('NEEDS_PASS', [completedRule]),
-			course('ASSESSMENT', [], true),
-		];
+		const courses = [course('NEEDS_PASS', [completedRule]), course('ASSESSMENT', [], true)];
 
-		expect([...nextCourseIds(courses, studyPlan, statuses, true)]).toEqual([
-			'NEEDS_PASS',
-			'ASSESSMENT',
-		]);
+		expect([...nextCourseIds(courses, studyPlan, statuses, true)]).toEqual(['NEEDS_PASS', 'ASSESSMENT']);
 	});
 });

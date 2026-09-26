@@ -45,37 +45,20 @@ async function submit(event: SubmitEvent): Promise<void> {
 	</p>
 	<p class="text-xs text-text-secondary">{m.reviews_required()}</p>
 	<fieldset disabled={busy} class="min-w-0 space-y-4">
-		<ReviewRating
-			label={m.reviews_recommendation()}
-			bind:value={recommendation}
-			stars
-		/>
-		<ReviewRating
-			label={m.reviews_content_interest()}
-			bind:value={contentInterest}
-			stars
-		/>
+		<ReviewRating label={m.reviews_recommendation()} bind:value={recommendation} stars />
+		<ReviewRating label={m.reviews_content_interest()} bind:value={contentInterest} stars />
 		<ReviewRating
 			label={m.reviews_difficulty()}
 			bind:value={difficulty}
 			low={m.reviews_easy()}
 			high={m.reviews_hard()}
 		/>
-		<ReviewRating
-			label={m.reviews_workload()}
-			bind:value={workload}
-			low={m.reviews_low()}
-			high={m.reviews_high()}
-		/>
+		<ReviewRating label={m.reviews_workload()} bind:value={workload} low={m.reviews_low()} high={m.reviews_high()} />
 		<p class="text-xs leading-relaxed text-text-secondary">
 			{m.reviews_scale_hint()}
 		</p>
 		<div>
-			<label
-				for={`${id}-text`}
-				class="block text-sm font-medium text-text-primary"
-				>{m.reviews_text()}</label
-			>
+			<label for={`${id}-text`} class="block text-sm font-medium text-text-primary">{m.reviews_text()}</label>
 			<p id={`${id}-hint`} class="mt-1 text-xs text-text-secondary">
 				{m.reviews_text_hint()}
 			</p>

@@ -1,9 +1,6 @@
 <script lang="ts">
 import type { ModuleType } from '$lib/data/catalog/catalog-types';
-import {
-	moduleTypeBadge,
-	moduleTypeLabel,
-} from '$lib/data/courses/module-type';
+import { moduleTypeBadge, moduleTypeLabel } from '$lib/data/courses/module-type';
 
 let {
 	type,
@@ -26,8 +23,7 @@ const solidColor: Record<ModuleType, string> = {
 };
 
 const subtleColor: Record<ModuleType, string> = {
-	Kernmodul:
-		'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300',
+	Kernmodul: 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-300',
 	Projektmodul:
 		'border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800 dark:bg-orange-950/50 dark:text-orange-300',
 	Erweiterungsmodul:
@@ -39,9 +35,7 @@ const subtleColor: Record<ModuleType, string> = {
 };
 
 const label = $derived(short ? moduleTypeBadge(type) : moduleTypeLabel(type));
-const color = $derived(
-	variant === 'solid' ? solidColor[type] : subtleColor[type],
-);
+const color = $derived(variant === 'solid' ? solidColor[type] : subtleColor[type]);
 </script>
 
 <span

@@ -3,12 +3,7 @@ let { value, label }: { value: number; label: string } = $props();
 const id = $props.id();
 </script>
 
-<span
-	role="img"
-	aria-label={label}
-	title={label}
-	class="inline-flex gap-0.5 text-blue-600 dark:text-blue-400"
->
+<span role="img" aria-label={label} title={label} class="inline-flex gap-0.5 text-blue-600 dark:text-blue-400">
 	{#each [1, 2, 3, 4, 5] as score (score)}
 		{@const fill = Math.max(0, Math.min(1, value - score + 1)) * 100}
 		<svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">

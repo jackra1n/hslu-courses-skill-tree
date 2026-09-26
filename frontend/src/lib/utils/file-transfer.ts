@@ -13,9 +13,7 @@ export function downloadJson(filename: string, data: unknown): void {
 	URL.revokeObjectURL(url);
 }
 
-export function pickTextFile(
-	accept = 'application/json,.json',
-): Promise<string | null> {
+export function pickTextFile(accept = 'application/json,.json'): Promise<string | null> {
 	if (!browser) return Promise.resolve(null);
 	return new Promise((resolve) => {
 		const input = document.createElement('input');
@@ -25,8 +23,7 @@ export function pickTextFile(
 			const file = input.files?.[0];
 			if (!file) return resolve(null);
 			const reader = new FileReader();
-			reader.onload = () =>
-				resolve(typeof reader.result === 'string' ? reader.result : null);
+			reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null);
 			reader.onerror = () => resolve(null);
 			reader.readAsText(file);
 		};

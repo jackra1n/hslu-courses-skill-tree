@@ -26,16 +26,9 @@ function closeModal() {
 			transition:scale={{ duration: 200, start: 0.95 }}
 			role="document"
 		>
-			<div
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={(e) => e.stopPropagation()}
-				role="button"
-				tabindex="-1"
-			>
+			<div onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="button" tabindex="-1">
 				<!-- modal header -->
-				<div
-					class="flex items-center justify-between p-6 border-b border-border-primary"
-				>
+				<div class="flex items-center justify-between p-6 border-b border-border-primary">
 					<h2 id="modal-title" class="text-xl font-bold text-text-primary">
 						{m.assessment_title()}
 					</h2>

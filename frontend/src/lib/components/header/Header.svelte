@@ -14,9 +14,7 @@ import TemplateSelector from './TemplateSelector.svelte';
 let programDropdownOpen = $state(false);
 let activeSidebar = $state<'settings' | 'analytics' | null>(null);
 let mobileMenuOpen = $state(false);
-const navigationOpen = $derived(
-	mobileMenuOpen || uiStore.tutorialNavigationOpen,
-);
+const navigationOpen = $derived(mobileMenuOpen || uiStore.tutorialNavigationOpen);
 let accountMenuOpen = $state(false);
 let menuButton: HTMLButtonElement;
 let programButton: HTMLButtonElement;
@@ -44,24 +42,15 @@ async function toggleMobileMenu() {
 const courseStore = getCourseStore();
 
 function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
-	return event
-		.composedPath()
-		.some(
-			(node) =>
-				node instanceof HTMLElement && node.classList.contains(className),
-		);
+	return event.composedPath().some((node) => node instanceof HTMLElement && node.classList.contains(className));
 }
 
 onMount(() => {
 	const handleClickOutside = (event: MouseEvent) => {
-		if (
-			programDropdownOpen &&
-			!eventPathIncludesClass(event, 'program-dropdown')
-		) {
+		if (programDropdownOpen && !eventPathIncludesClass(event, 'program-dropdown')) {
 			programDropdownOpen = false;
 		}
-		if (mobileMenuOpen && !eventPathIncludesClass(event, 'header-navigation'))
-			closeMobileMenu();
+		if (mobileMenuOpen && !eventPathIncludesClass(event, 'header-navigation')) closeMobileMenu();
 	};
 	document.addEventListener('click', handleClickOutside);
 	const handleKeydown = (event: KeyboardEvent) => {
@@ -121,9 +110,7 @@ function closeSidebar() {
 
 const plannedCredits = $derived(courseStore.totalCredits);
 const passedEcts = $derived(courseStore.completedCredits);
-const requiredEcts = $derived(
-	getEctsRequirements(courseStore.currentTemplate.studiengang)?.total ?? 0,
-);
+const requiredEcts = $derived(getEctsRequirements(courseStore.currentTemplate.studiengang)?.total ?? 0);
 const attended = $derived(courseStore.attendedCredits);
 const ectsTooltip = $derived(
 	m.header_ects_tooltip({
@@ -160,10 +147,7 @@ const ectsTooltip = $derived(
 				aria-expanded={programDropdownOpen}
 				class="flex h-11 w-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-border-primary text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:h-9 lg:w-auto lg:px-3"
 			>
-				<span
-					class="i-lucide-graduation-cap h-4 w-4 shrink-0"
-					aria-hidden="true"
-				></span>
+				<span class="i-lucide-graduation-cap h-4 w-4 shrink-0" aria-hidden="true"></span>
 				<span class="hidden lg:inline">{m.header_study_plan()}</span>
 			</button>
 			{#if programDropdownOpen}
@@ -212,17 +196,9 @@ const ectsTooltip = $derived(
 				onclick={closeMobileMenu}
 				class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:order-first lg:mr-2 lg:min-h-9 lg:gap-2 lg:text-text-secondary lg:hover:text-text-primary"
 			>
-				<span
-					class="i-lucide-library h-4 w-4 shrink-0 lg:hidden"
-					aria-hidden="true"
-				></span>
-				<span class="lg:underline lg:underline-offset-4"
-					>{m.browser_title()}</span
-				>
-				<span
-					class="i-lucide-arrow-right ml-auto h-4 w-4 shrink-0 lg:ml-0"
-					aria-hidden="true"
-				></span>
+				<span class="i-lucide-library h-4 w-4 shrink-0 lg:hidden" aria-hidden="true"></span>
+				<span class="lg:underline lg:underline-offset-4">{m.browser_title()}</span>
+				<span class="i-lucide-arrow-right ml-auto h-4 w-4 shrink-0 lg:ml-0" aria-hidden="true"></span>
 			</a>
 
 			<div class="lg:order-2">
@@ -242,10 +218,7 @@ const ectsTooltip = $derived(
 				title={m.header_settings_help()}
 				class="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-text-primary hover:bg-bg-secondary focus-visible:outline-blue-500 lg:order-3 lg:min-h-9 lg:w-9 lg:justify-center lg:px-0"
 			>
-				<span
-					class="i-lucide-settings h-4 w-4 shrink-0"
-					aria-hidden="true"
-				></span>
+				<span class="i-lucide-settings h-4 w-4 shrink-0" aria-hidden="true"></span>
 				<span class="lg:hidden">{m.header_settings_help()}</span>
 			</button>
 		</nav>
@@ -253,7 +226,4 @@ const ectsTooltip = $derived(
 </header>
 
 <SettingsSidebar isOpen={activeSidebar === 'settings'} onClose={closeSidebar} />
-<ProgressAnalytics
-	isOpen={activeSidebar === 'analytics'}
-	onClose={closeSidebar}
-/>
+<ProgressAnalytics isOpen={activeSidebar === 'analytics'} onClose={closeSidebar} />
