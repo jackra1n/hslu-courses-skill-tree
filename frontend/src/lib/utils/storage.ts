@@ -25,17 +25,20 @@ export function writeStorage(key: string, value: string): boolean {
 	}
 }
 
-export function removeStorage(key: string): void {
+export function removeStorage(key: string): boolean {
 	try {
-		if (browser) localStorage.removeItem(key);
+		if (!browser) return false;
+		localStorage.removeItem(key);
+		return true;
 	} catch (error) {
 		warn('remove', key, error);
+		return false;
 	}
 }
 
-export function storageKeys(prefix: string): string[] {
+export function storageKeys(prefix: string): string[] | null {
 	try {
-		if (!browser) return [];
+		if (!browser) return null;
 		const keys: string[] = [];
 		for (let i = 0; i < localStorage.length; i++) {
 			const key = localStorage.key(i);
@@ -44,6 +47,31 @@ export function storageKeys(prefix: string): string[] {
 		return keys;
 	} catch (error) {
 		warn('list', `${prefix}*`, error);
-		return [];
+		return null;
 	}
+}
+
+export function backupStorage(
+	keys: Iterable<string>,
+): Map<string, string | null> | null {
+	try {
+		if (!browser) return null;
+		const backup = new Map<string, string | null>();
+		for (const key of keys) backup.set(key, localStorage.getItem(key));
+		return backup;
+	} catch (error) {
+		warn('back up', [...keys].join(', '), error);
+		return null;
+	}
+}
+
+export function restoreStorage(backup: Map<string, string | null>): boolean {
+	let restored = true;
+	for (const [key, value] of backup) {
+		if (value === null) restored = removeStorage(key) && restored;
+	}
+	for (const [key, value] of backup) {
+		if (value !== null) restored = writeStorage(key, value) && restored;
+	}
+	return restored;
 }

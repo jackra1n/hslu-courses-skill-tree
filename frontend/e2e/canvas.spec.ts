@@ -46,59 +46,107 @@ test('progress imports and saved statuses discard invalid entries without losing
 	).toEqual({ valid: 'attended' });
 });
 
-test('imports report storage failures and keep the stored plans', async ({
-	page,
-	isMobile,
-}) => {
-	await page.addInitScript(() => {
-		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
-	});
-	await page.goto('/');
-	await expect(page.locator('.svelte-flow')).toBeVisible();
-	if (isMobile) {
-		await page.getByRole('button', { name: 'Menu', exact: true }).click();
-	}
-	await page
-		.getByRole('button', { name: 'Settings & help', exact: true })
-		.click();
-	const downloading = page.waitForEvent('download');
-	await page.getByRole('button', { name: 'Export Data', exact: true }).click();
-	const data = JSON.parse(
-		await readFile(await (await downloading).path(), 'utf8'),
-	);
-	const storedPlans = () =>
-		page.evaluate(() =>
-			Object.keys(localStorage)
-				.filter((key) => key.startsWith('studyPlan:'))
-				.map((key) => [key, localStorage.getItem(key)]),
-		);
-	const before = await storedPlans();
-	expect(before.length).toBeGreaterThan(0);
+const STORAGE_FAILURES = [
+	{ name: 'a later plan write', method: 'setItem', key: 'studyPlan:e2e-new' },
+	{ name: 'a progress write', method: 'setItem', key: 'slotStatus' },
+	{
+		name: 'a stale plan removal',
+		method: 'removeItem',
+		key: 'studyPlan:e2e-stale',
+	},
+] as const;
 
-	await page.evaluate(() => {
-		const setItem = Storage.prototype.setItem;
-		Storage.prototype.setItem = function (key: string, value: string) {
-			if (key.startsWith('studyPlan:')) {
-				throw new DOMException('full', 'QuotaExceededError');
-			}
-			setItem.call(this, key, value);
+for (const failure of STORAGE_FAILURES) {
+	test(`imports roll back completely when ${failure.name} fails`, async ({
+		page,
+		isMobile,
+	}) => {
+		await page.addInitScript(() => {
+			localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
+		});
+		await page.goto('/');
+		await expect(page.locator('.svelte-flow')).toBeVisible();
+		if (isMobile) {
+			await page.getByRole('button', { name: 'Menu', exact: true }).click();
+		}
+		await page
+			.getByRole('button', { name: 'Settings & help', exact: true })
+			.click();
+		const exportData = async () => {
+			const downloading = page.waitForEvent('download');
+			await page
+				.getByRole('button', { name: 'Export Data', exact: true })
+				.click();
+			return JSON.parse(
+				await readFile(await (await downloading).path(), 'utf8'),
+			);
 		};
-	});
-	const choosing = page.waitForEvent('filechooser');
-	await page.getByRole('button', { name: 'Import Data', exact: true }).click();
-	await (await choosing).setFiles({
-		name: 'progress.json',
-		mimeType: 'application/json',
-		buffer: Buffer.from(JSON.stringify(data)),
-	});
+		const appStorage = () =>
+			page.evaluate(() =>
+				Object.keys(localStorage)
+					.filter((key) => key !== 'hslu-skill-tree-cloud-sync')
+					.sort()
+					.map((key) => [key, localStorage.getItem(key)]),
+			);
 
-	await expect(
-		page.getByText('Your data could not be saved in this browser.', {
-			exact: false,
-		}),
-	).toBeVisible();
-	expect(await storedPlans()).toEqual(before);
-});
+		const original = await exportData();
+		const plan = original.studyPlans[original.currentTemplateId];
+		await page.evaluate(
+			(stale) => {
+				localStorage.setItem('studyPlan:e2e-stale', JSON.stringify(stale));
+			},
+			{ ...plan, templateId: 'e2e-stale' },
+		);
+		const before = await appStorage();
+
+		const nodeId = plan.rows[0].nodeOrder[0];
+		const imported = {
+			...original,
+			studyPlans: {
+				[original.currentTemplateId]: {
+					...plan,
+					nodes: {
+						...plan.nodes,
+						[nodeId]: { ...plan.nodes[nodeId], label: 'Imported' },
+					},
+				},
+				'e2e-new': { ...plan, templateId: 'e2e-new' },
+			},
+			slotStatus: { [nodeId]: 'completed' },
+		};
+		await page.evaluate(({ method, key }) => {
+			const original = Storage.prototype[method] as (
+				this: Storage,
+				...args: string[]
+			) => void;
+			Storage.prototype[method] = function (...args: string[]) {
+				if (args[0] === key) {
+					throw new DOMException('blocked', 'QuotaExceededError');
+				}
+				original.apply(this, args);
+			};
+		}, failure);
+		const choosing = page.waitForEvent('filechooser');
+		await page
+			.getByRole('button', { name: 'Import Data', exact: true })
+			.click();
+		await (await choosing).setFiles({
+			name: 'progress.json',
+			mimeType: 'application/json',
+			buffer: Buffer.from(JSON.stringify(imported)),
+		});
+
+		await expect(
+			page.getByText('Your data could not be saved in this browser.', {
+				exact: false,
+			}),
+		).toBeVisible();
+		expect(await appStorage()).toEqual(before);
+		const after = await exportData();
+		expect(after.studyPlans[after.currentTemplateId]).toEqual(plan);
+		expect(after.slotStatus).toEqual(original.slotStatus);
+	});
+}
 
 test('invalid badge preferences do not block startup or subsequent changes', async ({
 	page,

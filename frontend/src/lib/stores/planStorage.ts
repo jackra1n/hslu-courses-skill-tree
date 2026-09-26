@@ -30,7 +30,7 @@ export function savePlan(plan: StudyPlan): boolean {
 
 export function loadAllPlans(): Record<string, StudyPlan> {
 	const plans: Record<string, StudyPlan> = {};
-	for (const key of storageKeys(PLAN_PREFIX)) {
+	for (const key of storageKeys(PLAN_PREFIX) ?? []) {
 		const stored = readStorage(key);
 		if (!stored) continue;
 		try {
@@ -43,16 +43,17 @@ export function loadAllPlans(): Record<string, StudyPlan> {
 	return plans;
 }
 
+export function storedPlanKeys(): string[] | null {
+	return storageKeys(PLAN_PREFIX);
+}
+
+export function planKey(templateId: string): string {
+	return KEYS.planFor(templateId);
+}
+
 export function replaceAllPlans(plans: StudyPlan[]): boolean {
-	const keep = new Set<string>();
-	for (const plan of plans) {
-		if (!savePlan(plan)) return false;
-		keep.add(KEYS.planFor(plan.templateId));
-	}
-	for (const key of storageKeys(PLAN_PREFIX)) {
-		if (!keep.has(key)) removeStorage(key);
-	}
-	return true;
+	const stale = storedPlanKeys();
+	return stale !== null && stale.every(removeStorage) && plans.every(savePlan);
 }
 
 export function loadPlan(
@@ -103,29 +104,30 @@ export function loadLegacySelections(): Record<string, string> {
 }
 
 export const planPrefs = {
-	saveTemplate(templateId: string, plan: string): void {
-		writeStorage(KEYS.template, templateId);
-		writeStorage(KEYS.plan, plan);
+	saveTemplate(templateId: string, plan: string): boolean {
+		return (
+			writeStorage(KEYS.template, templateId) && writeStorage(KEYS.plan, plan)
+		);
 	},
 	loadTemplateId: (): string | null => readStorage(KEYS.template),
 	loadPlanCode: (): string | null => readStorage(KEYS.plan),
-	saveStartSeason(season: Season): void {
-		writeStorage(KEYS.startSeason, season);
+	saveStartSeason(season: Season): boolean {
+		return writeStorage(KEYS.startSeason, season);
 	},
 	loadStartSeason(): Season | null {
 		const raw = readStorage(KEYS.startSeason);
 		return raw === 'HS' || raw === 'FS' ? raw : null;
 	},
-	saveStartYear(year: number): void {
-		writeStorage(KEYS.startYear, String(year));
+	saveStartYear(year: number): boolean {
+		return writeStorage(KEYS.startYear, String(year));
 	},
 	loadStartYear(): number | null {
 		const raw = readStorage(KEYS.startYear);
 		const year = raw ? Number(raw) : NaN;
 		return Number.isInteger(year) ? year : null;
 	},
-	saveShortNames(value: boolean): void {
-		writeStorage(KEYS.shortNames, JSON.stringify(value));
+	saveShortNames(value: boolean): boolean {
+		return writeStorage(KEYS.shortNames, JSON.stringify(value));
 	},
 	loadShortNames(): boolean | null {
 		const raw = readStorage(KEYS.shortNames);

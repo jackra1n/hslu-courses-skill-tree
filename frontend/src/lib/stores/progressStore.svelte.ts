@@ -28,8 +28,8 @@ class ProgressStore {
 		return this.statuses;
 	}
 
-	private saveToLocalStorage() {
-		writeStorage(
+	private saveToLocalStorage(): boolean {
+		return writeStorage(
 			'slotStatus',
 			JSON.stringify(Object.fromEntries(this.statuses)),
 		);
@@ -62,9 +62,9 @@ class ProgressStore {
 		return this.statuses.get(slotId) ?? null;
 	}
 
-	replaceAll(status: unknown) {
+	replaceAll(status: unknown): boolean {
 		this.statuses = parseSlotStatuses(status);
-		this.saveToLocalStorage();
+		return this.saveToLocalStorage();
 	}
 
 	hasCompletedInstance(courseId: string, plan: StudyPlan): boolean {

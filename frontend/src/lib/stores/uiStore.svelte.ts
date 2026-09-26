@@ -34,9 +34,9 @@ class UIStore {
 		this.setShowCourseTypeBadges(!this.courseTypeBadges);
 	}
 
-	setShowCourseTypeBadges(value: boolean) {
+	setShowCourseTypeBadges(value: boolean): boolean {
 		this.courseTypeBadges = value;
-		writeStorage('showCourseTypeBadges', JSON.stringify(value));
+		return writeStorage('showCourseTypeBadges', JSON.stringify(value));
 	}
 
 	init() {

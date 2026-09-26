@@ -139,7 +139,7 @@ class CourseStore {
 		template: CurriculumTemplate,
 		resetLayout = false,
 		legacySelections: Record<string, string> = {},
-	): void {
+	): boolean {
 		setCoursePlan(template.plan);
 		const loaded =
 			!resetLayout || template.id !== this.currentTemplate.id
@@ -156,8 +156,8 @@ class CourseStore {
 			progressStore.replaceAll(status);
 		}
 		this.template = template;
-		this.setStudyPlan(next);
-		planPrefs.saveTemplate(template.id, template.plan);
+		const planSaved = this.setStudyPlan(next);
+		return planPrefs.saveTemplate(template.id, template.plan) && planSaved;
 	}
 
 	resetProgress(): void {
@@ -223,15 +223,17 @@ class CourseStore {
 		year: number,
 		season: Season,
 		showShortNamesOnly: boolean,
-	) {
+	): boolean {
 		const template = getTemplateById(currentTemplateId) ?? this.currentTemplate;
 		this.startYear = year;
 		this.startSeason = season;
 		this.showShortNamesOnly = showShortNamesOnly;
-		planPrefs.saveStartYear(year);
-		planPrefs.saveStartSeason(season);
-		planPrefs.saveShortNames(showShortNamesOnly);
-		this.activateTemplate(template);
+		const prefsSaved = [
+			planPrefs.saveStartYear(year),
+			planPrefs.saveStartSeason(season),
+			planPrefs.saveShortNames(showShortNamesOnly),
+		].every(Boolean);
+		return this.activateTemplate(template) && prefsSaved;
 	}
 
 	// The calendar season (HS/FS) a given 1-indexed plan semester falls in.
@@ -372,12 +374,12 @@ class CourseStore {
 		return isPlanCustomized(this.studyPlan);
 	}
 
-	private setStudyPlan(nextPlan: StudyPlan): void {
+	private setStudyPlan(nextPlan: StudyPlan): boolean {
 		const normalized = normalizePlan(nextPlan);
-		if (normalized === this.plan) return;
+		if (normalized === this.plan) return true;
 		this.plan = normalized;
 		this.drag.clear();
-		savePlan(this.studyPlan);
+		return savePlan(this.studyPlan);
 	}
 }
 

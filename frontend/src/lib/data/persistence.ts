@@ -2,10 +2,15 @@ import { browser } from '$app/environment';
 import { isPlanCustomized } from '$lib/data/planning/plan-rules';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { loadAllPlans, replaceAllPlans } from '$lib/stores/planStorage';
+import {
+	loadAllPlans,
+	planKey,
+	replaceAllPlans,
+	storedPlanKeys,
+} from '$lib/stores/planStorage';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
-import { readStorage } from '$lib/utils/storage';
+import { backupStorage, readStorage, restoreStorage } from '$lib/utils/storage';
 import type { Season } from './season';
 import type { StudyPlan } from './planning/study-plan';
 
@@ -56,18 +61,48 @@ export function collectAppData(): AppData {
 	};
 }
 
+function requirePersisted(saved: boolean, what: string): void {
+	if (!saved) throw new Error(`Could not store ${what}`);
+}
+
 export function applyAppData(data: AppData): void {
-	if (!replaceAllPlans(Object.values(data.studyPlans))) {
-		throw new Error('Could not store study plans');
+	const plans = Object.values(data.studyPlans);
+	const storedPlanKeysBefore = storedPlanKeys();
+	const backup =
+		storedPlanKeysBefore &&
+		backupStorage([
+			...storedPlanKeysBefore,
+			...plans.map((plan) => planKey(plan.templateId)),
+			...MEANINGFUL_KEYS,
+			'slotStatus',
+		]);
+	if (!backup) throw new Error('Could not back up stored app data');
+
+	try {
+		requirePersisted(replaceAllPlans(plans), 'study plans');
+		requirePersisted(
+			getCourseStore().restore(
+				data.currentTemplateId,
+				data.start.year,
+				data.start.season,
+				data.preferences.showShortNamesOnly,
+			),
+			'plan preferences',
+		);
+		requirePersisted(progressStore.replaceAll(data.slotStatus), 'progress');
+		requirePersisted(
+			uiStore.setShowCourseTypeBadges(data.preferences.showCourseTypeBadges),
+			'preferences',
+		);
+	} catch (error) {
+		if (!restoreStorage(backup)) {
+			console.error('Could not restore app data after a failed apply');
+		}
+		getCourseStore().init();
+		progressStore.init();
+		uiStore.init();
+		throw error;
 	}
-	getCourseStore().restore(
-		data.currentTemplateId,
-		data.start.year,
-		data.start.season,
-		data.preferences.showShortNamesOnly,
-	);
-	progressStore.replaceAll(data.slotStatus);
-	uiStore.setShowCourseTypeBadges(data.preferences.showCourseTypeBadges);
 }
 
 export function importAppData(
