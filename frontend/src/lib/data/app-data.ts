@@ -112,7 +112,9 @@ export function parseStudyPlan(value: unknown): StudyPlan | null {
 	if (typeof value.planCode !== 'string') return null;
 	if (!Array.isArray(value.rows) || !value.rows.every(isPlanRow)) return null;
 	if (!isRecord(value.nodes)) return null;
-	if (!Object.entries(value.nodes).every(([id, node]) => isPlanNode(node, id))) {
+	if (
+		!Object.entries(value.nodes).every(([id, node]) => isPlanNode(node, id))
+	) {
 		return null;
 	}
 
