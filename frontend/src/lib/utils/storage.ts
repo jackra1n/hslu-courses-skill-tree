@@ -66,12 +66,18 @@ export function backupStorage(
 }
 
 export function restoreStorage(backup: Map<string, string | null>): boolean {
+	const size = (value: string | null) => value?.length ?? 0;
+	const changes = [...backup].map(([key, value]) => ({
+		key,
+		value,
+		growth: size(value) - size(readStorage(key)),
+	}));
+	changes.sort((a, b) => a.growth - b.growth);
+
 	let restored = true;
-	for (const [key, value] of backup) {
-		if (value === null) restored = removeStorage(key) && restored;
-	}
-	for (const [key, value] of backup) {
-		if (value !== null) restored = writeStorage(key, value) && restored;
+	for (const { key, value } of changes) {
+		const done = value === null ? removeStorage(key) : writeStorage(key, value);
+		restored = done && restored;
 	}
 	return restored;
 }
