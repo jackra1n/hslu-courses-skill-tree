@@ -2,11 +2,10 @@ import { browser } from '$app/environment';
 import { authClient } from '$lib/auth-client';
 import {
 	type AppData,
-	applyAppData,
-	collectAppData,
 	parseAppData,
 	serializeSnapshot,
-} from '$lib/data/persistence';
+} from '$lib/data/app-data';
+import { applyAppData, collectAppData } from '$lib/data/persistence';
 import * as m from '$lib/paraglide/messages';
 
 export type SyncStatus =

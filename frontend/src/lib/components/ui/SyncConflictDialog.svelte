@@ -1,6 +1,6 @@
 <script lang="ts">
 import { fade, scale } from 'svelte/transition';
-import { serializeSnapshot } from '$lib/data/persistence';
+import { serializeSnapshot } from '$lib/data/app-data';
 import { seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import {
