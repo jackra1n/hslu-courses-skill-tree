@@ -5,6 +5,7 @@ import {
 	overwriteSetLocale,
 	setLocale,
 } from '$lib/paraglide/runtime';
+import { readStorage, writeStorage } from '$lib/utils/storage';
 
 const LOCALE_KEY = 'locale';
 
@@ -15,8 +16,7 @@ let _locale = $state<Locale>('en');
 
 overwriteGetLocale(() => _locale);
 overwriteSetLocale((newLocale) => {
-	if (typeof localStorage !== 'undefined')
-		localStorage.setItem(LOCALE_KEY, newLocale);
+	writeStorage(LOCALE_KEY, newLocale);
 	applyLocale(newLocale);
 });
 
@@ -35,7 +35,7 @@ function isLocale(value: string): value is Locale {
 }
 
 function detectLocale(): Locale {
-	const stored = localStorage.getItem(LOCALE_KEY);
+	const stored = readStorage(LOCALE_KEY);
 	if (stored && isLocale(stored)) return stored;
 	const preferred = navigator.language.slice(0, 2);
 	return isLocale(preferred) ? preferred : 'en';

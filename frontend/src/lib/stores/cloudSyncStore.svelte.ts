@@ -8,6 +8,7 @@ import {
 	serializeSnapshot,
 } from '$lib/data/persistence';
 import * as m from '$lib/paraglide/messages';
+import { readStorage, writeStorage } from '$lib/utils/storage';
 
 export type SyncStatus =
 	| 'loading'
@@ -80,7 +81,7 @@ function loadMetadata(): SyncMetadata {
 	};
 	if (!browser) return empty;
 	try {
-		const parsed = JSON.parse(localStorage.getItem(METADATA_KEY) ?? 'null');
+		const parsed = JSON.parse(readStorage(METADATA_KEY) ?? 'null');
 		if (parsed && typeof parsed === 'object') {
 			let lastSyncedSnapshot: string | null = null;
 			if (typeof parsed.lastSyncedSnapshot === 'string') {
@@ -106,7 +107,7 @@ function loadMetadata(): SyncMetadata {
 }
 
 function persistMetadata(): void {
-	if (browser) localStorage.setItem(METADATA_KEY, JSON.stringify(metadata));
+	writeStorage(METADATA_KEY, JSON.stringify(metadata));
 }
 
 function cancelDebounce(): void {

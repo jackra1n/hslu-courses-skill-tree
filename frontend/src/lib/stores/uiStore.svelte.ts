@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+import { readStorage, writeStorage } from '$lib/utils/storage';
 import type { Course } from '../types';
 
 class UIStore {
@@ -36,15 +36,11 @@ class UIStore {
 
 	setShowCourseTypeBadges(value: boolean) {
 		this.courseTypeBadges = value;
-		if (browser) {
-			localStorage.setItem('showCourseTypeBadges', JSON.stringify(value));
-		}
+		writeStorage('showCourseTypeBadges', JSON.stringify(value));
 	}
 
 	init() {
-		if (!browser) return;
-		this.courseTypeBadges =
-			localStorage.getItem('showCourseTypeBadges') === 'true';
+		this.courseTypeBadges = readStorage('showCourseTypeBadges') === 'true';
 	}
 }
 

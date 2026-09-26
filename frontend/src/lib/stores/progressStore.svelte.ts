@@ -3,6 +3,7 @@ import type { StudyPlan } from '$lib/data/planning/study-plan';
 import { resolveCourse } from '$lib/data/planning/study-plan';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
 import { getAssessmentStageProgress } from '$lib/utils/status';
+import { readStorage, writeStorage } from '$lib/utils/storage';
 
 type SlotStatus = 'attended' | 'completed';
 
@@ -28,12 +29,10 @@ class ProgressStore {
 	}
 
 	private saveToLocalStorage() {
-		if (browser) {
-			localStorage.setItem(
-				'slotStatus',
-				JSON.stringify(Object.fromEntries(this.statuses)),
-			);
-		}
+		writeStorage(
+			'slotStatus',
+			JSON.stringify(Object.fromEntries(this.statuses)),
+		);
 	}
 
 	private toggleSlotStatus(slotId: string, status: SlotStatus | null) {
@@ -122,7 +121,7 @@ class ProgressStore {
 
 		this.statuses = new Map();
 		try {
-			const savedSlotStatus = localStorage.getItem('slotStatus');
+			const savedSlotStatus = readStorage('slotStatus');
 			if (savedSlotStatus !== null) {
 				this.statuses = parseSlotStatuses(JSON.parse(savedSlotStatus));
 			}

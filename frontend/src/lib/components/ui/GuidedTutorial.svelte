@@ -5,6 +5,7 @@ import 'driver.js/dist/driver.css';
 import * as m from '$lib/paraglide/messages';
 import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
+import { readStorage, writeStorage } from '$lib/utils/storage';
 
 const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
 
@@ -21,7 +22,7 @@ function buildSteps(): DriveStep[] {
 				disableButtons: [],
 				onPrevClick: finishTutorial,
 				onNextClick: (_element, _step, { driver }) => {
-					localStorage.setItem(SEEN_KEY, 'true');
+					writeStorage(SEEN_KEY, 'true');
 					driver.moveNext();
 				},
 				onPopoverRender: (popover) => {
@@ -140,7 +141,7 @@ function finishTutorial() {
 	// onDestroyed can be skipped before the first step animation settles.
 	driverInstance?.destroy();
 	driverInstance = null;
-	localStorage.setItem(SEEN_KEY, 'true');
+	writeStorage(SEEN_KEY, 'true');
 }
 
 async function runTutorial() {
@@ -196,7 +197,7 @@ async function runTutorial() {
 }
 
 onMount(() => {
-	if (localStorage.getItem(SEEN_KEY) !== 'true') {
+	if (readStorage(SEEN_KEY) !== 'true') {
 		runTutorial().catch(handleTutorialError);
 	}
 });
