@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { isStudyPlan } from '$lib/data/app-data';
 import type { CurriculumTemplate } from '$lib/data/catalog/courses';
 import type { Season } from '$lib/data/season';
 import {
@@ -42,7 +43,9 @@ export function loadAllPlans(): Record<string, StudyPlan> {
 		const stored = localStorage.getItem(key);
 		if (!stored) continue;
 		try {
-			const plan = normalizePlan(JSON.parse(stored) as StudyPlan);
+			const parsed: unknown = JSON.parse(stored);
+			if (!isStudyPlan(parsed)) continue;
+			const plan = normalizePlan(parsed);
 			plans[plan.templateId] = plan;
 		} catch (error) {
 			console.error('Failed to parse stored study plan', error);
@@ -70,8 +73,11 @@ export function loadPlan(
 	const stored = read(KEYS.planFor(template.id));
 	if (stored) {
 		try {
-			const parsed = normalizePlan(JSON.parse(stored) as StudyPlan);
-			if (isPlanCompatible(parsed, template)) return parsed;
+			const parsed: unknown = JSON.parse(stored);
+			if (isStudyPlan(parsed)) {
+				const plan = normalizePlan(parsed);
+				if (isPlanCompatible(plan, template)) return plan;
+			}
 		} catch (error) {
 			console.error('Failed to parse stored study plan', error);
 		}
