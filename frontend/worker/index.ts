@@ -1,4 +1,5 @@
 import { getAuth } from './auth';
+import { APP_ORIGINS } from './auth-options';
 import { json } from './http';
 import { handleProgressRequest } from './progress';
 import {
@@ -9,11 +10,17 @@ import {
 	updateReview,
 } from './reviews';
 
-const ALLOWED_ORIGINS = new Set([
-	'https://hsluskilltree.com',
-	'http://localhost:5173',
-	'http://127.0.0.1:5173',
-]);
+const ALLOWED_ORIGINS = new Set(APP_ORIGINS);
+
+function isAllowedOrigin(request: Request): boolean {
+	const origin = request.headers.get('Origin');
+	return origin !== null && ALLOWED_ORIGINS.has(origin);
+}
+
+async function getUserId(request: Request): Promise<string | null> {
+	const session = await getAuth().api.getSession({ headers: request.headers });
+	return session?.user.id ?? null;
+}
 
 // Structured error log: never request bodies, cookies, OAuth tokens, or AppData.
 function logError(scope: string, request: Request, error: unknown): void {
@@ -53,18 +60,13 @@ export default {
 					Allow: 'GET, PUT',
 				});
 			}
-			if (request.method === 'PUT') {
-				const origin = request.headers.get('Origin');
-				if (!origin || !ALLOWED_ORIGINS.has(origin)) {
-					return json({ error: 'forbidden origin' }, 403);
-				}
+			if (request.method === 'PUT' && !isAllowedOrigin(request)) {
+				return json({ error: 'forbidden origin' }, 403);
 			}
 			try {
-				const session = await getAuth().api.getSession({
-					headers: request.headers,
-				});
-				if (!session) return json({ error: 'unauthorized' }, 401);
-				return await handleProgressRequest(request, session.user.id, env.DB);
+				const userId = await getUserId(request);
+				if (!userId) return json({ error: 'unauthorized' }, 401);
+				return await handleProgressRequest(request, userId, env.DB);
 			} catch (error) {
 				logError('progress', request, error);
 				return json({ error: 'internal' }, 500);
@@ -105,26 +107,20 @@ export default {
 			}
 			try {
 				if (request.method === 'GET') {
-					const session = await getAuth().api.getSession({
-						headers: request.headers,
-					});
-					return await getCourseReviews(id, session?.user.id ?? null, env.DB);
+					return await getCourseReviews(id, await getUserId(request), env.DB);
 				}
-				const origin = request.headers.get('Origin');
-				if (!origin || !ALLOWED_ORIGINS.has(origin)) {
+				if (!isAllowedOrigin(request)) {
 					return json({ error: 'forbidden origin' }, 403);
 				}
-				const session = await getAuth().api.getSession({
-					headers: request.headers,
-				});
-				if (!session) return json({ error: 'unauthorized' }, 401);
+				const userId = await getUserId(request);
+				if (!userId) return json({ error: 'unauthorized' }, 401);
 				if (courseReviews) {
-					return await createCourseReview(request, id, session.user.id, env.DB);
+					return await createCourseReview(request, id, userId, env.DB);
 				}
 				if (request.method === 'PUT') {
-					return await updateReview(request, id, session.user.id, env.DB);
+					return await updateReview(request, id, userId, env.DB);
 				}
-				return await deleteReview(id, session.user.id, env.DB);
+				return await deleteReview(id, userId, env.DB);
 			} catch (error) {
 				logError('reviews', request, error);
 				return json({ error: 'internal' }, 500);
