@@ -74,32 +74,14 @@ export function loadPlan(
 	if (stored) {
 		try {
 			const parsed: unknown = JSON.parse(stored);
-			if (isStudyPlan(parsed)) {
-				const plan = normalizePlan(parsed);
-				if (isPlanCompatible(plan, template)) return plan;
+			if (isStudyPlan(parsed) && parsed.templateId === template.id) {
+				return normalizePlan(parsed);
 			}
 		} catch (error) {
 			console.error('Failed to parse stored study plan', error);
 		}
 	}
 	return createStudyPlan(template, fallbackSelections);
-}
-
-function isPlanCompatible(
-	plan: StudyPlan,
-	template: CurriculumTemplate,
-): boolean {
-	if (plan.templateId !== template.id) return false;
-
-	const rowNodeIds = plan.rows.flatMap((row) => row.nodeOrder);
-	const uniqueRowIds = new Set(rowNodeIds);
-	if (uniqueRowIds.size !== rowNodeIds.length) return false;
-
-	const nodeIds = Object.keys(plan.nodes);
-	return (
-		uniqueRowIds.size === nodeIds.length &&
-		nodeIds.every((id) => uniqueRowIds.has(id))
-	);
 }
 
 export function loadLegacySelections(): Record<string, string> {

@@ -72,6 +72,17 @@ function isPlanNode(value: unknown, id: string): value is PlanNode {
 	);
 }
 
+function hasConsistentRows(plan: StudyPlan): boolean {
+	const rowNodeIds = plan.rows.flatMap((row) => row.nodeOrder);
+	const uniqueRowIds = new Set(rowNodeIds);
+	const nodeIds = Object.keys(plan.nodes);
+	return (
+		uniqueRowIds.size === rowNodeIds.length &&
+		uniqueRowIds.size === nodeIds.length &&
+		nodeIds.every((id) => uniqueRowIds.has(id))
+	);
+}
+
 export function isStudyPlan(value: unknown): value is StudyPlan {
 	return (
 		isRecord(value) &&
@@ -80,7 +91,8 @@ export function isStudyPlan(value: unknown): value is StudyPlan {
 		Array.isArray(value.rows) &&
 		value.rows.every(isPlanRow) &&
 		isRecord(value.nodes) &&
-		Object.entries(value.nodes).every(([id, node]) => isPlanNode(node, id))
+		Object.entries(value.nodes).every(([id, node]) => isPlanNode(node, id)) &&
+		hasConsistentRows(value as StudyPlan)
 	);
 }
 

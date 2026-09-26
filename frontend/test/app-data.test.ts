@@ -73,6 +73,16 @@ describe('parseAppData', () => {
 		expect(parseAppData(data)).toEqual(snapshot());
 	});
 
+	test('keeps statuses for slots named like object prototype keys', () => {
+		const json = JSON.stringify(snapshot()).replaceAll('ana-g', '__proto__');
+		const parsed = parseAppData(JSON.parse(json));
+		expect(parsed).not.toBeNull();
+		expect(Object.hasOwn(parsed?.slotStatus ?? {}, '__proto__')).toBe(true);
+		expect(
+			Object.getOwnPropertyDescriptor(parsed?.slotStatus, '__proto__')?.value,
+		).toBe('completed');
+	});
+
 	test.each([
 		['a non-object', null],
 		['an array', []],
@@ -88,6 +98,27 @@ describe('parseAppData', () => {
 		[
 			'a non-string node id',
 			edited([...PLAN, 'rows'], [{ semester: 1, nodeOrder: [1] }]),
+		],
+		[
+			'a row naming a missing node',
+			edited(
+				[...PLAN, 'rows'],
+				[{ semester: 1, nodeOrder: ['ana-g', 'custom-1', 'gone'] }],
+			),
+		],
+		[
+			'a node listed in two rows',
+			edited(
+				[...PLAN, 'rows'],
+				[
+					{ semester: 1, nodeOrder: ['ana-g', 'custom-1'] },
+					{ semester: 2, nodeOrder: ['ana-g'] },
+				],
+			),
+		],
+		[
+			'a node missing from every row',
+			edited([...PLAN, 'rows'], [{ semester: 1, nodeOrder: ['ana-g'] }]),
 		],
 		['a node id not matching its key', edited([...NODE, 'id'], 'other')],
 		['a node with an unknown kind', edited([...NODE, 'kind'], 'optional')],
