@@ -1,5 +1,24 @@
 import { browser } from '$app/environment';
 
+const PLAN_PREFIX = 'studyPlan:';
+
+export const STORAGE_KEYS = {
+	template: 'currentTemplate',
+	plan: 'selectedPlan',
+	shortNames: 'showShortNamesOnly',
+	startSeason: 'startSeason',
+	startYear: 'startYear',
+	legacySelections: 'userSelections',
+	planPrefix: PLAN_PREFIX,
+	planFor: (templateId: string) => `${PLAN_PREFIX}${templateId}`,
+	slotStatus: 'slotStatus',
+	courseTypeBadges: 'showCourseTypeBadges',
+	theme: 'theme',
+	locale: 'locale',
+	tutorialSeen: 'hslu-skill-tree-tutorial-seen',
+	cloudSync: 'hslu-skill-tree-cloud-sync',
+} as const;
+
 function warn(action: string, key: string, error: unknown): void {
 	console.warn(`Could not ${action} "${key}" in local storage`, error);
 }

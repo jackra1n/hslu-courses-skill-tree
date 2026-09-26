@@ -1,4 +1,4 @@
-import { readStorage, writeStorage } from '$lib/utils/storage';
+import { readStorage, STORAGE_KEYS, writeStorage } from '$lib/utils/storage';
 import type { Course } from '../types';
 
 class UIStore {
@@ -36,7 +36,7 @@ class UIStore {
 
 	setShowCourseTypeBadges(value: boolean): boolean {
 		this.courseTypeBadges = value;
-		return writeStorage('showCourseTypeBadges', JSON.stringify(value));
+		return writeStorage(STORAGE_KEYS.courseTypeBadges, JSON.stringify(value));
 	}
 
 	captureState(): boolean {
@@ -48,7 +48,8 @@ class UIStore {
 	}
 
 	init() {
-		this.courseTypeBadges = readStorage('showCourseTypeBadges') === 'true';
+		this.courseTypeBadges =
+			readStorage(STORAGE_KEYS.courseTypeBadges) === 'true';
 	}
 }
 

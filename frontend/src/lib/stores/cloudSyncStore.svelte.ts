@@ -8,7 +8,7 @@ import {
 	serializeSnapshot,
 } from '$lib/data/persistence';
 import * as m from '$lib/paraglide/messages';
-import { readStorage, writeStorage } from '$lib/utils/storage';
+import { readStorage, STORAGE_KEYS, writeStorage } from '$lib/utils/storage';
 
 export type SyncStatus =
 	| 'loading'
@@ -47,7 +47,7 @@ type CloudSnapshot = {
 	updatedAt: number;
 };
 
-const METADATA_KEY = 'hslu-skill-tree-cloud-sync';
+const METADATA_KEY = STORAGE_KEYS.cloudSync;
 const DEBOUNCE_MS = 1_000;
 type SyncError = 'unavailable' | 'sign-in-failed';
 

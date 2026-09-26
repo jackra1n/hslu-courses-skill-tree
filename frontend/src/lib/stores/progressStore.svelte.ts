@@ -3,7 +3,7 @@ import type { StudyPlan } from '$lib/data/planning/study-plan';
 import { resolveCourse } from '$lib/data/planning/study-plan';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
 import { getAssessmentStageProgress } from '$lib/utils/status';
-import { readStorage, writeStorage } from '$lib/utils/storage';
+import { readStorage, STORAGE_KEYS, writeStorage } from '$lib/utils/storage';
 
 type SlotStatus = 'attended' | 'completed';
 
@@ -30,7 +30,7 @@ class ProgressStore {
 
 	private saveToLocalStorage(): boolean {
 		return writeStorage(
-			'slotStatus',
+			STORAGE_KEYS.slotStatus,
 			JSON.stringify(Object.fromEntries(this.statuses)),
 		);
 	}
@@ -129,7 +129,7 @@ class ProgressStore {
 
 		this.statuses = new Map();
 		try {
-			const savedSlotStatus = readStorage('slotStatus');
+			const savedSlotStatus = readStorage(STORAGE_KEYS.slotStatus);
 			if (savedSlotStatus !== null) {
 				this.statuses = parseSlotStatuses(JSON.parse(savedSlotStatus));
 			}

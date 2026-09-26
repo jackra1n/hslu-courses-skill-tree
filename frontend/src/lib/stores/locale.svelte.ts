@@ -5,9 +5,9 @@ import {
 	overwriteSetLocale,
 	setLocale,
 } from '$lib/paraglide/runtime';
-import { readStorage, writeStorage } from '$lib/utils/storage';
+import { readStorage, STORAGE_KEYS, writeStorage } from '$lib/utils/storage';
 
-const LOCALE_KEY = 'locale';
+const LOCALE_KEY = STORAGE_KEYS.locale;
 
 // Bind paraglide's locale resolution to Svelte 5 state: messages call
 // getLocale() while rendering, so reading $state here re-renders every
