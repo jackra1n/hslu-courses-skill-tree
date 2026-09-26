@@ -6,23 +6,14 @@ import {
 	type StudyPlan,
 } from '$lib/data/planning/study-plan';
 import {
+	STORAGE_KEYS,
 	readStorage,
 	removeStorage,
 	storageKeys,
 	writeStorage,
 } from '$lib/utils/storage';
 
-const PLAN_PREFIX = 'studyPlan:';
-
-const KEYS = {
-	template: 'currentTemplate',
-	plan: 'selectedPlan',
-	shortNames: 'showShortNamesOnly',
-	startSeason: 'startSeason',
-	startYear: 'startYear',
-	legacySelections: 'userSelections',
-	planFor: (templateId: string) => `${PLAN_PREFIX}${templateId}`,
-} as const;
+const KEYS = STORAGE_KEYS;
 
 export function savePlan(plan: StudyPlan): boolean {
 	return writeStorage(KEYS.planFor(plan.templateId), JSON.stringify(plan));
@@ -30,7 +21,7 @@ export function savePlan(plan: StudyPlan): boolean {
 
 export function loadAllPlans(): Record<string, StudyPlan> {
 	const plans: Record<string, StudyPlan> = {};
-	for (const key of storageKeys(PLAN_PREFIX) ?? []) {
+	for (const key of storageKeys(KEYS.planPrefix) ?? []) {
 		const stored = readStorage(key);
 		if (!stored) continue;
 		try {
@@ -44,11 +35,7 @@ export function loadAllPlans(): Record<string, StudyPlan> {
 }
 
 export function storedPlanKeys(): string[] | null {
-	return storageKeys(PLAN_PREFIX);
-}
-
-export function planKey(templateId: string): string {
-	return KEYS.planFor(templateId);
+	return storageKeys(KEYS.planPrefix);
 }
 
 export function replaceAllPlans(plans: StudyPlan[]): boolean {

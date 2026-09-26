@@ -4,13 +4,17 @@ import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import {
 	loadAllPlans,
-	planKey,
 	replaceAllPlans,
 	storedPlanKeys,
 } from '$lib/stores/planStorage';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
-import { backupStorage, readStorage, restoreStorage } from '$lib/utils/storage';
+import {
+	backupStorage,
+	readStorage,
+	restoreStorage,
+	STORAGE_KEYS,
+} from '$lib/utils/storage';
 import type { Season } from './season';
 import type { StudyPlan } from './planning/study-plan';
 
@@ -72,9 +76,9 @@ export function applyAppData(data: AppData): void {
 		storedPlanKeysBefore &&
 		backupStorage([
 			...storedPlanKeysBefore,
-			...plans.map((plan) => planKey(plan.templateId)),
+			...plans.map((plan) => STORAGE_KEYS.planFor(plan.templateId)),
 			...MEANINGFUL_KEYS,
-			'slotStatus',
+			STORAGE_KEYS.slotStatus,
 		]);
 	if (!backup) throw new Error('Could not back up stored app data');
 	const store = getCourseStore();
@@ -156,18 +160,18 @@ export function parseAppData(value: unknown): AppData | null {
 // plan: any slot status, any customized plan, or any explicit preference key.
 // Called before store initialization, so it only reads raw storage.
 const MEANINGFUL_KEYS = [
-	'currentTemplate',
-	'selectedPlan',
-	'showShortNamesOnly',
-	'startSeason',
-	'startYear',
-	'showCourseTypeBadges',
-] as const;
+	STORAGE_KEYS.template,
+	STORAGE_KEYS.plan,
+	STORAGE_KEYS.shortNames,
+	STORAGE_KEYS.startSeason,
+	STORAGE_KEYS.startYear,
+	STORAGE_KEYS.courseTypeBadges,
+];
 
 export function hasMeaningfulStoredAppData(): boolean {
 	if (!browser) return false;
 
-	const slotStatusRaw = readStorage('slotStatus');
+	const slotStatusRaw = readStorage(STORAGE_KEYS.slotStatus);
 	if (slotStatusRaw) {
 		try {
 			const statuses = JSON.parse(slotStatusRaw) as Record<string, unknown>;

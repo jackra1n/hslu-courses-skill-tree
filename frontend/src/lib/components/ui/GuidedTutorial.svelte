@@ -5,9 +5,9 @@ import 'driver.js/dist/driver.css';
 import * as m from '$lib/paraglide/messages';
 import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
-import { readStorage, writeStorage } from '$lib/utils/storage';
+import { readStorage, STORAGE_KEYS, writeStorage } from '$lib/utils/storage';
 
-const SEEN_KEY = 'hslu-skill-tree-tutorial-seen';
+const SEEN_KEY = STORAGE_KEYS.tutorialSeen;
 
 // Built per run so the popovers pick up the active locale.
 function buildSteps(): DriveStep[] {
