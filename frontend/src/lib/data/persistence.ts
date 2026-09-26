@@ -2,9 +2,19 @@ import { browser } from '$app/environment';
 import { isPlanCustomized } from '$lib/data/planning/plan-rules';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
-import { clearAllPlans, loadAllPlans, savePlan } from '$lib/stores/planStorage';
+import {
+	loadAllPlans,
+	replaceAllPlans,
+	storedPlanKeys,
+} from '$lib/stores/planStorage';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
+import {
+	backupStorage,
+	readStorage,
+	restoreStorage,
+	STORAGE_KEYS,
+} from '$lib/utils/storage';
 import { APP_DATA_VERSION, type AppData, parseAppData } from './app-data';
 
 export function collectAppData(): AppData {
@@ -25,18 +35,54 @@ export function collectAppData(): AppData {
 	};
 }
 
+function requirePersisted(saved: boolean, what: string): void {
+	if (!saved) throw new Error(`Could not store ${what}`);
+}
+
 export function applyAppData(data: AppData): void {
-	// Replace stale plans so removed plans never resurface on the next upload.
-	clearAllPlans();
-	for (const plan of Object.values(data.studyPlans)) savePlan(plan);
-	getCourseStore().restore(
-		data.currentTemplateId,
-		data.start.year,
-		data.start.season,
-		data.preferences.showShortNamesOnly,
-	);
-	progressStore.replaceAll(data.slotStatus);
-	uiStore.setShowCourseTypeBadges(data.preferences.showCourseTypeBadges);
+	const plans = Object.values(data.studyPlans);
+	const storedPlanKeysBefore = storedPlanKeys();
+	const backup =
+		storedPlanKeysBefore &&
+		backupStorage([
+			...storedPlanKeysBefore,
+			...plans.map((plan) => STORAGE_KEYS.planFor(plan.templateId)),
+			...MEANINGFUL_KEYS,
+			STORAGE_KEYS.slotStatus,
+		]);
+	if (!backup) throw new Error('Could not back up stored app data');
+	const store = getCourseStore();
+	const live = {
+		course: store.captureState(),
+		progress: progressStore.captureState(),
+		ui: uiStore.captureState(),
+	};
+
+	try {
+		requirePersisted(replaceAllPlans(plans), 'study plans');
+		requirePersisted(
+			store.restore(
+				data.currentTemplateId,
+				data.start.year,
+				data.start.season,
+				data.preferences.showShortNamesOnly,
+			),
+			'plan preferences',
+		);
+		requirePersisted(progressStore.replaceAll(data.slotStatus), 'progress');
+		requirePersisted(
+			uiStore.setShowCourseTypeBadges(data.preferences.showCourseTypeBadges),
+			'preferences',
+		);
+	} catch (error) {
+		if (!restoreStorage(backup)) {
+			console.error('Could not restore stored app data after a failed apply');
+		}
+		store.restoreState(live.course);
+		progressStore.restoreState(live.progress);
+		uiStore.restoreState(live.ui);
+		throw error;
+	}
 }
 
 export function importAppData(
@@ -52,7 +98,12 @@ export function importAppData(
 	const data = parseAppData(parsed);
 	if (!data) return { ok: false, error: m.persistence_invalid_backup() };
 
-	applyAppData(data);
+	try {
+		applyAppData(data);
+	} catch (error) {
+		console.error('Failed to import app data', error);
+		return { ok: false, error: m.persistence_storage_failed() };
+	}
 	return { ok: true };
 }
 
@@ -60,18 +111,18 @@ export function importAppData(
 // plan: any slot status, any customized plan, or any explicit preference key.
 // Called before store initialization, so it only reads raw storage.
 const MEANINGFUL_KEYS = [
-	'currentTemplate',
-	'selectedPlan',
-	'showShortNamesOnly',
-	'startSeason',
-	'startYear',
-	'showCourseTypeBadges',
-] as const;
+	STORAGE_KEYS.template,
+	STORAGE_KEYS.plan,
+	STORAGE_KEYS.shortNames,
+	STORAGE_KEYS.startSeason,
+	STORAGE_KEYS.startYear,
+	STORAGE_KEYS.courseTypeBadges,
+];
 
 export function hasMeaningfulStoredAppData(): boolean {
 	if (!browser) return false;
 
-	const slotStatusRaw = localStorage.getItem('slotStatus');
+	const slotStatusRaw = readStorage(STORAGE_KEYS.slotStatus);
 	if (slotStatusRaw) {
 		try {
 			const statuses = JSON.parse(slotStatusRaw) as Record<string, unknown>;
@@ -85,5 +136,5 @@ export function hasMeaningfulStoredAppData(): boolean {
 		if (isPlanCustomized(plan)) return true;
 	}
 
-	return MEANINGFUL_KEYS.some((key) => localStorage.getItem(key) !== null);
+	return MEANINGFUL_KEYS.some((key) => readStorage(key) !== null);
 }

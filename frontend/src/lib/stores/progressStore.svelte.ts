@@ -3,6 +3,7 @@ import type { StudyPlan } from '$lib/data/planning/study-plan';
 import { resolveCourse } from '$lib/data/planning/study-plan';
 import { evaluatePrerequisites } from '$lib/utils/prerequisite';
 import { getAssessmentStageProgress } from '$lib/utils/status';
+import { readStorage, STORAGE_KEYS, writeStorage } from '$lib/utils/storage';
 
 type SlotStatus = 'attended' | 'completed';
 
@@ -27,13 +28,11 @@ class ProgressStore {
 		return this.statuses;
 	}
 
-	private saveToLocalStorage() {
-		if (browser) {
-			localStorage.setItem(
-				'slotStatus',
-				JSON.stringify(Object.fromEntries(this.statuses)),
-			);
-		}
+	private saveToLocalStorage(): boolean {
+		return writeStorage(
+			STORAGE_KEYS.slotStatus,
+			JSON.stringify(Object.fromEntries(this.statuses)),
+		);
 	}
 
 	private toggleSlotStatus(slotId: string, status: SlotStatus | null) {
@@ -63,9 +62,17 @@ class ProgressStore {
 		return this.statuses.get(slotId) ?? null;
 	}
 
-	replaceAll(status: unknown) {
+	captureState(): Map<string, SlotStatus> {
+		return this.statuses;
+	}
+
+	restoreState(statuses: Map<string, SlotStatus>): void {
+		this.statuses = statuses;
+	}
+
+	replaceAll(status: unknown): boolean {
 		this.statuses = parseSlotStatuses(status);
-		this.saveToLocalStorage();
+		return this.saveToLocalStorage();
 	}
 
 	hasCompletedInstance(courseId: string, plan: StudyPlan): boolean {
@@ -122,7 +129,7 @@ class ProgressStore {
 
 		this.statuses = new Map();
 		try {
-			const savedSlotStatus = localStorage.getItem('slotStatus');
+			const savedSlotStatus = readStorage(STORAGE_KEYS.slotStatus);
 			if (savedSlotStatus !== null) {
 				this.statuses = parseSlotStatuses(JSON.parse(savedSlotStatus));
 			}

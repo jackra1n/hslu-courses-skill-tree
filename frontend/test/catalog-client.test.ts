@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, test } from 'bun:test';
 import { createCatalogClient } from '../src/lib/data/catalog/catalog-client';
+import { loadCatalog } from '../src/lib/data/catalog/catalog-loader';
 import type { CatalogData } from '../src/lib/data/catalog/catalog-types';
+import { getTemplateById } from '../src/lib/data/catalog/courses';
 
 const VALID_CATALOG: CatalogData = {
 	schemaVersion: 1,
@@ -193,16 +195,8 @@ describe('catalog client', () => {
 				),
 			)) as typeof fetch;
 
-		// Dynamic imports ensure catalog-loader captures this test fetch.
 		try {
-			const { loadCatalog } = await import(
-				'../src/lib/data/catalog/catalog-loader'
-			);
 			await loadCatalog();
-			const { getTemplateById } = await import(
-				'../src/lib/data/catalog/courses'
-			);
-
 			expect(getTemplateById(template.id)).toEqual(template);
 		} finally {
 			globalThis.fetch = originalFetch;

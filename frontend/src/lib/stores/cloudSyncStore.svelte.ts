@@ -7,6 +7,7 @@ import {
 } from '$lib/data/app-data';
 import { applyAppData, collectAppData } from '$lib/data/persistence';
 import * as m from '$lib/paraglide/messages';
+import { readStorage, STORAGE_KEYS, writeStorage } from '$lib/utils/storage';
 
 export type SyncStatus =
 	| 'loading'
@@ -45,7 +46,7 @@ type CloudSnapshot = {
 	updatedAt: number;
 };
 
-const METADATA_KEY = 'hslu-skill-tree-cloud-sync';
+const METADATA_KEY = STORAGE_KEYS.cloudSync;
 const DEBOUNCE_MS = 1_000;
 type SyncError = 'unavailable' | 'sign-in-failed';
 
@@ -79,7 +80,7 @@ function loadMetadata(): SyncMetadata {
 	};
 	if (!browser) return empty;
 	try {
-		const parsed = JSON.parse(localStorage.getItem(METADATA_KEY) ?? 'null');
+		const parsed = JSON.parse(readStorage(METADATA_KEY) ?? 'null');
 		if (parsed && typeof parsed === 'object') {
 			let lastSyncedSnapshot: string | null = null;
 			if (typeof parsed.lastSyncedSnapshot === 'string') {
@@ -105,12 +106,16 @@ function loadMetadata(): SyncMetadata {
 }
 
 function persistMetadata(): void {
-	if (browser) localStorage.setItem(METADATA_KEY, JSON.stringify(metadata));
+	writeStorage(METADATA_KEY, JSON.stringify(metadata));
 }
 
 function cancelDebounce(): void {
 	window.clearTimeout(debounceTimer);
 	debounceTimer = undefined;
+}
+
+function logSyncError(operation: string, error: unknown): void {
+	console.error(`Cloud sync ${operation} failed`, error);
 }
 
 function setUnavailable(): void {
@@ -247,7 +252,8 @@ async function putSnapshot(
 		if (response.status !== 401 || attempt === 1) return response;
 		const session = await authClient.getSession();
 		if (user?.id !== userId) return null;
-		if (session.error) throw new Error('Session unavailable');
+		if (session.error)
+			throw new Error(`Session unavailable (${session.error.status})`);
 		if (session.data?.user?.id !== userId) {
 			setUser(null);
 			conflict = null;
@@ -305,7 +311,8 @@ async function writePending(
 				continue;
 			}
 
-			if (!response.ok) throw new Error('Cloud write unavailable');
+			if (!response.ok)
+				throw new Error(`Cloud write failed (${response.status})`);
 			const body: unknown = await response.json();
 			if (user?.id !== userId) return;
 			if (
@@ -324,7 +331,8 @@ async function writePending(
 			expectedRevision = metadata.revision;
 			resolution = null;
 		}
-	} catch {
+	} catch (error) {
+		logSyncError('write', error);
 		if (user?.id === userId) setUnavailable();
 	}
 }
@@ -356,7 +364,8 @@ async function initialize(localDataIsMeaningful: boolean): Promise<void> {
 		await inFlight;
 		observeLocal(collectAppData());
 		const session = await authClient.getSession();
-		if (session.error) throw new Error('Session unavailable');
+		if (session.error)
+			throw new Error(`Session unavailable (${session.error.status})`);
 		const sessionUser = session.data?.user;
 		if (!sessionUser) {
 			setUser(null);
@@ -412,14 +421,15 @@ async function initialize(localDataIsMeaningful: boolean): Promise<void> {
 			await startPendingWrite();
 			return;
 		}
-		if (!response.ok) throw new Error('Cloud read unavailable');
+		if (!response.ok) throw new Error(`Cloud read failed (${response.status})`);
 		const cloud = parseCloudSnapshot(await response.json());
 		if (user?.id !== userId) return;
 		if (!cloud) throw new Error('Invalid cloud snapshot');
 		canWrite = true;
 		if (reconcileCloud(cloud, localDataIsMeaningful, true) === 'write')
 			await startPendingWrite();
-	} catch {
+	} catch (error) {
+		logSyncError('initialization', error);
 		setUnavailable();
 	}
 }
@@ -487,10 +497,15 @@ export const cloudSyncStore = {
 				callbackURL,
 			});
 			if (result.error) {
+				logSyncError(
+					'sign-in',
+					new Error(`Sign-in failed (${result.error.status})`),
+				);
 				status = 'error';
 				syncError = 'sign-in-failed';
 			}
-		} catch {
+		} catch (error) {
+			logSyncError('sign-in', error);
 			status = 'error';
 			syncError = 'sign-in-failed';
 		}
@@ -505,12 +520,14 @@ export const cloudSyncStore = {
 				await inFlight;
 				await startPendingWrite();
 				const result = await authClient.signOut();
-				if (result.error) throw new Error('Sign-out unavailable');
+				if (result.error)
+					throw new Error(`Sign-out failed (${result.error.status})`);
 				setUser(null);
 				conflict = null;
 				syncError = null;
 				status = 'local';
-			} catch {
+			} catch (error) {
+				logSyncError('sign-out', error);
 				setUnavailable();
 			}
 		})().finally(() => {
@@ -535,7 +552,8 @@ export const cloudSyncStore = {
 				revision: conflict.cloudRevision,
 				updatedAt: conflict.cloudUpdatedAt,
 			});
-		} catch {
+		} catch (error) {
+			logSyncError('cloud conflict resolution', error);
 			setUnavailable();
 		}
 	},
@@ -553,7 +571,8 @@ export const cloudSyncStore = {
 			metadata.dirty = true;
 			persistMetadata();
 			await startPendingWrite(conflict);
-		} catch {
+		} catch (error) {
+			logSyncError('local conflict resolution', error);
 			setUnavailable();
 		} finally {
 			resolvingConflict = false;

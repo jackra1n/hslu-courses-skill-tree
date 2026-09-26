@@ -4,7 +4,9 @@ import type { CatalogData } from './catalog-types';
 
 export { catalogAssetUrl };
 
-const client = createCatalogClient(catalogAssetUrl, fetch);
+const client = createCatalogClient(catalogAssetUrl, (input, init) =>
+	fetch(input, init),
+);
 
 export function loadCatalog(): Promise<CatalogData> {
 	return client.load();

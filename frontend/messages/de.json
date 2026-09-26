@@ -311,6 +311,7 @@
 
 	"persistence_invalid_json": "Keine gültige JSON-Datei.",
 	"persistence_invalid_backup": "Diese Datei ist kein gültiges Skill-Tree-Backup.",
+	"persistence_storage_failed": "Deine Daten konnten in diesem Browser nicht gespeichert werden. Prüfe, ob der Website-Speicher aktiviert und nicht voll ist.",
 
 	"tutorial_progress": "Schritt {current} von {total}",
 	"tutorial_next": "Weiter",

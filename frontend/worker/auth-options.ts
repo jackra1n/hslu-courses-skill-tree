@@ -1,5 +1,11 @@
 import type { BetterAuthOptions } from 'better-auth';
 
+export const APP_ORIGINS = [
+	'https://hsluskilltree.com',
+	'http://localhost:5173',
+	'http://127.0.0.1:5173',
+];
+
 export type AuthSecrets = {
 	BETTER_AUTH_SECRET: string;
 	GITHUB_CLIENT_ID: string;
@@ -25,13 +31,9 @@ export function createAuthOptions(
 		baseURL: {
 			// Dynamic per-request base URL limited to the app's real hosts. No
 			// fallback: unknown hosts throw instead of being silently trusted.
-			allowedHosts: ['hsluskilltree.com', 'localhost:5173', '127.0.0.1:5173'],
+			allowedHosts: APP_ORIGINS.map((origin) => new URL(origin).host),
 		},
-		trustedOrigins: [
-			'https://hsluskilltree.com',
-			'http://localhost:5173',
-			'http://127.0.0.1:5173',
-		],
+		trustedOrigins: APP_ORIGINS,
 		socialProviders: {
 			github: {
 				clientId: secrets.GITHUB_CLIENT_ID,

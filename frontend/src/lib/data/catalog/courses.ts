@@ -69,13 +69,6 @@ export function getAvailablePlans(
 	return [...new Set(templates.map((template) => template.plan))].sort();
 }
 
-let _currentPlan: string | null = null;
-
-function currentPlan(): string {
-	_currentPlan ??= getDefaultTemplate()?.plan ?? 'HS25';
-	return _currentPlan;
-}
-
 export function getAvailableModels(studiengang: string): StudyModel[] {
 	const models = new Set<StudyModel>();
 	getAvailableTemplates().forEach((template) => {
@@ -86,66 +79,45 @@ export function getAvailableModels(studiengang: string): StudyModel[] {
 	return Array.from(models).sort((a, b) => a.localeCompare(b));
 }
 
-let _sortedCourses: Course[] | null = null;
-let _sortedCoursesLocale: string | null = null;
-let _coursesById: Record<string, Course> | null = null;
+let _currentPlan: string | null = null;
 
-function buildCourseCollections(): {
-	sortedCourses: Course[];
-	coursesMap: Record<string, Course>;
-} {
-	const activeLocale = getLocale();
-	if (_sortedCourses && _sortedCoursesLocale === activeLocale && _coursesById) {
-		return { sortedCourses: _sortedCourses, coursesMap: _coursesById };
-	}
+function currentPlan(): string {
+	_currentPlan ??= getDefaultTemplate()?.plan ?? 'HS25';
+	return _currentPlan;
+}
 
-	const courses = _coursesById
-		? Object.values(_coursesById)
-		: loadCourseData(currentPlan());
-	if (!_coursesById) {
-		_coursesById = Object.fromEntries(
-			courses.map((course) => [course.id, course]),
-		);
-	}
-	_sortedCourses = [...courses].sort((a, b) =>
-		courseLabel(a).localeCompare(courseLabel(b)),
+let _coursesById: Map<string, Course> | null = null;
+let _sortedCourses: { locale: string; courses: Course[] } | null = null;
+
+function coursesById(): Map<string, Course> {
+	_coursesById ??= new Map(
+		loadCourseData(currentPlan()).map((course) => [course.id, course]),
 	);
-	_sortedCoursesLocale = activeLocale;
-
-	return { sortedCourses: _sortedCourses, coursesMap: _coursesById };
+	return _coursesById;
 }
 
 export function setCoursePlan(plan: string): void {
-	if (_currentPlan !== plan) {
-		_currentPlan = plan;
-		_sortedCourses = null;
-		_sortedCoursesLocale = null;
-		_coursesById = null;
-	}
+	if (_currentPlan === plan) return;
+	_currentPlan = plan;
+	_coursesById = null;
+	_sortedCourses = null;
 }
 
-export const COURSES: Course[] = new Proxy([], {
-	get(_target, prop) {
-		const { sortedCourses } = buildCourseCollections();
-		return Reflect.get(sortedCourses, prop);
-	},
-	has(_target, prop) {
-		const { sortedCourses } = buildCourseCollections();
-		return Reflect.has(sortedCourses, prop);
-	},
-	ownKeys(_target) {
-		const { sortedCourses } = buildCourseCollections();
-		return Reflect.ownKeys(sortedCourses);
-	},
-	getOwnPropertyDescriptor(_target, prop) {
-		const { sortedCourses } = buildCourseCollections();
-		return Reflect.getOwnPropertyDescriptor(sortedCourses, prop);
-	},
-}) as Course[];
+export function getSortedCourses(): Course[] {
+	const locale = getLocale();
+	if (_sortedCourses?.locale !== locale) {
+		_sortedCourses = {
+			locale,
+			courses: [...coursesById().values()].sort((a, b) =>
+				courseLabel(a).localeCompare(courseLabel(b)),
+			),
+		};
+	}
+	return _sortedCourses.courses;
+}
 
 export function getCourseById(id: string): Course | undefined {
-	const { coursesMap } = buildCourseCollections();
-	return coursesMap[id];
+	return coursesById().get(id);
 }
 
 export type ExtendedNodeData = {

@@ -1,10 +1,12 @@
 <script lang="ts">
-import { onMount, tick } from 'svelte';
+import { tick } from 'svelte';
+import { MediaQuery } from 'svelte/reactivity';
 import CourseDetailContent from '$lib/components/course/CourseDetailContent.svelte';
 import { getCourseById } from '$lib/data/catalog/courses';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
+import { DRAWER_OVERLAY_QUERY, trapTabFocus } from '$lib/utils/drawer';
 import ActionButtons from './ActionButtons.svelte';
 import ElectiveCourseSelector from './ElectiveCourseSelector.svelte';
 import StatusLegend from './StatusLegend.svelte';
@@ -13,7 +15,8 @@ const TITLE_ID = 'skill-tree-course-detail-title';
 
 let panel: HTMLElement;
 let closeButton = $state<HTMLButtonElement>();
-let isOverlay = $state(false);
+const overlay = new MediaQuery(DRAWER_OVERLAY_QUERY);
+const isOverlay = $derived(overlay.current);
 
 const courseStore = getCourseStore();
 
@@ -50,16 +53,6 @@ const activePlanNode = $derived.by(() => {
 
 const isDrawerOpen = $derived(uiStore.hasSelection);
 
-function focusableElements(): HTMLElement[] {
-	return Array.from(
-		panel.querySelectorAll<HTMLElement>(
-			'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])',
-		),
-	).filter(
-		(element) => element.tabIndex >= 0 && element.getClientRects().length > 0,
-	);
-}
-
 function closeDetails(): void {
 	uiStore.deselectCourse();
 }
@@ -83,31 +76,8 @@ function handleKeydown(event: KeyboardEvent): void {
 		closeDetails();
 		return;
 	}
-	if (event.key !== 'Tab') return;
-
-	const focusable = focusableElements();
-	const first = focusable[0];
-	const last = focusable.at(-1);
-	if (!first || !last) return;
-
-	if (event.shiftKey && document.activeElement === first) {
-		event.preventDefault();
-		last.focus();
-	} else if (!event.shiftKey && document.activeElement === last) {
-		event.preventDefault();
-		first.focus();
-	}
+	trapTabFocus(event, panel);
 }
-
-onMount(() => {
-	const media = window.matchMedia('(max-width: 1279px)');
-	const updateOverlay = () => {
-		isOverlay = media.matches;
-	};
-	updateOverlay();
-	media.addEventListener('change', updateOverlay);
-	return () => media.removeEventListener('change', updateOverlay);
-});
 
 $effect(() => {
 	if (!displayCourse?.id) return;
