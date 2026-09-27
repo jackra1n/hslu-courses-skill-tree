@@ -127,7 +127,6 @@
 	"layout_description": "Interaktive Skill-Tree-Visualisierung für HSLU-Module. Plane dein Studium mit Voraussetzungs-Tracking und Modulfortschritt.",
 
 	"page_loading_catalog": "Modulkatalog wird geladen…",
-	"page_loading_progress": "Dein Fortschritt wird geladen…",
 	"page_catalog_unavailable_title": "Modulkatalog nicht verfügbar",
 	"page_catalog_unavailable_text": "Überprüfe deine Verbindung und versuche es erneut.",
 
@@ -204,6 +203,7 @@
 	"account_status_saved": "Gespeichert",
 	"account_status_saving": "Speichern…",
 	"account_status_saved_local": "Auf diesem Gerät gespeichert",
+	"account_status_syncing": "Wird synchronisiert…",
 
 	"sync_title": "Wähle welche Daten du behalten möchtest",
 	"sync_description": "Dieses Gerät und dein Cloud-Konto haben unterschiedliche Daten. Wähle welche Version du behalten möchtest; sie ersetzt die andere.",
