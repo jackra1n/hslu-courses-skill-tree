@@ -33,3 +33,18 @@ for (const { path, status, ready } of pages) {
 		await expect(control).toBeVisible();
 	});
 }
+
+for (const { path, ready } of pages) {
+	test(`${path} preloads the catalog from its prerendered html and fetches it once`, async ({ page }) => {
+		const html = await (await page.request.get(path)).text();
+		const href = /<link rel="preload" as="fetch"[^>]* href="([^"]*catalog[^"]*)"/.exec(html)?.[1];
+		expect(href).toBeDefined();
+		const requests: string[] = [];
+		page.on('request', (request) => {
+			if (request.url().includes('catalog.generated')) requests.push(request.url());
+		});
+		await page.goto(path);
+		await expect(page.getByRole(ready.role, { name: ready.name, exact: true })).toBeVisible();
+		expect(requests).toEqual([new URL(href!, page.url()).href]);
+	});
+}
