@@ -354,16 +354,32 @@ test('edits during a pending session lookup upload once it resolves', async ({ p
 	expect((await snapshot(page)).data.slotStatus).toEqual({ [slotId]: 'attended' });
 });
 
-test('signed-out visitors can edit while the session lookup is pending', async ({ page }) => {
+test('the last confirmed account shows until its session is verified', async ({ page }) => {
+	const session = await holdRequests(page, sessionUrl);
+	await page.reload();
+	await expect.poll(session.requests).toBe(1);
+	await page.getByRole('button', { name: 'Account menu', exact: true }).click();
+	await expect(page.getByText('Syncing…', { exact: true })).toBeVisible();
+	await expect(page.getByText(/@e2e\.invalid$/)).toHaveCount(0);
+	await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toHaveCount(0);
+	session.release();
+	await expect(page.getByText('Saved', { exact: true })).toBeVisible();
+	await expect(page.getByText(/@e2e\.invalid$/)).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toBeVisible();
+});
+
+test('an ended session can edit while pending and then forgets the account', async ({ page }) => {
 	await page.context().clearCookies();
 	const session = await holdRequests(page, sessionUrl);
 	await page.reload();
 	await expect.poll(session.requests).toBe(1);
+	await expect(page.getByRole('button', { name: 'Account menu', exact: true })).toBeVisible();
 	const slotId = await openCourse(page);
 	await changeProgress(page, 'Attended');
 	session.release();
 	await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeVisible();
 	await expectLocalProgress(page, slotId, 'attended');
+	expect(await page.evaluate(() => JSON.parse(localStorage.getItem('hslu-skill-tree-cloud-sync')!).profile)).toBeNull();
 });
 
 test('edits during a pending progress read survive divergent cloud data', async ({ page }) => {
@@ -387,6 +403,11 @@ test('a failed session lookup leaves the plan usable', async ({ page }) => {
 	const slotId = await openCourse(page);
 	await changeProgress(page, 'Attended');
 	await expectLocalProgress(page, slotId, 'attended');
+	await page.getByRole('button', { name: 'Account menu', exact: true }).click();
+	await expect(
+		page.getByText('Cloud sync unavailable. Changes remain saved on this device.', { exact: true }),
+	).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toHaveCount(0);
 });
 
 test('a late cloud update clears the selection and refits the canvas', async ({ page }) => {
