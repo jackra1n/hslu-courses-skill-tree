@@ -8,7 +8,7 @@ import Header from '$lib/components/header/Header.svelte';
 import CourseDetailsPanel from '$lib/components/sidebar/CourseDetailsPanel.svelte';
 import StatusLegend from '$lib/components/sidebar/StatusLegend.svelte';
 import GuidedTutorial from '$lib/components/ui/GuidedTutorial.svelte';
-import { catalogAssetUrl, loadCatalog } from '$lib/data/catalog/catalog-loader';
+import { loadCatalog } from '$lib/data/catalog/catalog-loader';
 import { collectAppData, hasMeaningfulStoredAppData } from '$lib/data/persistence';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
@@ -141,7 +141,3 @@ $effect(() => {
 		</div>
 	</div>
 {/if}
-
-<svelte:head>
-	<link rel="preload" as="fetch" type="application/json" href={catalogAssetUrl} crossorigin="anonymous">
-</svelte:head>
