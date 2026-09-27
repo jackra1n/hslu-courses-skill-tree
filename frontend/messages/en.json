@@ -203,6 +203,7 @@
 	"account_status_saved": "Saved",
 	"account_status_saving": "Saving…",
 	"account_status_saved_local": "Saved on this device",
+	"account_status_syncing": "Syncing…",
 
 	"sync_title": "Choose which data to keep",
 	"sync_description": "This device and your cloud account have different data. Choose which version to keep; it will replace the other.",

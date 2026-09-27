@@ -14,6 +14,8 @@ type SyncUser = {
 	image: string | null;
 };
 
+type SyncProfile = Pick<SyncUser, 'name' | 'image'>;
+
 export type SyncConflict = {
 	local: AppData;
 	cloud: AppData;
@@ -28,6 +30,8 @@ type SyncMetadata = {
 	lastSyncedSnapshot: string | null;
 	dirty: boolean;
 	localUpdatedAt: number | null;
+	// Last confirmed account, shown while the session is unverified.
+	profile: SyncProfile | null;
 };
 
 type CloudSnapshot = {
@@ -67,6 +71,7 @@ function loadMetadata(): SyncMetadata {
 		lastSyncedSnapshot: null,
 		dirty: false,
 		localUpdatedAt: null,
+		profile: null,
 	};
 	if (!browser) return empty;
 	try {
@@ -85,6 +90,13 @@ function loadMetadata(): SyncMetadata {
 				localUpdatedAt:
 					typeof parsed.localUpdatedAt === 'number' && Number.isFinite(parsed.localUpdatedAt)
 						? parsed.localUpdatedAt
+						: null,
+				profile:
+					typeof parsed.profile?.name === 'string'
+						? {
+								name: parsed.profile.name,
+								image: typeof parsed.profile.image === 'string' ? parsed.profile.image : null,
+							}
 						: null,
 			};
 		}
@@ -123,6 +135,8 @@ function setUser(next: SyncUser | null): void {
 	if (!next) canWrite = false;
 	user = next;
 	if (next) metadata.userId = next.id;
+	metadata.profile = next && { name: next.name, image: next.image };
+	persistMetadata();
 }
 
 function observeLocal(data: AppData): string {
@@ -341,7 +355,6 @@ async function initialize(localDataIsMeaningful: boolean): Promise<void> {
 		if (!sessionUser) {
 			setUser(null);
 			conflict = null;
-			persistMetadata();
 			syncError = null;
 			status = 'local';
 			return;
@@ -407,6 +420,9 @@ async function initialize(localDataIsMeaningful: boolean): Promise<void> {
 export const cloudSyncStore = {
 	get user() {
 		return user;
+	},
+	get profile(): SyncProfile | null {
+		return user ?? metadata.profile;
 	},
 	get status() {
 		return status;

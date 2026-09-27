@@ -47,11 +47,14 @@ onMount(() => {
 });
 
 const user = $derived(cloudSyncStore.user);
+const profile = $derived(cloudSyncStore.profile);
 const status = $derived(cloudSyncStore.status);
 const errorMessage = $derived(cloudSyncStore.errorMessage);
 
 function statusLabel(status: SyncStatus): string | null {
 	switch (status) {
+		case 'loading':
+			return m.account_status_syncing();
 		case 'synced':
 			return m.account_status_saved();
 		case 'saving':
@@ -63,8 +66,6 @@ function statusLabel(status: SyncStatus): string | null {
 			return errorMessage;
 		case 'conflict':
 			return m.account_status_saved_local();
-		default:
-			return null;
 	}
 }
 
@@ -88,15 +89,15 @@ async function handleSignOut() {
 </script>
 
 <div class="relative account-menu" data-tour="account">
-	{#if user}
+	{#if profile}
 		<button
 			onclick={toggleAccountMenu}
 			class={triggerClass}
 			aria-label={m.account_menu()}
 			aria-expanded={accountMenuOpen}
 		>
-			{#if user.image}
-				<img src={user.image} alt="" class="h-6 w-6 rounded-full object-cover" referrerpolicy="no-referrer">
+			{#if profile.image}
+				<img src={profile.image} alt="" class="h-6 w-6 rounded-full object-cover" referrerpolicy="no-referrer">
 			{:else}
 				<div class="i-lucide-user h-4 w-4 text-text-primary"></div>
 			{/if}
@@ -105,15 +106,15 @@ async function handleSignOut() {
 			{/if}
 			<span
 				class={`${navigationMenu ? 'hidden lg:inline' : 'hidden sm:inline'} max-w-40 truncate text-sm font-medium text-text-primary`}
-				>{user.name}</span
+				>{profile.name}</span
 			>
 		</button>
 
 		{#if accountMenuOpen}
 			<div class={panelClass}>
 				<div class="flex items-center gap-3 px-1 pb-3">
-					{#if user.image}
-						<img src={user.image} alt="" class="h-9 w-9 rounded-full object-cover" referrerpolicy="no-referrer">
+					{#if profile.image}
+						<img src={profile.image} alt="" class="h-9 w-9 rounded-full object-cover" referrerpolicy="no-referrer">
 					{:else}
 						<div class="flex h-9 w-9 items-center justify-center rounded-full bg-bg-secondary">
 							<div class="i-lucide-user h-5 w-5 text-text-primary"></div>
@@ -121,9 +122,11 @@ async function handleSignOut() {
 					{/if}
 					<div class="min-w-0">
 						<div class="truncate text-sm font-semibold text-text-primary">
-							{user.name}
+							{profile.name}
 						</div>
-						<div class="truncate text-xs text-text-secondary">{user.email}</div>
+						{#if user}
+							<div class="truncate text-xs text-text-secondary">{user.email}</div>
+						{/if}
 					</div>
 				</div>
 
@@ -136,13 +139,15 @@ async function handleSignOut() {
 					</div>
 				{/if}
 
-				<button
-					onclick={handleSignOut}
-					class="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-text-primary hover:bg-bg-secondary transition-colors"
-				>
-					<div class="i-lucide-log-out h-4 w-4"></div>
-					<span>{m.account_sign_out()}</span>
-				</button>
+				{#if user}
+					<button
+						onclick={handleSignOut}
+						class="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-text-primary hover:bg-bg-secondary transition-colors"
+					>
+						<div class="i-lucide-log-out h-4 w-4"></div>
+						<span>{m.account_sign_out()}</span>
+					</button>
+				{/if}
 			</div>
 		{/if}
 	{:else}
