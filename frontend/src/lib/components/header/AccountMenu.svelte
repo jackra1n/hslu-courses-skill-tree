@@ -147,6 +147,14 @@ async function handleSignOut() {
 						<div class="i-lucide-log-out h-4 w-4"></div>
 						<span>{m.account_sign_out()}</span>
 					</button>
+				{:else if status === 'error'}
+					<button
+						onclick={() => cloudSyncStore.retry()}
+						class="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-text-primary hover:bg-bg-secondary transition-colors"
+					>
+						<div class="i-lucide-refresh-cw h-4 w-4"></div>
+						<span>{m.common_retry()}</span>
+					</button>
 				{/if}
 			</div>
 		{/if}

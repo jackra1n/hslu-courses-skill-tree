@@ -57,6 +57,7 @@ let pendingSnapshot: AppData | null = null;
 let debounceTimer: number | undefined;
 let inFlight: Promise<void> | null = null;
 let initialization: Promise<void> | null = null;
+let lastLocalDataIsMeaningful = false;
 let signingOut: Promise<void> | null = null;
 let canWrite = false;
 
@@ -447,10 +448,17 @@ export const cloudSyncStore = {
 		if (initialization) return initialization;
 		if (signingOut) return signingOut.then(() => cloudSyncStore.init(localDataIsMeaningful));
 		cancelDebounce();
+		lastLocalDataIsMeaningful = localDataIsMeaningful;
 		initialization = initialize(localDataIsMeaningful).finally(() => {
 			initialization = null;
 		});
 		return initialization;
+	},
+
+	retry(): Promise<void> {
+		status = 'loading';
+		syncError = null;
+		return cloudSyncStore.init(lastLocalDataIsMeaningful);
 	},
 
 	recordLocalSnapshot(data: AppData): void {
@@ -556,7 +564,8 @@ export const cloudSyncStore = {
 	armOnlineRetry(): void {
 		if (!browser) return;
 		window.addEventListener('online', () => {
-			if (metadata.dirty && user && !conflict && pendingSnapshot) void flushPending();
+			if (!user && syncError === 'unavailable') void cloudSyncStore.retry();
+			else if (metadata.dirty && user && !conflict && pendingSnapshot) void flushPending();
 		});
 	},
 };
