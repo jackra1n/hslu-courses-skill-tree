@@ -39,6 +39,12 @@ async function seedReview(page: Page, origin: string, courseId: string, recommen
 	expect(response.status()).toBe(201);
 }
 
+async function expectSaved(page: Page) {
+	await page.getByRole('button', { name: 'Account menu', exact: true }).click();
+	await expect(page.getByText('Saved', { exact: true })).toBeVisible();
+	await page.getByRole('button', { name: 'Account menu', exact: true }).click();
+}
+
 async function expectCourseOrder(page: Page, courseIds: string[]) {
 	await expect(page.getByRole('list').getByRole('button')).toContainText(
 		courseIds.map((id) => new RegExp(`\\b${id}\\b`)),
@@ -429,14 +435,14 @@ test('direct course browser visits resolve cloud conflicts and resume syncing', 
 	await page.clock.setFixedTime(new Date('2026-02-15T12:00:00Z'));
 	await login();
 	await page.goto('/courses');
-	await expect(page.getByRole('textbox', { name: 'Search courses' })).toBeVisible();
+	await expectSaved(page);
 	const original = await (await page.request.get('/api/progress')).json();
 	// An untouched reload must preserve the inferred start term and stay synced.
 	const conflict = page.getByRole('dialog', {
 		name: 'Choose which data to keep',
 	});
 	await page.reload();
-	await expect(page.getByRole('textbox', { name: 'Search courses' })).toBeVisible();
+	await expectSaved(page);
 	await expect(conflict).toBeHidden();
 	const unchanged = await (await page.request.get('/api/progress')).json();
 	expect(unchanged).toEqual(original);
