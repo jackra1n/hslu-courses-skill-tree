@@ -15,6 +15,7 @@ import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
+import SkillTreeSkeleton from './SkillTreeSkeleton.svelte';
 
 type StartupPhase = 'catalog' | 'ready' | 'catalog-error';
 
@@ -71,9 +72,7 @@ $effect(() => {
 </script>
 
 {#if phase === 'catalog'}
-	<div class="flex h-screen items-center justify-center font-sans">
-		<p class="text-sm text-text-secondary" role="status" aria-live="polite">{m.page_loading_catalog()}</p>
-	</div>
+	<SkillTreeSkeleton />
 {:else if phase === 'catalog-error'}
 	<div class="flex h-screen items-center justify-center font-sans">
 		<div class="flex flex-col items-center gap-4 text-center px-6">

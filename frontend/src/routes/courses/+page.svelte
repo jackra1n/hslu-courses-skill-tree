@@ -27,6 +27,7 @@ import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 import { measureHeaderHeight } from '$lib/utils/header-height';
 import { getAssessmentStageProgress } from '$lib/utils/status';
+import CourseBrowserSkeleton from './CourseBrowserSkeleton.svelte';
 import CourseDetailPanel from './CourseDetailPanel.svelte';
 import CourseRow from './CourseRow.svelte';
 import FilterSidebar from './FilterSidebar.svelte';
@@ -213,9 +214,7 @@ onMount(() => {
 </svelte:head>
 
 {#if phase === 'loading'}
-	<div class="flex min-h-screen items-center justify-center font-sans">
-		<p class="text-text-secondary" role="status">{m.browser_loading()}</p>
-	</div>
+	<CourseBrowserSkeleton />
 {:else if phase === 'error'}
 	<div class="flex min-h-screen items-center justify-center font-sans">
 		<p class="text-text-primary" role="alert">
