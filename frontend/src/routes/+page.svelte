@@ -16,7 +16,7 @@ import { initializeCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
 
-type StartupPhase = 'catalog' | 'progress' | 'ready' | 'catalog-error';
+type StartupPhase = 'catalog' | 'ready' | 'catalog-error';
 
 let legendOpen = $state(false);
 const reducedMotion = new MediaQuery('(prefers-reduced-motion: reduce)');
@@ -25,7 +25,6 @@ let phase = $state<StartupPhase>('catalog');
 async function startFromCatalog(): Promise<void> {
 	try {
 		await loadCatalog();
-		phase = 'progress';
 	} catch (error) {
 		console.error('Failed to load course catalog', error);
 		phase = 'catalog-error';
@@ -38,8 +37,8 @@ async function startFromCatalog(): Promise<void> {
 	courseStore.init();
 	progressStore.init();
 	uiStore.init();
-	await cloudSyncStore.init(localDataIsMeaningful);
 	phase = 'ready';
+	void cloudSyncStore.init(localDataIsMeaningful);
 }
 
 function handleStartupError(error: unknown): void {
@@ -71,11 +70,9 @@ $effect(() => {
 });
 </script>
 
-{#if phase === 'catalog' || phase === 'progress'}
+{#if phase === 'catalog'}
 	<div class="flex h-screen items-center justify-center font-sans">
-		<p class="text-sm text-text-secondary" role="status" aria-live="polite">
-			{phase === 'catalog' ? m.page_loading_catalog() : m.page_loading_progress()}
-		</p>
+		<p class="text-sm text-text-secondary" role="status" aria-live="polite">{m.page_loading_catalog()}</p>
 	</div>
 {:else if phase === 'catalog-error'}
 	<div class="flex h-screen items-center justify-center font-sans">

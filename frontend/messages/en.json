@@ -127,7 +127,6 @@
 	"layout_description": "Interactive skill tree visualization for HSLU courses. Plan your academic journey with prerequisite tracking and course progression.",
 
 	"page_loading_catalog": "Loading course catalog…",
-	"page_loading_progress": "Loading your progress…",
 	"page_catalog_unavailable_title": "Course catalog unavailable",
 	"page_catalog_unavailable_text": "Check your connection and try again.",
 

@@ -185,8 +185,8 @@ async function load(): Promise<void> {
 		courseStore.init();
 		progressStore.init();
 		uiStore.init();
-		await cloudSyncStore.init(localDataIsMeaningful);
 		phase = 'ready';
+		void cloudSyncStore.init(localDataIsMeaningful);
 	} catch (error) {
 		console.error('Failed to load course catalog', error);
 		phase = 'error';
