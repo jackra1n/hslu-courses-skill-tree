@@ -60,7 +60,7 @@ function widths(done: number, projected: number, required: number) {
 			<div>
 				<div class="flex items-baseline justify-between mb-2">
 					<span class="text-base font-bold text-text-primary">{m.analytics_overall()}</span>
-					<span class="text-sm text-text-secondary">{passed}/ {requiredTotal} ECTS</span>
+					<span class="text-sm text-text-secondary">{`${passed} / ${requiredTotal} ECTS`}</span>
 				</div>
 				{@render bar(passed, plannedRemaining, requiredTotal)}
 				<div class="flex flex-wrap gap-x-4 gap-y-1 mt-3 text-sm text-text-secondary">
@@ -89,14 +89,14 @@ function widths(done: number, projected: number, required: number) {
 					<div>
 						<div class="flex items-baseline justify-between mb-1.5">
 							<span class="text-sm text-text-primary">{moduleTypeLabel(category.category)}</span>
-							<span class="text-xs text-text-secondary">{category.passed}/ {category.required} ECTS</span>
+							<span class="text-xs text-text-secondary">{`${category.passed} / ${category.required} ECTS`}</span>
 						</div>
 						{@render bar(category.passed, category.planned, category.required)}
 						{#each category.subcategories ?? [] as sub (sub.category)}
 							<div class="mt-2 pl-4 border-l border-border-primary">
 								<div class="flex items-baseline justify-between mb-1.5">
 									<span class="text-xs text-text-secondary">↳ {moduleTypeLabel(sub.category)}</span>
-									<span class="text-xs text-text-secondary">{sub.passed}/ {sub.required} ECTS</span>
+									<span class="text-xs text-text-secondary">{`${sub.passed} / ${sub.required} ECTS`}</span>
 								</div>
 								{@render bar(sub.passed, sub.planned, sub.required)}
 							</div>
