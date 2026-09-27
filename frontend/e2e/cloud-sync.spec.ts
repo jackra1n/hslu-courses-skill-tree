@@ -397,17 +397,47 @@ test('edits during a pending progress read survive divergent cloud data', async 
 	await expectLocalProgress(page, slotId, 'attended');
 });
 
-test('a failed session lookup leaves the plan usable', async ({ page }) => {
-	await page.route(sessionUrl, (route) => route.abort('internetdisconnected'));
-	await page.reload();
-	const slotId = await openCourse(page);
-	await changeProgress(page, 'Attended');
-	await expectLocalProgress(page, slotId, 'attended');
+async function failSessionLookups(page: Page) {
+	const lookups = { count: 0, failing: true };
+	await page.route(sessionUrl, (route) => {
+		lookups.count++;
+		return lookups.failing ? route.abort('internetdisconnected') : route.continue();
+	});
+	return lookups;
+}
+
+async function expectUnverifiedAccount(page: Page) {
 	await page.getByRole('button', { name: 'Account menu', exact: true }).click();
 	await expect(
 		page.getByText('Cloud sync unavailable. Changes remain saved on this device.', { exact: true }),
 	).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toHaveCount(0);
+}
+
+test('a failed session lookup leaves the plan usable and can be retried', async ({ page }) => {
+	const lookups = await failSessionLookups(page);
+	await page.reload();
+	const slotId = await openCourse(page);
+	await changeProgress(page, 'Attended');
+	await expectLocalProgress(page, slotId, 'attended');
+	await expectUnverifiedAccount(page);
+	lookups.failing = false;
+	await page.getByRole('button', { name: 'Retry', exact: true }).click();
+	await expect(page.getByRole('button', { name: 'Sign out', exact: true })).toBeVisible();
+	await expect(page.getByText('Saved', { exact: true })).toBeVisible();
+	expect(lookups.count).toBe(2);
+	expect((await snapshot(page)).data.slotStatus).toEqual({ [slotId]: 'attended' });
+});
+
+test('a failed session lookup is retried when the browser comes back online', async ({ page }) => {
+	const lookups = await failSessionLookups(page);
+	await page.reload();
+	await expectUnverifiedAccount(page);
+	await page.getByRole('button', { name: 'Account menu', exact: true }).click();
+	lookups.failing = false;
+	await page.evaluate(() => window.dispatchEvent(new Event('online')));
+	await expectSaved(page);
+	expect(lookups.count).toBe(2);
 });
 
 test('a late cloud update clears the selection and refits the canvas', async ({ page }) => {
