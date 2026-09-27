@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { isPlanCustomized } from '$lib/data/planning/plan-rules';
 import * as m from '$lib/paraglide/messages';
+import { canvasCommands } from '$lib/stores/canvasCommands.svelte';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { loadAllPlans, replaceAllPlans, storedPlanKeys } from '$lib/stores/planStorage';
 import { progressStore } from '$lib/stores/progressStore.svelte';
@@ -66,6 +67,10 @@ export function applyAppData(data: AppData): void {
 		uiStore.restoreState(live.ui);
 		throw error;
 	}
+	// A replaced plan can reuse a selected slot id for another course or move
+	// nodes outside the viewport fitted on mount.
+	uiStore.deselectCourse();
+	void canvasCommands.current?.fitView();
 }
 
 export function importAppData(json: string): { ok: true } | { ok: false; error: string } {

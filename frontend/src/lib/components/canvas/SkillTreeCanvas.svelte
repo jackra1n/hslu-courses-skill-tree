@@ -45,7 +45,7 @@ const courseStore = getCourseStore();
 
 const viewportSignal = useViewport();
 const viewport = $derived(viewportSignal.current);
-const { setCenter, screenToFlowPosition } = useSvelteFlow();
+const { setCenter, screenToFlowPosition, fitView } = useSvelteFlow();
 const semesterIndicators = $derived(courseStore.semesterDividerData);
 
 const statuses = $derived.by(() => computeStatuses(courseStore.studyPlan, progressStore.slotStatus));
@@ -177,7 +177,7 @@ async function centerOnElement(element: Element) {
 }
 
 $effect(() => {
-	canvasCommands.set({ centerOnElement });
+	canvasCommands.set({ centerOnElement, fitView });
 	return () => canvasCommands.set(null);
 });
 </script>

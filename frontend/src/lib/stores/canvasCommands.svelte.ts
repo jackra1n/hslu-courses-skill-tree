@@ -1,5 +1,6 @@
 export type CanvasCommands = {
 	centerOnElement: (element: Element) => Promise<void>;
+	fitView: () => Promise<boolean>;
 };
 
 let commands: CanvasCommands | null = $state(null);
