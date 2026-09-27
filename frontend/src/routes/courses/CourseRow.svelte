@@ -70,7 +70,9 @@ function seasonTitle(season: Season): string {
 					</span>
 				{/if}
 			</span>
-			<span class="mt-0.5 block text-sm text-text-secondary"> {course.id}· {course.ects} ECTS </span>
+			<span class="mt-0.5 block text-sm text-text-secondary">
+				{`${course.id} · ${course.ects} ECTS`}
+			</span>
 			{#if prerequisiteIds.length > 0}
 				<span class="mt-1 flex items-center gap-1.5 text-xs text-text-secondary">
 					<span class="i-lucide-lock h-3.5 w-3.5 shrink-0" aria-hidden="true"></span>
