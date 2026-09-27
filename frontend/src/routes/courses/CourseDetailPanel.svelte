@@ -19,10 +19,7 @@ let {
 	courseById: ReadonlyMap<string, CatalogCourse>;
 	onClose: () => void;
 	onNavigate: (course: CatalogCourse) => void;
-	onReviewSummary?: (
-		courseId: string,
-		summary: CourseReviewsResponse['summary'],
-	) => void;
+	onReviewSummary?: (courseId: string, summary: CourseReviewsResponse['summary']) => void;
 } = $props();
 
 const TITLE_ID = 'course-browser-detail-title';
@@ -110,16 +107,11 @@ async function navigateToPrerequisite(courseId: string): Promise<void> {
 			{/key}
 		</div>
 	{:else}
-		<div
-			class="flex h-full flex-col items-center justify-center px-8 text-center"
-		>
+		<div class="flex h-full flex-col items-center justify-center px-8 text-center">
 			<div
 				class="flex h-12 w-12 items-center justify-center rounded-full border border-border-primary bg-bg-primary text-text-tertiary"
 			>
-				<span
-					class="i-lucide-panel-right-open h-5 w-5"
-					aria-hidden="true"
-				></span>
+				<span class="i-lucide-panel-right-open h-5 w-5" aria-hidden="true"></span>
 			</div>
 			<h2 class="mt-4 font-semibold text-text-primary">
 				{m.browser_details_empty_title()}

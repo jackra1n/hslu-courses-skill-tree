@@ -44,9 +44,7 @@ const NODE = [...PLAN, 'nodes', 'ana-g'];
 
 function edited(path: string[], ...value: [unknown?]): unknown {
 	const data: Record<string, unknown> = structuredClone(snapshot());
-	const parent = path
-		.slice(0, -1)
-		.reduce((record, key) => record[key] as Record<string, unknown>, data);
+	const parent = path.slice(0, -1).reduce((record, key) => record[key] as Record<string, unknown>, data);
 	const key = path.at(-1) as string;
 	if (value.length) parent[key] = value[0];
 	else delete parent[key];
@@ -78,16 +76,11 @@ describe('parseAppData', () => {
 		const parsed = parseAppData(JSON.parse(json));
 		expect(parsed).not.toBeNull();
 		expect(Object.hasOwn(parsed?.slotStatus ?? {}, '__proto__')).toBe(true);
-		expect(
-			Object.getOwnPropertyDescriptor(parsed?.slotStatus, '__proto__')?.value,
-		).toBe('completed');
+		expect(Object.getOwnPropertyDescriptor(parsed?.slotStatus, '__proto__')?.value).toBe('completed');
 	});
 
 	test.each([
-		[
-			'the same row',
-			[{ semester: 1, nodeOrder: ['ana-g', 'custom-1', 'ana-g'] }],
-		],
+		['the same row', [{ semester: 1, nodeOrder: ['ana-g', 'custom-1', 'ana-g'] }]],
 		[
 			'another row',
 			[
@@ -95,23 +88,16 @@ describe('parseAppData', () => {
 				{ semester: 2, nodeOrder: ['ana-g'] },
 			],
 		],
-	])(
-		'repairs a node repeated in %s by keeping its first entry',
-		(_name, rows) => {
-			const parsed = parseAppData(edited([...PLAN, 'rows'], rows));
-			expect(
-				parsed?.studyPlans['inf-fulltime-HS25']?.rows.flatMap(
-					(row) => row.nodeOrder,
-				),
-			).toEqual(['ana-g', 'custom-1']);
-		},
-	);
+	])('repairs a node repeated in %s by keeping its first entry', (_name, rows) => {
+		const parsed = parseAppData(edited([...PLAN, 'rows'], rows));
+		expect(parsed?.studyPlans['inf-fulltime-HS25']?.rows.flatMap((row) => row.nodeOrder)).toEqual([
+			'ana-g',
+			'custom-1',
+		]);
+	});
 
 	test('keeps plans for templates named like object prototype keys', () => {
-		const json = JSON.stringify(snapshot()).replaceAll(
-			'inf-fulltime-HS25',
-			'__proto__',
-		);
+		const json = JSON.stringify(snapshot()).replaceAll('inf-fulltime-HS25', '__proto__');
 		const parsed = parseAppData(JSON.parse(json));
 		expect(Object.hasOwn(parsed?.studyPlans ?? {}, '__proto__')).toBe(true);
 	});
@@ -128,30 +114,18 @@ describe('parseAppData', () => {
 		['a plan keyed by another template', edited([...PLAN, 'templateId'], 'x')],
 		['non-object nodes', edited([...PLAN, 'nodes'], 'nodes')],
 		['non-array rows', edited([...PLAN, 'rows'], {})],
-		[
-			'a non-string node id',
-			edited([...PLAN, 'rows'], [{ semester: 1, nodeOrder: [1] }]),
-		],
+		['a non-string node id', edited([...PLAN, 'rows'], [{ semester: 1, nodeOrder: [1] }])],
 		[
 			'a row naming a missing node',
-			edited(
-				[...PLAN, 'rows'],
-				[{ semester: 1, nodeOrder: ['ana-g', 'custom-1', 'gone'] }],
-			),
+			edited([...PLAN, 'rows'], [{ semester: 1, nodeOrder: ['ana-g', 'custom-1', 'gone'] }]),
 		],
-		[
-			'a node missing from every row',
-			edited([...PLAN, 'rows'], [{ semester: 1, nodeOrder: ['ana-g'] }]),
-		],
+		['a node missing from every row', edited([...PLAN, 'rows'], [{ semester: 1, nodeOrder: ['ana-g'] }])],
 		['a node id not matching its key', edited([...NODE, 'id'], 'other')],
 		['a node with an unknown kind', edited([...NODE, 'kind'], 'optional')],
 		['a node with non-numeric ects', edited([...NODE, 'ects'], '3')],
 		['non-object slot statuses', edited(['slotStatus'], [])],
 		['a missing preference', edited(['preferences', 'showCourseTypeBadges'])],
-		[
-			'a non-boolean preference',
-			edited(['preferences', 'showShortNamesOnly'], 'yes'),
-		],
+		['a non-boolean preference', edited(['preferences', 'showShortNamesOnly'], 'yes')],
 	])('rejects %s', (_name, value) => {
 		expect(parseAppData(value)).toBeNull();
 	});

@@ -1,18 +1,10 @@
 import type { Course, PrerequisiteRule } from '$lib/data/catalog/courses';
 import type { StudyPlan } from '$lib/data/planning/study-plan';
-import {
-	buildPlanRowIndex,
-	mapPlanCourseProviders,
-	resolveCourse,
-} from '$lib/data/planning/study-plan';
+import { buildPlanRowIndex, mapPlanCourseProviders, resolveCourse } from '$lib/data/planning/study-plan';
 
 type SlotStatus = ReadonlyMap<string, 'attended' | 'completed'>;
 
-export function evaluatePrerequisiteRule(
-	rule: PrerequisiteRule,
-	slotStatus: SlotStatus,
-	plan: StudyPlan,
-): boolean {
+export function evaluatePrerequisiteRule(rule: PrerequisiteRule, slotStatus: SlotStatus, plan: StudyPlan): boolean {
 	const moduleResults = rule.modules.map((moduleId) => {
 		const nodeIds = getNodesForCourse(plan, moduleId);
 		if (nodeIds.length === 0) return false;
@@ -31,11 +23,7 @@ export function evaluatePrerequisiteRule(
 	return moduleResults.every(Boolean);
 }
 
-export function evaluatePrerequisites(
-	rules: PrerequisiteRule[],
-	slotStatus: SlotStatus,
-	plan: StudyPlan,
-): boolean {
+export function evaluatePrerequisites(rules: PrerequisiteRule[], slotStatus: SlotStatus, plan: StudyPlan): boolean {
 	if (rules.length === 0) return true;
 
 	return rules.reduce((acc, rule, index) => {
@@ -73,18 +61,12 @@ export class PlanPrerequisites {
 		for (const moduleId of rule.modules) {
 			for (const providerId of this.courseProviders.get(moduleId) ?? []) {
 				const status = this.slotStatus.get(providerId);
-				const satisfies =
-					status === 'completed' ||
-					(!rule.mustBePassed && status === 'attended');
+				const satisfies = status === 'completed' || (!rule.mustBePassed && status === 'attended');
 				// Prefer a satisfying outcome, then a planned attempt, then a failure.
 				const priority = satisfies ? 0 : status === undefined ? 1 : 2;
 				const row = this.rowIndex[providerId] ?? Infinity;
 				const preferredRow = priority === 2 ? row > bestRow : row < bestRow;
-				if (
-					best === undefined ||
-					priority < bestPriority ||
-					(priority === bestPriority && preferredRow)
-				) {
+				if (best === undefined || priority < bestPriority || (priority === bestPriority && preferredRow)) {
 					best = providerId;
 					bestPriority = priority;
 					bestRow = row;
@@ -109,17 +91,12 @@ export class PlanPrerequisites {
 
 		const ruleRows = rules.map((rule) => {
 			const providers = this.selectProviders(rule);
-			return providers.length === 0
-				? Infinity
-				: Math.min(...providers.map((id) => this.rowIndex[id] ?? Infinity));
+			return providers.length === 0 ? Infinity : Math.min(...providers.map((id) => this.rowIndex[id] ?? Infinity));
 		});
 		return [rules[ruleRows.indexOf(Math.min(...ruleRows))]];
 	}
 
-	hasConflict(
-		targetNodeId: string,
-		options?: { considerSameSemester?: boolean },
-	): boolean {
+	hasConflict(targetNodeId: string, options?: { considerSameSemester?: boolean }): boolean {
 		const node = this.plan.nodes[targetNodeId];
 		if (!node?.courseId) return false;
 		const course = resolveCourse(node.courseId);
@@ -134,9 +111,7 @@ export class PlanPrerequisites {
 
 			return providers.some((providerId) => {
 				const providerRow = this.rowIndex[providerId] ?? 0;
-				return considerSameSemester
-					? providerRow >= dependentRow
-					: providerRow > dependentRow;
+				return considerSameSemester ? providerRow >= dependentRow : providerRow > dependentRow;
 			});
 		});
 	}

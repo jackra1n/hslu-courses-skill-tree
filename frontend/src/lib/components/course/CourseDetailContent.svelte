@@ -33,10 +33,7 @@ let {
 	targetNodeId?: string;
 	close: Snippet;
 	onNavigate: (courseId: string) => void;
-	onReviewSummary?: (
-		courseId: string,
-		summary: CourseReviewsResponse['summary'],
-	) => void;
+	onReviewSummary?: (courseId: string, summary: CourseReviewsResponse['summary']) => void;
 	actions?: Snippet;
 	selector?: Snippet;
 	elective?: boolean;
@@ -53,19 +50,11 @@ const labels = $derived({
 	reviews: m.course_details_reviews(),
 });
 const alternateLabel = $derived(
-	courseLabel(course) === course.label
-		? course.labelEn !== course.label
-			? course.labelEn
-			: null
-		: course.label,
+	courseLabel(course) === course.label ? (course.labelEn !== course.label ? course.labelEn : null) : course.label,
 );
-const languageNames = $derived(
-	new Intl.DisplayNames([locale()], { type: 'language' }),
-);
+const languageNames = $derived(new Intl.DisplayNames([locale()], { type: 'language' }));
 const hasPrerequisites = $derived(
-	course.assessmentLevelPassed ||
-		course.prerequisites.length > 0 ||
-		!!course.prerequisiteNote?.trim(),
+	course.assessmentLevelPassed || course.prerequisites.length > 0 || !!course.prerequisiteNote?.trim(),
 );
 
 function selectTab(tab: Tab) {
@@ -76,8 +65,7 @@ function selectTab(tab: Tab) {
 function handleTabKey(event: KeyboardEvent, index: number) {
 	let next: number;
 	if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
-	else if (event.key === 'ArrowLeft')
-		next = (index + tabs.length - 1) % tabs.length;
+	else if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
 	else if (event.key === 'Home') next = 0;
 	else if (event.key === 'End') next = tabs.length - 1;
 	else return;
@@ -91,17 +79,11 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 	<div class="flex items-start justify-between gap-2">
 		<div class="min-w-0">
 			{#if !elective}
-				<p
-					class="font-mono text-xs font-semibold tracking-wide text-blue-600 dark:text-blue-400"
-				>
+				<p class="font-mono text-xs font-semibold tracking-wide text-blue-600 dark:text-blue-400">
 					{course.id}
 				</p>
 			{/if}
-			<h2
-				id={titleId}
-				class="text-xl font-semibold leading-snug text-text-primary break-words"
-				class:mt-2={!elective}
-			>
+			<h2 id={titleId} class="text-xl font-semibold leading-snug text-text-primary break-words" class:mt-2={!elective}>
 				{courseLabel(course)}
 			</h2>
 			{#if alternateLabel}
@@ -129,33 +111,25 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 			</div>
 		{/if}
 	</dl>
-	<dl
-		class="mt-4 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 text-sm leading-relaxed"
-	>
+	<dl class="mt-4 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2 text-sm leading-relaxed">
 		<dt class="flex items-center gap-2 text-text-primary">
-			<span
-				class="i-lucide-calendar-days h-4 w-4 shrink-0 text-text-secondary"
-				aria-hidden="true"
-			></span>{m.course_details_seasons()}
+			<span class="i-lucide-calendar-days h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true"></span>
+			{m.course_details_seasons()}
 		</dt>
 		<dd class="text-text-secondary">
 			{course.seasons?.length ? course.seasons.map(seasonLabel).join(' · ') : m.course_details_unknown()}
 		</dd>
 		{#if semester !== undefined}
 			<dt class="flex items-center gap-2 text-text-primary">
-				<span
-					class="i-lucide-layers h-4 w-4 shrink-0 text-text-secondary"
-					aria-hidden="true"
-				></span>{m.course_details_plan_semester()}
+				<span class="i-lucide-layers h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true"></span>
+				{m.course_details_plan_semester()}
 			</dt>
 			<dd class="text-text-secondary">{semester}</dd>
 		{/if}
 		{#if !elective}
 			<dt class="flex items-center gap-2 text-text-primary">
-				<span
-					class="i-lucide-languages h-4 w-4 shrink-0 text-text-secondary"
-					aria-hidden="true"
-				></span>{m.course_details_languages()}
+				<span class="i-lucide-languages h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true"></span>
+				{m.course_details_languages()}
 			</dt>
 			<dd class="text-text-secondary">
 				{course.languages?.length ? course.languages.map((language) => languageNames.of(language)).join(', ') : m.course_details_unknown()}
@@ -199,22 +173,15 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 		class="p-5 space-y-5 focus-visible:outline-blue-500"
 	>
 		<section aria-labelledby={`${id}-assessment`}>
-			<h3
-				id={`${id}-assessment`}
-				class="text-sm font-semibold text-text-primary"
-			>
+			<h3 id={`${id}-assessment`} class="text-sm font-semibold text-text-primary">
 				{m.assessment_methods()}
 			</h3>
 			{#if course.assessmentModes.length}
 				<ul class="mt-3 space-y-3">
 					{#each course.assessmentModes as mode (mode)}
-						<li
-							class="flex items-start gap-3 text-sm leading-relaxed text-text-secondary"
-						>
-							<span
-								class="i-lucide-clipboard-check mt-0.5 h-4 w-4 shrink-0"
-								aria-hidden="true"
-							></span>{assessmentModeLabel(mode)}
+						<li class="flex items-start gap-3 text-sm leading-relaxed text-text-secondary">
+							<span class="i-lucide-clipboard-check mt-0.5 h-4 w-4 shrink-0" aria-hidden="true"></span>
+							{assessmentModeLabel(mode)}
 						</li>
 					{/each}
 				</ul>
@@ -224,10 +191,7 @@ function handleTabKey(event: KeyboardEvent, index: number) {
 				</p>
 			{/if}
 		</section>
-		<section
-			class="border-t border-border-primary pt-4"
-			aria-labelledby={`${id}-summary`}
-		>
+		<section class="border-t border-border-primary pt-4" aria-labelledby={`${id}-summary`}>
 			<h3 id={`${id}-summary`} class="text-sm font-semibold text-text-primary">
 				{m.course_details_prerequisite_summary()}
 			</h3>

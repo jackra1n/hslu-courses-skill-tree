@@ -7,7 +7,5 @@ let auth: Auth | undefined;
 // Schema validation performs database I/O, so initialize on first use within
 // a request rather than while the Worker module is loading.
 export function getAuth() {
-	return (auth ??= betterAuth(
-		createAuthOptions(env.DB, env as Cloudflare.Env & AuthSecrets),
-	));
+	return (auth ??= betterAuth(createAuthOptions(env.DB, env as Cloudflare.Env & AuthSecrets)));
 }

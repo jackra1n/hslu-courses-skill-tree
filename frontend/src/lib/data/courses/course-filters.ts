@@ -1,8 +1,4 @@
-import type {
-	AssessmentMode,
-	CatalogCourse,
-	ModuleType,
-} from '../catalog/catalog-types';
+import type { AssessmentMode, CatalogCourse, ModuleType } from '../catalog/catalog-types';
 import type { Season } from '../season';
 
 // inclusive ECTS bounds. Null means unbounded (matches everything).
@@ -26,14 +22,8 @@ export const EMPTY_FILTERS: CourseFilters = {
 
 // the browser is plan-agnostic, so one type per course: the plan default,
 // falling back to a season-specific type when no default was computed.
-export function courseModuleType(
-	course: CatalogCourse,
-): ModuleType | undefined {
-	return (
-		course.typeByPlanSeason.default ??
-		course.typeByPlanSeason.HS ??
-		course.typeByPlanSeason.FS
-	);
+export function courseModuleType(course: CatalogCourse): ModuleType | undefined {
+	return course.typeByPlanSeason.default ?? course.typeByPlanSeason.HS ?? course.typeByPlanSeason.FS;
 }
 
 function matchesQuery(course: CatalogCourse, query: string): boolean {
@@ -60,22 +50,14 @@ function matchesEcts(course: CatalogCourse, ects: EctsRange): boolean {
 
 // all dimensions combine with AND; an empty filter matches everything and
 // input order is preserved.
-export function filterCourses(
-	courses: readonly CatalogCourse[],
-	filters: CourseFilters,
-): CatalogCourse[] {
+export function filterCourses(courses: readonly CatalogCourse[], filters: CourseFilters): CatalogCourse[] {
 	return courses.filter(
 		(course) =>
 			matchesQuery(course, filters.query) &&
 			matchesSeason(course, filters.season) &&
-			(filters.moduleTypes.length === 0 ||
-				filters.moduleTypes.some(
-					(type) => courseModuleType(course) === type,
-				)) &&
+			(filters.moduleTypes.length === 0 || filters.moduleTypes.some((type) => courseModuleType(course) === type)) &&
 			(filters.assessmentModes.length === 0 ||
-				course.assessmentModes.some((mode) =>
-					filters.assessmentModes.includes(mode),
-				)) &&
+				course.assessmentModes.some((mode) => filters.assessmentModes.includes(mode))) &&
 			matchesEcts(course, filters.ects),
 	);
 }

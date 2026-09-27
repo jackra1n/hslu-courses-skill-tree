@@ -7,10 +7,7 @@ import {
 	ReviewApiError,
 	saveCourseReview,
 } from '$lib/data/reviews/review-client';
-import type {
-	CourseReviewsResponse,
-	ReviewInput,
-} from '$lib/data/reviews/review-types';
+import type { CourseReviewsResponse, ReviewInput } from '$lib/data/reviews/review-types';
 import * as m from '$lib/paraglide/messages';
 import { cloudSyncStore } from '$lib/stores/cloudSyncStore.svelte';
 import { locale } from '$lib/stores/locale.svelte';
@@ -23,10 +20,7 @@ let {
 	onReviewSummary,
 }: {
 	courseId: string;
-	onReviewSummary?: (
-		courseId: string,
-		summary: CourseReviewsResponse['summary'],
-	) => void;
+	onReviewSummary?: (courseId: string, summary: CourseReviewsResponse['summary']) => void;
 } = $props();
 const id = $props.id();
 // the parent keys this component by course and signed-in user. Old reads and
@@ -38,25 +32,15 @@ let loadFailed = $state(false);
 let editing = $state(false);
 let confirmingDelete = $state(false);
 let busy = $state<'saving' | 'deleting' | 'signing-in' | null>(null);
-let error = $state<
-	'save' | 'delete' | 'session' | 'conflict' | 'invalid' | 'sign-in' | null
->(null);
+let error = $state<'save' | 'delete' | 'session' | 'conflict' | 'invalid' | 'sign-in' | null>(null);
 let notice = $state<'saved' | 'deleted' | null>(null);
 let heading: HTMLHeadingElement;
 let errorElement = $state<HTMLDivElement>();
 let actionButton = $state<HTMLButtonElement>();
 const user = $derived(cloudSyncStore.user);
-const ownReview = $derived(
-	user
-		? data?.reviews.find((review) => review.id === data?.ownReviewId)
-		: undefined,
-);
-const numberFormat = $derived(
-	new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 }),
-);
-const dateFormat = $derived(
-	new Intl.DateTimeFormat(locale(), { dateStyle: 'medium' }),
-);
+const ownReview = $derived(user ? data?.reviews.find((review) => review.id === data?.ownReviewId) : undefined);
+const numberFormat = $derived(new Intl.NumberFormat(locale(), { maximumFractionDigits: 1 }));
+const dateFormat = $derived(new Intl.DateTimeFormat(locale(), { dateStyle: 'medium' }));
 const dimensions = $derived([
 	{
 		key: 'recommendation' as const,
@@ -109,10 +93,7 @@ async function load(afterWrite = false): Promise<void> {
 	const publishSummary = onReviewSummary;
 	try {
 		// A persisted write must refresh the course list even if its panel closes.
-		const next = await fetchCourseReviews(
-			requestedCourseId,
-			afterWrite ? undefined : controller.signal,
-		);
+		const next = await fetchCourseReviews(requestedCourseId, afterWrite ? undefined : controller.signal);
 		if (afterWrite || !controller.signal.aborted) {
 			publishSummary?.(requestedCourseId, next.summary);
 		}
@@ -132,10 +113,7 @@ onMount(() => {
 	return () => controller.abort();
 });
 
-async function showError(
-	cause: unknown,
-	fallback: 'save' | 'delete',
-): Promise<void> {
+async function showError(cause: unknown, fallback: 'save' | 'delete'): Promise<void> {
 	if (controller.signal.aborted) return;
 	error = fallback;
 	if (cause instanceof ReviewApiError) {
@@ -163,12 +141,7 @@ async function save(input: ReviewInput): Promise<void> {
 	error = null;
 	notice = null;
 	try {
-		await saveCourseReview(
-			courseId,
-			ownReview?.id ?? null,
-			input,
-			controller.signal,
-		);
+		await saveCourseReview(courseId, ownReview?.id ?? null, input, controller.signal);
 		if (controller.signal.aborted) return;
 		editing = false;
 		notice = 'saved';
@@ -243,9 +216,7 @@ async function reload(): Promise<void> {
 			{m.reviews_title()}
 		</h3>
 		{#if data}
-			<span class="text-xs text-text-secondary"
-				>{m.reviews_count({ count: data.summary.count })}</span
-			>
+			<span class="text-xs text-text-secondary">{m.reviews_count({ count: data.summary.count })}</span>
 		{/if}
 	</div>
 
@@ -301,24 +272,16 @@ async function reload(): Promise<void> {
 		</button>
 	{:else if data}
 		{#if data.summary.count > 0}
-			<dl
-				aria-label={m.reviews_averages()}
-				class="mt-3 grid grid-cols-2 gap-x-4 gap-y-3"
-			>
+			<dl aria-label={m.reviews_averages()} class="mt-3 grid grid-cols-2 gap-x-4 gap-y-3">
 				{#each dimensions as dimension (dimension.key)}
 					{@const average = data.summary[dimension.key]}
 					<div>
 						<dt class="text-xs text-text-secondary">{dimension.label}</dt>
-						<dd
-							class="mt-0.5 flex items-center gap-1 text-lg font-semibold text-text-primary"
-						>
+						<dd class="mt-0.5 flex items-center gap-1 text-lg font-semibold text-text-primary">
 							{#if average === null}
 								{m.course_details_unknown()}
 							{:else if dimension.stars}
-								<ReviewStars
-									value={average}
-									label={m.reviews_star_label({ value: numberFormat.format(average) })}
-								/>
+								<ReviewStars value={average} label={m.reviews_star_label({ value: numberFormat.format(average) })} />
 							{:else}
 								{numberFormat.format(average)}
 							{/if}
@@ -347,12 +310,7 @@ async function reload(): Promise<void> {
 					{m.account_continue_github()}
 				</button>
 			{:else if editing}
-				<ReviewForm
-					initial={ownReview}
-					busy={busy !== null}
-					onSave={save}
-					onCancel={cancelEditing}
-				/>
+				<ReviewForm initial={ownReview} busy={busy !== null} onSave={save} onCancel={cancelEditing} />
 			{:else}
 				<div class="flex flex-wrap gap-2">
 					<button
@@ -386,21 +344,15 @@ async function reload(): Promise<void> {
 		<ul class="mt-4 space-y-3">
 			{#each data.reviews as review (review.id)}
 				<li>
-					<article
-						class="rounded-lg border border-border-primary bg-bg-primary p-3"
-					>
+					<article class="rounded-lg border border-border-primary bg-bg-primary p-3">
 						<header class="flex items-center justify-between gap-2 text-xs">
-							<div
-								class="min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1"
-							>
+							<div class="min-w-0 flex flex-wrap items-baseline gap-x-2 gap-y-1">
 								{#if review.id === ownReview?.id}
 									<h4 class="font-semibold text-text-primary">
 										{m.reviews_yours()}
 									</h4>
 								{/if}
-								<time
-									datetime={new Date(review.createdAt).toISOString()}
-									class="text-text-secondary"
+								<time datetime={new Date(review.createdAt).toISOString()} class="text-text-secondary"
 									>{dateFormat.format(review.createdAt)}</time
 								>
 							</div>

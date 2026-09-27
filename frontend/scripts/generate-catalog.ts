@@ -136,11 +136,8 @@ function parseSemesterFromPath(path: string): SemesterCode | null {
 // selectModuleType.
 function offeredSeasons(module: RawModule): Season[] {
 	const offers = module.ModuleOffers ?? [];
-	const informatikOffers = offers.filter(
-		(offer) => offer.DegreeProgramme === 'Informatik',
-	);
-	const candidateOffers =
-		informatikOffers.length > 0 ? informatikOffers : offers;
+	const informatikOffers = offers.filter((offer) => offer.DegreeProgramme === 'Informatik');
+	const candidateOffers = informatikOffers.length > 0 ? informatikOffers : offers;
 
 	const seasons: Season[] = [];
 	for (const offer of candidateOffers) {
@@ -157,10 +154,7 @@ function mapModuleType(rawType: string | undefined): ModuleType | undefined {
 	return MODULE_TYPE_BY_VALUE[rawType];
 }
 
-function selectModuleType(
-	module: RawModule,
-	plan: string,
-): ModuleType | undefined {
+function selectModuleType(module: RawModule, plan: string): ModuleType | undefined {
 	const offers = module.ModuleOffers ?? [];
 	if (offers.length === 0) return undefined;
 
@@ -170,33 +164,22 @@ function selectModuleType(
 			? 'Frühling'
 			: 'Frühling/Herbst';
 
-	const offersForInformatik = offers.filter(
-		(offer) => offer.DegreeProgramme === 'Informatik',
-	);
-	const candidateOffers =
-		offersForInformatik.length > 0 ? offersForInformatik : offers;
+	const offersForInformatik = offers.filter((offer) => offer.DegreeProgramme === 'Informatik');
+	const candidateOffers = offersForInformatik.length > 0 ? offersForInformatik : offers;
 
-	const bySeasonPreference = candidateOffers.find(
-		(offer) => offer.CourseOffering === preferredSeason,
-	);
+	const bySeasonPreference = candidateOffers.find((offer) => offer.CourseOffering === preferredSeason);
 	if (bySeasonPreference) return mapModuleType(bySeasonPreference.ModuleType);
 
-	const flexibleOffer = candidateOffers.find(
-		(offer) => offer.CourseOffering === 'Frühling/Herbst',
-	);
+	const flexibleOffer = candidateOffers.find((offer) => offer.CourseOffering === 'Frühling/Herbst');
 	if (flexibleOffer) return mapModuleType(flexibleOffer.ModuleType);
 
 	return mapModuleType(candidateOffers[0]?.ModuleType);
 }
 
-function mapPrerequisites(
-	prereqs: RawModule['Prerequisites'],
-): PrerequisiteRule[] {
+function mapPrerequisites(prereqs: RawModule['Prerequisites']): PrerequisiteRule[] {
 	if (!prereqs) return [];
 
-	const normaliseLink = (
-		value?: RawPrerequisiteLink,
-	): PrerequisiteLink | undefined => {
+	const normaliseLink = (value?: RawPrerequisiteLink): PrerequisiteLink | undefined => {
 		if (!value) return undefined;
 		switch (value.toLowerCase()) {
 			case 'und':
@@ -218,10 +201,7 @@ function mapPrerequisites(
 	}));
 }
 
-function normaliseAssessmentModes(
-	value: unknown,
-	scope: string,
-): AssessmentMode[] {
+function normaliseAssessmentModes(value: unknown, scope: string): AssessmentMode[] {
 	if (value === undefined || value === null) return [];
 	if (!Array.isArray(value)) {
 		fail(scope, 'ModeOfAssessments must be an array');
@@ -240,9 +220,7 @@ function normaliseAssessmentModes(
 	return [...modes];
 }
 
-function normaliseLanguages(
-	value: string | null | undefined,
-): string[] | undefined {
+function normaliseLanguages(value: string | null | undefined): string[] | undefined {
 	switch (value?.trim()) {
 		case 'D':
 			return ['de'];
@@ -288,14 +266,10 @@ function readModuleEntry(value: unknown, path: string): RawModule {
 	const nameEnglish = 'NameEnglish' in value ? value.NameEnglish : null;
 	const language = 'Language' in value ? value.Language : undefined;
 	const moduleOffers = 'ModuleOffers' in value ? value.ModuleOffers : undefined;
-	const prerequisites =
-		'Prerequisites' in value ? value.Prerequisites : undefined;
-	const prerequisiteNote =
-		'PrerequisiteNote' in value ? value.PrerequisiteNote : undefined;
-	const assessmentLevelPassed =
-		'AssessmentLevelPassed' in value ? value.AssessmentLevelPassed : undefined;
-	const modeOfAssessments =
-		'ModeOfAssessments' in value ? value.ModeOfAssessments : undefined;
+	const prerequisites = 'Prerequisites' in value ? value.Prerequisites : undefined;
+	const prerequisiteNote = 'PrerequisiteNote' in value ? value.PrerequisiteNote : undefined;
+	const assessmentLevelPassed = 'AssessmentLevelPassed' in value ? value.AssessmentLevelPassed : undefined;
+	const modeOfAssessments = 'ModeOfAssessments' in value ? value.ModeOfAssessments : undefined;
 
 	return {
 		ShortName: shortName,
@@ -305,22 +279,11 @@ function readModuleEntry(value: unknown, path: string): RawModule {
 		Language: typeof language === 'string' ? language : null,
 		// Offer/prerequisite shapes are read tolerantly: absent fields behave
 		// exactly like the legacy runtime, which consumed the JSON unvalidated.
-		ModuleOffers: Array.isArray(moduleOffers)
-			? (moduleOffers as RawModuleOffer[])
-			: undefined,
-		Prerequisites: Array.isArray(prerequisites)
-			? (prerequisites as RawModulePrerequisite[])
-			: null,
-		PrerequisiteNote:
-			typeof prerequisiteNote === 'string' ? prerequisiteNote : null,
-		AssessmentLevelPassed:
-			typeof assessmentLevelPassed === 'boolean'
-				? assessmentLevelPassed
-				: undefined,
-		ModeOfAssessments: normaliseAssessmentModes(
-			modeOfAssessments,
-			`${scope} "${shortName}"`,
-		),
+		ModuleOffers: Array.isArray(moduleOffers) ? (moduleOffers as RawModuleOffer[]) : undefined,
+		Prerequisites: Array.isArray(prerequisites) ? (prerequisites as RawModulePrerequisite[]) : null,
+		PrerequisiteNote: typeof prerequisiteNote === 'string' ? prerequisiteNote : null,
+		AssessmentLevelPassed: typeof assessmentLevelPassed === 'boolean' ? assessmentLevelPassed : undefined,
+		ModeOfAssessments: normaliseAssessmentModes(modeOfAssessments, `${scope} "${shortName}"`),
 	};
 }
 
@@ -366,8 +329,7 @@ function loadCourses(dataRoot: string): CatalogCourse[] {
 			seenInSnapshot.add(module.ShortName);
 			moduleIndex.set(module.ShortName, module);
 
-			const seasons =
-				seasonsByShortName.get(module.ShortName) ?? new Set<Season>();
+			const seasons = seasonsByShortName.get(module.ShortName) ?? new Set<Season>();
 			for (const season of offeredSeasons(module)) seasons.add(season);
 			seasonsByShortName.set(module.ShortName, seasons);
 		}
@@ -396,9 +358,7 @@ function loadCourses(dataRoot: string): CatalogCourse[] {
 			assessmentLevelPassed: module.AssessmentLevelPassed ?? undefined,
 			assessmentModes: module.ModeOfAssessments,
 			typeByPlanSeason,
-			seasons: (['FS', 'HS'] as const).filter((season) =>
-				seasonsByShortName.get(module.ShortName)?.has(season),
-			),
+			seasons: (['FS', 'HS'] as const).filter((season) => seasonsByShortName.get(module.ShortName)?.has(season)),
 		});
 	}
 	return courses;
@@ -459,65 +419,56 @@ function readTemplate(path: string): {
 	}
 
 	const slotIds = new Set<string>();
-	const slots = data.slots.map(
-		(slot: unknown, index): CurriculumTemplate['slots'][number] => {
-			const scope = `${path}: slot #${index + 1}`;
-			if (typeof slot !== 'object' || slot === null) {
-				fail(scope, 'slot must be an object');
+	const slots = data.slots.map((slot: unknown, index): CurriculumTemplate['slots'][number] => {
+		const scope = `${path}: slot #${index + 1}`;
+		if (typeof slot !== 'object' || slot === null) {
+			fail(scope, 'slot must be an object');
+		}
+		// Object-shape verified above; fields are checked below.
+		const record = slot as Record<string, unknown>;
+		if (typeof record.id !== 'string' || record.id.trim() === '') {
+			fail(scope, 'slot is missing an id');
+		}
+		if (slotIds.has(record.id)) {
+			fail(scope, `duplicate slot id "${record.id}"`);
+		}
+		slotIds.add(record.id);
+		const type = record.type;
+		if (type !== 'fixed' && type !== 'elective' && type !== 'major') {
+			fail(scope, `invalid slot type "${String(type)}"`);
+		}
+		const semester = record.semester;
+		if (typeof semester !== 'number' || !Number.isInteger(semester)) {
+			fail(scope, 'slot semester must be an integer');
+		}
+		const normalized: CurriculumTemplate['slots'][number] = {
+			id: record.id,
+			type,
+			semester,
+		};
+		if (record.courseId !== undefined) {
+			if (typeof record.courseId !== 'string') {
+				fail(scope, 'slot courseId must be a string');
 			}
-			// Object-shape verified above; fields are checked below.
-			const record = slot as Record<string, unknown>;
-			if (typeof record.id !== 'string' || record.id.trim() === '') {
-				fail(scope, 'slot is missing an id');
-			}
-			if (slotIds.has(record.id)) {
-				fail(scope, `duplicate slot id "${record.id}"`);
-			}
-			slotIds.add(record.id);
-			const type = record.type;
-			if (type !== 'fixed' && type !== 'elective' && type !== 'major') {
-				fail(scope, `invalid slot type "${String(type)}"`);
-			}
-			const semester = record.semester;
-			if (typeof semester !== 'number' || !Number.isInteger(semester)) {
-				fail(scope, 'slot semester must be an integer');
-			}
-			const normalized: CurriculumTemplate['slots'][number] = {
-				id: record.id,
-				type,
-				semester,
-			};
-			if (record.courseId !== undefined) {
-				if (typeof record.courseId !== 'string') {
-					fail(scope, 'slot courseId must be a string');
-				}
-				// Unresolved fixed course ids (e.g. "MAJOR") are tolerated by
-				// the runtime and preserved as-is.
-				normalized.courseId = record.courseId;
-			}
-			return normalized;
-		},
-	);
+			// Unresolved fixed course ids (e.g. "MAJOR") are tolerated by
+			// the runtime and preserved as-is.
+			normalized.courseId = record.courseId;
+		}
+		return normalized;
+	});
 
 	return {
 		id: id === undefined ? undefined : id,
 		name,
-		studiengang:
-			typeof data.studiengang === 'string' ? data.studiengang : undefined,
-		programName:
-			typeof data.programName === 'string' ? data.programName : undefined,
+		studiengang: typeof data.studiengang === 'string' ? data.studiengang : undefined,
+		programName: typeof data.programName === 'string' ? data.programName : undefined,
 		slots,
 	};
 }
 
-function loadTemplates(
-	dataRoot: string,
-	programmes: ProgramInfo[],
-): CurriculumTemplate[] {
+function loadTemplates(dataRoot: string, programmes: ProgramInfo[]): CurriculumTemplate[] {
 	const templatesDir = join(dataRoot, 'templates');
-	const programmeNameByShort = new Map(
-		programmes.map((program) => [program.shortName, program.name]),
-	);
+	const programmeNameByShort = new Map(programmes.map((program) => [program.shortName, program.name]));
 
 	const templates: CurriculumTemplate[] = [];
 	const seenIds = new Set<string>();
@@ -540,9 +491,7 @@ function loadTemplates(
 			programShortName;
 
 		const template: CurriculumTemplate = {
-			id:
-				rawTemplate.id ??
-				`${programShortName.toLowerCase()}-${model}-${plan.toLowerCase()}`,
+			id: rawTemplate.id ?? `${programShortName.toLowerCase()}-${model}-${plan.toLowerCase()}`,
 			name: rawTemplate.name,
 			studiengang: programShortName,
 			modell: model,
@@ -603,9 +552,7 @@ function loadProgrammes(dataRoot: string): ProgramInfo[] {
 	return programmes.sort((a, b) => a.name.localeCompare(b.name));
 }
 
-function loadEctsRequirements(
-	dataRoot: string,
-): Record<string, EctsRequirements> {
+function loadEctsRequirements(dataRoot: string): Record<string, EctsRequirements> {
 	const ectsDir = join(dataRoot, 'hslu_data', 'ects');
 	const byProgram: Record<string, EctsRequirements> = {};
 	for (const path of listJsonFiles(ectsDir)) {
@@ -628,18 +575,12 @@ function loadEctsRequirements(
 			fail(path, `invalid TotalECTS value "${totalEcts}"`);
 		}
 		const perModuleRaw = record.ectsPerModule;
-		if (
-			typeof perModuleRaw !== 'object' ||
-			perModuleRaw === null ||
-			Array.isArray(perModuleRaw)
-		) {
+		if (typeof perModuleRaw !== 'object' || perModuleRaw === null || Array.isArray(perModuleRaw)) {
 			fail(path, 'missing ectsPerModule');
 		}
 		// Object-shape verified above; entries are iterated for validation.
 		const perModule: EctsRequirements['perModule'] = {};
-		for (const [category, value] of Object.entries(
-			perModuleRaw as Record<string, unknown>,
-		)) {
+		for (const [category, value] of Object.entries(perModuleRaw as Record<string, unknown>)) {
 			if (!(category in MODULE_TYPE_BY_VALUE)) {
 				fail(path, `invalid ECTS category "${category}"`);
 			}
@@ -661,12 +602,7 @@ function loadDataVersion(dataRoot: string): string {
 		fail(path, 'latest semester must be a non-empty string');
 	}
 	const semester = data.trim();
-	const snapshot = join(
-		dataRoot,
-		'hslu_data',
-		'modules',
-		`${semester}_modules.json`,
-	);
+	const snapshot = join(dataRoot, 'hslu_data', 'modules', `${semester}_modules.json`);
 	try {
 		statSync(snapshot);
 	} catch {
@@ -711,9 +647,7 @@ function jsonPrimitive(value: unknown): string {
 }
 
 function jsonEntries(value: unknown): Array<[string, unknown]> {
-	return Object.entries(value as Record<string, unknown>).filter(
-		([, entry]) => entry !== undefined,
-	);
+	return Object.entries(value as Record<string, unknown>).filter(([, entry]) => entry !== undefined);
 }
 
 function jsonFlat(value: unknown): string {
@@ -725,9 +659,7 @@ function jsonFlat(value: unknown): string {
 	}
 	const entries = jsonEntries(value);
 	if (entries.length === 0) return '{}';
-	return `{ ${entries
-		.map(([key, entry]) => `${JSON.stringify(key)}: ${jsonFlat(entry)}`)
-		.join(', ')} }`;
+	return `{ ${entries.map(([key, entry]) => `${JSON.stringify(key)}: ${jsonFlat(entry)}`).join(', ')} }`;
 }
 
 function jsonFormat(value: unknown, indent: number, column: number): string {
@@ -741,12 +673,7 @@ function jsonFormat(value: unknown, indent: number, column: number): string {
 
 		const innerIndent = indent + 1;
 		const parts = value.map(
-			(entry) =>
-				`${'\t'.repeat(innerIndent)}${jsonFormat(
-					entry,
-					innerIndent,
-					innerIndent * JSON_TAB_WIDTH,
-				)}`,
+			(entry) => `${'\t'.repeat(innerIndent)}${jsonFormat(entry, innerIndent, innerIndent * JSON_TAB_WIDTH)}`,
 		);
 		return `[\n${parts.join(',\n')}\n${'\t'.repeat(indent)}]`;
 	}
@@ -759,11 +686,7 @@ function jsonFormat(value: unknown, indent: number, column: number): string {
 	const parts = entries.map(([key, entry]) => {
 		const keyPrefix = `${JSON.stringify(key)}: `;
 		const valueColumn = innerIndent * JSON_TAB_WIDTH + keyPrefix.length;
-		return `${'\t'.repeat(innerIndent)}${keyPrefix}${jsonFormat(
-			entry,
-			innerIndent,
-			valueColumn,
-		)}`;
+		return `${'\t'.repeat(innerIndent)}${keyPrefix}${jsonFormat(entry, innerIndent, valueColumn)}`;
 	});
 	return `{\n${parts.join(',\n')}\n${'\t'.repeat(indent)}}`;
 }
@@ -781,14 +704,7 @@ function main(): void {
 	const args = process.argv.slice(2);
 	const checkOnly = args.includes('--check');
 	const dataRoot = join(projectRoot(), 'data');
-	const outputPath = join(
-		projectRoot(),
-		'src',
-		'lib',
-		'data',
-		'catalog',
-		'catalog.generated.json',
-	);
+	const outputPath = join(projectRoot(), 'src', 'lib', 'data', 'catalog', 'catalog.generated.json');
 
 	const catalog = buildCatalog(dataRoot);
 	const serialized = serializeCatalog(catalog);
@@ -801,18 +717,14 @@ function main(): void {
 			existing = '';
 		}
 		if (existing !== serialized) {
-			process.stderr.write(
-				'Catalog bundle is out of date. Run "bun run catalog:generate".\n',
-			);
+			process.stderr.write('Catalog bundle is out of date. Run "bun run catalog:generate".\n');
 			process.exit(1);
 		}
 		return;
 	}
 
 	writeFileSync(outputPath, serialized);
-	console.log(
-		`Wrote ${outputPath} (${serialized.length} bytes, ${catalog.courses.length} courses).`,
-	);
+	console.log(`Wrote ${outputPath} (${serialized.length} bytes, ${catalog.courses.length} courses).`);
 }
 
 if (import.meta.main) {

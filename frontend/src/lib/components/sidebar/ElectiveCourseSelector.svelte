@@ -23,16 +23,10 @@ const availableCourses = $derived(
 	}),
 );
 
-const slotSeason = $derived(
-	slotNode ? courseStore.seasonOf(slotNode.semester) : null,
-);
+const slotSeason = $derived(slotNode ? courseStore.seasonOf(slotNode.semester) : null);
 
 function isOfferedIn(course: Course, season: Season): boolean {
-	return (
-		!course.seasons ||
-		course.seasons.length === 0 ||
-		course.seasons.includes(season)
-	);
+	return !course.seasons || course.seasons.length === 0 || course.seasons.includes(season);
 }
 
 const courseOptions = $derived.by(() => {
@@ -82,9 +76,7 @@ function clearSelection() {
 </script>
 
 <div class="border-t border-border-primary pt-4">
-	<h3
-		class="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2"
-	>
+	<h3 class="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
 		<div class="i-lucide-book-plus text-text-secondary"></div>
 		{m.elective_select_title()}
 	</h3>

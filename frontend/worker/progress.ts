@@ -12,36 +12,23 @@ type SnapshotRow = { data: string; revision: number; updated_at: number };
 // version-1 object snapshot and a null-or-positive-integer revision.
 function parsePutBody(
 	raw: string,
-):
-	| { ok: true; body: { data: unknown; expectedRevision: number | null } }
-	| { ok: false } {
+): { ok: true; body: { data: unknown; expectedRevision: number | null } } | { ok: false } {
 	let parsed: unknown;
 	try {
 		parsed = JSON.parse(raw);
 	} catch {
 		return { ok: false };
 	}
-	if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed))
-		return { ok: false };
+	if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return { ok: false };
 	const keys = Object.keys(parsed);
-	if (
-		keys.length !== 2 ||
-		!('data' in parsed) ||
-		!('expectedRevision' in parsed)
-	)
-		return { ok: false };
+	if (keys.length !== 2 || !('data' in parsed) || !('expectedRevision' in parsed)) return { ok: false };
 	const { data, expectedRevision } = parsed as {
 		data: unknown;
 		expectedRevision: unknown;
 	};
-	if (typeof data !== 'object' || data === null || Array.isArray(data))
-		return { ok: false };
-	if ((data as { version?: unknown }).version !== APP_DATA_VERSION)
-		return { ok: false };
-	if (
-		expectedRevision !== null &&
-		(!Number.isInteger(expectedRevision) || (expectedRevision as number) < 1)
-	) {
+	if (typeof data !== 'object' || data === null || Array.isArray(data)) return { ok: false };
+	if ((data as { version?: unknown }).version !== APP_DATA_VERSION) return { ok: false };
+	if (expectedRevision !== null && (!Number.isInteger(expectedRevision) || (expectedRevision as number) < 1)) {
 		return { ok: false };
 	}
 	return {
@@ -50,24 +37,15 @@ function parsePutBody(
 	};
 }
 
-async function getRow(
-	db: D1Database,
-	userId: string,
-): Promise<SnapshotRow | null> {
+async function getRow(db: D1Database, userId: string): Promise<SnapshotRow | null> {
 	const row = await db
-		.prepare(
-			'SELECT data, revision, updated_at FROM user_data WHERE user_id = ?',
-		)
+		.prepare('SELECT data, revision, updated_at FROM user_data WHERE user_id = ?')
 		.bind(userId)
 		.first<SnapshotRow>();
 	return row ?? null;
 }
 
-export async function handleProgressRequest(
-	request: Request,
-	userId: string,
-	db: D1Database,
-): Promise<Response> {
+export async function handleProgressRequest(request: Request, userId: string, db: D1Database): Promise<Response> {
 	const url = new URL(request.url);
 
 	if (request.method === 'GET' && url.pathname === '/api/progress') {
@@ -118,8 +96,7 @@ export async function handleProgressRequest(
 
 		if (changed === 0) {
 			const current = await getRow(db, userId);
-			if (!current)
-				return json({ data: null, revision: null, updatedAt: null }, 409);
+			if (!current) return json({ data: null, revision: null, updatedAt: null }, 409);
 			try {
 				return json(
 					{

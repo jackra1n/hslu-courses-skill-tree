@@ -1,15 +1,8 @@
 import { describe, expect, test } from 'bun:test';
 import type { CatalogCourse } from '../src/lib/data/catalog/catalog-types';
-import {
-	courseModuleType,
-	EMPTY_FILTERS,
-	filterCourses,
-	isFiltering,
-} from '../src/lib/data/courses/course-filters';
+import { courseModuleType, EMPTY_FILTERS, filterCourses, isFiltering } from '../src/lib/data/courses/course-filters';
 
-function course(
-	overrides: Partial<CatalogCourse> & { id: string },
-): CatalogCourse {
+function course(overrides: Partial<CatalogCourse> & { id: string }): CatalogCourse {
 	return {
 		label: overrides.id,
 		ects: 3,
@@ -73,47 +66,26 @@ describe('courseModuleType', () => {
 	});
 
 	test('falls back to a season type and then undefined', () => {
-		expect(
-			courseModuleType(
-				course({ id: 'X', typeByPlanSeason: { FS: 'Zusatzmodul' } }),
-			),
-		).toBe('Zusatzmodul');
+		expect(courseModuleType(course({ id: 'X', typeByPlanSeason: { FS: 'Zusatzmodul' } }))).toBe('Zusatzmodul');
 		expect(courseModuleType(course({ id: 'X' }))).toBeUndefined();
 	});
 });
 
 describe('filterCourses', () => {
 	test('empty filters return everything in order', () => {
-		expect(ids(filterCourses(COURSES, EMPTY_FILTERS))).toEqual([
-			'AINF',
-			'SEC',
-			'PROJ',
-			'MISC',
-		]);
+		expect(ids(filterCourses(COURSES, EMPTY_FILTERS))).toEqual(['AINF', 'SEC', 'PROJ', 'MISC']);
 	});
 
 	test('query matches id and both languages case-insensitively', () => {
-		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'ainf' })),
-		).toEqual(['AINF']);
-		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'calculus' })),
-		).toEqual(['AINF']);
-		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'sicherheit' })),
-		).toEqual(['SEC']);
-		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: '  proj  ' })),
-		).toEqual(['PROJ']);
+		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'ainf' }))).toEqual(['AINF']);
+		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'calculus' }))).toEqual(['AINF']);
+		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: 'sicherheit' }))).toEqual(['SEC']);
+		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, query: '  proj  ' }))).toEqual(['PROJ']);
 	});
 
 	test('season filter keeps both-season and unknown-season courses', () => {
-		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, season: 'HS' })),
-		).toEqual(['AINF', 'PROJ', 'MISC']);
-		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, season: 'FS' })),
-		).toEqual(['SEC', 'PROJ', 'MISC']);
+		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, season: 'HS' }))).toEqual(['AINF', 'PROJ', 'MISC']);
+		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, season: 'FS' }))).toEqual(['SEC', 'PROJ', 'MISC']);
 	});
 
 	test('module type filter uses the resolved plan-agnostic type', () => {
@@ -164,9 +136,7 @@ describe('filterCourses', () => {
 	});
 
 	test('ects range matches inclusively, null matches everything', () => {
-		expect(
-			ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: null })),
-		).toEqual(['AINF', 'SEC', 'PROJ', 'MISC']);
+		expect(ids(filterCourses(COURSES, { ...EMPTY_FILTERS, ects: null }))).toEqual(['AINF', 'SEC', 'PROJ', 'MISC']);
 		expect(
 			ids(
 				filterCourses(COURSES, {
@@ -226,14 +196,8 @@ describe('isFiltering', () => {
 	test('any active dimension counts as filtering', () => {
 		expect(isFiltering({ ...EMPTY_FILTERS, query: 'x' })).toBe(true);
 		expect(isFiltering({ ...EMPTY_FILTERS, season: 'HS' })).toBe(true);
-		expect(isFiltering({ ...EMPTY_FILTERS, moduleTypes: ['Kernmodul'] })).toBe(
-			true,
-		);
-		expect(isFiltering({ ...EMPTY_FILTERS, ects: { min: 3, max: 6 } })).toBe(
-			true,
-		);
-		expect(
-			isFiltering({ ...EMPTY_FILTERS, assessmentModes: ['oral_exam'] }),
-		).toBe(true);
+		expect(isFiltering({ ...EMPTY_FILTERS, moduleTypes: ['Kernmodul'] })).toBe(true);
+		expect(isFiltering({ ...EMPTY_FILTERS, ects: { min: 3, max: 6 } })).toBe(true);
+		expect(isFiltering({ ...EMPTY_FILTERS, assessmentModes: ['oral_exam'] })).toBe(true);
 	});
 });

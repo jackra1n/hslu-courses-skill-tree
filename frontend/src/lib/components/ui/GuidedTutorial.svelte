@@ -150,9 +150,7 @@ async function runTutorial() {
 
 	try {
 		await tick();
-		await new Promise<void>((resolve) =>
-			requestAnimationFrame(() => resolve()),
-		);
+		await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
 		// let the canvas mount before positioning the first highlighted step.
 		await waitForNode('.svelte-flow__node-custom', 2000);
@@ -183,8 +181,7 @@ async function runTutorial() {
 				// reveal menu targets before driver.js measures their highlight.
 				flushSync(() => {
 					uiStore.tutorialNavigationOpen =
-						step.element === '[data-tour="course-browser"]' ||
-						step.element === '[data-tour="account"]';
+						step.element === '[data-tour="course-browser"]' || step.element === '[data-tour="account"]';
 				});
 			},
 			onDestroyStarted: finishTutorial,
@@ -303,17 +300,9 @@ onDestroy(() => {
 	white-space: nowrap;
 }
 
-:global(
-	.hslu-tutorial-popover .driver-popover-description .hslu-github-link:hover
-),
-:global(
-	.hslu-tutorial-popover .driver-popover-description .hslu-github-link:focus
-) {
-	background-color: color-mix(
-		in srgb,
-		rgb(var(--bg-secondary)) 70%,
-		rgb(var(--bg-primary))
-	);
+:global(.hslu-tutorial-popover .driver-popover-description .hslu-github-link:hover),
+:global(.hslu-tutorial-popover .driver-popover-description .hslu-github-link:focus) {
+	background-color: color-mix(in srgb, rgb(var(--bg-secondary)) 70%, rgb(var(--bg-primary)));
 	border-color: rgb(var(--border-secondary));
 	color: rgb(var(--text-primary));
 }
@@ -347,26 +336,14 @@ onDestroy(() => {
 	background-color: rgb(var(--bg-secondary));
 }
 
-:global(
-	.hslu-tutorial-popover
-		.driver-popover-navigation-btns
-		.driver-popover-next-btn
-) {
+:global(.hslu-tutorial-popover .driver-popover-navigation-btns .driver-popover-next-btn) {
 	background-color: rgb(37 99 235);
 	border-color: rgb(37 99 235);
 	color: #fff;
 }
 
-:global(
-	.hslu-tutorial-popover
-		.driver-popover-navigation-btns
-		.driver-popover-next-btn:hover
-),
-:global(
-	.hslu-tutorial-popover
-		.driver-popover-navigation-btns
-		.driver-popover-next-btn:focus
-) {
+:global(.hslu-tutorial-popover .driver-popover-navigation-btns .driver-popover-next-btn:hover),
+:global(.hslu-tutorial-popover .driver-popover-navigation-btns .driver-popover-next-btn:focus) {
 	background-color: rgb(29 78 216);
 	border-color: rgb(29 78 216);
 }

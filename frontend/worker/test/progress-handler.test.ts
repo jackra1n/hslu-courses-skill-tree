@@ -15,27 +15,15 @@ const SNAPSHOT = {
 	},
 };
 
-function request(
-	method: string,
-	body?: unknown,
-	url = 'https://hsluskilltree.com/api/progress',
-): Request {
+function request(method: string, body?: unknown, url = 'https://hsluskilltree.com/api/progress'): Request {
 	const init: RequestInit = { method };
 	if (body !== undefined) init.body = JSON.stringify(body);
 	return new Request(url, init);
 }
 
-async function put(
-	userId: string,
-	data: unknown,
-	expectedRevision: number | null,
-) {
+async function put(userId: string, data: unknown, expectedRevision: number | null) {
 	await seedUser(userId);
-	return handleProgressRequest(
-		request('PUT', { data, expectedRevision }),
-		userId,
-		env.DB,
-	);
+	return handleProgressRequest(request('PUT', { data, expectedRevision }), userId, env.DB);
 }
 
 beforeEach(async () => {
@@ -60,11 +48,7 @@ describe('handleProgressRequest', () => {
 		expect(putBody).toMatchObject({ data: SNAPSHOT, revision: 1 });
 		expect(typeof putBody.updatedAt).toBe('number');
 
-		const getRes = await handleProgressRequest(
-			request('GET'),
-			'user-1',
-			env.DB,
-		);
+		const getRes = await handleProgressRequest(request('GET'), 'user-1', env.DB);
 		expect(getRes.status).toBe(200);
 		expect(await getRes.json()).toEqual({
 			data: SNAPSHOT,
@@ -80,11 +64,7 @@ describe('handleProgressRequest', () => {
 		const body = await res.json();
 		expect(body).toMatchObject({ data: next, revision: 2 });
 
-		const getRes = await handleProgressRequest(
-			request('GET'),
-			'user-1',
-			env.DB,
-		);
+		const getRes = await handleProgressRequest(request('GET'), 'user-1', env.DB);
 		const getBody = (await getRes.json()) as { revision: number };
 		expect(getBody.revision).toBe(2);
 	});
@@ -94,11 +74,7 @@ describe('handleProgressRequest', () => {
 		await put('user-1', { ...SNAPSHOT, slotStatus: { a: 'completed' } }, 1);
 
 		// stale: writer still believes revision 1
-		const stale = await put(
-			'user-1',
-			{ ...SNAPSHOT, slotStatus: { b: 'attended' } },
-			1,
-		);
+		const stale = await put('user-1', { ...SNAPSHOT, slotStatus: { b: 'attended' } }, 1);
 		expect(stale.status).toBe(409);
 		const staleBody = await stale.json();
 		expect(staleBody).toMatchObject({
@@ -108,17 +84,9 @@ describe('handleProgressRequest', () => {
 
 		// concurrent: two writers at the same revision, second one loses
 		await put('user-2', SNAPSHOT, null);
-		const concurrent = await put(
-			'user-2',
-			{ ...SNAPSHOT, slotStatus: { c: 'attended' } },
-			1,
-		);
+		const concurrent = await put('user-2', { ...SNAPSHOT, slotStatus: { c: 'attended' } }, 1);
 		expect(concurrent.status).toBe(200);
-		const loser = await put(
-			'user-2',
-			{ ...SNAPSHOT, slotStatus: { d: 'attended' } },
-			1,
-		);
+		const loser = await put('user-2', { ...SNAPSHOT, slotStatus: { d: 'attended' } }, 1);
 		expect(loser.status).toBe(409);
 		const loserBody = (await loser.json()) as {
 			data: { slotStatus: Record<string, string> };
@@ -130,18 +98,10 @@ describe('handleProgressRequest', () => {
 		await put('user-1', SNAPSHOT, null);
 		await put('user-1', { ...SNAPSHOT, slotStatus: { x: 'completed' } }, 1);
 
-		const otherGet = await handleProgressRequest(
-			request('GET'),
-			'user-2',
-			env.DB,
-		);
+		const otherGet = await handleProgressRequest(request('GET'), 'user-2', env.DB);
 		expect(otherGet.status).toBe(404);
 
-		const otherPut = await put(
-			'user-2',
-			{ ...SNAPSHOT, slotStatus: { y: 'attended' } },
-			null,
-		);
+		const otherPut = await put('user-2', { ...SNAPSHOT, slotStatus: { y: 'attended' } }, null);
 		expect(otherPut.status).toBe(200);
 
 		const first = await handleProgressRequest(request('GET'), 'user-1', env.DB);
@@ -169,11 +129,7 @@ describe('handleProgressRequest', () => {
 			JSON.stringify({ data: SNAPSHOT, expectedRevision: '1' }),
 		];
 		for (const body of cases) {
-			const res = await handleProgressRequest(
-				request('PUT', body),
-				'user-1',
-				env.DB,
-			);
+			const res = await handleProgressRequest(request('PUT', body), 'user-1', env.DB);
 			expect(res.status).toBe(400);
 		}
 	});
@@ -181,9 +137,7 @@ describe('handleProgressRequest', () => {
 	it('preserves Unicode when a request splits multibyte characters across chunks', async () => {
 		await seedUser('user-1');
 		const data = { ...SNAPSHOT, notes: 'Grüsse aus Luzern 🧠' };
-		const encoded = new TextEncoder().encode(
-			JSON.stringify({ data, expectedRevision: null }),
-		);
+		const encoded = new TextEncoder().encode(JSON.stringify({ data, expectedRevision: null }));
 		const body = new ReadableStream<Uint8Array>({
 			start(controller) {
 				for (let index = 0; index < encoded.length; index++) {
@@ -201,11 +155,7 @@ describe('handleProgressRequest', () => {
 			env.DB,
 		);
 		expect(response.status).toBe(200);
-		const stored = await handleProgressRequest(
-			request('GET'),
-			'user-1',
-			env.DB,
-		);
+		const stored = await handleProgressRequest(request('GET'), 'user-1', env.DB);
 		expect(await stored.json()).toMatchObject({ data });
 	});
 
@@ -250,35 +200,19 @@ describe('handleProgressRequest', () => {
 		const res = await put('user-1', malicious, null);
 		expect(res.status).toBe(200);
 
-		const getRes = await handleProgressRequest(
-			request('GET'),
-			'user-1',
-			env.DB,
-		);
+		const getRes = await handleProgressRequest(request('GET'), 'user-1', env.DB);
 		const stored = (await getRes.json()) as { data: unknown };
 		expect(stored.data).toEqual(malicious);
 
 		// SQL-like user id is a bound parameter, never a statement fragment
-		const evilId = await handleProgressRequest(
-			request('GET'),
-			"'; DROP TABLE user_data; --",
-			env.DB,
-		);
+		const evilId = await handleProgressRequest(request('GET'), "'; DROP TABLE user_data; --", env.DB);
 		expect(evilId.status).toBe(404);
-		const row = await env.DB.prepare(
-			'SELECT revision FROM user_data WHERE user_id = ?',
-		)
-			.bind('user-1')
-			.first();
+		const row = await env.DB.prepare('SELECT revision FROM user_data WHERE user_id = ?').bind('user-1').first();
 		expect(row?.revision).toBe(1);
 	});
 
 	it('returns 405 for unsupported methods', async () => {
-		const res = await handleProgressRequest(
-			request('POST', SNAPSHOT),
-			'user-1',
-			env.DB,
-		);
+		const res = await handleProgressRequest(request('POST', SNAPSHOT), 'user-1', env.DB);
 		expect(res.status).toBe(405);
 	});
 

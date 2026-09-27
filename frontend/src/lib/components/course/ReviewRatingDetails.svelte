@@ -146,10 +146,7 @@ $effect(() => () => clearTimeout(closeTimer));
 				<div>
 					<dt class="mb-1 font-medium">{m.reviews_recommendation()}</dt>
 					<dd>
-						<ReviewStars
-							value={review.recommendation}
-							label={m.reviews_star_label({ value: review.recommendation })}
-						/>
+						<ReviewStars value={review.recommendation} label={m.reviews_star_label({ value: review.recommendation })} />
 					</dd>
 				</div>
 				<div>
@@ -164,13 +161,9 @@ $effect(() => () => clearTimeout(closeTimer));
 				<div>
 					<dt class="font-medium">{m.reviews_difficulty()}</dt>
 					<dd>
-						<span class="font-semibold tabular-nums"
-							>{review.difficulty}/5</span
-						>
-						<span
-							class="mt-1 flex justify-between gap-3 text-xs text-text-secondary"
-							><span>1: {m.reviews_easy()}</span
-							><span class="text-right">5: {m.reviews_hard()}</span></span
+						<span class="font-semibold tabular-nums">{review.difficulty}/5</span>
+						<span class="mt-1 flex justify-between gap-3 text-xs text-text-secondary"
+							><span>1: {m.reviews_easy()}</span><span class="text-right">5: {m.reviews_hard()}</span></span
 						>
 					</dd>
 				</div>
@@ -178,10 +171,8 @@ $effect(() => () => clearTimeout(closeTimer));
 					<dt class="font-medium">{m.reviews_workload()}</dt>
 					<dd>
 						<span class="font-semibold tabular-nums">{review.workload}/5</span>
-						<span
-							class="mt-1 flex justify-between gap-3 text-xs text-text-secondary"
-							><span>1: {m.reviews_low()}</span
-							><span class="text-right">5: {m.reviews_high()}</span></span
+						<span class="mt-1 flex justify-between gap-3 text-xs text-text-secondary"
+							><span>1: {m.reviews_low()}</span><span class="text-right">5: {m.reviews_high()}</span></span
 						>
 					</dd>
 				</div>

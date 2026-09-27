@@ -1,9 +1,6 @@
 import { getTemplateById } from '$lib/data/catalog/courses';
 import type { StudyPlan } from '$lib/data/planning/study-plan';
-import {
-	calculateCompletedCredits,
-	resolveCourse,
-} from '$lib/data/planning/study-plan';
+import { calculateCompletedCredits, resolveCourse } from '$lib/data/planning/study-plan';
 import type { Status } from '../types';
 import { assessmentStagePassed } from './assessment-stage';
 import { evaluatePrerequisites } from './prerequisite';
@@ -15,9 +12,7 @@ export function getAssessmentStageProgress(
 	const completedEcts = calculateCompletedCredits(plan, slotStatus);
 	const projectEcts = Object.values(plan.nodes).reduce((sum, node) => {
 		if (slotStatus.get(node.id) !== 'completed') return sum;
-		return resolveCourse(node.courseId)?.type === 'Projektmodul'
-			? sum + (node.ects || 0)
-			: sum;
+		return resolveCourse(node.courseId)?.type === 'Projektmodul' ? sum + (node.ects || 0) : sum;
 	}, 0);
 	return {
 		completedEcts,
@@ -31,10 +26,7 @@ export function computeStatuses(
 	slotStatus: Map<string, 'attended' | 'completed'>,
 ): Record<string, Status> {
 	const statuses: Record<string, Status> = {};
-	const assessmentStageMet = getAssessmentStageProgress(
-		plan,
-		slotStatus,
-	).passed;
+	const assessmentStageMet = getAssessmentStageProgress(plan, slotStatus).passed;
 
 	Object.values(plan.nodes).forEach((node) => {
 		const currentStatus = slotStatus.get(node.id);
@@ -54,11 +46,7 @@ export function computeStatuses(
 			return;
 		}
 
-		const prereqsMet = evaluatePrerequisites(
-			course.prerequisites,
-			slotStatus,
-			plan,
-		);
+		const prereqsMet = evaluatePrerequisites(course.prerequisites, slotStatus, plan);
 		const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
 		statuses[node.id] = prereqsMet && assessmentMet ? 'available' : 'locked';
 	});
@@ -72,9 +60,7 @@ type NodeWarnings = {
 };
 
 /** Plan-only warnings, computed once rather than on every canvas restyle. */
-export function computePlanWarnings(
-	plan: StudyPlan,
-): Record<string, NodeWarnings> {
+export function computePlanWarnings(plan: StudyPlan): Record<string, NodeWarnings> {
 	const nodes = Object.values(plan.nodes);
 	const coursesInPlan = new Set<string>();
 	for (const node of nodes) {
@@ -93,8 +79,7 @@ export function computePlanWarnings(
 						? !rule.modules.some((id) => coursesInPlan.has(id))
 						: !rule.modules.every((id) => coursesInPlan.has(id)),
 				),
-			hasAssessmentStageViolation:
-				!!course?.assessmentLevelPassed && node.semester <= assessmentSemesters,
+			hasAssessmentStageViolation: !!course?.assessmentLevelPassed && node.semester <= assessmentSemesters,
 		};
 	}
 	return warnings;
@@ -109,10 +94,7 @@ function getAssessmentStageSemesters(plan: StudyPlan): number {
  * Checks if a course requiring "assessment stage passed" is placed in assessment stage semesters.
  * Assessment stage is semesters 1-2 for full-time programs and 1-3 for part-time programs.
  */
-export function hasAssessmentStageViolation(
-	plan: StudyPlan,
-	nodeId: string,
-): boolean {
+export function hasAssessmentStageViolation(plan: StudyPlan, nodeId: string): boolean {
 	const node = plan.nodes[nodeId];
 	if (!node?.courseId) return false;
 

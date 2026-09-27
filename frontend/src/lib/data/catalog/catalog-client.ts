@@ -21,10 +21,7 @@ function validateShape(value: unknown): CatalogData {
 	return data as unknown as CatalogData;
 }
 
-export function createCatalogClient(
-	url: string,
-	fetchFn: typeof fetch,
-): CatalogClient {
+export function createCatalogClient(url: string, fetchFn: typeof fetch): CatalogClient {
 	let value: CatalogData | undefined;
 	let pending: Promise<CatalogData> | undefined;
 
@@ -35,9 +32,7 @@ export function createCatalogClient(
 				headers: { Accept: 'application/json' },
 			});
 			if (!response.ok) {
-				throw new Error(
-					`Catalog request failed with status ${response.status}.`,
-				);
+				throw new Error(`Catalog request failed with status ${response.status}.`);
 			}
 			let parsed: unknown;
 			try {
@@ -47,9 +42,7 @@ export function createCatalogClient(
 			}
 			const data = validateShape(parsed);
 			if (data.schemaVersion !== 1) {
-				throw new Error(
-					`Unsupported catalog schema version: ${data.schemaVersion}`,
-				);
+				throw new Error(`Unsupported catalog schema version: ${data.schemaVersion}`);
 			}
 			value = data;
 			return data;

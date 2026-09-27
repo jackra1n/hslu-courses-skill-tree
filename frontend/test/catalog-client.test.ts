@@ -39,9 +39,7 @@ const URL = '/assets/catalog.json';
 describe('catalog client', () => {
 	let calls: FetchCall[];
 
-	function clientRespondingWith(
-		responder: (url: string) => Response | Promise<Response>,
-	) {
+	function clientRespondingWith(responder: (url: string) => Response | Promise<Response>) {
 		const made = makeFetch(responder);
 		calls = made.calls;
 		return createCatalogClient(URL, made.fetchFn);
@@ -52,9 +50,7 @@ describe('catalog client', () => {
 	});
 
 	test('parses and exposes a successful catalog', async () => {
-		const client = clientRespondingWith(() =>
-			jsonResponse(JSON.stringify(VALID_CATALOG)),
-		);
+		const client = clientRespondingWith(() => jsonResponse(JSON.stringify(VALID_CATALOG)));
 
 		const loaded = await client.load();
 		expect(loaded.dataVersion).toBe('H25');
@@ -62,9 +58,7 @@ describe('catalog client', () => {
 	});
 
 	test('sends the configured URL with same-origin credentials', async () => {
-		const client = clientRespondingWith(() =>
-			jsonResponse(JSON.stringify(VALID_CATALOG)),
-		);
+		const client = clientRespondingWith(() => jsonResponse(JSON.stringify(VALID_CATALOG)));
 
 		await client.load();
 
@@ -77,9 +71,7 @@ describe('catalog client', () => {
 	});
 
 	test('shares one request between concurrent loads', async () => {
-		const client = clientRespondingWith(() =>
-			jsonResponse(JSON.stringify(VALID_CATALOG)),
-		);
+		const client = clientRespondingWith(() => jsonResponse(JSON.stringify(VALID_CATALOG)));
 
 		const [a, b] = await Promise.all([client.load(), client.load()]);
 
@@ -88,9 +80,7 @@ describe('catalog client', () => {
 	});
 
 	test('reuses the value for repeated successful loads', async () => {
-		const client = clientRespondingWith(() =>
-			jsonResponse(JSON.stringify(VALID_CATALOG)),
-		);
+		const client = clientRespondingWith(() => jsonResponse(JSON.stringify(VALID_CATALOG)));
 
 		const first = await client.load();
 		const second = await client.load();
@@ -102,28 +92,20 @@ describe('catalog client', () => {
 	test('rejects non-2xx responses with status message', async () => {
 		const client = clientRespondingWith(() => jsonResponse('', 503));
 
-		await expect(client.load()).rejects.toThrow(
-			'Catalog request failed with status 503.',
-		);
+		await expect(client.load()).rejects.toThrow('Catalog request failed with status 503.');
 		expect(client.get).toThrow('Catalog has not been loaded.');
 	});
 
 	test('rejects invalid JSON bodies', async () => {
 		const client = clientRespondingWith(() => jsonResponse('<html>'));
 
-		await expect(client.load()).rejects.toThrow(
-			'Catalog response is not valid JSON.',
-		);
+		await expect(client.load()).rejects.toThrow('Catalog response is not valid JSON.');
 	});
 
 	test('rejects unsupported schema versions', async () => {
-		const client = clientRespondingWith(() =>
-			jsonResponse(JSON.stringify({ ...VALID_CATALOG, schemaVersion: 2 })),
-		);
+		const client = clientRespondingWith(() => jsonResponse(JSON.stringify({ ...VALID_CATALOG, schemaVersion: 2 })));
 
-		await expect(client.load()).rejects.toThrow(
-			'Unsupported catalog schema version: 2',
-		);
+		await expect(client.load()).rejects.toThrow('Unsupported catalog schema version: 2');
 	});
 
 	test('rejects invalid top-level shapes', async () => {
@@ -136,21 +118,15 @@ describe('catalog client', () => {
 			{ ...VALID_CATALOG, courses: null },
 			{ ...VALID_CATALOG, ectsRequirements: null },
 		]) {
-			const client = clientRespondingWith(() =>
-				jsonResponse(JSON.stringify(broken)),
-			);
-			await expect(client.load()).rejects.toThrow(
-				'Catalog response has an invalid shape.',
-			);
+			const client = clientRespondingWith(() => jsonResponse(JSON.stringify(broken)));
+			await expect(client.load()).rejects.toThrow('Catalog response has an invalid shape.');
 		}
 	});
 
 	test('makes a real second request after a failure', async () => {
 		let failing = true;
 		const client = clientRespondingWith(() =>
-			failing
-				? jsonResponse('', 503)
-				: jsonResponse(JSON.stringify(VALID_CATALOG)),
+			failing ? jsonResponse('', 503) : jsonResponse(JSON.stringify(VALID_CATALOG)),
 		);
 
 		await expect(client.load()).rejects.toThrow();
@@ -189,11 +165,7 @@ describe('catalog client', () => {
 		} as const;
 		const originalFetch = globalThis.fetch;
 		globalThis.fetch = (() =>
-			Promise.resolve(
-				jsonResponse(
-					JSON.stringify({ ...VALID_CATALOG, templates: [template] }),
-				),
-			)) as typeof fetch;
+			Promise.resolve(jsonResponse(JSON.stringify({ ...VALID_CATALOG, templates: [template] })))) as typeof fetch;
 
 		try {
 			await loadCatalog();

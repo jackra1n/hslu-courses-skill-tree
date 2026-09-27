@@ -59,23 +59,14 @@ export const test = base.extend<Fixtures, { harness: TestHarness }>({
 			try {
 				const headers = new Headers();
 				for (let index = 0; index < request.rawHeaders.length; index += 2) {
-					headers.append(
-						request.rawHeaders[index],
-						request.rawHeaders[index + 1],
-					);
+					headers.append(request.rawHeaders[index], request.rawHeaders[index + 1]);
 				}
-				const result = await frontend.fetch(
-					new URL(request.url ?? '/', `http://${request.headers.host}`),
-					{
-						method: request.method,
-						headers,
-						body:
-							request.method === 'GET' || request.method === 'HEAD'
-								? undefined
-								: Readable.toWeb(request),
-						duplex: 'half',
-					},
-				);
+				const result = await frontend.fetch(new URL(request.url ?? '/', `http://${request.headers.host}`), {
+					method: request.method,
+					headers,
+					body: request.method === 'GET' || request.method === 'HEAD' ? undefined : Readable.toWeb(request),
+					duplex: 'half',
+				});
 				response.statusCode = result.status;
 				// fetch decodes the body; Node supplies the outgoing framing.
 				result.headers.forEach((value, name) => {
@@ -96,17 +87,13 @@ export const test = base.extend<Fixtures, { harness: TestHarness }>({
 					response.end();
 				}
 			} catch (error) {
-				response.destroy(
-					error instanceof Error ? error : new Error(String(error)),
-				);
+				response.destroy(error instanceof Error ? error : new Error(String(error)));
 			}
 		});
 		server.keepAliveTimeout = 0;
 		server.listen(0, '127.0.0.1');
 		await once(server, 'listening');
-		const url = new URL(
-			`http://127.0.0.1:${(server.address() as AddressInfo).port}`,
-		);
+		const url = new URL(`http://127.0.0.1:${(server.address() as AddressInfo).port}`);
 		try {
 			await use({ url, database: DB });
 		} finally {
@@ -146,9 +133,7 @@ export const test = base.extend<Fixtures, { harness: TestHarness }>({
 				{ method: 'test' },
 			);
 			const session = await authContext.internalAdapter.createSession(user.id);
-			const signature = createHmac('sha256', authContext.secret)
-				.update(session.token)
-				.digest('base64');
+			const signature = createHmac('sha256', authContext.secret).update(session.token).digest('base64');
 			await context.addCookies([
 				{
 					name: authContext.authCookies.sessionToken.name,

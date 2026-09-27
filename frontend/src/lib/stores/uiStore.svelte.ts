@@ -48,8 +48,7 @@ class UIStore {
 	}
 
 	init() {
-		this.courseTypeBadges =
-			readStorage(STORAGE_KEYS.courseTypeBadges) === 'true';
+		this.courseTypeBadges = readStorage(STORAGE_KEYS.courseTypeBadges) === 'true';
 	}
 }
 

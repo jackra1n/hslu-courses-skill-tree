@@ -12,31 +12,18 @@ let { courseId }: { courseId: string } = $props();
 const courseStore = getCourseStore();
 
 const _selectedSlotId = $derived(uiStore.selectedSlotId);
-const slotStatus = $derived(
-	_selectedSlotId ? progressStore.getSlotStatus(_selectedSlotId) : null,
-);
+const slotStatus = $derived(_selectedSlotId ? progressStore.getSlotStatus(_selectedSlotId) : null);
 const isAttended = $derived(slotStatus === 'attended');
 const isCompleted = $derived(slotStatus === 'completed');
-const statuses = $derived(
-	computeStatuses(courseStore.studyPlan, progressStore.slotStatus),
-);
-const isLocked = $derived(
-	_selectedSlotId ? statuses[_selectedSlotId] === 'locked' : true,
-);
+const statuses = $derived(computeStatuses(courseStore.studyPlan, progressStore.slotStatus));
+const isLocked = $derived(_selectedSlotId ? statuses[_selectedSlotId] === 'locked' : true);
 
 // check if prerequisites are met (including assessment stage)
 const course = $derived.by(() => getCourseById(courseId));
 const prerequisitesMet = $derived.by(() => {
 	if (!course) return false;
-	const prereqsMet = evaluatePrerequisites(
-		course.prerequisites,
-		progressStore.slotStatus,
-		courseStore.studyPlan,
-	);
-	const assessmentStageMet = getAssessmentStageProgress(
-		courseStore.studyPlan,
-		progressStore.slotStatus,
-	).passed;
+	const prereqsMet = evaluatePrerequisites(course.prerequisites, progressStore.slotStatus, courseStore.studyPlan);
+	const assessmentStageMet = getAssessmentStageProgress(courseStore.studyPlan, progressStore.slotStatus).passed;
 	const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
 	return prereqsMet && assessmentMet;
 });

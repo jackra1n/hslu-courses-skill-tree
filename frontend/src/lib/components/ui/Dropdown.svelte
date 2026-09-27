@@ -59,39 +59,27 @@ const filteredOptions = $derived(
 		? options.filter(
 				(option) =>
 					normalize(option.label).includes(normalizedQuery) ||
-					option.keywords?.some((keyword) =>
-						normalize(keyword).includes(normalizedQuery),
-					),
+					option.keywords?.some((keyword) => normalize(keyword).includes(normalizedQuery)),
 			)
 		: options,
 );
-const selectedOption = $derived(
-	options.find((option) => option.value === selected),
-);
-const activeId = $derived(
-	isOpen && activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined,
-);
+const selectedOption = $derived(options.find((option) => option.value === selected));
+const activeId = $derived(isOpen && activeIndex >= 0 ? `${id}-option-${activeIndex}` : undefined);
 
 function scrollToActive() {
 	const option = document.getElementById(`${id}-option-${activeIndex}`);
 	if (!option || !listbox) return;
 	if (option.offsetTop < listbox.scrollTop) {
 		listbox.scrollTop = option.offsetTop;
-	} else if (
-		option.offsetTop + option.offsetHeight >
-		listbox.scrollTop + listbox.clientHeight
-	) {
-		listbox.scrollTop =
-			option.offsetTop + option.offsetHeight - listbox.clientHeight;
+	} else if (option.offsetTop + option.offsetHeight > listbox.scrollTop + listbox.clientHeight) {
+		listbox.scrollTop = option.offsetTop + option.offsetHeight - listbox.clientHeight;
 	}
 }
 
 function open(preferLast = false) {
 	query = '';
 	typedPrefix = '';
-	const current = options.findIndex(
-		(option) => option.value === selected && !option.disabled,
-	);
+	const current = options.findIndex((option) => option.value === selected && !option.disabled);
 	activeIndex =
 		current >= 0
 			? current
@@ -128,10 +116,7 @@ function move(direction: number) {
 
 function typeAhead(event: KeyboardEvent) {
 	const key = normalize(event.key);
-	typedPrefix =
-		event.timeStamp - lastTypedAt < 700 && typedPrefix !== key
-			? typedPrefix + key
-			: key;
+	typedPrefix = event.timeStamp - lastTypedAt < 700 && typedPrefix !== key ? typedPrefix + key : key;
 	lastTypedAt = event.timeStamp;
 	for (let step = 1; step <= filteredOptions.length; step++) {
 		const index = (activeIndex + step) % filteredOptions.length;
@@ -152,30 +137,18 @@ function handleKeydown(event: KeyboardEvent) {
 		event.preventDefault();
 		if (isOpen) move(event.key === 'ArrowDown' ? 1 : -1);
 		else open(event.key === 'ArrowUp');
-	} else if (
-		event.key === 'Enter' ||
-		(event.key === ' ' && event.target === trigger)
-	) {
+	} else if (event.key === 'Enter' || (event.key === ' ' && event.target === trigger)) {
 		event.preventDefault();
 		if (!isOpen) open();
 		else if (activeIndex >= 0) selectOption(filteredOptions[activeIndex]);
-	} else if (
-		event.target === trigger &&
-		(event.key === 'Home' || event.key === 'End')
-	) {
+	} else if (event.target === trigger && (event.key === 'Home' || event.key === 'End')) {
 		event.preventDefault();
 		if (!isOpen) open();
 		activeIndex =
 			event.key === 'Home'
 				? filteredOptions.findIndex((option) => !option.disabled)
 				: filteredOptions.findLastIndex((option) => !option.disabled);
-	} else if (
-		!searchable &&
-		event.key.length === 1 &&
-		!event.ctrlKey &&
-		!event.metaKey &&
-		!event.altKey
-	) {
+	} else if (!searchable && event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
 		event.preventDefault();
 		if (!isOpen) open();
 		typeAhead(event);
@@ -196,8 +169,7 @@ function position() {
 	const viewport = window.visualViewport;
 	const left = (viewport?.offsetLeft ?? 0) + 8;
 	const top = (viewport?.offsetTop ?? 0) + 8;
-	const right =
-		left + (viewport?.width ?? document.documentElement.clientWidth) - 16;
+	const right = left + (viewport?.width ?? document.documentElement.clientWidth) - 16;
 	const bottom = top + (viewport?.height ?? window.innerHeight) - 16;
 	const below = bottom - anchor.bottom - 4;
 	const above = anchor.top - top - 4;
@@ -221,8 +193,7 @@ $effect(() => {
 		close(true);
 	};
 	const handleScroll = (event: Event) => {
-		if (!(event.target instanceof Node) || !popover.contains(event.target))
-			position();
+		if (!(event.target instanceof Node) || !popover.contains(event.target)) position();
 	};
 	const observer = new ResizeObserver(position);
 	observer.observe(trigger);
@@ -270,14 +241,9 @@ $effect(() => {
 	>
 		<span class="flex min-w-0 flex-1 items-center gap-2 text-left">
 			{#if selectedOption?.icon}
-				<span
-					class="{selectedOption.icon} h-4 w-4 shrink-0"
-					aria-hidden="true"
-				></span>
+				<span class="{selectedOption.icon} h-4 w-4 shrink-0" aria-hidden="true"></span>
 			{/if}
-			<span id={`${id}-value`} class="truncate text-sm font-medium"
-				>{selectedOption?.label ?? placeholder}</span
-			>
+			<span id={`${id}-value`} class="truncate text-sm font-medium">{selectedOption?.label ?? placeholder}</span>
 		</span>
 		<span
 			class="i-lucide-chevron-down h-4 w-4 shrink-0 text-text-secondary {isOpen ? 'rotate-180' : ''}"
@@ -333,16 +299,12 @@ $effect(() => {
 						class="flex min-h-10 items-center gap-2 rounded-md px-2 py-2 text-sm {index === activeIndex ? 'bg-bg-secondary' : ''} {option.disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}"
 					>
 						{#if option.icon}
-							<span
-								class="{option.icon} h-4 w-4 shrink-0"
-								aria-hidden="true"
-							></span>
+							<span class="{option.icon} h-4 w-4 shrink-0" aria-hidden="true"></span>
 						{/if}
 						<span class="min-w-0 flex-1 break-words font-medium">
 							{#if match >= 0}
 								{option.label.slice(0, match)}
-								<mark
-									class="rounded bg-yellow-200 text-inherit dark:bg-yellow-800"
+								<mark class="rounded bg-yellow-200 text-inherit dark:bg-yellow-800"
 									>{option.label.slice(match, match + query.trim().length)}</mark
 								>{option.label.slice(match + query.trim().length)}
 							{:else}
@@ -350,15 +312,9 @@ $effect(() => {
 							{/if}
 						</span>
 						{#if option.disabled}
-							<span
-								class="i-lucide-lock h-4 w-4 shrink-0 text-text-tertiary"
-								aria-hidden="true"
-							></span>
+							<span class="i-lucide-lock h-4 w-4 shrink-0 text-text-tertiary" aria-hidden="true"></span>
 						{:else if option.value === selected}
-							<span
-								class="i-lucide-check h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400"
-								aria-hidden="true"
-							></span>
+							<span class="i-lucide-check h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" aria-hidden="true"></span>
 						{/if}
 					</li>
 				{/each}

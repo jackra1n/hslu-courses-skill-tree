@@ -3,10 +3,7 @@ import { fade, scale } from 'svelte/transition';
 import { serializeSnapshot } from '$lib/data/app-data';
 import { seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
-import {
-	cloudSyncStore,
-	type SyncConflict,
-} from '$lib/stores/cloudSyncStore.svelte';
+import { cloudSyncStore, type SyncConflict } from '$lib/stores/cloudSyncStore.svelte';
 
 const conflict = $derived(cloudSyncStore.conflict);
 const differences = $derived.by(() => {
@@ -47,8 +44,7 @@ const differences = $derived.by(() => {
 	const { local, cloud } = conflict;
 	return categories.filter(
 		(category) =>
-			serializeSnapshot({ value: category.value(local) }) !==
-			serializeSnapshot({ value: category.value(cloud) }),
+			serializeSnapshot({ value: category.value(local) }) !== serializeSnapshot({ value: category.value(cloud) }),
 	);
 });
 
@@ -93,12 +89,8 @@ function counts(data: SyncConflict['local']) {
 			role="document"
 		>
 			<!-- Header -->
-			<div
-				class="flex items-center gap-3 border-b border-border-primary px-6 py-4"
-			>
-				<div
-					class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900"
-				>
+			<div class="flex items-center gap-3 border-b border-border-primary px-6 py-4">
+				<div class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900">
 					<svg
 						class="w-5 h-5 text-yellow-600 dark:text-yellow-400"
 						fill="none"
@@ -114,20 +106,14 @@ function counts(data: SyncConflict['local']) {
 						/>
 					</svg>
 				</div>
-				<h2
-					id="sync-conflict-title"
-					class="text-lg font-semibold text-text-primary"
-				>
+				<h2 id="sync-conflict-title" class="text-lg font-semibold text-text-primary">
 					{m.sync_title()}
 				</h2>
 			</div>
 
 			<!-- Content -->
 			<div class="px-6 py-6 space-y-4">
-				<p
-					id="sync-conflict-description"
-					class="text-sm text-text-secondary leading-relaxed"
-				>
+				<p id="sync-conflict-description" class="text-sm text-text-secondary leading-relaxed">
 					{m.sync_description()}
 				</p>
 				<div class="space-y-2 text-sm text-text-secondary">
@@ -141,14 +127,9 @@ function counts(data: SyncConflict['local']) {
 
 				<div class="grid gap-3 sm:grid-cols-2">
 					{#snippet card(title: string, icon: string, data: SyncConflict['local'], time: number | null)}
-						<div
-							class="rounded-xl border border-border-primary bg-bg-secondary p-4"
-						>
+						<div class="rounded-xl border border-border-primary bg-bg-secondary p-4">
 							<div class="flex items-center gap-2 mb-3">
-								<div
-									class="{icon} h-4 w-4 text-text-primary"
-									aria-hidden="true"
-								></div>
+								<div class="{icon} h-4 w-4 text-text-primary" aria-hidden="true"></div>
 								<div class="text-sm font-semibold text-text-primary">
 									{title}
 								</div>
@@ -195,9 +176,7 @@ function counts(data: SyncConflict['local']) {
 			</div>
 
 			<!-- Actions -->
-			<div
-				class="flex flex-col-reverse gap-3 border-t border-border-primary px-6 py-4 sm:flex-row sm:justify-end"
-			>
+			<div class="flex flex-col-reverse gap-3 border-t border-border-primary px-6 py-4 sm:flex-row sm:justify-end">
 				<button
 					class="rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors disabled:cursor-wait disabled:opacity-50"
 					onclick={() => cloudSyncStore.useLocalConflict()}

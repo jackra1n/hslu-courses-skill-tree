@@ -9,10 +9,7 @@ export function getNodeWidth(credits: number): number {
 	return blocks * 150 + (blocks - 1) * 40;
 }
 
-export function getNodeLabel(
-	course: Course,
-	showShortNamesOnly: boolean,
-): string {
+export function getNodeLabel(course: Course, showShortNamesOnly: boolean): string {
 	if (showShortNamesOnly) {
 		return course.id;
 	}

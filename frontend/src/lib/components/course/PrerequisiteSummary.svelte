@@ -8,46 +8,30 @@ import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 import { getAssessmentStageProgress } from '$lib/utils/status';
 
-let {
-	course,
-	targetNodeId,
-}: { course: Omit<Course, 'type'>; targetNodeId?: string } = $props();
+let { course, targetNodeId }: { course: Omit<Course, 'type'>; targetNodeId?: string } = $props();
 const courseStore = getCourseStore();
 const plan = $derived(courseStore.studyPlan);
-const hasPlan = $derived(
-	Object.values(plan.nodes).some((node) => node.courseId),
-);
+const hasPlan = $derived(Object.values(plan.nodes).some((node) => node.courseId));
 const groups = $derived(
-	summarizePrerequisites(
-		course.prerequisites,
-		hasPlan ? plan : null,
-		progressStore.slotStatus,
-		targetNodeId,
-	).filter((group) => group.relevant),
+	summarizePrerequisites(course.prerequisites, hasPlan ? plan : null, progressStore.slotStatus, targetNodeId).filter(
+		(group) => group.relevant,
+	),
 );
 const assessmentPassed = $derived(
-	course.assessmentLevelPassed && hasPlan
-		? getAssessmentStageProgress(plan, progressStore.slotStatus).passed
-		: false,
+	course.assessmentLevelPassed && hasPlan ? getAssessmentStageProgress(plan, progressStore.slotStatus).passed : false,
 );
 
-type CourseState = ReturnType<
-	typeof summarizePrerequisites
->[number]['courses'][number]['state'];
+type CourseState = ReturnType<typeof summarizePrerequisites>[number]['courses'][number]['state'];
 
 function statusColor(state: CourseState) {
-	if (state === 'completed' || state === 'attended')
-		return 'text-green-700 dark:text-green-400';
-	if (state === 'missing' || state === 'later' || state === 'incomplete')
-		return 'text-amber-700 dark:text-amber-400';
+	if (state === 'completed' || state === 'attended') return 'text-green-700 dark:text-green-400';
+	if (state === 'missing' || state === 'later' || state === 'incomplete') return 'text-amber-700 dark:text-amber-400';
 	return 'text-text-secondary';
 }
 
 function statusIcon(state: CourseState) {
-	if (state === 'completed' || state === 'attended')
-		return 'i-lucide-circle-check';
-	if (state === 'missing' || state === 'later' || state === 'incomplete')
-		return 'i-lucide-triangle-alert';
+	if (state === 'completed' || state === 'attended') return 'i-lucide-circle-check';
+	if (state === 'missing' || state === 'later' || state === 'incomplete') return 'i-lucide-triangle-alert';
 	return state === 'planned' ? 'i-lucide-calendar-days' : 'i-lucide-circle';
 }
 
@@ -111,9 +95,7 @@ function moduleLabel(courseId: string) {
 					></span>
 					<p class="min-w-0 text-text-primary">
 						{group.courses.map((candidate) => candidate.courseId).join(` ${m.course_summary_or()} `)}
-						<span
-							class={group.state === 'missing' ? 'text-amber-700 dark:text-amber-400' : 'sr-only'}
-						>
+						<span class={group.state === 'missing' ? 'text-amber-700 dark:text-amber-400' : 'sr-only'}>
 							— {statusLabel(group.state)}</span
 						>
 					</p>
@@ -131,9 +113,7 @@ function moduleLabel(courseId: string) {
 							></span>
 							<p class="min-w-0 text-text-primary">
 								{#if candidateIndex > 0 && rule.moduleLinkType === 'oder'}
-									<span class="text-text-secondary"
-										>{m.course_summary_or()}
-									</span>
+									<span class="text-text-secondary">{m.course_summary_or()} </span>
 								{/if}
 								{moduleLabel(candidate.courseId)}
 								<span
@@ -150,12 +130,7 @@ function moduleLabel(courseId: string) {
 	{/each}
 </ul>
 {#if course.prerequisiteNote?.trim()}
-	<p
-		class="mt-3 flex items-start gap-2 text-xs leading-relaxed text-text-secondary"
-	>
-		<span
-			class="i-lucide-info mt-0.5 h-3.5 w-3.5 shrink-0"
-			aria-hidden="true"
-		></span>{m.course_summary_notes()}
+	<p class="mt-3 flex items-start gap-2 text-xs leading-relaxed text-text-secondary">
+		<span class="i-lucide-info mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true"></span>{m.course_summary_notes()}
 	</p>
 {/if}

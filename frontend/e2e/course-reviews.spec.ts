@@ -43,9 +43,7 @@ async function fillRatings(form: Locator, ratings: Ratings) {
 }
 
 async function expectDraft(form: Locator, ratings: Ratings, text: string) {
-	await expect(
-		form.getByRole('textbox', { name: 'Your experience (optional)' }),
-	).toHaveValue(text);
+	await expect(form.getByRole('textbox', { name: 'Your experience (optional)' })).toHaveValue(text);
 	for (const [key, label] of dimensions) {
 		await expect(ratingInput(form, label, ratings[key])).toBeChecked();
 	}
@@ -69,9 +67,7 @@ async function expectPublishedRatings(article: Locator, ratings: Ratings) {
 				}),
 			).toBeVisible();
 		} else {
-			await expect(
-				dimension.getByText(`${ratings[key]}/5`, { exact: true }),
-			).toBeVisible();
+			await expect(dimension.getByText(`${ratings[key]}/5`, { exact: true })).toBeVisible();
 		}
 	}
 	await details.press('Escape');
@@ -79,10 +75,7 @@ async function expectPublishedRatings(article: Locator, ratings: Ratings) {
 	await expect(article).toBeVisible();
 }
 
-test('a reviewer can publish, edit and cancel or confirm deletion with persistent results', async ({
-	page,
-	login,
-}) => {
+test('a reviewer can publish, edit and cancel or confirm deletion with persistent results', async ({ page, login }) => {
 	await login();
 	await page.goto(courseUrl);
 	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
@@ -91,23 +84,16 @@ test('a reviewer can publish, edit and cancel or confirm deletion with persisten
 		exact: true,
 	});
 	const originalText = 'The practical web exercises made the concepts clear.';
-	const updatedText =
-		'After the final project, I found the material more challenging but the workload manageable.';
+	const updatedText = 'After the final project, I found the material more challenging but the workload manageable.';
 
-	await reviews
-		.getByRole('button', { name: 'Write a review', exact: true })
-		.click();
+	await reviews.getByRole('button', { name: 'Write a review', exact: true }).click();
 	const createForm = reviews.getByRole('form', {
 		name: 'Write a review',
 		exact: true,
 	});
 	await fillRatings(createForm, originalRatings);
-	await createForm
-		.getByRole('textbox', { name: 'Your experience (optional)' })
-		.fill(originalText);
-	await createForm
-		.getByRole('button', { name: 'Publish review', exact: true })
-		.click();
+	await createForm.getByRole('textbox', { name: 'Your experience (optional)' }).fill(originalText);
+	await createForm.getByRole('button', { name: 'Publish review', exact: true }).click();
 	await expect(reviews.getByRole('article')).toHaveCount(1);
 	await expect(reviews.getByRole('article')).toContainText(originalText);
 
@@ -116,26 +102,18 @@ test('a reviewer can publish, edit and cancel or confirm deletion with persisten
 	const article = reviews.getByRole('article');
 	await expect(article).toHaveCount(1);
 	await expect(article).toContainText(originalText);
-	await expect(
-		article.getByRole('heading', { name: 'Your review', exact: true }),
-	).toBeVisible();
+	await expect(article.getByRole('heading', { name: 'Your review', exact: true })).toBeVisible();
 	await expectPublishedRatings(article, originalRatings);
 
-	await reviews
-		.getByRole('button', { name: 'Edit review', exact: true })
-		.click();
+	await reviews.getByRole('button', { name: 'Edit review', exact: true }).click();
 	const editForm = reviews.getByRole('form', {
 		name: 'Edit review',
 		exact: true,
 	});
 	await expectDraft(editForm, originalRatings, originalText);
 	await fillRatings(editForm, updatedRatings);
-	await editForm
-		.getByRole('textbox', { name: 'Your experience (optional)' })
-		.fill(updatedText);
-	await editForm
-		.getByRole('button', { name: 'Save changes', exact: true })
-		.click();
+	await editForm.getByRole('textbox', { name: 'Your experience (optional)' }).fill(updatedText);
+	await editForm.getByRole('button', { name: 'Save changes', exact: true }).click();
 	await expect(article).toContainText(updatedText);
 	await expect(article).not.toContainText(originalText);
 
@@ -145,46 +123,30 @@ test('a reviewer can publish, edit and cancel or confirm deletion with persisten
 	await expect(article).toContainText(updatedText);
 	await expectPublishedRatings(article, updatedRatings);
 
-	await reviews
-		.getByRole('button', { name: 'Delete review', exact: true })
-		.click();
+	await reviews.getByRole('button', { name: 'Delete review', exact: true }).click();
 	const confirmation = page.getByRole('dialog', {
 		name: 'Delete your review?',
 		exact: true,
 	});
 	await expect(confirmation).toBeVisible();
-	await confirmation
-		.getByRole('button', { name: 'Cancel', exact: true })
-		.click();
+	await confirmation.getByRole('button', { name: 'Cancel', exact: true }).click();
 	await expect(confirmation).toBeHidden();
 	await expect(article).toContainText(updatedText);
 	await page.reload();
 	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
 	await expect(article).toContainText(updatedText);
 
-	await reviews
-		.getByRole('button', { name: 'Delete review', exact: true })
-		.click();
-	await confirmation
-		.getByRole('button', { name: 'Delete review', exact: true })
-		.click();
+	await reviews.getByRole('button', { name: 'Delete review', exact: true }).click();
+	await confirmation.getByRole('button', { name: 'Delete review', exact: true }).click();
 	await expect(confirmation).toBeHidden();
 	await expect(article).toHaveCount(0);
-	await expect(
-		reviews.getByRole('button', { name: 'Write a review', exact: true }),
-	).toBeVisible();
+	await expect(reviews.getByRole('button', { name: 'Write a review', exact: true })).toBeVisible();
 	await page.reload();
 	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
-	await expect(
-		reviews.getByRole('button', { name: 'Write a review', exact: true }),
-	).toBeVisible();
+	await expect(reviews.getByRole('button', { name: 'Write a review', exact: true })).toBeVisible();
 	await expect(article).toHaveCount(0);
-	await expect(
-		reviews.getByRole('button', { name: 'Edit review', exact: true }),
-	).toHaveCount(0);
-	await expect(
-		reviews.getByRole('button', { name: 'Delete review', exact: true }),
-	).toHaveCount(0);
+	await expect(reviews.getByRole('button', { name: 'Edit review', exact: true })).toHaveCount(0);
+	await expect(reviews.getByRole('button', { name: 'Delete review', exact: true })).toHaveCount(0);
 });
 
 test('guests and another account can read an anonymous review but cannot edit or delete it', async ({
@@ -202,80 +164,49 @@ test('guests and another account can read an anonymous review but cannot edit or
 		name: 'Student reviews',
 		exact: true,
 	});
-	await reviews
-		.getByRole('button', { name: 'Write a review', exact: true })
-		.click();
+	await reviews.getByRole('button', { name: 'Write a review', exact: true }).click();
 	const form = reviews.getByRole('form', {
 		name: 'Write a review',
 		exact: true,
 	});
 	await fillRatings(form, originalRatings);
-	await form
-		.getByRole('textbox', { name: 'Your experience (optional)' })
-		.fill(text);
-	await form
-		.getByRole('button', { name: 'Publish review', exact: true })
-		.click();
+	await form.getByRole('textbox', { name: 'Your experience (optional)' }).fill(text);
+	await form.getByRole('button', { name: 'Publish review', exact: true }).click();
 	await expect(reviews.getByRole('article')).toContainText(text);
 	await expect(reviews).not.toContainText(author);
 
 	await context.clearCookies();
 	await page.reload();
 	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
-	await expect(
-		reviews.getByRole('button', { name: 'Continue with GitHub', exact: true }),
-	).toBeVisible();
+	await expect(reviews.getByRole('button', { name: 'Continue with GitHub', exact: true })).toBeVisible();
 	await expect(reviews.getByRole('article')).toHaveCount(1);
 	await expect(reviews.getByRole('article')).toContainText(text);
 	await expectPublishedRatings(reviews.getByRole('article'), originalRatings);
-	await expect(
-		reviews.getByRole('heading', { name: 'Your review', exact: true }),
-	).toHaveCount(0);
-	await expect(
-		reviews.getByRole('button', { name: 'Write a review', exact: true }),
-	).toHaveCount(0);
-	await expect(
-		reviews.getByRole('button', { name: 'Edit review', exact: true }),
-	).toHaveCount(0);
-	await expect(
-		reviews.getByRole('button', { name: 'Delete review', exact: true }),
-	).toHaveCount(0);
+	await expect(reviews.getByRole('heading', { name: 'Your review', exact: true })).toHaveCount(0);
+	await expect(reviews.getByRole('button', { name: 'Write a review', exact: true })).toHaveCount(0);
+	await expect(reviews.getByRole('button', { name: 'Edit review', exact: true })).toHaveCount(0);
+	await expect(reviews.getByRole('button', { name: 'Delete review', exact: true })).toHaveCount(0);
 	await expect(reviews).not.toContainText(author);
 
 	await login(reader);
 	await page.reload();
 	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
-	await expect(
-		reviews.getByRole('button', { name: 'Write a review', exact: true }),
-	).toBeVisible();
+	await expect(reviews.getByRole('button', { name: 'Write a review', exact: true })).toBeVisible();
 	await expect(reviews.getByRole('article')).toHaveCount(1);
 	await expect(reviews.getByRole('article')).toContainText(text);
-	await expect(
-		reviews.getByRole('heading', { name: 'Your review', exact: true }),
-	).toHaveCount(0);
-	await expect(
-		reviews.getByRole('button', { name: 'Edit review', exact: true }),
-	).toHaveCount(0);
-	await expect(
-		reviews.getByRole('button', { name: 'Delete review', exact: true }),
-	).toHaveCount(0);
+	await expect(reviews.getByRole('heading', { name: 'Your review', exact: true })).toHaveCount(0);
+	await expect(reviews.getByRole('button', { name: 'Edit review', exact: true })).toHaveCount(0);
+	await expect(reviews.getByRole('button', { name: 'Delete review', exact: true })).toHaveCount(0);
 	await expect(reviews).not.toContainText(author);
 	await expect(reviews).not.toContainText(reader);
-	await reviews
-		.getByRole('button', { name: 'Write a review', exact: true })
-		.click();
-	await expect(
-		form.getByRole('textbox', { name: 'Your experience (optional)' }),
-	).toHaveValue('');
+	await reviews.getByRole('button', { name: 'Write a review', exact: true }).click();
+	await expect(form.getByRole('textbox', { name: 'Your experience (optional)' })).toHaveValue('');
 	await expect(form.getByRole('radio', { checked: true })).toHaveCount(0);
 	await form.getByRole('button', { name: 'Cancel', exact: true }).click();
 	await expect(reviews.getByRole('article')).toContainText(text);
 });
 
-test('a failed write keeps every draft field and a real retry persists exactly one review', async ({
-	page,
-	login,
-}) => {
+test('a failed write keeps every draft field and a real retry persists exactly one review', async ({ page, login }) => {
 	await login();
 	await page.goto(courseUrl);
 	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
@@ -283,19 +214,14 @@ test('a failed write keeps every draft field and a real retry persists exactly o
 		name: 'Student reviews',
 		exact: true,
 	});
-	const text =
-		'Keep this draft, including the ratings, when the connection drops.\nThe project was rewarding.';
-	await reviews
-		.getByRole('button', { name: 'Write a review', exact: true })
-		.click();
+	const text = 'Keep this draft, including the ratings, when the connection drops.\nThe project was rewarding.';
+	await reviews.getByRole('button', { name: 'Write a review', exact: true }).click();
 	const form = reviews.getByRole('form', {
 		name: 'Write a review',
 		exact: true,
 	});
 	await fillRatings(form, originalRatings);
-	await form
-		.getByRole('textbox', { name: 'Your experience (optional)' })
-		.fill(text);
+	await form.getByRole('textbox', { name: 'Your experience (optional)' }).fill(text);
 
 	const endpoint = '**/api/courses/WEBLAB/reviews';
 	const abortSave = async (route: Route) => {
@@ -303,29 +229,21 @@ test('a failed write keeps every draft field and a real retry persists exactly o
 		else await route.continue();
 	};
 	await page.route(endpoint, abortSave);
-	await form
-		.getByRole('button', { name: 'Publish review', exact: true })
-		.click();
+	await form.getByRole('button', { name: 'Publish review', exact: true }).click();
 	await expect(reviews.getByRole('alert')).toContainText(/could not be saved/i);
 	await expectDraft(form, originalRatings, text);
-	await expect(
-		form.getByRole('button', { name: 'Publish review', exact: true }),
-	).toBeEnabled();
+	await expect(form.getByRole('button', { name: 'Publish review', exact: true })).toBeEnabled();
 	await expect(reviews.getByRole('article')).toHaveCount(0);
 
 	await page.unroute(endpoint, abortSave);
-	await form
-		.getByRole('button', { name: 'Publish review', exact: true })
-		.click();
+	await form.getByRole('button', { name: 'Publish review', exact: true }).click();
 	await expect(form).toHaveCount(0);
 	await expect(reviews.getByRole('alert')).toHaveCount(0);
 	await expect(reviews.getByRole('article')).toHaveCount(1);
 	await expect(reviews.getByRole('article')).toContainText(text);
 	await page.reload();
 	await page.getByRole('tab', { name: 'Reviews', exact: true }).click();
-	await expect(
-		reviews.getByRole('button', { name: 'Edit review', exact: true }),
-	).toBeVisible();
+	await expect(reviews.getByRole('button', { name: 'Edit review', exact: true })).toBeVisible();
 	await expect(reviews.getByRole('article')).toHaveCount(1);
 	await expect(reviews.getByRole('article')).toContainText(text);
 	await expectPublishedRatings(reviews.getByRole('article'), originalRatings);

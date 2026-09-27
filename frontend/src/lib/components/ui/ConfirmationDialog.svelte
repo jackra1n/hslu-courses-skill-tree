@@ -59,25 +59,13 @@ function handleBackdropClick(event: MouseEvent) {
 	oncancel={(event) => { event.preventDefault(); finish(false); }}
 	aria-labelledby={titleId}
 >
-	<div
-		class="w-full max-w-md rounded-2xl border border-border-primary bg-bg-primary shadow-2xl"
-		role="document"
-	>
+	<div class="w-full max-w-md rounded-2xl border border-border-primary bg-bg-primary shadow-2xl" role="document">
 		<!-- Header -->
-		<div
-			class="flex items-center justify-between border-b border-border-primary px-6 py-4"
-		>
+		<div class="flex items-center justify-between border-b border-border-primary px-6 py-4">
 			<div class="flex items-center gap-3">
 				{#if variant === 'danger'}
-					<div
-						class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900"
-					>
-						<svg
-							class="w-5 h-5 text-red-600 dark:text-red-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
+					<div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
+						<svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -87,9 +75,7 @@ function handleBackdropClick(event: MouseEvent) {
 						</svg>
 					</div>
 				{:else}
-					<div
-						class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900"
-					>
+					<div class="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900">
 						<svg
 							class="w-5 h-5 text-yellow-600 dark:text-yellow-400"
 							fill="none"
@@ -124,9 +110,7 @@ function handleBackdropClick(event: MouseEvent) {
 		</div>
 
 		<!-- Actions -->
-		<div
-			class="flex justify-end gap-3 border-t border-border-primary px-6 py-4"
-		>
+		<div class="flex justify-end gap-3 border-t border-border-primary px-6 py-4">
 			<button
 				bind:this={cancelButton}
 				class="min-h-11 rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-medium text-text-primary hover:bg-bg-secondary transition-colors"

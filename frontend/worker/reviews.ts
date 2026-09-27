@@ -14,17 +14,10 @@ const MAX_BODY_BYTES = 32_768;
 const MAX_TEXT_LENGTH = 5_000;
 
 function isRating(value: unknown): value is number {
-	return (
-		typeof value === 'number' &&
-		Number.isInteger(value) &&
-		value >= 1 &&
-		value <= 5
-	);
+	return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 5;
 }
 
-async function readReviewBody(
-	request: Request,
-): Promise<ReviewInput | Response> {
+async function readReviewBody(request: Request): Promise<ReviewInput | Response> {
 	const raw = await readBoundedBody(request, MAX_BODY_BYTES);
 	if (raw === null) return json({ error: 'payload too large' }, 413);
 	let parsed: unknown;
@@ -36,13 +29,7 @@ async function readReviewBody(
 	if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
 		return json({ error: 'invalid body' }, 400);
 	}
-	const {
-		recommendation,
-		contentInterest,
-		difficulty,
-		workload,
-		text = '',
-	} = parsed as Record<string, unknown>;
+	const { recommendation, contentInterest, difficulty, workload, text = '' } = parsed as Record<string, unknown>;
 	if (
 		!isRating(recommendation) ||
 		!isRating(contentInterest) ||
@@ -73,11 +60,7 @@ export async function getCourseReviewScores(db: D1Database): Promise<Response> {
 	return json({ scores }, 200);
 }
 
-export async function getCourseReviews(
-	courseId: string,
-	userId: string | null,
-	db: D1Database,
-): Promise<Response> {
+export async function getCourseReviews(courseId: string, userId: string | null, db: D1Database): Promise<Response> {
 	if (!courseIds.has(courseId)) return json({ error: 'course not found' }, 404);
 	const [{ results: reviews }, ownReviewId] = await Promise.all([
 		db
@@ -189,17 +172,9 @@ export async function updateReview(
 	return json({ review }, 200);
 }
 
-export async function deleteReview(
-	reviewId: string,
-	userId: string,
-	db: D1Database,
-): Promise<Response> {
-	const result = await db
-		.prepare('DELETE FROM reviews WHERE id = ? AND user_id = ?')
-		.bind(reviewId, userId)
-		.run();
-	if (result.meta.changes === 0)
-		return json({ error: 'review not found' }, 404);
+export async function deleteReview(reviewId: string, userId: string, db: D1Database): Promise<Response> {
+	const result = await db.prepare('DELETE FROM reviews WHERE id = ? AND user_id = ?').bind(reviewId, userId).run();
+	if (result.meta.changes === 0) return json({ error: 'review not found' }, 404);
 	return new Response(null, {
 		status: 204,
 		headers: { 'Cache-Control': 'no-store' },

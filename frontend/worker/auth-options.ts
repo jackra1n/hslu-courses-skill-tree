@@ -1,10 +1,6 @@
 import type { BetterAuthOptions } from 'better-auth';
 
-export const APP_ORIGINS = [
-	'https://hsluskilltree.com',
-	'http://localhost:5173',
-	'http://127.0.0.1:5173',
-];
+export const APP_ORIGINS = ['https://hsluskilltree.com', 'http://localhost:5173', 'http://127.0.0.1:5173'];
 
 export type AuthSecrets = {
 	BETTER_AUTH_SECRET: string;
@@ -15,16 +11,11 @@ export type AuthSecrets = {
 
 // D1Database is the global runtime binding type from worker/env.d.ts. The
 // structural fallback covers Bun's sqlite Database used by the CLI entry.
-export type AuthDatabase =
-	| D1Database
-	| { prepare(sql: string): unknown; exec(sql: string): unknown };
+export type AuthDatabase = D1Database | { prepare(sql: string): unknown; exec(sql: string): unknown };
 
 // One options object shared by the runtime Worker and the schema-generation
 // CLI so both stay on the same Better Auth configuration.
-export function createAuthOptions(
-	database: AuthDatabase,
-	secrets: AuthSecrets,
-): BetterAuthOptions {
+export function createAuthOptions(database: AuthDatabase, secrets: AuthSecrets): BetterAuthOptions {
 	return {
 		database,
 		secret: secrets.BETTER_AUTH_SECRET,

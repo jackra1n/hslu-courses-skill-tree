@@ -8,12 +8,7 @@ import {
 	type StudyModel,
 } from '$lib/data/catalog/courses';
 import { getProgramPlans, getPrograms } from '$lib/data/catalog/programs';
-import {
-	planIntroYear,
-	resolvePlan,
-	type Season,
-	seasonLabel,
-} from '$lib/data/season';
+import { planIntroYear, resolvePlan, type Season, seasonLabel } from '$lib/data/season';
 import * as m from '$lib/paraglide/messages';
 import { getCourseStore } from '$lib/stores/courseStore.svelte';
 import { uiStore } from '$lib/stores/uiStore.svelte';
@@ -33,9 +28,7 @@ let pendingSeason = $state<Season | null>(null);
 
 const courseStore = getCourseStore();
 
-const program = $derived(
-	pendingProgram ?? courseStore.currentTemplate.studiengang,
-);
+const program = $derived(pendingProgram ?? courseStore.currentTemplate.studiengang);
 const model = $derived(pendingModel ?? courseStore.currentTemplate.modell);
 const year = $derived(pendingYear ?? courseStore.startYear);
 const season = $derived(pendingSeason ?? courseStore.startSeason);
@@ -52,17 +45,11 @@ const isPlanCustomized = $derived.by(() => courseStore.isStudyPlanCustomized());
 const targetTemplate = $derived.by(() => {
 	const plan = resolvePlan(getAvailablePlans(program, model), { year, season });
 	if (!plan) return undefined;
-	return getTemplatesByProgram(program, model).find(
-		(template) => template.plan === plan,
-	);
+	return getTemplatesByProgram(program, model).find((template) => template.plan === plan);
 });
 
-const templateChanges = $derived(
-	!!targetTemplate && targetTemplate.id !== courseStore.currentTemplate.id,
-);
-const canLoad = $derived(
-	!!targetTemplate && (hasPendingChanges || isPlanCustomized),
-);
+const templateChanges = $derived(!!targetTemplate && targetTemplate.id !== courseStore.currentTemplate.id);
+const canLoad = $derived(!!targetTemplate && (hasPendingChanges || isPlanCustomized));
 
 const programOptions = $derived.by(() =>
 	getPrograms().map((entry) => {
@@ -124,11 +111,7 @@ function handleProgramChange(value: string) {
 	pendingProgram = value;
 	const models = getAvailableModels(value);
 	const current = pendingModel ?? courseStore.currentTemplate.modell;
-	pendingModel = models.length
-		? models.includes(current)
-			? current
-			: models[0]
-		: null;
+	pendingModel = models.length ? (models.includes(current) ? current : models[0]) : null;
 }
 
 function handleModelChange(value: string) {
@@ -182,9 +165,7 @@ const id = $props.id();
 
 <div class="space-y-3">
 	<div class="space-y-1.5">
-		<label for={`${id}-program`} class="text-xs font-medium text-text-secondary"
-			>{m.template_program()}</label
-		>
+		<label for={`${id}-program`} class="text-xs font-medium text-text-secondary">{m.template_program()}</label>
 		<Dropdown
 			options={programOptions}
 			selected={program}
@@ -195,9 +176,7 @@ const id = $props.id();
 	</div>
 
 	<div class="space-y-1.5">
-		<label for={`${id}-model`} class="text-xs font-medium text-text-secondary"
-			>{m.template_study_model()}</label
-		>
+		<label for={`${id}-model`} class="text-xs font-medium text-text-secondary">{m.template_study_model()}</label>
 		<Dropdown
 			options={modelOptions}
 			selected={model}
@@ -209,9 +188,7 @@ const id = $props.id();
 
 	<div class="grid grid-cols-2 gap-2">
 		<div class="space-y-1.5">
-			<label for={`${id}-year`} class="text-xs font-medium text-text-secondary"
-				>{m.template_start_year()}</label
-			>
+			<label for={`${id}-year`} class="text-xs font-medium text-text-secondary">{m.template_start_year()}</label>
 			<Dropdown
 				options={yearOptions}
 				selected={String(year)}
@@ -221,11 +198,7 @@ const id = $props.id();
 			/>
 		</div>
 		<div class="space-y-1.5">
-			<label
-				for={`${id}-season`}
-				class="text-xs font-medium text-text-secondary"
-				>{m.template_start_season()}</label
-			>
+			<label for={`${id}-season`} class="text-xs font-medium text-text-secondary">{m.template_start_season()}</label>
 			<Dropdown
 				options={seasonOptions}
 				selected={season}
@@ -254,9 +227,7 @@ const id = $props.id();
 			{m.template_view_options()}
 		</div>
 		<div class="flex items-center justify-between">
-			<label for="show-full-course-names" class="text-sm text-text-primary"
-				>{m.template_show_full_names()}</label
-			>
+			<label for="show-full-course-names" class="text-sm text-text-primary">{m.template_show_full_names()}</label>
 			<button
 				id="show-full-course-names"
 				onclick={toggleCourseNames}
@@ -274,9 +245,7 @@ const id = $props.id();
 			</button>
 		</div>
 		<div class="flex items-center justify-between">
-			<label for="show-course-badges" class="text-sm text-text-primary"
-				>{m.template_show_badges()}</label
-			>
+			<label for="show-course-badges" class="text-sm text-text-primary">{m.template_show_badges()}</label>
 			<button
 				id="show-course-badges"
 				onclick={toggleCourseBadges}

@@ -1,17 +1,8 @@
 import { getTemplateById } from '$lib/data/catalog/courses';
-import {
-	createStudyPlan,
-	deriveSelections,
-	type PlanRow,
-	type StudyPlan,
-} from '$lib/data/planning/study-plan';
+import { createStudyPlan, deriveSelections, type PlanRow, type StudyPlan } from '$lib/data/planning/study-plan';
 import { progressStore } from '$lib/stores/progressStore.svelte';
 
-export function canSelectCourse(
-	plan: StudyPlan,
-	slotId: string,
-	courseId: string,
-): boolean {
+export function canSelectCourse(plan: StudyPlan, slotId: string, courseId: string): boolean {
 	const node = plan.nodes[slotId];
 	if (!node || node.slotType === 'fixed') return false;
 
@@ -24,16 +15,13 @@ export function canSelectCourse(
 	if (fixedNodes.length > 0) {
 		// fixed-curriculum course: only repeatable if attended, and after its earliest slot
 		if (!progressStore.hasAttendedInstance(courseId, plan)) return false;
-		const earliestFixed = Math.min(
-			...fixedNodes.map((planNode) => planNode.semester),
-		);
+		const earliestFixed = Math.min(...fixedNodes.map((planNode) => planNode.semester));
 		if (node.semester <= earliestFixed) return false;
 	}
 
 	const selections = deriveSelections(plan);
 	const conflictingSlotId = Object.entries(selections).find(
-		([otherSlotId, otherCourseId]) =>
-			otherSlotId !== slotId && otherCourseId === courseId,
+		([otherSlotId, otherCourseId]) => otherSlotId !== slotId && otherCourseId === courseId,
 	)?.[0];
 
 	if (!conflictingSlotId) return true;
@@ -61,10 +49,7 @@ export function isPlanCustomized(plan: StudyPlan): boolean {
 	const slotChanged = currentIds.some((id) => {
 		const current = plan.nodes[id];
 		const original = defaultPlan.nodes[id];
-		return (
-			current.semester !== original.semester ||
-			(current.courseId ?? null) !== (original.courseId ?? null)
-		);
+		return current.semester !== original.semester || (current.courseId ?? null) !== (original.courseId ?? null);
 	});
 	if (slotChanged) return true;
 
@@ -75,7 +60,6 @@ function rowsEqual(a: readonly PlanRow[], b: readonly PlanRow[]): boolean {
 	if (a.length !== b.length) return false;
 	return a.every(
 		(row, i) =>
-			row.nodeOrder.length === b[i].nodeOrder.length &&
-			row.nodeOrder.every((id, j) => id === b[i].nodeOrder[j]),
+			row.nodeOrder.length === b[i].nodeOrder.length && row.nodeOrder.every((id, j) => id === b[i].nodeOrder[j]),
 	);
 }

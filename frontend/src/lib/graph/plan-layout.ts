@@ -9,8 +9,7 @@ export const MAX_SEMESTERS = 12;
 const ROW_START_X = GRID_SIZE.x * 2;
 const DEFAULT_NODE_WIDTH = getNodeWidth(3);
 const MIN_DIVIDER_NODE_COUNT = 5;
-const MIN_DIVIDER_WIDTH =
-	ROW_START_X + (DEFAULT_NODE_WIDTH + GRID_SIZE.x) * MIN_DIVIDER_NODE_COUNT;
+const MIN_DIVIDER_WIDTH = ROW_START_X + (DEFAULT_NODE_WIDTH + GRID_SIZE.x) * MIN_DIVIDER_NODE_COUNT;
 const DIVIDER_MARGIN = GRID_SIZE.x * 2;
 const DIVIDER_LINE_START = -150; // keep in sync with SemesterDivider.svelte
 
@@ -58,10 +57,7 @@ export function layoutNodes(
 	return sourceNodes.map((node) => byId.get(node.id) ?? node);
 }
 
-export function addAddNodeButtons(
-	nodes: Node[],
-	rows: readonly PlanRow[],
-): Node[] {
+export function addAddNodeButtons(nodes: Node[], rows: readonly PlanRow[]): Node[] {
 	const byId = new Map(nodes.map((node) => [node.id, node] as const));
 	const addNodes: Node[] = [];
 	const semestersToShow = Math.min(rows.length + 1, MAX_SEMESTERS);
@@ -70,9 +66,7 @@ export function addAddNodeButtons(
 		const semester = i + 1;
 		const row = rows[i];
 		const y = semester * GRID_SIZE.y;
-		const x = row
-			? walkRow(row.nodeOrder, (nodeId) => resolveNodeWidth(byId.get(nodeId)))
-			: ROW_START_X;
+		const x = row ? walkRow(row.nodeOrder, (nodeId) => resolveNodeWidth(byId.get(nodeId))) : ROW_START_X;
 
 		addNodes.push({
 			id: `add-node-${semester}`,
@@ -92,10 +86,7 @@ export function addAddNodeButtons(
 }
 
 // Honours explicit node positions (set during a drag), else a cumulative cursor.
-function calculateRowRightEdge(
-	row: PlanRow,
-	nodeLookup: Map<string, Node>,
-): number {
+function calculateRowRightEdge(row: PlanRow, nodeLookup: Map<string, Node>): number {
 	let fallbackCursor = ROW_START_X;
 	let rightEdge = fallbackCursor + DEFAULT_NODE_WIDTH;
 
@@ -118,15 +109,10 @@ function calculateRowRightEdge(
 	return rightEdge;
 }
 
-export function computeDividerLength(
-	rows: readonly PlanRow[],
-	nodes: Node[],
-): number {
+export function computeDividerLength(rows: readonly PlanRow[], nodes: Node[]): number {
 	if (!rows.length) return MIN_DIVIDER_WIDTH;
 	const lookup = new Map(nodes.map((node) => [node.id, node] as const));
-	const longestEnd = Math.max(
-		...rows.map((row) => calculateRowRightEdge(row, lookup)),
-	);
+	const longestEnd = Math.max(...rows.map((row) => calculateRowRightEdge(row, lookup)));
 	const rawLength = longestEnd + DIVIDER_MARGIN - DIVIDER_LINE_START;
 	return Math.max(MIN_DIVIDER_WIDTH, rawLength);
 }

@@ -1,11 +1,6 @@
 import { getLocale } from '$lib/paraglide/runtime';
 import { getCatalog } from './catalog-loader';
-import type {
-	Course,
-	CurriculumTemplate,
-	StudyModel,
-	TemplateSlot,
-} from './catalog-types';
+import type { Course, CurriculumTemplate, StudyModel, TemplateSlot } from './catalog-types';
 import { loadCourseData } from './course-data-adapter';
 import { courseLabel } from '../courses/course-label';
 
@@ -41,30 +36,20 @@ export function getAvailableTemplates(): readonly CurriculumTemplate[] {
 }
 
 export function getDefaultTemplate(): CurriculumTemplate | undefined {
-	return getAvailableTemplates().find(
-		(template) =>
-			template.studiengang === 'INF' && template.modell === 'fulltime',
-	);
+	return getAvailableTemplates().find((template) => template.studiengang === 'INF' && template.modell === 'fulltime');
 }
 
 export function getTemplateById(id: string): CurriculumTemplate | undefined {
 	return getTemplateIndex().byId.get(id);
 }
 
-export function getTemplatesByProgram(
-	studiengang: string,
-	modell: StudyModel,
-): CurriculumTemplate[] {
+export function getTemplatesByProgram(studiengang: string, modell: StudyModel): CurriculumTemplate[] {
 	return getAvailableTemplates().filter(
-		(template) =>
-			template.studiengang === studiengang && template.modell === modell,
+		(template) => template.studiengang === studiengang && template.modell === modell,
 	);
 }
 
-export function getAvailablePlans(
-	studiengang: string,
-	modell: StudyModel,
-): string[] {
+export function getAvailablePlans(studiengang: string, modell: StudyModel): string[] {
 	const templates = getTemplatesByProgram(studiengang, modell);
 	return [...new Set(templates.map((template) => template.plan))].sort();
 }
@@ -90,9 +75,7 @@ let _coursesById: Map<string, Course> | null = null;
 let _sortedCourses: { locale: string; courses: Course[] } | null = null;
 
 function coursesById(): Map<string, Course> {
-	_coursesById ??= new Map(
-		loadCourseData(currentPlan()).map((course) => [course.id, course]),
-	);
+	_coursesById ??= new Map(loadCourseData(currentPlan()).map((course) => [course.id, course]));
 	return _coursesById;
 }
 
@@ -108,9 +91,7 @@ export function getSortedCourses(): Course[] {
 	if (_sortedCourses?.locale !== locale) {
 		_sortedCourses = {
 			locale,
-			courses: [...coursesById().values()].sort((a, b) =>
-				courseLabel(a).localeCompare(courseLabel(b)),
-			),
+			courses: [...coursesById().values()].sort((a, b) => courseLabel(a).localeCompare(courseLabel(b))),
 		};
 	}
 	return _sortedCourses.courses;

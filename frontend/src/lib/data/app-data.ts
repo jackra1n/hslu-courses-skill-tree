@@ -90,9 +90,7 @@ function withoutRepeatedRowEntries(plan: StudyPlan): StudyPlan {
 			seen.add(id);
 			return true;
 		});
-		return nodeOrder.length === row.nodeOrder.length
-			? row
-			: { ...row, nodeOrder };
+		return nodeOrder.length === row.nodeOrder.length ? row : { ...row, nodeOrder };
 	});
 	return repeated ? { ...plan, rows } : plan;
 }
@@ -100,10 +98,7 @@ function withoutRepeatedRowEntries(plan: StudyPlan): StudyPlan {
 function hasConsistentRows(plan: StudyPlan): boolean {
 	const rowNodeIds = new Set(plan.rows.flatMap((row) => row.nodeOrder));
 	const nodeIds = Object.keys(plan.nodes);
-	return (
-		rowNodeIds.size === nodeIds.length &&
-		nodeIds.every((id) => rowNodeIds.has(id))
-	);
+	return rowNodeIds.size === nodeIds.length && nodeIds.every((id) => rowNodeIds.has(id));
 }
 
 export function parseStudyPlan(value: unknown): StudyPlan | null {
@@ -112,9 +107,7 @@ export function parseStudyPlan(value: unknown): StudyPlan | null {
 	if (typeof value.planCode !== 'string') return null;
 	if (!Array.isArray(value.rows) || !value.rows.every(isPlanRow)) return null;
 	if (!isRecord(value.nodes)) return null;
-	if (
-		!Object.entries(value.nodes).every(([id, node]) => isPlanNode(node, id))
-	) {
+	if (!Object.entries(value.nodes).every(([id, node]) => isPlanNode(node, id))) {
 		return null;
 	}
 
@@ -125,16 +118,14 @@ export function parseStudyPlan(value: unknown): StudyPlan | null {
 function validSlotStatuses(value: UnknownRecord): AppData['slotStatus'] {
 	return Object.fromEntries(
 		Object.entries(value).filter(
-			(entry): entry is [string, 'attended' | 'completed'] =>
-				entry[1] === 'attended' || entry[1] === 'completed',
+			(entry): entry is [string, 'attended' | 'completed'] => entry[1] === 'attended' || entry[1] === 'completed',
 		),
 	);
 }
 
 export function parseAppData(value: unknown): AppData | null {
 	if (!isRecord(value) || value.version !== APP_DATA_VERSION) return null;
-	const { currentTemplateId, start, studyPlans, slotStatus, preferences } =
-		value;
+	const { currentTemplateId, start, studyPlans, slotStatus, preferences } = value;
 	if (typeof currentTemplateId !== 'string') return null;
 	if (!isRecord(start)) return null;
 	if (start.season !== 'HS' && start.season !== 'FS') return null;
@@ -143,11 +134,8 @@ export function parseAppData(value: unknown): AppData | null {
 	}
 
 	if (!isRecord(studyPlans)) return null;
-	const plans = Object.entries(studyPlans).map(
-		([templateId, plan]) => [templateId, parseStudyPlan(plan)] as const,
-	);
-	if (!plans.every(([templateId, plan]) => plan?.templateId === templateId))
-		return null;
+	const plans = Object.entries(studyPlans).map(([templateId, plan]) => [templateId, parseStudyPlan(plan)] as const);
+	if (!plans.every(([templateId, plan]) => plan?.templateId === templateId)) return null;
 	if (!isRecord(slotStatus)) return null;
 	// Older snapshots included theme; device-local preferences never enter sync.
 	if (!isRecord(preferences)) return null;

@@ -3,10 +3,7 @@ import type { CatalogCourse, Course } from './catalog-types';
 
 const courseCache = new Map<string, Course[]>();
 
-function courseTypeForPlan(
-	course: CatalogCourse,
-	plan: string,
-): Course['type'] {
+function courseTypeForPlan(course: CatalogCourse, plan: string): Course['type'] {
 	if (plan.startsWith('HS')) return course.typeByPlanSeason.HS;
 	if (plan.startsWith('FS')) return course.typeByPlanSeason.FS;
 	return course.typeByPlanSeason.default;

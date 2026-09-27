@@ -6,11 +6,7 @@ import SettingsSidebar from '$lib/components/sidebar/SettingsSidebar.svelte';
 import Dropdown from '$lib/components/ui/Dropdown.svelte';
 import Tooltip from '$lib/components/ui/Tooltip.svelte';
 import { loadCatalog } from '$lib/data/catalog/catalog-loader';
-import type {
-	AssessmentMode,
-	CatalogCourse,
-	ModuleType,
-} from '$lib/data/catalog/catalog-types';
+import type { AssessmentMode, CatalogCourse, ModuleType } from '$lib/data/catalog/catalog-types';
 import {
 	courseModuleType,
 	type EctsRange,
@@ -20,10 +16,7 @@ import {
 } from '$lib/data/courses/course-filters';
 import { courseLabel } from '$lib/data/courses/course-label';
 import { nextCourseIds } from '$lib/data/courses/course-readiness';
-import {
-	collectAppData,
-	hasMeaningfulStoredAppData,
-} from '$lib/data/persistence';
+import { collectAppData, hasMeaningfulStoredAppData } from '$lib/data/persistence';
 import { fetchCourseReviewScores } from '$lib/data/reviews/review-client';
 import type { CourseReviewScore } from '$lib/data/reviews/review-types';
 import { type Season } from '$lib/data/season';
@@ -45,9 +38,7 @@ let courses = $state<CatalogCourse[]>([]);
 let settingsOpen = $state(false);
 let selectedCourse = $state<CatalogCourse | null>(null);
 let selectedTrigger: HTMLButtonElement | null = null;
-let courseStore = $state.raw<ReturnType<typeof initializeCourseStore> | null>(
-	null,
-);
+let courseStore = $state.raw<ReturnType<typeof initializeCourseStore> | null>(null);
 
 let query = $state(EMPTY_FILTERS.query);
 let season = $state<Season | 'all'>(EMPTY_FILTERS.season);
@@ -62,9 +53,7 @@ let reviewScores = $state<Record<string, CourseReviewScore | null>>({});
 let scoresLoaded = $state(false);
 let scoresLoading = $state(false);
 const scoresController = new AbortController();
-const sortOptions = $derived<
-	{ value: CourseSort; label: string; disabled?: boolean }[]
->([
+const sortOptions = $derived<{ value: CourseSort; label: string; disabled?: boolean }[]>([
 	{ value: 'name-asc', label: m.browser_sort_name_asc() },
 	{ value: 'name-desc', label: m.browser_sort_name_desc() },
 	{
@@ -79,9 +68,7 @@ const sortOptions = $derived<
 	},
 ]);
 const filters = $derived({ query, season, moduleTypes, assessmentModes, ects });
-const courseById = $derived(
-	new Map(courses.map((course) => [course.id, course])),
-);
+const courseById = $derived(new Map(courses.map((course) => [course.id, course])));
 const sortedCourses = $derived(
 	courses.toSorted((a, b) => {
 		if (sort === 'rating-desc' || sort === 'rating-asc') {
@@ -106,16 +93,10 @@ const nextCourseIdSet = $derived.by(() => {
 	return nextCourseIds(courses, plan, statuses, assessmentStageMet);
 });
 const filteredCourses = $derived(
-	nextOnly
-		? catalogFilteredCourses.filter((course) => nextCourseIdSet.has(course.id))
-		: catalogFilteredCourses,
+	nextOnly ? catalogFilteredCourses.filter((course) => nextCourseIdSet.has(course.id)) : catalogFilteredCourses,
 );
 // facet counts apply every other filter, but not their own selection.
-const countableCourses = $derived(
-	nextOnly
-		? courses.filter((course) => nextCourseIdSet.has(course.id))
-		: courses,
-);
+const countableCourses = $derived(nextOnly ? courses.filter((course) => nextCourseIdSet.has(course.id)) : courses);
 const moduleTypeCounts = $derived.by(() => {
 	const counts: Partial<Record<ModuleType, number>> = {};
 	for (const course of filterCourses(countableCourses, {
@@ -133,8 +114,7 @@ const assessmentModeCounts = $derived.by(() => {
 		...filters,
 		assessmentModes: [],
 	})) {
-		for (const mode of course.assessmentModes)
-			counts[mode] = (counts[mode] ?? 0) + 1;
+		for (const mode of course.assessmentModes) counts[mode] = (counts[mode] ?? 0) + 1;
 	}
 	return counts;
 });
@@ -149,9 +129,7 @@ const activeFilterCount = $derived(
 );
 // slider stops are the distinct ECTS values in the catalog, so every stop
 // matches real courses.
-const ectsSteps = $derived(
-	[...new Set(courses.map((course) => course.ects))].sort((a, b) => a - b),
-);
+const ectsSteps = $derived([...new Set(courses.map((course) => course.ects))].sort((a, b) => a - b));
 
 function clearFilters(): void {
 	query = EMPTY_FILTERS.query;
@@ -198,11 +176,8 @@ async function load(): Promise<void> {
 	try {
 		const catalog = await loadCatalog();
 		courses = catalog.courses;
-		const requestedCourse = new URL(window.location.href).searchParams.get(
-			'course',
-		);
-		selectedCourse =
-			courses.find((course) => course.id === requestedCourse) ?? null;
+		const requestedCourse = new URL(window.location.href).searchParams.get('course');
+		selectedCourse = courses.find((course) => course.id === requestedCourse) ?? null;
 		// the settings sidebar and account menu need the same stores as the
 		// skill Tree page, without its study-plan specific header controls.
 		const localDataIsMeaningful = hasMeaningfulStoredAppData();
@@ -251,16 +226,12 @@ onMount(() => {
 		</p>
 	</div>
 {:else}
-	<div
-		class="flex h-screen h-dvh overflow-hidden flex-col bg-bg-primary font-sans text-text-primary"
-	>
+	<div class="flex h-screen h-dvh overflow-hidden flex-col bg-bg-primary font-sans text-text-primary">
 		<header
 			{@attach measureHeaderHeight}
 			class="shrink-0 border-b border-border-primary bg-bg-primary px-4 py-2 sm:py-3"
 		>
-			<div
-				class="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-3"
-			>
+			<div class="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-3">
 				<a
 					href={resolve('/')}
 					class="flex min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-text-secondary transition-all hover:bg-bg-secondary hover:text-text-primary"
@@ -282,14 +253,8 @@ onMount(() => {
 				</div>
 			</div>
 		</header>
-		<SettingsSidebar
-			isOpen={settingsOpen}
-			onClose={() => (settingsOpen = false)}
-			showTutorial={false}
-		/>
-		<main
-			class="mx-auto flex min-h-0 w-full max-w-[90rem] flex-1 flex-col px-4 py-6"
-		>
+		<SettingsSidebar isOpen={settingsOpen} onClose={() => (settingsOpen = false)} showTutorial={false} />
+		<main class="mx-auto flex min-h-0 w-full max-w-[90rem] flex-1 flex-col px-4 py-6">
 			<div
 				class="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:items-start lg:gap-8 xl:grid-cols-[16rem_minmax(0,1fr)_30rem]"
 			>
@@ -329,10 +294,7 @@ onMount(() => {
 						aria-expanded={sidebarOpen}
 						class="mt-3 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-border-primary bg-bg-secondary px-3 text-sm font-medium text-text-primary lg:hidden"
 					>
-						<span
-							class="i-lucide-sliders-horizontal h-4 w-4 text-text-tertiary"
-							aria-hidden="true"
-						></span>
+						<span class="i-lucide-sliders-horizontal h-4 w-4 text-text-tertiary" aria-hidden="true"></span>
 						{m.browser_filters()}
 						{#if activeFilterCount > 0}
 							<span
@@ -349,11 +311,7 @@ onMount(() => {
 						></span>
 					</button>
 					<div class="mt-3 flex items-center gap-3">
-						<label
-							for="course-sort"
-							class="shrink-0 text-sm font-medium text-text-secondary"
-							>{m.browser_sort()}</label
-						>
+						<label for="course-sort" class="shrink-0 text-sm font-medium text-text-secondary">{m.browser_sort()}</label>
 						<div class="min-w-0 flex-1">
 							<Dropdown
 								id="course-sort"
@@ -411,9 +369,7 @@ onMount(() => {
 					</div>
 					<div class="mt-2 min-h-0 flex-1 overflow-y-auto">
 						{#if filteredCourses.length === 0}
-							<div
-								class="rounded-lg border border-border-primary bg-bg-secondary p-6 text-center"
-							>
+							<div class="rounded-lg border border-border-primary bg-bg-secondary p-6 text-center">
 								<p class="text-sm text-text-secondary">
 									{m.elective_no_results()}
 								</p>

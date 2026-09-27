@@ -29,10 +29,7 @@ class ProgressStore {
 	}
 
 	private saveToLocalStorage(): boolean {
-		return writeStorage(
-			STORAGE_KEYS.slotStatus,
-			JSON.stringify(Object.fromEntries(this.statuses)),
-		);
+		return writeStorage(STORAGE_KEYS.slotStatus, JSON.stringify(Object.fromEntries(this.statuses)));
 	}
 
 	private toggleSlotStatus(slotId: string, status: SlotStatus | null) {
@@ -76,49 +73,33 @@ class ProgressStore {
 	}
 
 	hasCompletedInstance(courseId: string, plan: StudyPlan): boolean {
-		return getNodeIdsForCourse(plan, courseId).some(
-			(slotId) => this.statuses.get(slotId) === 'completed',
-		);
+		return getNodeIdsForCourse(plan, courseId).some((slotId) => this.statuses.get(slotId) === 'completed');
 	}
 
 	hasAttendedInstance(courseId: string, plan: StudyPlan): boolean {
 		const nodeIds = getNodeIdsForCourse(plan, courseId);
-		const hasCurrentAttended = nodeIds.some(
-			(slotId) => this.statuses.get(slotId) === 'attended',
-		);
+		const hasCurrentAttended = nodeIds.some((slotId) => this.statuses.get(slotId) === 'attended');
 		if (hasCurrentAttended) return true;
 
 		const potentialSlotId = courseId.toLowerCase();
 		return this.statuses.get(potentialSlotId) === 'attended';
 	}
 
-	getAllInstanceStatuses(
-		courseId: string,
-		plan: StudyPlan,
-	): Array<{ slotId: string; status: SlotStatus }> {
+	getAllInstanceStatuses(courseId: string, plan: StudyPlan): Array<{ slotId: string; status: SlotStatus }> {
 		return getNodeIdsForCourse(plan, courseId)
 			.map((slotId) => {
 				const status = this.statuses.get(slotId);
 				return status ? { slotId, status } : null;
 			})
-			.filter(
-				(item): item is { slotId: string; status: SlotStatus } => item !== null,
-			);
+			.filter((item): item is { slotId: string; status: SlotStatus } => item !== null);
 	}
 
 	canTakeCourse(courseId: string, plan: StudyPlan): boolean {
 		const course = resolveCourse(courseId);
 		if (!course) return false;
 
-		const prereqsMet = evaluatePrerequisites(
-			course.prerequisites,
-			this.statuses,
-			plan,
-		);
-		const assessmentStageMet = getAssessmentStageProgress(
-			plan,
-			this.statuses,
-		).passed;
+		const prereqsMet = evaluatePrerequisites(course.prerequisites, this.statuses, plan);
+		const assessmentStageMet = getAssessmentStageProgress(plan, this.statuses).passed;
 		const assessmentMet = !course.assessmentLevelPassed || assessmentStageMet;
 
 		return prereqsMet && assessmentMet;

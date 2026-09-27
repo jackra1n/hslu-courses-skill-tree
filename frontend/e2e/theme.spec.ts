@@ -5,16 +5,12 @@ import { expect, test } from './fixtures';
 const conflictName = 'Choose which data to keep';
 
 async function openSettings(page: Page) {
-	await page
-		.getByRole('button', { name: 'Settings & help', exact: true })
-		.click();
+	await page.getByRole('button', { name: 'Settings & help', exact: true }).click();
 	return page.getByRole('combobox', { name: 'Theme', exact: true });
 }
 
 async function closeSettings(page: Page) {
-	await page
-		.getByRole('button', { name: 'Close settings', exact: true })
-		.click();
+	await page.getByRole('button', { name: 'Close settings', exact: true }).click();
 }
 
 async function chooseDark(page: Page) {
@@ -97,11 +93,7 @@ test('signed-in theme changes stay local, and exports and imported progress neve
 	expect(original.data.preferences).not.toHaveProperty('theme');
 	let writes = 0;
 	page.on('request', (request) => {
-		if (
-			new URL(request.url()).pathname === '/api/progress' &&
-			request.method() === 'PUT'
-		)
-			writes++;
+		if (new URL(request.url()).pathname === '/api/progress' && request.method() === 'PUT') writes++;
 	});
 
 	await chooseDark(page);
@@ -117,9 +109,7 @@ test('signed-in theme changes stay local, and exports and imported progress neve
 	const download = await downloading;
 	const exported = JSON.parse(await readFile(await download.path(), 'utf8'));
 	expect(exported.preferences).not.toHaveProperty('theme');
-	const [slot] = Object.keys(
-		exported.studyPlans[exported.currentTemplateId].nodes,
-	);
+	const [slot] = Object.keys(exported.studyPlans[exported.currentTemplateId].nodes);
 	const legacyBackup = {
 		...exported,
 		slotStatus: { [slot]: 'completed' },
@@ -132,9 +122,7 @@ test('signed-in theme changes stay local, and exports and imported progress neve
 		mimeType: 'application/json',
 		buffer: Buffer.from(JSON.stringify(legacyBackup)),
 	});
-	await expect(
-		page.getByRole('button', { name: 'Close settings', exact: true }),
-	).toBeHidden();
+	await expect(page.getByRole('button', { name: 'Close settings', exact: true })).toBeHidden();
 	await expect.poll(() => writes).toBe(1);
 	await expectSaved(page);
 	const imported = await snapshot(page);
@@ -171,20 +159,14 @@ test('legacy cloud and baseline themes neither conflict nor replace the device t
 	await addLegacyBaselineTheme(page);
 	let writes = 0;
 	page.on('request', (request) => {
-		if (
-			new URL(request.url()).pathname === '/api/progress' &&
-			request.method() === 'PUT'
-		)
-			writes++;
+		if (new URL(request.url()).pathname === '/api/progress' && request.method() === 'PUT') writes++;
 	});
 	await page.reload();
 	await expectSaved(page);
 	await expectLocalDark(page);
 	expect((await snapshot(page)).revision).toBe(legacy.revision);
 
-	const [first, second] = Object.keys(
-		legacyData.studyPlans[legacyData.currentTemplateId].nodes,
-	);
+	const [first, second] = Object.keys(legacyData.studyPlans[legacyData.currentTemplateId].nodes);
 	const remoteOnly = await page.request.put('/api/progress', {
 		headers,
 		data: {
@@ -198,9 +180,7 @@ test('legacy cloud and baseline themes neither conflict nor replace the device t
 	await addLegacyBaselineTheme(page);
 	await page.reload();
 	await expectSaved(page);
-	expect(
-		await page.evaluate(() => JSON.parse(localStorage.getItem('slotStatus')!)),
-	).toEqual({ [first]: 'attended' });
+	expect(await page.evaluate(() => JSON.parse(localStorage.getItem('slotStatus')!))).toEqual({ [first]: 'attended' });
 	await expectLocalDark(page);
 	expect((await snapshot(page)).revision).toBe(remote.revision);
 	expect(writes).toBe(0);
@@ -219,17 +199,13 @@ test('legacy cloud and baseline themes neither conflict nor replace the device t
 	await page.reload();
 	const conflict = page.getByRole('dialog', { name: conflictName });
 	await expect(conflict).toBeVisible();
-	await expect(
-		conflict.getByText('Individual course progress', { exact: true }),
-	).toBeVisible();
+	await expect(conflict.getByText('Individual course progress', { exact: true })).toBeVisible();
 	await expect(conflict.getByText('Theme', { exact: true })).toHaveCount(0);
 	const writesBeforeChoice = writes;
 	await conflict.getByRole('button', { name: 'Use cloud data' }).click();
 	await expect(conflict).toBeHidden();
 	await expectSaved(page);
-	expect(
-		await page.evaluate(() => JSON.parse(localStorage.getItem('slotStatus')!)),
-	).toEqual({ [first]: 'completed' });
+	expect(await page.evaluate(() => JSON.parse(localStorage.getItem('slotStatus')!))).toEqual({ [first]: 'completed' });
 	await expectLocalDark(page);
 	// Existing legacy payloads need not be rewritten until a real local save.
 	expect((await snapshot(page)).revision).toBe(remote.revision + 1);

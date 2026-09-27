@@ -1,10 +1,7 @@
 <script lang="ts">
 import { onMount } from 'svelte';
 import * as m from '$lib/paraglide/messages';
-import {
-	cloudSyncStore,
-	type SyncStatus,
-} from '$lib/stores/cloudSyncStore.svelte';
+import { cloudSyncStore, type SyncStatus } from '$lib/stores/cloudSyncStore.svelte';
 
 let {
 	onInteract,
@@ -28,12 +25,7 @@ const panelClass = $derived(
 );
 
 function eventPathIncludesClass(event: MouseEvent, className: string): boolean {
-	return event
-		.composedPath()
-		.some(
-			(node) =>
-				node instanceof HTMLElement && node.classList.contains(className),
-		);
+	return event.composedPath().some((node) => node instanceof HTMLElement && node.classList.contains(className));
 }
 
 onMount(() => {
@@ -104,12 +96,7 @@ async function handleSignOut() {
 			aria-expanded={accountMenuOpen}
 		>
 			{#if user.image}
-				<img
-					src={user.image}
-					alt=""
-					class="h-6 w-6 rounded-full object-cover"
-					referrerpolicy="no-referrer"
-				>
+				<img src={user.image} alt="" class="h-6 w-6 rounded-full object-cover" referrerpolicy="no-referrer">
 			{:else}
 				<div class="i-lucide-user h-4 w-4 text-text-primary"></div>
 			{/if}
@@ -126,16 +113,9 @@ async function handleSignOut() {
 			<div class={panelClass}>
 				<div class="flex items-center gap-3 px-1 pb-3">
 					{#if user.image}
-						<img
-							src={user.image}
-							alt=""
-							class="h-9 w-9 rounded-full object-cover"
-							referrerpolicy="no-referrer"
-						>
+						<img src={user.image} alt="" class="h-9 w-9 rounded-full object-cover" referrerpolicy="no-referrer">
 					{:else}
-						<div
-							class="flex h-9 w-9 items-center justify-center rounded-full bg-bg-secondary"
-						>
+						<div class="flex h-9 w-9 items-center justify-center rounded-full bg-bg-secondary">
 							<div class="i-lucide-user h-5 w-5 text-text-primary"></div>
 						</div>
 					{/if}
@@ -150,12 +130,8 @@ async function handleSignOut() {
 				<div class="border-b border-border-primary mb-2"></div>
 
 				{#if syncStatusLabel}
-					<div
-						class="mb-1.5 flex items-start gap-2 rounded-md bg-bg-secondary px-2.5 py-2 text-xs text-text-secondary"
-					>
-						<div
-							class="i-lucide-cloud mt-0.5 h-4 w-4 flex-none text-text-secondary"
-						></div>
+					<div class="mb-1.5 flex items-start gap-2 rounded-md bg-bg-secondary px-2.5 py-2 text-xs text-text-secondary">
+						<div class="i-lucide-cloud mt-0.5 h-4 w-4 flex-none text-text-secondary"></div>
 						<span class="min-w-0 leading-5">{syncStatusLabel}</span>
 					</div>
 				{/if}
@@ -177,8 +153,7 @@ async function handleSignOut() {
 			aria-expanded={accountMenuOpen}
 		>
 			<div class="i-lucide-user h-4 w-4 text-text-primary"></div>
-			<span
-				class={`${navigationMenu ? '' : 'hidden sm:inline'} text-sm font-medium text-text-primary`}
+			<span class={`${navigationMenu ? '' : 'hidden sm:inline'} text-sm font-medium text-text-primary`}
 				>{m.account_sign_in()}</span
 			>
 		</button>

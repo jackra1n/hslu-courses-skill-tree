@@ -1,8 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import type { Page } from '@playwright/test';
-import catalog from '../src/lib/data/catalog/catalog.generated.json' with {
-	type: 'json',
-};
+import catalog from '../src/lib/data/catalog/catalog.generated.json' with { type: 'json' };
 import { expect, test } from './fixtures';
 
 test('progress imports and saved statuses discard invalid entries without losing valid progress', async ({
@@ -11,19 +9,14 @@ test('progress imports and saved statuses discard invalid entries without losing
 }) => {
 	await page.addInitScript(() => {
 		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
-		localStorage.setItem(
-			'slotStatus',
-			JSON.stringify({ valid: 'completed', invalid: 'bogus' }),
-		);
+		localStorage.setItem('slotStatus', JSON.stringify({ valid: 'completed', invalid: 'bogus' }));
 	});
 	await page.goto('/');
 	await expect(page.locator('.svelte-flow')).toBeVisible();
 	if (isMobile) {
 		await page.getByRole('button', { name: 'Menu', exact: true }).click();
 	}
-	await page
-		.getByRole('button', { name: 'Settings & help', exact: true })
-		.click();
+	await page.getByRole('button', { name: 'Settings & help', exact: true }).click();
 	const downloading = page.waitForEvent('download');
 	await page.getByRole('button', { name: 'Export Data', exact: true }).click();
 	const download = await downloading;
@@ -38,22 +31,12 @@ test('progress imports and saved statuses discard invalid entries without losing
 		mimeType: 'application/json',
 		buffer: Buffer.from(JSON.stringify(data)),
 	});
-	await expect(
-		page.getByRole('button', { name: 'Close settings', exact: true }),
-	).toBeHidden();
-	expect(
-		await page.evaluate(() => JSON.parse(localStorage.getItem('slotStatus')!)),
-	).toEqual({ valid: 'attended' });
+	await expect(page.getByRole('button', { name: 'Close settings', exact: true })).toBeHidden();
+	expect(await page.evaluate(() => JSON.parse(localStorage.getItem('slotStatus')!))).toEqual({ valid: 'attended' });
 });
 
-for (const templateId of [
-	'informatik-parttime-hs24',
-	'informatik-parttime-hs25',
-]) {
-	test(`${templateId} backups with the old repeated elective slot still import`, async ({
-		page,
-		isMobile,
-	}) => {
+for (const templateId of ['informatik-parttime-hs24', 'informatik-parttime-hs25']) {
+	test(`${templateId} backups with the old repeated elective slot still import`, async ({ page, isMobile }) => {
 		await page.addInitScript((templateId) => {
 			localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
 			localStorage.setItem('currentTemplate', templateId);
@@ -63,48 +46,32 @@ for (const templateId of [
 		if (isMobile) {
 			await page.getByRole('button', { name: 'Menu', exact: true }).click();
 		}
-		await page
-			.getByRole('button', { name: 'Settings & help', exact: true })
-			.click();
+		await page.getByRole('button', { name: 'Settings & help', exact: true }).click();
 		const downloading = page.waitForEvent('download');
-		await page
-			.getByRole('button', { name: 'Export Data', exact: true })
-			.click();
-		const data = JSON.parse(
-			await readFile(await (await downloading).path(), 'utf8'),
-		);
+		await page.getByRole('button', { name: 'Export Data', exact: true }).click();
+		const data = JSON.parse(await readFile(await (await downloading).path(), 'utf8'));
 		expect(data.currentTemplateId).toBe(templateId);
 
 		const plan = data.studyPlans[templateId];
 		delete plan.nodes['elective4-s4'];
 		for (const row of plan.rows) {
-			row.nodeOrder = row.nodeOrder.map((id: string) =>
-				id === 'elective4-s4' ? 'elective3-s4' : id,
-			);
+			row.nodeOrder = row.nodeOrder.map((id: string) => (id === 'elective4-s4' ? 'elective3-s4' : id));
 		}
 		const choosing = page.waitForEvent('filechooser');
-		await page
-			.getByRole('button', { name: 'Import Data', exact: true })
-			.click();
+		await page.getByRole('button', { name: 'Import Data', exact: true }).click();
 		await (await choosing).setFiles({
 			name: 'progress.json',
 			mimeType: 'application/json',
 			buffer: Buffer.from(JSON.stringify(data)),
 		});
 
-		await expect(
-			page.getByRole('button', { name: 'Close settings', exact: true }),
-		).toBeHidden();
+		await expect(page.getByRole('button', { name: 'Close settings', exact: true })).toBeHidden();
 		const stored = await page.evaluate(
 			(key) => JSON.parse(localStorage.getItem(key) ?? 'null'),
 			`studyPlan:${templateId}`,
 		);
-		const rowIds = stored.rows.flatMap(
-			(row: { nodeOrder: string[] }) => row.nodeOrder,
-		);
-		expect(rowIds.filter((id: string) => id === 'elective3-s4')).toHaveLength(
-			1,
-		);
+		const rowIds = stored.rows.flatMap((row: { nodeOrder: string[] }) => row.nodeOrder);
+		expect(rowIds.filter((id: string) => id === 'elective3-s4')).toHaveLength(1);
 		expect(new Set(rowIds).size).toBe(Object.keys(stored.nodes).length);
 	});
 }
@@ -120,10 +87,7 @@ const STORAGE_FAILURES = [
 ] as const;
 
 for (const failure of STORAGE_FAILURES) {
-	test(`imports roll back completely when ${failure.name} fails`, async ({
-		page,
-		isMobile,
-	}) => {
+	test(`imports roll back completely when ${failure.name} fails`, async ({ page, isMobile }) => {
 		await page.addInitScript(() => {
 			localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
 		});
@@ -132,17 +96,11 @@ for (const failure of STORAGE_FAILURES) {
 		if (isMobile) {
 			await page.getByRole('button', { name: 'Menu', exact: true }).click();
 		}
-		await page
-			.getByRole('button', { name: 'Settings & help', exact: true })
-			.click();
+		await page.getByRole('button', { name: 'Settings & help', exact: true }).click();
 		const exportData = async () => {
 			const downloading = page.waitForEvent('download');
-			await page
-				.getByRole('button', { name: 'Export Data', exact: true })
-				.click();
-			return JSON.parse(
-				await readFile(await (await downloading).path(), 'utf8'),
-			);
+			await page.getByRole('button', { name: 'Export Data', exact: true }).click();
+			return JSON.parse(await readFile(await (await downloading).path(), 'utf8'));
 		};
 		const appStorage = () =>
 			page.evaluate(() =>
@@ -181,10 +139,7 @@ for (const failure of STORAGE_FAILURES) {
 			},
 		};
 		await page.evaluate(({ method, key }) => {
-			const original = Storage.prototype[method] as (
-				this: Storage,
-				...args: string[]
-			) => void;
+			const original = Storage.prototype[method] as (this: Storage, ...args: string[]) => void;
 			Storage.prototype[method] = function (...args: string[]) {
 				if (args[0] === key) {
 					throw new DOMException('blocked', 'QuotaExceededError');
@@ -193,9 +148,7 @@ for (const failure of STORAGE_FAILURES) {
 			};
 		}, failure);
 		const choosing = page.waitForEvent('filechooser');
-		await page
-			.getByRole('button', { name: 'Import Data', exact: true })
-			.click();
+		await page.getByRole('button', { name: 'Import Data', exact: true }).click();
 		await (await choosing).setFiles({
 			name: 'progress.json',
 			mimeType: 'application/json',
@@ -215,9 +168,7 @@ for (const failure of STORAGE_FAILURES) {
 	});
 }
 
-test('invalid badge preferences do not block startup or subsequent changes', async ({
-	page,
-}) => {
+test('invalid badge preferences do not block startup or subsequent changes', async ({ page }) => {
 	await page.addInitScript(() => {
 		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true');
 		if (localStorage.getItem('showCourseTypeBadges') === null) {
@@ -236,18 +187,12 @@ test('invalid badge preferences do not block startup or subsequent changes', asy
 	await expect(badges).toHaveAttribute('aria-pressed', 'true');
 });
 
-test('tutorial centers the course inside the canvas rather than the page', async ({
-	page,
-}) => {
+test('tutorial centers the course inside the canvas rather than the page', async ({ page }) => {
 	await page.goto('/');
 	const tutorial = page.locator('.driver-popover');
-	await tutorial
-		.getByRole('button', { name: 'Start tour', exact: true })
-		.click();
+	await tutorial.getByRole('button', { name: 'Start tour', exact: true }).click();
 	await tutorial.getByRole('button', { name: 'Next', exact: true }).click();
-	const course = page.locator(
-		'.svelte-flow__node-custom.driver-active-element',
-	);
+	const course = page.locator('.svelte-flow__node-custom.driver-active-element');
 	await expect(course).toBeVisible();
 	await expect
 		.poll(async () => {
@@ -262,21 +207,14 @@ test('tutorial centers the course inside the canvas rather than the page', async
 		.toBeLessThan(1);
 });
 
-test('closing course details also clears the canvas remove action', async ({
-	page,
-	isMobile,
-}) => {
+test('closing course details also clears the canvas remove action', async ({ page, isMobile }) => {
 	await page.goto('/');
 	// At the minimum zoom the first semester can be off-screen on mobile.
 	// Use the tutorial's pan action before exercising the node.
 	const tutorial = page.locator('.driver-popover');
-	await tutorial
-		.getByRole('button', { name: 'Start tour', exact: true })
-		.click();
+	await tutorial.getByRole('button', { name: 'Start tour', exact: true }).click();
 	await tutorial.getByRole('button', { name: 'Next', exact: true }).click();
-	await expect(
-		page.locator('.svelte-flow__node-custom.driver-active-element'),
-	).toBeVisible();
+	await expect(page.locator('.svelte-flow__node-custom.driver-active-element')).toBeVisible();
 	await tutorial.getByRole('button', { name: 'Close', exact: true }).click();
 	const course = page.locator('.svelte-flow__node-custom').first();
 	await course.click();
@@ -305,9 +243,7 @@ test('closing course details also clears the canvas remove action', async ({
 test('Backspace preserves the plan while the remove action persists deletion', {
 	tag: '@desktop-only',
 }, async ({ page }) => {
-	await page.addInitScript(() =>
-		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'),
-	);
+	await page.addInitScript(() => localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'));
 	await page.goto('/');
 	const first = page.locator('.svelte-flow__node-custom').first();
 	await first.click();
@@ -331,13 +267,9 @@ test('Backspace preserves the plan while the remove action persists deletion', {
 test('replacing a completed elective does not transfer its progress', {
 	tag: '@desktop-only',
 }, async ({ page }) => {
-	await page.addInitScript(() =>
-		localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'),
-	);
+	await page.addInitScript(() => localStorage.setItem('hslu-skill-tree-tutorial-seen', 'true'));
 	await page.goto('/');
-	await page
-		.getByRole('button', { name: 'Add course to semester 1', exact: true })
-		.click();
+	await page.getByRole('button', { name: 'Add course to semester 1', exact: true }).click();
 	const node = page.locator('.svelte-flow__node-custom[data-id^="custom-"]');
 	await node.click();
 	const panel = page.locator('#skill-tree-course-detail-panel');
@@ -353,12 +285,8 @@ test('replacing a completed elective does not transfer its progress', {
 			exact: true,
 		})
 		.click();
-	await panel
-		.getByRole('button', { name: 'Mark as Completed', exact: true })
-		.click();
-	await expect(
-		panel.getByRole('button', { name: 'Completed', exact: true }),
-	).toBeVisible();
+	await panel.getByRole('button', { name: 'Mark as Completed', exact: true }).click();
+	await expect(panel.getByRole('button', { name: 'Completed', exact: true })).toBeVisible();
 	await choose.click();
 	await page.getByRole('combobox').fill('Academic Methods');
 	await page
@@ -367,17 +295,11 @@ test('replacing a completed elective does not transfer its progress', {
 			exact: true,
 		})
 		.click();
-	await expect(
-		panel.getByRole('button', { name: 'Completed', exact: true }),
-	).toHaveCount(0);
-	await expect(
-		page.getByRole('button', { name: 'Open progress analytics' }),
-	).toContainText('0 / 180');
+	await expect(panel.getByRole('button', { name: 'Completed', exact: true })).toHaveCount(0);
+	await expect(page.getByRole('button', { name: 'Open progress analytics' })).toContainText('0 / 180');
 	await page.reload();
 	await node.click();
-	await expect(
-		panel.getByRole('button', { name: 'Completed', exact: true }),
-	).toHaveCount(0);
+	await expect(panel.getByRole('button', { name: 'Completed', exact: true })).toHaveCount(0);
 });
 
 async function loadRetakePlan(page: Page) {
@@ -393,9 +315,7 @@ async function loadRetakePlan(page: Page) {
 		planCode: template.plan,
 		rows: [1, 2, 3].map((semester) => ({
 			semester,
-			nodeOrder: courses
-				.filter((course) => course.semester === semester)
-				.map((course) => course.id),
+			nodeOrder: courses.filter((course) => course.semester === semester).map((course) => course.id),
 		})),
 		nodes: Object.fromEntries(
 			courses.map((course) => [
@@ -404,8 +324,7 @@ async function loadRetakePlan(page: Page) {
 					...course,
 					kind: 'custom',
 					slotType: 'custom',
-					ects: catalog.courses.find((entry) => entry.id === course.courseId)!
-						.ects,
+					ects: catalog.courses.find((entry) => entry.id === course.courseId)!.ects,
 					label: course.courseId,
 				},
 			]),
@@ -427,53 +346,35 @@ async function loadRetakePlan(page: Page) {
 	await page.goto('/');
 }
 
-test('prerequisite edges follow successful retakes and react to corrected outcomes', async ({
-	page,
-}) => {
+test('prerequisite edges follow successful retakes and react to corrected outcomes', async ({ page }) => {
 	await loadRetakePlan(page);
 	const edge = (source: string, target: string) =>
-		page.locator(
-			`.svelte-flow__edge[data-id="custom-${source}=>custom-${target}"]`,
-		);
+		page.locator(`.svelte-flow__edge[data-id="custom-${source}=>custom-${target}"]`);
 	await expect(edge('retake', 'passed')).toBeVisible();
 	await expect(edge('original', 'passed')).toHaveCount(0);
 	// An attendance-only prerequisite is already satisfied by the first attempt.
 	await expect(edge('original', 'attended')).toBeVisible();
 
-	await page
-		.locator('.svelte-flow__node-custom[data-id="custom-original"]')
-		.click();
+	await page.locator('.svelte-flow__node-custom[data-id="custom-original"]').click();
 	const panel = page.locator('#skill-tree-course-detail-panel');
-	await panel
-		.getByRole('button', { name: 'Mark as Completed', exact: true })
-		.click();
+	await panel.getByRole('button', { name: 'Mark as Completed', exact: true }).click();
 	await expect(edge('original', 'passed')).toBeVisible();
 	await expect(edge('retake', 'passed')).toHaveCount(0);
 
 	await panel.getByRole('button', { name: 'Completed', exact: true }).click();
-	await panel
-		.getByRole('button', { name: 'Mark as Attended', exact: true })
-		.click();
+	await panel.getByRole('button', { name: 'Mark as Attended', exact: true }).click();
 	await expect(edge('retake', 'passed')).toBeVisible();
 	await expect(edge('original', 'passed')).toHaveCount(0);
 	await expect(edge('original', 'attended')).toBeVisible();
 });
 
-test('graph animations and transitions follow live reduced-motion preferences', async ({
-	page,
-}) => {
+test('graph animations and transitions follow live reduced-motion preferences', async ({ page }) => {
 	await page.emulateMedia({ reducedMotion: 'reduce' });
 	await loadRetakePlan(page);
-	const node = page.locator(
-		'.svelte-flow__node-custom[data-id="custom-original"]',
-	);
+	const node = page.locator('.svelte-flow__node-custom[data-id="custom-original"]');
 	const paths = [
-		page.locator(
-			'.svelte-flow__edge[data-id="custom-retake=>custom-passed"] .svelte-flow__edge-path',
-		),
-		page.locator(
-			'.svelte-flow__edge[data-id="custom-original=>custom-attended"] .svelte-flow__edge-path',
-		),
+		page.locator('.svelte-flow__edge[data-id="custom-retake=>custom-passed"] .svelte-flow__edge-path'),
+		page.locator('.svelte-flow__edge[data-id="custom-original=>custom-attended"] .svelte-flow__edge-path'),
 	];
 	await expect(node).toHaveCSS('transition-duration', '0s');
 	for (const path of paths) {

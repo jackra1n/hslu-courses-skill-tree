@@ -1,17 +1,8 @@
 import type { Season } from '../season';
 
-export type ModuleType =
-	| 'Kernmodul'
-	| 'Projektmodul'
-	| 'Erweiterungsmodul'
-	| 'Major-/Minormodul'
-	| 'Zusatzmodul';
+export type ModuleType = 'Kernmodul' | 'Projektmodul' | 'Erweiterungsmodul' | 'Major-/Minormodul' | 'Zusatzmodul';
 
-export type AssessmentMode =
-	| 'coursework'
-	| 'written_exam'
-	| 'oral_exam'
-	| 'electronic_exam';
+export type AssessmentMode = 'coursework' | 'written_exam' | 'oral_exam' | 'electronic_exam';
 
 export type PrerequisiteLink = 'und' | 'oder';
 
