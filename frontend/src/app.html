@@ -5,6 +5,19 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="color-scheme" content="light dark">
 		<meta id="theme-color" name="theme-color" content="#ffffff">
+		<script>
+		// Mirrors themeStore so the first paint already uses the saved theme.
+		{
+			let theme = null;
+			try {
+				theme = localStorage.getItem('theme');
+			} catch {}
+			const dark = theme === 'dark' || (theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+			document.documentElement.classList.toggle('dark', dark);
+			document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+			document.getElementById('theme-color').content = dark ? '#111827' : '#ffffff';
+		}
+		</script>
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 		<link rel="icon" type="image/png" href="%sveltekit.assets%/icon.png">
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icon.png">
