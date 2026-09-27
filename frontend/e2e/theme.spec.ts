@@ -211,3 +211,42 @@ test('legacy cloud and baseline themes neither conflict nor replace the device t
 	expect((await snapshot(page)).revision).toBe(remote.revision + 1);
 	expect(writes).toBe(writesBeforeChoice);
 });
+
+test('the saved theme applies before the app script loads', async ({ context }) => {
+	const cases = [
+		{ os: 'light', stored: 'dark', dark: true },
+		{ os: 'dark', stored: 'light', dark: false },
+		{ os: 'dark', stored: 'system', dark: true },
+		{ os: 'dark', stored: 'invalid', dark: true },
+		{ os: 'light', stored: null, dark: false },
+		{ os: 'dark', stored: 'unreadable', dark: true },
+	] as const;
+	for (const { os, stored, dark } of cases) {
+		await test.step(`${stored} on a ${os} system`, async () => {
+			const page = await context.newPage();
+			await page.emulateMedia({ colorScheme: os });
+			await page.route(/\/_app\/.*\.js$/, (route) => route.abort());
+			await page.addInitScript((stored) => {
+				if (stored === 'unreadable') {
+					Object.defineProperty(window, 'localStorage', {
+						get() {
+							throw new DOMException('Storage is disabled', 'SecurityError');
+						},
+					});
+				} else if (stored === null) {
+					localStorage.removeItem('theme');
+				} else {
+					localStorage.setItem('theme', stored);
+				}
+			}, stored);
+			await page.goto('/');
+			const html = page.locator('html');
+			if (dark) await expect(html).toHaveClass(/\bdark\b/);
+			else await expect(html).not.toHaveClass(/\bdark\b/);
+			await expect(html).toHaveCSS('color-scheme', dark ? 'dark' : 'light');
+			await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', dark ? '#111827' : '#ffffff');
+			if (stored !== 'unreadable') expect(await page.evaluate(() => localStorage.getItem('theme'))).toBe(stored);
+			await page.close();
+		});
+	}
+});
