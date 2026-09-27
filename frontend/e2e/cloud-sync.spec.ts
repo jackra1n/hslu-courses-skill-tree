@@ -311,3 +311,123 @@ test('an already uploaded snapshot does not conflict with a newer queued edit', 
 	});
 	expect(writes).toBe(2);
 });
+
+const sessionUrl = /\/api\/auth\/get-session/;
+
+async function holdRequests(page: Page, url: string | RegExp) {
+	let release!: () => void;
+	const released = new Promise<void>((resolve) => {
+		release = resolve;
+	});
+	let requests = 0;
+	await page.route(url, async (route) => {
+		if (route.request().method() !== 'GET') return route.continue();
+		requests++;
+		await released;
+		await route.continue();
+	});
+	return { release, requests: () => requests };
+}
+
+async function putCloud(page: Page, data: unknown, expectedRevision: number) {
+	const response = await page.request.put('/api/progress', {
+		headers: { Origin: new URL(page.url()).origin },
+		data: { data, expectedRevision },
+	});
+	expect(response.ok()).toBe(true);
+}
+
+test('edits during a pending session lookup upload once it resolves', async ({ page }) => {
+	const session = await holdRequests(page, sessionUrl);
+	await page.reload();
+	await expect.poll(session.requests).toBe(1);
+	const slotId = await openCourse(page);
+	await changeProgress(page, 'Attended');
+	await page.getByRole('link', { name: 'Course Browser', exact: true }).click();
+	await expect(page.getByRole('textbox', { name: 'Search courses' })).toBeVisible();
+	await page.getByRole('link', { name: 'Skill Tree', exact: true }).click();
+	await expect(page.locator('.svelte-flow')).toBeVisible();
+	session.release();
+	await expectSaved(page);
+	expect(session.requests()).toBe(1);
+	await expectLocalProgress(page, slotId, 'attended');
+	expect((await snapshot(page)).data.slotStatus).toEqual({ [slotId]: 'attended' });
+});
+
+test('signed-out visitors can edit while the session lookup is pending', async ({ page }) => {
+	await page.context().clearCookies();
+	const session = await holdRequests(page, sessionUrl);
+	await page.reload();
+	await expect.poll(session.requests).toBe(1);
+	const slotId = await openCourse(page);
+	await changeProgress(page, 'Attended');
+	session.release();
+	await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeVisible();
+	await expectLocalProgress(page, slotId, 'attended');
+});
+
+test('edits during a pending progress read survive divergent cloud data', async ({ page }) => {
+	const original = await snapshot(page);
+	const progress = await holdRequests(page, '**/api/progress');
+	await page.reload();
+	await expect.poll(progress.requests).toBe(1);
+	const slotId = await openCourse(page);
+	await changeProgress(page, 'Attended');
+	const plan = original.data.studyPlans[original.data.currentTemplateId];
+	const otherSlotId = Object.keys(plan.nodes).find((id) => id !== slotId)!;
+	await putCloud(page, { ...original.data, slotStatus: { [otherSlotId]: 'completed' } }, original.revision);
+	progress.release();
+	await expect(page.getByRole('dialog', { name: conflictName })).toBeVisible();
+	await expectLocalProgress(page, slotId, 'attended');
+});
+
+test('a failed session lookup leaves the plan usable', async ({ page }) => {
+	await page.route(sessionUrl, (route) => route.abort('internetdisconnected'));
+	await page.reload();
+	const slotId = await openCourse(page);
+	await changeProgress(page, 'Attended');
+	await expectLocalProgress(page, slotId, 'attended');
+});
+
+test('a late cloud update clears the selection and refits the canvas', async ({ page }) => {
+	const original = await snapshot(page);
+	const templateId = original.data.currentTemplateId;
+	const plan = original.data.studyPlans[templateId];
+	const [row] = plan.rows;
+	const small = {
+		...plan,
+		rows: [{ ...row, nodeOrder: row.nodeOrder.slice(0, 2) }],
+		nodes: Object.fromEntries(row.nodeOrder.slice(0, 2).map((id: string) => [id, plan.nodes[id]])),
+	};
+	await page.evaluate(
+		([templateId, small]) => localStorage.setItem(`studyPlan:${templateId}`, JSON.stringify(small)),
+		[templateId, small],
+	);
+	await page.reload();
+	await expectSaved(page);
+	const synced = await snapshot(page);
+	await putCloud(page, original.data, synced.revision);
+
+	const progress = await holdRequests(page, '**/api/progress');
+	await page.reload();
+	await expect(page.locator('.svelte-flow__node-custom')).toHaveCount(2);
+	await expect.poll(progress.requests).toBe(1);
+	await openCourse(page);
+	await expect(page.locator('#skill-tree-course-detail-title')).toBeVisible();
+	progress.release();
+	await expect(page.locator('.svelte-flow__node-custom')).toHaveCount(Object.keys(plan.nodes).length);
+	await expect(page.locator('#skill-tree-course-detail-title')).toBeHidden();
+	await expect
+		.poll(() =>
+			page.evaluate(() => {
+				const canvas = document.querySelector('.svelte-flow')!.getBoundingClientRect();
+				return [...document.querySelectorAll('.svelte-flow__node-custom')].every((node) => {
+					const box = node.getBoundingClientRect();
+					return (
+						box.left >= canvas.left && box.right <= canvas.right && box.top >= canvas.top && box.bottom <= canvas.bottom
+					);
+				});
+			}),
+		)
+		.toBe(true);
+});
